@@ -1,0 +1,20 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_LiveChatStickerViewModel
+<div class="col-12 mb-1 position-relative user-select-none" style="height: 170px;overflow: auto;" id="htmlSticker@(Model.PathName)">
+</div>
+<script>
+    // ========= Start Sticker
+    $.getJSON('@Model.PathJson', function (data) {
+        var htmlSticker = "";
+        $.each(data, function (key, val) {
+            htmlSticker += `<img class="c-pointer me-1" border="0" outline="0"
+                                 src="@XHelper.pathFabSticker`+ val.sticker + `"
+                                 style="background-repeat: no-repeat;
+                                 background-size: 85px 85px;
+                                 height: 85px; width: 85px; border: none;"
+                                 onclick="ChooseSticker('@XHelper.pathFabSticker` + val.sticker + `')"
+                                 />`;
+        });
+        $("#htmlSticker" + '@Model.PathName').append(htmlSticker);
+    });
+    // ========= End Sticker
+</script>

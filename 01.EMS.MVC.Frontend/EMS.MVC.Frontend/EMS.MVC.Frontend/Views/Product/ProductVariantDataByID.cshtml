@@ -1,0 +1,318 @@
+﻿@model EMS.MVC.Frontend.Models.ProductVariantDataByIDViewModel
+@{
+    Layout = null;
+}
+<input type="hidden" id="VariantID" value="@Model.ID" />
+<div class="card" id="2">
+    <div class="card-body">
+        <h5 class="card-title">Chi tiết biến thể</h5>
+        <div class="row">
+            <div class="col-xl-8 col-lg-8 col-md-8 mb-2">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                        <label class="form-label">SKU <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" placeholder="SKU" id="VariantSKU" value="@Model.SKU">
+                        <span class="error-message text-danger" id="errVariantSKU"></span>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                        <label class="form-label">Barcode</label>
+                        <input type="text" class="form-control" placeholder="Barcode" id="VariantBarcode" value="@Model.Barcode">
+                        <span class="error-message text-danger" id="errVariantBarcode"></span>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="Giá bán" id="VariantPrice" data-inputmask="'alias': 'currency'" value="@Model.Price" maxlength="14">
+                            <span class="props">d</span>
+                        </div>
+                        <span class="text-danger" id="errVariantPrice"></span>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Khối lượng <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="Khối lượng" id="VariantWeight" value="@Model.Weight" data-inputmask="'alias': 'PositiveNumber'" maxlength="6">
+                            <span class="props">gr</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                <div class="update-img">
+                    @if (Model.Avatar != "")
+                    {
+                        <img id="VariantImage" data-filename="@Model.Avatar" src="@XHelper.pathImages@Model.Avatar" width="148">
+                    }
+                    else
+                    {
+                        <img id="VariantImage" data-filename="@Model.Avatar" src="~/Assets/images/default/2.png" width="148">
+                    }
+                    <button class="btn btn-outline-secondary mt-3 font-w600" id="btnUpdateImage">Cập nhật ảnh</button>
+                </div>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <label class="form-label">Kích thước (Dài x Rộng x Cao)</label>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <input type="text" class="form-control" placeholder="Nhập chiều dài" data-inputmask="'alias': 'PositiveDecimal'" id="VariantLength" value="@Model.Length" maxlength="4">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <input type="text" class="form-control" placeholder="Nhập chiều rộng" data-inputmask="'alias': 'PositiveDecimal'" id="VariantWidth" value="@Model.Width" maxlength="4">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <input type="text" class="form-control" placeholder="Nhập chiều cao" data-inputmask="'alias': 'PositiveDecimal'" id="VariantHeight" value="@Model.Height" maxlength="4">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="fs-18 font-w600">Thuộc tính</p>
+            @if (Model.OptionName1 != "")
+            {
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">@Model.OptionName1 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="Option1" value="@Model.OptionValue1" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập giá trị" maxlength="50">
+                    <span class="error-message text-danger" id="errOption1"></span>
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8 mb-2"></div>
+            }
+            @if (Model.OptionName2 != "")
+            {
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">@Model.OptionName2 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="Option2" value="@Model.OptionValue2" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập giá trị" maxlength="50">
+                    <span class="error-message text-danger" id="errOption2"></span>
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8 mb-2"></div>
+            }
+            @if (Model.OptionName3 != "")
+            {
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">@Model.OptionName3 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="Option3" value="@Model.OptionValue3" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập giá trị" maxlength="50">
+                    <span class="error-message text-danger" id="errOption3"></span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-footer d-sm-flex justify-content-end align-items-center">
+        <button type="button" class="btn btn-outline-dark" onclick="RemoveVariant(@Model.ID)">Xóa biến thể</button>
+        <button type="button" class="btn btn-primary" id="btnSubmit">Cập nhật</button>
+    </div>
+</div>
+<script>
+    CheckChangeValue("VariantSKU", "", "SKU", "N");
+    CheckChangeValue("VariantBarcode", "", "BARCODE", "N");
+    $(document).ready(function () {
+        $(":input").inputmask();
+
+        let model = @Html.Raw(Json.Encode(Model));
+        var ProductID = $('#ProductID').val()
+        //cập nhật ảnh
+        $('#btnUpdateImage').on('click', function () {
+            $.post('@Url.Action("ImagesView", "Product")', { ProductID: ProductID, Page: "Variant" }, function (data) {
+                $('#modal-ViewModal-html').html('<div class="ImagesView">' + data + '</div>');
+                $('#ViewModal').modal('show');
+            });
+        });
+        //$("#VariantPrice").on("change", function () {
+        //    if ($(this).val() == "" || $(this).val() == "0") {
+        //        $("#errVariantPrice").text("Vui lòng nhập giá bán");
+        //    } else {
+        //        $("#errVariantPrice").text("");
+        //    }
+        //});
+        $('#VariantName, #VariantSKU').on('keyup', function () {
+            var data;
+            if ($(this).attr('ID') == 'VariantName') {
+                data = $('#VariantName').val().trim();
+            } else {
+                data = $('#VariantSKU').val().trim();
+            }
+            CheckNullValue(data, $(this).attr('ID'), 'Trường này không được để trống.');
+        });
+
+        //Cập nhật biến thể
+        $('#btnSubmit').on('click', function () {
+
+            var VariantID = $('#VariantID').val()
+            var isError = false, isValid = true;
+            var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+            var Length = $('#VariantLength').val().replaceAll(',', '');
+            var Width = $('#VariantWidth').val().replaceAll(',', '');
+            var Height = $('#VariantHeight').val().replaceAll(',', '');
+            var Options = "Mặc định";
+            var agrs = {
+                ProductID: model.ProductID,
+                ID: VariantID,
+                Price: NumberReplace($('#VariantPrice').val()),
+                SKU: $('#VariantSKU').val().trim(),
+                Barcode: $('#VariantBarcode').val().trim(),
+                Avatar: $('#VariantImage').data('filename'),
+                Length: Length,
+                Width: Width,
+                Height: Height,
+                Weight: $('#VariantWeight').val().replaceAll(',', ''),
+            };
+            if (agrs.SKU != "") {
+                isValid = Validate("SKU", agrs.SKU);
+                if (isValid == false) {
+                    $("#errVariantSKU").text(msgIsValid);
+                    $("#VariantSKU").focus();
+                    isError = true;
+                } else {
+                    $("#errVariantSKU").text("");
+                }
+            } else {
+                $("#errVariantSKU").text("Trường này không được để trống.");
+                $("#VariantSKU").focus();
+                isError = true;
+            }
+
+            if (agrs.Barcode != "") {
+                isValid = Validate("BARCODE", agrs.Barcode);
+                if (isValid == false) {
+                    $("#errVariantBarcode").text(msgIsValid);
+                    $("#VariantBarcode").focus();
+                    isError = true;
+                } else {
+                    $("#errVariantBarcode").text("");
+                }
+            }
+
+            if (model.OptionName1 != "") {
+                agrs.OptionValue1 = $('#Option1').val().trim();
+                Options = agrs.OptionValue1;
+                isError = CheckRegexValue(agrs.OptionValue1, "Vietnamese", 'Option1','Giá trị không hợp lệ.', isError);
+            }
+            if (model.OptionName2 != "") {
+                agrs.OptionValue2 = $('#Option2').val().trim();
+                Options = agrs.OptionValue1 + " / " + agrs.OptionValue2 ;
+                isError = CheckRegexValue(agrs.OptionValue2, "Vietnamese", 'Option2', 'Giá trị không hợp lệ.', isError);
+            }
+            if (model.OptionName3 != "") {
+                agrs.OptionValue3 = $('#Option3').val().trim();
+                Options = agrs.OptionValue1 + " / " + agrs.OptionValue2 + " / " + agrs.OptionValue3;
+                isError = CheckRegexValue(agrs.OptionValue3, "Vietnamese", 'Option3', 'Giá trị không hợp lệ.', isError);
+            }
+            agrs.Options = Options;
+            if (agrs.SKU != "") {
+                isError = CheckRegexValue(agrs.SKU, "Code", 'VariantSKU', 'Giá trị không hợp lệ.', isError);
+            }
+
+            //isError = CheckNullValue(Number(agrs.Price), "VariantPrice", "Vui lòng nhập giá bán.", isError);
+
+            if (isError) {
+                return;
+            };
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn sửa thông tin biến thể?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "CÓ",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "KHÔNG",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JProductVariantEdit", "Product")',
+                        data: agrs,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                sessionStorage.setItem('lastProductVariant', agrs.ID);
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+    });
+    function RemoveVariant(ID) {
+        var ProductID = $('#ProductID').val()
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá biến thể?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveVariant", "Product")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        VariantID: ID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: "Xoá biến thể thành công!",
+                                html: true,
+                                button: false,
+                                timer: 1000
+                            }).then(function () {
+                                window.location.href = '@Url.Action("ProductVariantIndex", "Product")?ProductID=' + ProductID;
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        CreateCustomSwal("error", err.Message);
+                        return;
+                    }
+                });
+            }
+        });
+    };
+</script>

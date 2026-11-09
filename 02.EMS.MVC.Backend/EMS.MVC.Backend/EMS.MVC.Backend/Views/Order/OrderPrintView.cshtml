@@ -1,0 +1,141 @@
+﻿@model List<EMS.MVC.Backend.Models.OrderPrintViewModel>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Backend EMSOne</title>
+    <link href="~/Assets/vendors/css/vendor.bundle.base.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Assets/css/main/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <script src="~/Assets/vendors/js/vendor.bundle.base.js"></script>
+</head>
+<body>
+    <style>
+        body {
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .col-md-6 {
+            float: left;
+        }
+    </style>
+    <!-- AJAX LOADER -->
+    <div id="ajax_loader" style="background-color: rgba(0, 0, 0, 0.5); z-index: 9999; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; display: none;" class="">
+        <div id="ajax_loader_contend" style="position: fixed; left: 50%; top: 50%; color:white"><img src="~/Assets/images/loading.gif" style="width:30px; height:30px" /></div>
+    </div>
+    <div class="row">
+        <div class="offset-1 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-print-none">
+            <ul class="nav nav-pills nav-pills-vertical nav-pills-info" id="pills-tab" role="tablist" style="position: fixed; top: 10%; margin: 0; padding: 0;">
+                <li class="nav-item">
+                    <a onclick="RidirectType('A4')" class="nav-link" data-toggle="pill" href="#TypeA4" role="tab" aria-controls="pills-a4" aria-selected="true">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu A4
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a onclick="RidirectType('A61')" class="nav-link" data-toggle="pill" href="#TypeA61" role="tab" aria-controls="pills-a61" aria-selected="false">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu A6 (4.1x5.8)
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a onclick="RidirectType('A64')" class="nav-link" data-toggle="pill" href="#TypeA64" role="tab" aria-controls="pills-a64" aria-selected="false">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu A6 (khổ A4)
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a onclick="RidirectType('B1')" class="nav-link" data-toggle="pill" href="#TypeB1" role="tab" aria-controls="pills-b1" aria-selected="false">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu B1
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a onclick="RidirectType('B2')" class="nav-link" data-toggle="pill" href="#TypeB2" role="tab" aria-controls="pills-b2" aria-selected="false">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu B2
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a onclick="RidirectType('Label')" class="nav-link active" data-toggle="pill" href="#TypeLabel" role="tab" aria-controls="pills-label" aria-selected="false">
+                        <i class="fa fa-file-o mr-1" aria-hidden="true"></i>
+                        Kiểu nhãn (3x5)
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="window.print()" href="#">
+                        <i class="fa fa-print mr-1" aria-hidden="true"></i>
+                        In đơn hàng
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+            <div class="tab-content-vertical" id="pills-tabContent" @*style="max-height: 950px; overflow: auto;"*@>
+                <div class="tab-pane fade" id="TypeA4" role="tabpanel" aria-labelledby="TypeA4Tab">
+                </div>
+                <div class="tab-pane fade" id="TypeA61" role="tabpanel" aria-labelledby="TypeA6Tab">
+                </div>
+                <div class="tab-pane fade" id="TypeA64" role="tabpanel" aria-labelledby="TypeA6Tab">
+                </div>
+                <div class="tab-pane fade" id="TypeB1" role="tabpanel" aria-labelledby="TypeB1Tab">
+                </div>
+                <div class="tab-pane fade" id="TypeB2" role="tabpanel" aria-labelledby="TypeB2Tab">
+                </div>
+                <div class="tab-pane fade show active" id="TypeLabel" role="tabpanel" aria-labelledby="TypeLabelTab">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        var CurrentType = "Label";
+        $(document).ready(function () {
+            LoadData(CurrentType);
+        });
+
+        function RidirectType(Type) {
+            LoadData(Type);
+        }
+
+        function LoadData(Type) {
+            $("#Type" + CurrentType).html("");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("OrderPrintType", "Order")',
+                dataType: 'html',
+                loading: true,
+                data: {
+                    ListDataOrderPrint: localStorage.getItem('ListDataOrderPrint'),
+                    PrintType: Type
+                },
+                success: function (data) {
+                    $("#Type" + Type).html(data);
+                    CurrentType = Type;
+                },
+            });
+        }
+    </script>
+    <script src="~/Assets/vendors/sweetalert/sweetalert.min.js"></script>
+    <script src="~/Assets/js/off-canvas.js"></script>
+    <script src="~/Assets/js/hoverable-collapse.js"></script>
+    <script src="~/Assets/js/template.js"></script>
+    <script src="~/Assets/js/settings.js"></script>
+    <script src="~/Assets/js/todolist.js"></script>
+</body>
+</html>

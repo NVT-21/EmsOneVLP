@@ -1,0 +1,67 @@
+﻿@model EMS.MVC.Frontend.Models.TemporaryTransportServiceFeeViewModel
+
+@if(Model.ShowView == "AddOrderView")
+{
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Tổng cước tạm tính</p>
+        <p class="font-w600">@Model.TotalAmount.ToString("N0")đ</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Cước chính</p>
+        <p class="font-w600">@Model.MainServiceTotalAmount.ToString("N0")đ</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Cước cộng thêm</p>
+        <p class="font-w600">@Model.ExtraServiceTotalAmount.ToString("N0")đ</p>
+    </div>
+}
+else if(Model.ShowView == "FastOrderView")
+{
+    @*<div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+            <label class="text-muted">Cước chính</label>
+            <span>@Model.MainServiceTotalAmount.ToString("N0")đ</span>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+            <label class="text-muted">Cước cộng thêm</label>
+            <span>@Model.ExtraServiceTotalAmount.ToString("N0")đ</span>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+            <label class="fw-bold">Tổng cước</label>
+            <b>@Model.TotalAmount.ToString("N0")đ</b>
+        </div>*@
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Tổng cước tạm tính</p>
+        <p class="font-w600">@Model.TotalAmount.ToString("N0")đ</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Cước chính</p>
+        <p class="font-w600">@Model.MainServiceTotalAmount.ToString("N0")đ</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Cước cộng thêm</p>
+        <p class="font-w600">@Model.ExtraServiceTotalAmount.ToString("N0")đ</p>
+    </div>
+}
+else if(Model.ShowView == "WalkInOrderView")
+{
+    <div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+            <label class="text-muted">Cước chính</label>
+            <span>@Model.MainServiceTotalAmount.ToString("N0")đ</span>
+    </div>
+    <div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+        <label class="text-muted">Cước cộng thêm</label>
+        <span>@Model.ExtraServiceTotalAmount.ToString("N0")đ</span>
+    </div>
+    <div class="col-xl-8 col-lg-8 col-md-8 d-flex justify-content-between">
+        <label class="fw-bold">Tổng cước</label>
+        <b>@Model.TotalAmount.ToString("N0")đ</b>
+    </div>
+}
+
+<span class="text-danger" id="errTemporaryTransportServiceFee">@Model.Message</span>
+
+<script>
+    $(document).ready(function () {
+        TransportFee = @Model.TotalAmount;
+    });
+</script>

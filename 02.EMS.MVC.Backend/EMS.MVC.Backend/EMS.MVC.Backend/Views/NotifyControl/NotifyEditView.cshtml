@@ -1,0 +1,308 @@
+﻿@model EMS.MVC.Backend.Models.NotifyControlSearchListViewModel
+<div class="modal-dialog modal-800" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Chỉnh sửa cài đặt thông báo</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.NotifyID)
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tiêu đề thông báo <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="NotifyName" placeholder="Tiêu đề thông báo" maxlength="100" value="@Model.NotifyName">
+                    <span class="text-danger" id="errNotifyName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label for="">Nội dung <span class="text-danger">(*)</span></label>
+                    <textarea class="form-control" style="line-height: 1.4rem;" id="NotifyContent" placeholder="Nội dung" rows="6" maxlength="250">@Model.NotifyContent</textarea>
+                    <div class="text-right mt-2">
+                        <span class="fs-12 font-w300 text-3"><span id="ShowLengthNotifyContent">0</span>/250</span>
+                    </div>
+                    <span class="text-danger" id="errNotifyContent"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="">Hình thức gửi <span style="color: red">(*)</span></label>
+                    <select class="select2" id="NotifyReceiverType">
+                        <option value="ALL">Tất cả</option>
+                        <option value="CRM">Theo mã CRM</option>
+                        <option value="GROUP">Theo nhóm khách hàng</option>
+                    </select>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2" id="divNotifyReceiverCRM">
+                    <label>Mã PP/CRM <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="NotifyReceiverCRM" placeholder="Nhập mã PP/CRM" value="@Model.NotifyReceiverCRM">
+                    <span class="text-danger" id="errNotifyReceiverCRM"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2" id="divNotifyReceiverGROUP">
+                    <label>Nhóm khách hàng <span style="color: red">(*)</span></label>
+                    @Html.DropDownListFor(model => model.NotifyReceiverGroupID, new SelectList(ViewBag.ListNotifyReceiverGroupID, "Value", "Text"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_actions_box = "true", @data_dropup_auto = "false", @data_size = "5", @data_selected_text_format = "count", @multiple = "true" })
+                    <span class="text-danger" id="errNotifyReceiverGroupID"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="">Thời gian gửi <span style="color: red">(*)</span></label>
+                    <select class="select2" id="NotifySendType">
+                        <option value="Now">Gửi ngay</option>
+                        <option value="Custom" selected>Tuỳ chọn</option>
+                    </select>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2" id="divNotifySendDate">
+                    <label>Thời gian gửi tuỳ chọn <span style="color: red">(*)</span></label>
+                    @Html.EditorFor(model => model.NotifySendDate, new
+                    {
+                        htmlAttributes = new
+                        {
+                            @type = "text",
+                            @class = "form-control",
+                            @placeholder = "Ngày/ Tháng/ Năm hh:ii",
+                            @readonly = "isReadOnly"
+                        }
+                    })
+                    <span class="text-danger mt-2" id="errNotifySendDate"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Link khuyến mãi</label>
+                    <input type="text" class="form-control" id="NotifyRedirectUrl" placeholder="Link khuyến mãi" value="@Model.NotifyRedirectUrl">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12 col-md-12">
+                <div class="row justify-content-between">
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-label="Close">HUỶ BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-submit">CẬP NHẬT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    ShowInputLength("NotifyContent", "ShowLengthNotifyContent", 250);
+    CheckChangeValue("NotifyName", "Vui lòng nhập tiêu đề thông báo.", "", "Y");
+    CheckChangeValue("NotifyContent", "Vui lòng nhập nội dung thông báo.", "", "Y");
+    CheckChangeValue("NotifySendDate", "Vui lòng nhập thời gian gửi thông báo.", "", "Y");
+    CheckChangeValue("NotifyReceiverGroupID", "Vui lòng chọn nhóm khách hàng", "", "Y");
+    $("#NotifyReceiverGroupID").selectpicker("refresh");
+    $("#NotifyReceiverGroupID").selectpicker("val", @Html.Raw(Json.Encode(Model.NotifyReceiverGroupID.Split(','))));
+
+    $(document).ready(function () {
+        var valueToSelect = "";
+        switch ('@Model.NotifyReceiverType') {
+            case "ALL":
+                var valueToSelect = "ALL";
+                break;
+            case "CRM":
+                var valueToSelect = "CRM";
+                break;
+            case "GROUP":
+                var valueToSelect = "GROUP";
+                break;
+            default:
+                break;
+        }
+        $("#NotifyReceiverType").val(valueToSelect);
+        $('#NotifyReceiverType').change();
+        CreateDateTimePicker("#NotifySendDate");
+        $('select.select2').select2(AttributeSelect2);
+        $("#ShowLengthNotifyContent").text($('#NotifyContent').val().length);
+        document.getElementById('divNotifySendDate').style.display = 'block';
+    });
+
+    $('#NotifyReceiverType').on('change', function () {
+        if ($('#NotifyReceiverType').val() == "CRM") {
+            document.getElementById('divNotifyReceiverCRM').style.display = 'block';
+            document.getElementById('divNotifyReceiverGROUP').style.display = 'none';
+        } else if ($('#NotifyReceiverType').val() == "GROUP") {
+            document.getElementById('divNotifyReceiverCRM').style.display = 'none';
+            document.getElementById('divNotifyReceiverGROUP').style.display = 'block';
+        } else if ($('#NotifyReceiverType').val() == "ALL") {
+            document.getElementById('divNotifyReceiverCRM').style.display = 'none';
+            document.getElementById('divNotifyReceiverGROUP').style.display = 'none';
+        }
+    });
+
+    $('#NotifySendType').on('change', function () {
+        if ($('#NotifySendType').val() == "Custom") {
+            document.getElementById('divNotifySendDate').style.display = 'block';
+        } else {
+            document.getElementById('divNotifySendDate').style.display = 'none';
+        }
+    });
+
+    $("input[id=NotifyReceiverCRM_tag]").keyup(function () {
+        var value = $(this).val();
+        $(this).val(value.toUpperCase());
+    });
+
+    $("input[id=NotifyReceiverCRM_tag]").bind("paste", function (e) {
+        var source = "";
+
+        if (window.clipboardData !== undefined) {
+            source = window.clipboardData;
+        } else {
+            source = e.originalEvent.clipboardData;
+        }
+
+        var data = source.getData("Text");
+
+        var replaceSpace = data.split(/\s+/);
+
+        $.each(replaceSpace, function (idx, value) {
+            if (value.trim()) {
+                $('#NotifyReceiverCRM').tagsinput('add', value.toUpperCase());
+            }
+        });
+
+        e.preventDefault();
+    });
+
+    $('#NotifyReceiverCRM').tagsinput({
+        maxChars: 20,
+        trimValue: true,
+        maxTags: 30,
+        confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+    });
+
+    $('#NotifyReceiverCRM').on('beforeItemAdd', function (event) {
+        var CrmOrPaypostcode = event.item;
+        var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "NotifyReceiverCRM", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+        if (isError == true) {
+            event.cancel = true;
+        }
+    });
+
+    $(".bootstrap-tagsinput input").attr("id", "NotifyReceiverCRM_tag");
+
+    $('#btn-submit').on('click', function () {
+        var isError = false;
+        var data = {
+            NotifyID: $('#NotifyID').val(),
+            NotifyName: $('#NotifyName').val().trim(),
+            NotifyContent: $('#NotifyContent').val().trim(),
+            NotifyRedirectUrl: $('#NotifyRedirectUrl').val().trim(),
+            NotifyReceiverType: $('#NotifyReceiverType').val()
+        };
+
+        isError = CheckNullValue(data.NotifyName, "NotifyName", "Vui lòng nhập tiêu đề thông báo.", isError);
+        isError = CheckNullValue(data.NotifyContent, "NotifyContent", "Vui lòng nhập nội dung.", isError);
+
+        if (data.NotifyReceiverType == "CRM") {
+            data.NotifyReceiverCRM = $('#NotifyReceiverCRM').val();
+            data.NotifyReceiverGroupID = "";
+            isError = CheckNullValue(data.NotifyReceiverCRM, "NotifyReceiverCRM", "Vui lòng nhập mã PP/CRM.", isError);
+        }
+        else if (data.NotifyReceiverType == "GROUP") {
+            data.NotifyReceiverCRM = "";
+            data.NotifyReceiverGroupID = $('#NotifyReceiverGroupID').val().toString();
+            isError = CheckNullValue(data.NotifyReceiverGroupID, "NotifyReceiverGroupID", "Vui lòng chọn nhóm khách hàng.", isError);
+            var strNotifyReceiverGroupID = data.NotifyReceiverGroupID;
+            var arrNotifyReceiverGroupID = strNotifyReceiverGroupID.split(",");
+            if (arrNotifyReceiverGroupID.length > 5) {
+                isError = true;
+                $('#errNotifyReceiverGroupID').text("Bạn chỉ chọn tối đa được 5 nhóm khách hàng.");
+            } else {
+                $('#errNotifyReceiverGroupID').text("");
+            }
+        }
+        else {
+            data.NotifyReceiverCRM = "";
+            data.NotifyReceiverGroupID = "";
+        }
+
+        if ($('#NotifySendType').val() == "Custom") {
+            if (!isDateTimeAfterNowPlus5Minutes($('#NotifySendDate').val())) {
+                isError = true;
+                $('#errNotifySendDate').text("Thời gian tuỳ chỉnh chưa đúng.");
+            } else {
+                $('#errNotifySendDate').text("");
+                data.NotifySendDate = $('#NotifySendDate').val();
+            }
+        } else {
+            var date = new Date();
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+            var hours = date.getHours();
+            var minutes = date.getMinutes() + 1;
+            if (day < 10) {
+                day = '0' + day;
+            }
+            if (month < 10) {
+                month = '0' + month;
+            }
+            if (hours < 10) {
+                hours = '0' + hours;
+            }
+            if (minutes < 10) {
+                minutes = '0' + minutes;
+            }
+            var notifySendDate = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
+            data.NotifySendDate = notifySendDate;
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEdit", "NotifyControl")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                $('#modal-common').modal('toggle');
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#modal-common').modal('toggle');
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+
+    function ShowInputLength(InputID, OutputID, MaxLength) {
+        $("#" + InputID).on("keyup keydown", function () {
+            var NoteLength = $("#" + InputID).val().length;
+            if (NoteLength <= MaxLength) {
+                $("#" + OutputID).text(NoteLength);
+            } else {
+                var SubString = $("#" + InputID).val().substring(0, MaxLength);
+                $("#" + InputID).val(SubString);
+            }
+        });
+    }
+
+    function isDateTimeAfterNowPlus5Minutes(dateTimeString) {
+        var dateTimeToCheck = new Date(parseDateTimeString(dateTimeString));
+        var now = new Date();
+        var tenMinutesLater = new Date(now.getTime() + 5 * 60000);
+        var nowInVietnam = new Date(tenMinutesLater.getTime());
+        return dateTimeToCheck > nowInVietnam;
+    }
+
+    function parseDateTimeString(dateTimeString) {
+        var parts = dateTimeString.split(" ");
+        var dateParts = parts[0].split("/");
+        var timeParts = parts[1].split(":");
+        var newDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], timeParts[0], timeParts[1]);
+        return newDate;
+    }
+</script>

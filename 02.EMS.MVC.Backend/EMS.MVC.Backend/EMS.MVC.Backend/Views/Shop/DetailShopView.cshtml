@@ -1,0 +1,360 @@
+﻿@model EMS.MVC.Backend.Models.DetailShopViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("ShopView", "Shop")">Tài khoản khách hàng</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("DetailShopView", "Shop", new { ID = Model.ID })">Chi tiết khách hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.Code</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-pills nav-pills-success" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="info-tab" data-toggle="pill" href="#info" role="tab" aria-controls="info" aria-selected="true">Thông tin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="images-tab" data-toggle="pill" href="#images" role="tab" aria-controls="images" aria-selected="false">Tài liệu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="reconciliation-tab" data-toggle="pill" href="#reconciliation" role="tab" aria-controls="reconciliation" aria-selected="false">Kỳ đối soát</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="history-tab" data-toggle="pill" href="#history" role="tab" aria-controls="history" aria-selected="false">Lịch sử</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="addressandlabelprint-tab" data-toggle="pill" href="#AddressAndLabelPrint" role="tab" aria-controls="addressandlabelprint" aria-selected="false">Địa chỉ và mẫu in</a>
+                </li>
+            </ul>
+            <div class="tab-content pt-3">
+                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                    <div class="form-group row">
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Mã khách hàng </label>
+                            <input class="form-control" value="@Model.Code" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="MobileNumber">Số điện thoại</label>
+                            <input type="text" class="form-control" id="MobileNumber" value="@Model.MobileNumber" placeholder="Vui lòng nhập số điện thoại" autocomplete="off" disabled>
+                            <span class="text-danger" id="errMobileNumber"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="ContractNumber">Số hợp đồng </label>
+                            <input class="form-control" id="ContractNumber" value="@Model.ContractNumber" placeholder="Số hợp đồng" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="CustomerCode">Mã CRM/Paypost  <span class="text-danger"></span></label>
+                            <input type="text" class="form-control" id="CustomerCode" value="@Model.CustomerCode" onkeyup="checkAZ09(this.value, '#errCustomerCode', '')" oninput="this.value = this.value.toUpperCase()" placeholder="Mã CRM/Paypost" disabled>
+                            <span class="text-danger" id="errCustomerCode"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="StoreName">Tên cửa hàng/công ty <span class="text-danger"></span></label>
+                            <textarea class="form-control" disabled>@Model.StoreName</textarea>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Họ và tên người liên hệ <span class="text-danger"></span></label>
+                            <input type="text" class="form-control" id="FullName" value="@Model.FullName" placeholder="Họ và tên người liên hệ" disabled>
+                            <span class="error-message" id="errFullName"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="Email">Email <span class="text-danger"></span></label>
+                            <input type="email" class="form-control" id="Email" value="@Model.Email" placeholder="Vui lòng nhập địa chỉ Email" autocomplete="off" disabled>
+                            <span class="text-danger" id="errEmail"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="ProductBusiness">Sản phẩm kinh doanh <span class="text-danger"></span></label>
+                            <input type="text" class="form-control" id="ProductBusiness" value="@Model.ProductBusiness" placeholder="Sản phẩm kinh doanh" disabled>
+                            <span class="error-message" id="errProductBusiness"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Loại hình kinh doanh <span class="text-danger"></span></label><br />
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" @if(Model.TypeBusiness == "Cá nhân") { Write("checked"); } name="TypeBusiness" value="Cá nhân" disabled>
+                                            Cá nhân
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" @if(Model.TypeBusiness == "Doanh nghiệp") { Write("checked"); } name="TypeBusiness" value="Doanh nghiệp" disabled>
+                                            Doanh nghiệp
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Loại khách hàng</label><br />
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" @if(Model.TypeShop == 1) { Write("checked"); } name="TypeCustomer" value="1" disabled>
+                                            KH thường
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" @if(Model.TypeShop == 2) { Write("checked"); } name="TypeCustomer" value="2" disabled>
+                                            Đại lý
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="">Loại tài khoản <span style="color: red"></span></label>
+                            @Html.DropDownListFor(model => model.AccountType, new SelectList(Model.ListAccountType, "Value", "Text"), "-- Chọn --", new { @class = "form-control", @style = "color: black;", @disabled = "true" })
+                            <span class="error-message" id="errAccountType"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="">Số lượng nhân viên <span style="color: red"></span></label>
+                            @Html.DropDownListFor(model => model.NumberOfEmployees, new SelectList(Model.ListNumberOfEmployee, "Value", "Text"), "-- Chọn --", new { @class = "form-control", @style = "color: black;", @disabled = "true" })
+                            <span class="error-message" id="errNumberOfEmployees"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="Street">Địa chỉ<span class="text-danger"></span></label>
+                            <input type="text" class="form-control" id="Street" value="@Model.Street" placeholder="Địa chỉ" maxlength="400" autocomplete="off" disabled>
+                            <span class="text-danger" id="errAddress"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="ProvinceID">Tỉnh/ Thành phố <span class="text-danger"></span></label>
+                            @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "-- Tỉnh/ Thành phố --", new { @class = "select2", @disabled = "true" })
+                            <span class="text-danger mb-3" id="errProvinceID"></span>
+                        </div>
+                        @*<div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="WardID">Quận/ Huyện <span class="text-danger"></span></label>
+                            @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "-- Quận/ Huyện --", new { @class = "select2", @disabled = "true" })
+                            <span class="text-danger" id="errDistrictID"></span>
+                        </div>*@
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="WardID">Phường/ Xã <span class="text-danger"></span></label>
+                            @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "-- Phường/ Xã --", new { @class = "select2", @disabled = "true" })
+                            <span class="text-danger" id="errWardID"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Dịch vụ chính <span class="text-danger"> (*)</span></label>
+                            @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                            <span class="text-danger" id="errMainTransportServiceID"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Dịch vụ cộng thêm </label>
+                            @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                            <span class="text-danger" id="errExtraTransportServiceID"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="">Hình thức thu gom</label>
+                            <input class="form-control" value="@Model.CollectionTypeName" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="">Mã bưu cục thu gom</label>
+                            @Html.DropDownListFor(model => model.CollectionPostOfficeID, new SelectList(Model.ListCollectionPostOffice, "ID", "CodeAndName"), "-- Bưu cục thu gom --", new { @class = "select2", @disabled = "true" })
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="ChildCustomerCode">Mã khách hàng con</label>
+                            <input type="text" class="form-control" id="ChildCustomerCode" value="@Model.ChildCustomerCode" oninput="this.value = this.value.toUpperCase()" placeholder="Mã khách hàng con" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Loại đối soát COD</label>
+                            <input type="text" class="form-control" value="@Model.CODPeriodTypeName" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Loại đối soát cước vận chuyển</label>
+                            <input type="text" class="form-control" value="@Model.FeePeriodTypeName" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="EmailBCG">Email bưu cục gửi</label>
+                            <input class="form-control" value="@Model.EmailBCG" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="EmailCSKH">Email chăm sóc khách hàng</label>
+                            <input class="form-control" value="@Model.EmailCSKH" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="TaxCode">Mã số thuế</label>
+                            @Html.EditorFor(model => model.TaxCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã số thuế", @maxlength = "15", @disabled = "disabled" } })
+                            <span class="text-danger" id="errTaxCode"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="Token">Token</label>
+                            @Html.EditorFor(model => model.CustomerToken, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Token", @maxlength = "500", @disabled = "disabled" } })
+                            <span class="text-danger" id="errCustomerToken"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="Partner">Đối tác</label>
+                            @Html.DropDownListFor(model => model.PartnerID, new SelectList(Model.ListPartner, "ID", "PartnerName"), "--- Chọn ---", new { @class = "select2", @disabled = "disabled" })
+                            <span class="text-danger" id="errPartnerID"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label>Phương thức thanh toán<span class="text-danger"> (*)</span></label>
+                            <input type="text" class="form-control" value="@Model.PaymentMethodName" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2 PaymentMethod_1" style="display: @if (Model.PaymentMethod == 1) { Write("block"); } else { Write("none"); } ">
+                            <label for="FullNameOfPayment">Họ tên chủ tài khoản </label>
+                            <input class="form-control" value="@Model.FullNameOfPayment" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2 PaymentMethod_1" style="display: @if (Model.PaymentMethod == 1) { Write("block"); } else { Write("none"); } ">
+                            <label for="NumberOfPayment">Số tài khoản </label>
+                            <input type="text" class="form-control" value="@Model.NumberOfPayment" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2 PaymentMethod_1" style="display: @if (Model.PaymentMethod == 1) { Write("block"); } else { Write("none"); } ">
+                            <label for="NameOfPayment">Tên ngân hàng </label>
+                            <input class="form-control" value="@Model.NameOfPayment" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2 PaymentMethod_1" style="display: @if (Model.PaymentMethod == 1) { Write("block"); } else { Write("none"); } ">
+                            <label for="BranchOfPayment">Chi nhánh</label>
+                            <input class="form-control" value="@Model.BranchOfPayment" disabled>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label for="Partner">Bảo mật</label>
+                            @Html.DropDownListFor(model => model.IsSercurity, new SelectList(Model.ListIsSercurity, "Value", "Text"), "-- Chọn --", new { @class = "form-control", @style = "color: black;", @disabled = "true" })
+                            <span class="text-danger" id="errPartnerID"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                    <div class="form-group row">
+                        <div class="col">
+                            <label>Tải tài liệu </label>
+
+                            <input id="UploadImageFile" name="UploadImageFile" type="file" class="file-upload-default" accept="image/*" multiple="multiple" />
+                            <div class="row list-image">
+                                <button class="btn btn-sm btn-link btn-fw border-dark" style="border-style:dashed;margin-left:20px;" type="button" id="btnImage">
+                                    <i class="fa fa-image" style="font-size:40px;"></i><i class="fa fa-level-up" style="font-size:20px;"></i><br />
+                                    Thêm tài liệu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="reconciliation" role="tabpanel" aria-labelledby="images-tab">
+                    @{Html.RenderAction("DetailPeriodView", "Shop", new { CODPeriodType = Model.CODPeriodType, FeePeriodType = Model.FeePeriodType, ID = Model.ID });}
+                </div>
+
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <div class="table-responsive">
+                        @{Html.RenderAction("HistoryByShopID", "Shop", new { ShopID = Model.ID });}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="AddressAndLabelPrint" role="tabpanel" aria-labelledby="addressandlabelprint-tab">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-3 col-md-3" id="TreeView" style="text-align: justify; overflow-x: auto;height: 419px;">
+                            <div class="mt-1" style="font-size: initial;background-color: #0072BC; color: white; border-radius: 10px; padding: 3px 5px; width: fit-content;"><i class="fa fa-home mr-2"></i>@Model.StoreName</div>
+                            <div class="row ml-1 mt-1" id="tree">
+
+                            </div>
+                        </div>
+                        <div class="col-xl-10 col-lg-9 col-md-9" id="ShowInfoAddressOrLabelPrint">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var MainTransportServiceID = '@Model.MainTransportServiceID';
+            if (MainTransportServiceID) {
+                $('#MainTransportServiceID').selectpicker('val', MainTransportServiceID.split(','));
+            } else {
+                $('#MainTransportServiceID').selectpicker('selectAll');
+            }
+
+            var ExtraTransportServiceID = '@Model.ExtraTransportServiceID';
+            if (ExtraTransportServiceID) {
+                $('#ExtraTransportServiceID').selectpicker('val', ExtraTransportServiceID.split(','));
+            } else {
+                if (@Model.IsExistExtraTransportServiceID == 0) {
+                    $('#ExtraTransportServiceID').selectpicker('selectAll');
+                }
+            }
+        });
+
+        $(function () {
+            $("#tree").jstree({
+                "core": {
+                    //"animation": 0,
+                    //"check_callback": true,
+                    //'force_text': true,
+                    "themes": {
+                        "icons": false
+                    },
+                    "data": {
+                        "url": function (node) {
+                            var url = "";
+                            if (node.id === "#") {
+                                url = "@Url.Action("PickUpAddressTreeView", "Handle", new { ShopID = Model.ID })";
+                            } else {
+                                url = "@Url.Action("LabelPrintTreeView", "Handle")?PickUpAddressID=" + node.id;
+                            }
+                            return url;
+                        },
+                        "data": function (node) {
+                            return { 'id': node.id };
+                        },
+                        "dataType": "json"
+                    }
+                },
+            }).on("loaded.jstree", function (event, data) {
+
+            }).on("select_node.jstree", function (e, data) {
+                var Parent = data.node.parent;
+                if (Parent == "#") {
+                    ShowInfoPickUpAddress(data.node.id, @Model.ID);
+                } else {
+                    ShowInfoLabelPrint(data.node.li_attr.id, @Model.ID);
+                }
+            });
+        });
+
+        function ShowInfoPickUpAddress(PickUpAddressID, ShopID) {
+            $.post('@Url.Action("ShowInfoPickUpAddress", "Shop")', {
+                ShopID: ShopID,
+                PickUpAddressID: PickUpAddressID,
+                IsDisplay: "N"
+            }, function (htmlString) {
+                $("#ShowInfoAddressOrLabelPrint").html(htmlString);
+            });
+        }
+
+        function ShowInfoLabelPrint(LabelPrintID, ShopID){
+            $.post('@Url.Action("ShowInfoLabelPrint", "Shop")', {
+                ShopID: ShopID,
+                LabelPrintID: LabelPrintID,
+                IsDisplay: "N"
+            }, function (htmlString) {
+                $("#ShowInfoAddressOrLabelPrint").html(htmlString);
+            });
+        }
+
+    </script>
+}
+

@@ -1,0 +1,48 @@
+﻿@model EMS.MVC.Frontend.Models.SearchListFunctionalViewModel
+
+@Html.HiddenFor(m => m.GroupPermissionID)
+
+<div class="row" id="tree" style="height: 375px;"></div>
+
+<script>
+    $(document).ready(function () {
+        var LoadTreeData = LoadListFunctional();
+        $("#tree").jstree({
+            "core": {
+                "themes": {
+                    "icons": false
+                },
+                "data": LoadTreeData
+            },
+            "checkbox": {
+                "keep_selected_style": false,
+                //"three_state": false,
+                //"whole_node": false,
+                "tie_selection": false
+            },
+            "plugins": ["checkbox"]
+        }).on("check_node.jstree uncheck_node.jstree", function (e, data) {
+            
+        }).on('loaded.jstree', function (e, data) {
+            $("#tree").jstree(true).open_all();
+        });
+    });
+
+    function LoadListFunctional() {
+        var GroupPermissionID = $("#GroupPermissionID").val();
+        var ListFunctional = SearchListFunctional(GroupPermissionID).responseJSON;
+        var LoadTreeData = [];
+        ListFunctional.forEach(function (item, i) {
+            var obj = {
+                "id": item.ID.toString(),
+                "parent": item.FunctionalParentID == 0 ? "#" : item.FunctionalParentID.toString(),
+                "text": item.FunctionalName,
+                "state": {
+                    "checked": item.IsValue == 1 ? true : false
+                }
+            };
+            LoadTreeData.push(obj);
+        });
+        return LoadTreeData;
+    }
+</script>

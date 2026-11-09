@@ -1,0 +1,52 @@
+﻿@model EMS.MVC.Frontend.Models.BranchViewModel
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-basis">
+                <div class="card-left boder-left">
+                    @{
+                        Html.RenderAction("TreeView", "Shop");
+                    }
+                </div>
+                <div class="card-right" id="showDataBranch">
+                    @{
+                        Html.RenderAction("BranchInformation", "Branch", new { ParentID = Model.ParentID });
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function LoadInformation(ParentID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("BranchInformation", "Branch", new { area = "" })',
+            data: {
+                ParentID: ParentID
+            },
+            dataType: 'html',
+            success: function (data) {
+                $("#showDataBranch").empty();
+                $("#showDataBranch").append(data);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>
+
+
+

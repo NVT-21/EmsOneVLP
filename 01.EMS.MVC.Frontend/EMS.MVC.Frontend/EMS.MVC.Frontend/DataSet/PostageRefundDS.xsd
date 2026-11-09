@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="PostageRefundDS" targetNamespace="http://tempuri.org/PostageRefundDS.xsd" xmlns:mstns="http://tempuri.org/PostageRefundDS.xsd" xmlns="http://tempuri.org/PostageRefundDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="PostageRefundDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="PostageRefundDS" msprop:Generator_UserDSName="PostageRefundDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="PostageRefund" msprop:Generator_TableClassName="PostageRefundDataTable" msprop:Generator_TableVarName="tablePostageRefund" msprop:Generator_TablePropName="PostageRefund" msprop:Generator_RowDeletingName="PostageRefundRowDeleting" msprop:Generator_RowChangingName="PostageRefundRowChanging" msprop:Generator_RowEvHandlerName="PostageRefundRowChangeEventHandler" msprop:Generator_RowDeletedName="PostageRefundRowDeleted" msprop:Generator_UserTableName="PostageRefund" msprop:Generator_RowChangedName="PostageRefundRowChanged" msprop:Generator_RowEvArgName="PostageRefundRowChangeEvent" msprop:Generator_RowClassName="PostageRefundRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CustomerCode" msprop:Generator_ColumnVarNameInTable="columnCustomerCode" msprop:Generator_ColumnPropNameInRow="CustomerCode" msprop:Generator_ColumnPropNameInTable="CustomerCodeColumn" msprop:Generator_UserColumnName="CustomerCode" type="xs:string" minOccurs="0" />
+              <xs:element name="Reference" msprop:Generator_ColumnVarNameInTable="columnReference" msprop:Generator_ColumnPropNameInRow="Reference" msprop:Generator_ColumnPropNameInTable="ReferenceColumn" msprop:Generator_UserColumnName="Reference" type="xs:string" minOccurs="0" />
+              <xs:element name="ItemCode" msprop:Generator_ColumnVarNameInTable="columnItemCode" msprop:Generator_ColumnPropNameInRow="ItemCode" msprop:Generator_ColumnPropNameInTable="ItemCodeColumn" msprop:Generator_UserColumnName="ItemCode" type="xs:string" minOccurs="0" />
+              <xs:element name="ReleaseDate" msprop:Generator_ColumnVarNameInTable="columnReleaseDate" msprop:Generator_ColumnPropNameInRow="ReleaseDate" msprop:Generator_ColumnPropNameInTable="ReleaseDateColumn" msprop:Generator_UserColumnName="ReleaseDate" type="xs:string" minOccurs="0" />
+              <xs:element name="RefundDate" msprop:Generator_ColumnVarNameInTable="columnRefundDate" msprop:Generator_ColumnPropNameInRow="RefundDate" msprop:Generator_ColumnPropNameInTable="RefundDateColumn" msprop:Generator_UserColumnName="RefundDate" type="xs:string" minOccurs="0" />
+              <xs:element name="MoneyforCollection" msprop:Generator_ColumnVarNameInTable="columnMoneyforCollection" msprop:Generator_ColumnPropNameInRow="MoneyforCollection" msprop:Generator_ColumnPropNameInTable="MoneyforCollectionColumn" msprop:Generator_UserColumnName="MoneyforCollection" type="xs:long" minOccurs="0" />
+              <xs:element name="CODFee" msprop:Generator_ColumnVarNameInTable="columnCODFee" msprop:Generator_ColumnPropNameInRow="CODFee" msprop:Generator_ColumnPropNameInTable="CODFeeColumn" msprop:Generator_UserColumnName="CODFee" type="xs:long" minOccurs="0" />
+              <xs:element name="CODFeeRefund" msprop:Generator_ColumnVarNameInTable="columnCODFeeRefund" msprop:Generator_ColumnPropNameInRow="CODFeeRefund" msprop:Generator_ColumnPropNameInTable="CODFeeRefundColumn" msprop:Generator_UserColumnName="CODFeeRefund" type="xs:long" minOccurs="0" />
+              <xs:element name="FeeE1TransferRefund" msprop:Generator_ColumnVarNameInTable="columnFeeE1TransferRefund" msprop:Generator_ColumnPropNameInRow="FeeE1TransferRefund" msprop:Generator_ColumnPropNameInTable="FeeE1TransferRefundColumn" msprop:Generator_UserColumnName="FeeE1TransferRefund" type="xs:long" minOccurs="0" />
+              <xs:element name="DiscountRate" msprop:Generator_ColumnVarNameInTable="columnDiscountRate" msprop:Generator_ColumnPropNameInRow="DiscountRate" msprop:Generator_ColumnPropNameInTable="DiscountRateColumn" msprop:Generator_UserColumnName="DiscountRate" type="xs:int" minOccurs="0" />
+              <xs:element name="RefundAmount" msprop:Generator_ColumnVarNameInTable="columnRefundAmount" msprop:Generator_ColumnPropNameInRow="RefundAmount" msprop:Generator_ColumnPropNameInTable="RefundAmountColumn" msprop:Generator_UserColumnName="RefundAmount" type="xs:long" minOccurs="0" />
+              <xs:element name="Note" msprop:Generator_ColumnVarNameInTable="columnNote" msprop:Generator_ColumnPropNameInRow="Note" msprop:Generator_ColumnPropNameInTable="NoteColumn" msprop:Generator_UserColumnName="Note" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

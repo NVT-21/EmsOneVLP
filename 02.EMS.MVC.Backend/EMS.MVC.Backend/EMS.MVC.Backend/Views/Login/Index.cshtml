@@ -1,0 +1,206 @@
+﻿@model EMS.MVC.Backend.Models.LoginViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Backend đăng nhập</title>
+    <link rel="stylesheet" href="~/Assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="~/Assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/Assets/css/main/style.css">
+    <link rel="shortcut icon" href="~/favicon.ico" />
+</head>
+<body>
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-center auth px-0">
+                <div class="row w-100 mx-0">
+                    <div class="col-lg-4 mx-auto">
+                        <div class="auth-form-light text-left px-4 px-sm-5" style="padding-bottom: 2rem;">
+                            <div class="text-center pt-3 pb-3">
+                                <img src="~/Assets/images/logo.png" alt="logo" class="img-fluid" style="width: auto; height: auto;">
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên đăng nhập", @autocomplete = "off", @tabindex = "1" } })
+                                    <span class="text-danger" id="errUserName"></span>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @type = "password", @class = "form-control border-right-0", @placeholder = "Mật khẩu", @autocomplete = "off", @tabindex = "2" } })
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-sm form-control" style="color: gray; border-left: none;" id="btnDisplayOrHiddenPassword">
+                                                <i class="fa fa-eye" id="iDisplayOrHiddenPassword"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger" id="errPassword"></span>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-12 col-md-6 col-sm-12 mb-2 d-table" id="ReplaceImage" style="height: 10px;">
+                                            @{
+                                                Html.RenderAction("CaptchaImage", "Login");
+                                            }
+                                        </div>
+                                        <div class="col-xl-6 col-lg-12 col-md-6 col-sm-12 m-auto">
+                                            <div class="input-group">
+                                                @Html.EditorFor(model => model.CaptchaText, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã Captcha", @autocomplete = "off", @value = "", @maxlength="5", @tabindex = "3" } })
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-sm btn-warning" title="Tải lại mã Captcha" id="btnRefreshCaptcha">
+                                                        <i class="fa fa-refresh text-white" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="text-danger" id="errCaptchaText"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    <button type="button" id="btnLogin" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" style="font-size: 20px;" tabindex="4">
+                                        ĐĂNG NHẬP
+                                    </button>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    @Html.EditorFor(model => model.RememberMe, new { htmlAttributes = new { @type = "checkbox" } }) Ghi nhớ tài khoản
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="~/Assets/js/js.js?n=2"></script>
+    <script src="~/Assets/vendors/js/sweetalert/sweetalert.min.js"></script>
+    <script src="~/Assets/js/alerts.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#UserName").focus();
+        });
+
+        $("#btnDisplayOrHiddenPassword").on("click", function () {
+            var CheckType = document.getElementById("Password").type;
+            if (CheckType == "password") {
+                document.getElementById("Password").type = "text";
+                $("#iDisplayOrHiddenPassword").removeClass("fa-eye");
+                $("#iDisplayOrHiddenPassword").addClass("fa-eye-slash");
+            } else {
+                document.getElementById("Password").type = "password";
+                $("#iDisplayOrHiddenPassword").addClass("fa-eye");
+                $("#iDisplayOrHiddenPassword").removeClass("fa-eye-slash");
+            }
+        });
+
+        $(document).keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                document.getElementById("btnLogin").click();
+            }
+        });
+
+        CheckChangeValue("UserName", "Vui lòng nhập tài khoản", "", "Y");
+        CheckChangeValue("Password", "Vui lòng nhập mật khẩu", "", "Y");
+        CheckChangeValue("CaptchaText", "Vui lòng nhập Captcha", "", "Y");
+
+        $("#btnRefreshCaptcha").on('click', function () {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("CaptchaImage", "Login")',
+                dataType: 'html',
+                success: function (data) {
+                    $('#ReplaceImage').html(data);
+                },
+            });
+        });
+
+        $('#btnLogin').on('click', function () {
+            var isError = false;
+            var data = {
+                UserName: $("#UserName").val().trim(),
+                Password: $("#Password").val().trim(),
+                CaptchaText: $("#CaptchaText").val().trim(),
+                CaptchaValue: $("#CaptchaValue").val().trim(),
+                RememberMe: $('#RememberMe').is(':checked'),
+            }
+
+            if (!data.UserName) {
+                $("#UserName").focus();
+                $("#errUserName").text("Tên đăng nhập không được để trống");
+                isError = true;
+            }
+
+            if (!data.Password) {
+                $("#Password").focus();
+                $("#errPassword").text("Mật khẩu không được để trống");
+                isError = true;
+            }
+
+            if (!data.CaptchaText) {
+                $("#CaptchaText").focus();
+                $("#errCaptchaText").text("Vui lòng nhập mã captcha.");
+                isError = true;
+            } else if (data.CaptchaText != data.CaptchaValue){
+                $("#CaptchaText").focus();
+                $("#errCaptchaText").text("Captcha không hợp lệ. Vui lòng kiểm tra lại.");
+                isError = true;
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JLogin", "Login")',
+                dataType: 'json',
+                loading: true,
+                data: data,
+                beforeSend: function () {
+                    $("#btnLogin").attr("disabled",true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        swal({
+                            icon: "success",
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: false,
+                            timer: 2000
+                        }).then(function () {
+                            window.location.href = '@Url.Action("Index","Home", new { area = "" })';
+                        });
+                    } else {
+                        swal({
+                            icon: "error",
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        });
+                    }
+                },
+                complete: function () {
+                    $("#btnLogin").attr("disabled", false).find("i#iLoading").remove();
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                        }
+                    });
+                    return;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,249 @@
+﻿@model EMS.MVC.Frontend.Models.EditStockTakeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.HiddenFor(m => m.StockTakeID)
+<div class="container-fluid">
+    <div class="header-content">
+        <p class="fs-20 font-w600">Mã phiếu kiểm kho @Model.StockTakeCode</p>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label>Kho <span class="text-danger">*</span></label>
+                                    @Html.DropDownListFor(model => model.WareHouseID, new SelectList(Model.ListWareHouse, "ID", "WareHouseName"), new { @class = "select2", @disabled = "true" })
+                                    <span class="text-danger" id="errWareHouseID"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label>Ghi chú</label>
+                                    @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Ghi chú", @maxlength = "250", @rows = "2" })
+                                    <div class="text-end">
+                                        <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">@Model.Note.Length</span>/250</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <span class="text-danger" id="errListDetail"></span>
+                    @Html.HiddenFor(m => m.NumberOfDetail)
+                    <div class="table-primary">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>Sản phẩm</th>
+                                    <th>Mã SKU</th>
+                                    <th>Giá</th>
+                                    <th>SL tồn kho</th>
+                                    <th>SL thực tế</th>
+                                    <th>Chênh lệch</th>
+                                    <th>Giá trị chênh lệch</th>
+                                    <th>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" id="btnAddRow" title="Thêm">Thêm</button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBody">
+                                @{
+                                    Html.RenderAction("EditDetailStockTakeView", "StockTake", new { WareHouseID = Model.WareHouseID, ListDetailStockTake = Model.ListDetailStockTake });
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-center">Tổng: <span class="ClearData" id="TotalProduct">@Model.NumberOfDetail.ToString("N0")</span></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th><span class="ClearData" id="TotalInventory">@Model.TotalInventory.ToString("N0")</span></th>
+                                    <th class="text-center"><span class="ClearData" id="TotalActual">@Model.TotalActual.ToString("N0")</span></th>
+                                    <th><span class="ClearData" id="TotalDifferent">@Model.TotalDifferent.ToString("N0")</span></th>
+                                    <th><span class="ClearData" id="TotalMoney">@Model.TotalMoney.ToString("N0")</span></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <button type="button" onclick="window.location.href = '@Url.Action("StockTakeView", "StockTake")'" class="btn btn-outline-dark">Quay lại</button>
+                        </div>
+                        <div class="col-xl-9 col-lg-9 col-md-9 d-flex justify-content-end">
+                            @if (Model.Status.Code == "D")
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="btnSave('D')">Lưu lại</button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="btnSave('N')">Tạo</button>
+                            }
+                            else if (Model.Status.Code == "N")
+                            {
+                                <button type="button" class="btn btn-sm btn-primary" onclick="btnSave('N')">Cập nhật</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        ShowInputLength("Note", "ShowLengthNote", 250);
+
+        var TotalRow = parseInt($("#NumberOfDetail").val()) + 1;
+
+        $("#btnAddRow").on("click", function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("EditDetailStockTakeView", "StockTake")',
+                dataType: 'html',
+                loading: true,
+                data: {
+                    NumberOfDetail: TotalRow,
+                    WareHouseID: $("#WareHouseID").val(),
+                },
+                beforeSend: function () {
+                    $("#btnAddRow").attr("disabled", true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+                },
+                success: function (data) {
+                    TotalRow = TotalRow + 1;
+                    $('#tBody').append(data);
+                },
+                complete: function () {
+                    $("#btnAddRow").attr("disabled", false).find("i#iLoading").remove();
+                }
+            })
+        });
+
+        //$("#WareHouseID").on("change", function () {
+        //    var WareHouseID = $(this).val();
+        //    LoadListProductVariant(WareHouseID);
+        //});
+
+        //function LoadListProductVariant(WareHouseID) {
+        //    var ListProductVariant = SearchListProductVariant(WareHouseID).responseJSON;
+        //    $(".ProductVariant").empty();
+        //    $("<option/>", {
+        //        value: "",
+        //        text: "-- Sản phẩm --",
+        //    }).appendTo(".ProductVariant");
+        //    ClearData();
+        //    if (ListProductVariant.length > 0) {
+        //        $.each(ListProductVariant, function (index, value) {
+        //            $("<option/>", {
+        //                "value": value.ProductVariantID,
+        //                "text": value.ProductName + " (" + value.ProductVariantName + ")",
+        //                "data-SKU": value.ProductVariantSKU,
+        //                "data-Price": value.ProductVariantPrice,
+        //                "data-Inventory": value.NumberOfInventory
+        //            }).appendTo(".ProductVariant");
+        //        });
+        //    }
+        //}
+
+        function btnSave(EditType) {
+            var isError = false;
+
+            var data = {
+                StockTakeID: $("#StockTakeID").val(),
+                Note: $("#Note").val().trim(),
+                EditType: EditType,
+                EditMessage: EditType == "N" ? "Bạn chắc chắn muốn sửa thông tin phiếu kiểm kho?" : "Bạn chắc chắn muốn lưu nháp phiếu kiểm kho?",
+            };
+
+            var arr = [];
+            $('.row-item').each(function () {
+                //var NumberOfDetail = $(this).find("td:eq(4) input[name='NumberOfActual']").data("number");
+                var ProductVariantID = $(this).find("td:eq(0) select[name='ProductVariant']").val().trim();
+
+                if (ProductVariantID) {
+                    var NumberOfActual = NumberReplace($(this).find("td:eq(4) input[name='NumberOfActual']").val().trim());
+                    //if (!parseInt(NumberOfActual)) {
+                    //    $("#errNumberOfActual_" + NumberOfDetail).text("Vui lòng nhập số lượng");
+                    //    isError = true;
+                    //    return;
+                    //}
+
+                    var obj = {};
+                    obj.ProductVariantID = ProductVariantID;
+                    obj.Quantity = NumberOfActual;
+
+                    arr.push(obj);
+                }
+            });
+
+            data.ListDetailStockTake = arr;
+
+            if (data.ListDetailStockTake.length == 0) {
+                $("#errListDetail").text("Vui lòng chọn sản phẩm.");
+                isError = true;
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: data.EditMessage,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JEditStockTake", "StockTake")',
+                        dataType: 'json',
+                        loading: true,
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("StockTakeView", "StockTake")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}
+

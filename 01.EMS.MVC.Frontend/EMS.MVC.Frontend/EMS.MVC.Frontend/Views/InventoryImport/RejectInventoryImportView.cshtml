@@ -1,0 +1,69 @@
+﻿@model EMS.MVC.Frontend.Models.RejectInventoryImportViewModel
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Lý do từ chối</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.InventoryImportID)
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Lý do từ chối <span class="text-danger">(*)</span></label>
+                    @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Người lý do từ chối" } })
+                    <span class="text-danger" id="errReason"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" id="btnCloseRejectInventoryImportView" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmitRejectInventoryImportView">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    CheckChangeValue("Reason", "Vui lòng nhập lý do từ chối", "", "Y");
+
+    $("#btnSubmitRejectInventoryImportView").on('click', function () {
+        var isError = false;
+        var data = {
+            InventoryImportID: $("#InventoryImportID").val(),
+            Reason: $('#Reason').val().trim()
+        };
+
+        isError = CheckNullValue(data.Reason, 'Reason', 'Vui lòng nhập lý do từ chối.', isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRejectInventoryImport", "InventoryImport")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    $("#btnCloseRejectInventoryImportView").click();
+                    CreateCustomSwal("success", res.Message,"@Url.Action("InventoryImportView", "InventoryImport")");
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

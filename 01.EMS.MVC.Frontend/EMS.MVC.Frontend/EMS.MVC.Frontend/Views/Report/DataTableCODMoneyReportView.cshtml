@@ -1,0 +1,51 @@
+﻿@model List<EMS.MVC.Frontend.Models.CODMoneyReportDataViewModel>
+@{
+    var stt = 1;
+}
+<table id="SearchListDataTable" class="table table-responsive-md">
+    <thead>
+        @if (Model != null)
+        {
+            <tr>
+                <th colspan="2"> Tổng dữ liệu </th>
+                <th class="text-end"> @Model.Sum(m => m.Quantity).ToString("N0") (Bưu gửi) </th>
+                <th class="text-end"> @Model.Sum(m => m.AmountOfMoney).ToString("N0") (VNĐ) </th>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <th colspan="2"> Tổng dữ liệu </th>
+                <th class="text-end"> 0 (Bưu gửi) </th>
+                <th class="text-end"> 0 (VNĐ) </th>
+            </tr>
+        }
+        <tr class="text-center">
+            <th> STT </th>
+            <th> Ngày cập nhật </th>
+            <th> Sản lượng (Đơn) </th>
+            <th> Số tiền (VNĐ) </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.TimeRelease</td>
+                    <td class="text-end">@item.Quantity.ToString("N0")</td>
+                    <td class="text-end">
+                        @item.AmountOfMoney.ToString("N0")
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

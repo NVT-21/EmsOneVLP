@@ -1,0 +1,238 @@
+﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-3s" id="daterangeView">
+                                <div class="mb-3">
+                                    <label class="mb-1">Thời gian</label>
+                                    <div class="datepicker-form">
+                                        <input type="text" class="form-control input-daterange-datepicker" id="AllDate">
+                                        <input type="hidden" id="FromDate" value="@Model.FromDate" />
+                                        <input type="hidden" id="ToDate" value="@Model.ToDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="mb-3">
+                                    <label class="mb-1">Kỳ đối soát</label>
+                                    <select class="select2 default-select form-control" id="PeriodFee">
+                                        <option value="0" selected>Tuỳ chọn ngày</option>
+                                        @foreach (var item in ViewBag.ListControlPeriod)
+                                        {
+                                            <option value="@item.ID">@item.PeriodName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="mb-3">
+                                    <label class="mb-1">Trạng thái đối soát</label>
+                                    <select class="select2 default-select form-control" id="ReconciliationStatus">
+                                        <option value="" selected>Tất cả</option>
+                                        @foreach (var item in ViewBag.ReconciliationStatus)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <div class="form-search">
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                          fill="#86909C" />
+                                </svg>
+                                <input type="text" class="form-control " id="SearchCode"
+                                       placeholder="Tìm theo mã đơn hàng, mã bảng kê, mã bưu gửi" maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8 d-flex justify-content-end align-items-end">
+                        <div class="mb-3 d-flex">
+                            <div class="dropdown me-3">
+                                <button class="btn btn-upload" type="button" id="btnExportExcel">
+                                    <i class="icon-down fs-18"></i>
+                                    Xuất file
+                                </button>
+                            </div>
+                            <div class="dropdown ">
+                                <button class="btn btn-upload d-flex align-items-center" type="button"
+                                        id="order-dropdown-1" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <span>
+                                        Thao tác hàng loạt
+                                    </span>
+                                    <i class="icon-arrow-b fs-20"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                                    <div class="py-2">
+                                        <a class="dropdown-item" id="IsAgreeAll">Đồng ý</a>
+                                        <a class="dropdown-item" id="IsRejectAll">Từ chối</a>
+                                        <a class="dropdown-item" id="IsPhaseChangeAll">Chuyển kỳ tiếp theo</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-warning alert-dismissible fade show">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+             stroke-linecap="round" stroke-linejoin="round" class="me-2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        Lưu ý: Cần xác nhận đối soát trong vòng 5 ngày, sau thời gian 5 ngày những bưu gửi chưa được xác nhận sẽ tự
+        động được xác nhận Đồng ý.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+        </button>
+    </div>
+    <div class="card">
+        <div class="card-body ">
+            <div id="tbl-data" class="table-primary table-responsive">
+                @{
+                    Html.RenderAction("DataFreightView", "Reconciliation", new { FromDate = Model.FromDate, ToDate = Model.ToDate });
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+        if (sessionStorage.getItem('FEE_ID') != "") {
+            $("#PeriodFee").val(sessionStorage.getItem('FEE_ID')).change();
+            if (sessionStorage.getItem('FEE_ID') > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Handle/ControlPeriodDateByID',
+                    loading: true,
+                    dataType: 'json',
+                    data: {
+                        ID: sessionStorage.getItem('FEE_ID')
+                    },
+                    success: function (data) {
+                        CreateDateRangePicker("AllDate", data.FromDate, data.ToDate);
+                    },
+                    error: function (xhr, status, error) {
+                        return;
+                    }
+                });
+                document.getElementById("daterangeView").style.display = "none";
+            } else {
+                CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+                document.getElementById("daterangeView").style.display = "block";
+            }
+            sessionStorage.setItem('FEE_ID', "");
+            $('#AllDate').change();
+        } else {
+            CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+        }
+        $('#AllDate,#ReconciliationStatus,#SearchCode').on('change', function () {
+            var errMsg = '', isError = false;
+                var req = {
+                    FromDate: $("#AllDate").val().split(" - ")[0],
+                    ToDate: $("#AllDate").val().split(" - ")[1],
+                    SearchCode: $("#SearchCode").val(),
+                    Status: $('#ReconciliationStatus').val(),
+                };
+                if (req.FromDate == "") {
+                    errMsg = 'Vui lòng chọn Từ ngày';
+                    isError = true;
+                }
+                if (req.ToDate == "") {
+                    errMsg = 'Vui lòng chọn Đến ngày';
+                    isError = true;
+                }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+
+            $.get('@Url.Action("DataFreightView", "Reconciliation")', req, function (data) {
+                $('#tbl-data').html(data);
+            });
+        });
+        $("#btnExportExcel").on("click", function () {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+                SearchCode: $("#SearchCode").val(),
+                Status: $('#FreightReconciliationStatus').val(),
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("ExcelDataFreight", "Reconciliation")?FromDate=" + req.FromDate + "&ToDate=" + req.ToDate + "&SearchCode=" + req.SearchCode + "&Status=" + req.Status;
+        });
+        $('#PeriodFee').on('change', function () {
+            if (this.value > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Handle/ControlPeriodDateByID',
+                    loading: true,
+                    dataType: 'json',
+                    data: {
+                        ID: this.value
+                    },
+                    success: function (data) {
+                        CreateDateRangePicker("AllDate", data.FromDate, data.ToDate);
+                    },
+                    error: function (xhr, status, error) {
+                        return;
+                    }
+                });
+                document.getElementById("daterangeView").style.display = "none";
+            } else {
+                CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+                document.getElementById("daterangeView").style.display = "block";
+            }
+        });
+    </script>
+}

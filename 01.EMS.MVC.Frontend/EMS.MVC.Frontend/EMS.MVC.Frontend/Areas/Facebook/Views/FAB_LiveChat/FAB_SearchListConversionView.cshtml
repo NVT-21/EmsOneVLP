@@ -1,0 +1,79 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListConversionViewModel>
+
+@foreach (var item in Model)
+{
+    Html.RenderAction("FAB_ConversionView", "FAB_LiveChat", new { model = item, area = "Facebook" });
+}
+
+<script>
+    function ConversionBoxActive(UserID) {
+        $(".bg-conversion-box").removeClass("active");
+        $("#conversion-" + UserID).addClass("active");
+    }
+    function LoadContentConversion(ConversionID, UserID, DisplayName, Avatar, ProfileLink) {
+        sessionStorage.removeItem('lastTabUserInformation');
+        CheckTabUserInformation();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_SearchListMessageOfConversionView", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'html',
+            loading: true,
+            global: false,
+            data: {
+                ConversionID: ConversionID,
+                UserID: UserID,
+                DisplayName: DisplayName,
+                Avatar: Avatar,
+                ProfileLink: ProfileLink,
+                ListSticker: JSON.parse($("#conversion-" + UserID).attr("data-ListSticker"))
+            },
+            success: function (data) {
+                ConversionBoxActive(UserID);
+                $("#image-default-conversation").css("display", "none");
+                $("#MessageOfConversion").removeClass("image-default-css");
+                $("#MessageOfConversion").html(data);
+                $("#NumberOfMessage-" + UserID).text("0");
+                $("#NumberOfMessage-" + UserID).addClass("d-none");
+
+                $("#p_TabOrderCustomer").removeClass("active");
+                $("#orderCustomer").removeClass("show");
+                $("#orderCustomer").removeClass("active");
+                $("#p_TabInfoCustomer").addClass("active");
+                $("#infoCustomer").addClass("show");
+                $("#infoCustomer").addClass("active");
+
+                LoadUserInformation(UserID, DisplayName, Avatar, ProfileLink);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+    function LoadUserInformation(UserID, DisplayName, Avatar, ProfileLink) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_UserInformationOfConversion", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'html',
+            loading: true,
+            global: false,
+            data: {
+                ChannelUserID: UserID,
+                DisplayName: DisplayName,
+                Avatar: Avatar,
+                ProfileLink: ProfileLink
+            },
+            success: function (data) {
+                $("#showUserInformation").removeClass("d-none");
+                $("#UserInformation").html(data);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+</script>
+

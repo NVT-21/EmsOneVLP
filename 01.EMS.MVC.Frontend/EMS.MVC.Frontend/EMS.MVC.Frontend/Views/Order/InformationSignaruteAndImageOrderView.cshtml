@@ -1,0 +1,163 @@
+﻿@model EMS.MVC.Frontend.Models.InformationSignaruteAndImageOrderViewModel
+@using Newtonsoft.Json
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">@Model.Title - @Model.ShippingCode</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                @if (Model.ListEMSSignaruteAndImageInformation.Count > 0)
+                {
+                    if (Model.SearchKey == "NORMAL")
+                    {
+                        foreach (var itemEMS in Model.ListEMSSignaruteAndImageInformation)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Chữ ký báo phát: </label>
+                                @if (string.IsNullOrEmpty(itemEMS.Signature))
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        <img class="img-fluid" width="100" src="@itemEMS.Signature" style="cursor: pointer;" alt="Ảnh chữ ký báo phát" data-ListImage="@JsonConvert.SerializeObject(itemEMS.Signature)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát: </label>
+                                @if (itemEMS.FileNames.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemEMS.FileNames.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemEMS.FileNames[i]" style="cursor: pointer;" alt="Hình ảnh báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNames)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else if (Model.SearchKey == "AUTHOR")
+                    {
+                        foreach (var itemEMS in Model.ListEMSSignaruteAndImageInformation)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát dịch vụ "Báo phát hình ảnh" (HA): </label>
+                                @if (itemEMS.FileNamesAuth.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemEMS.FileNamesAuth.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemEMS.FileNamesAuth[i]" style="cursor: pointer;" alt="Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNamesAuth)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+
+                }
+                else if (Model.ListVNPSignaruteAndImageInformation.Count > 0)
+                {
+                    if (Model.SearchKey == "NORMAL")
+                    {
+                        foreach (var itemVNP in Model.ListVNPSignaruteAndImageInformation)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Chữ ký báo phát: </label>
+                                @if (itemVNP.ImagesSignature.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemVNP.ImagesSignature.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesSignature[i]" style="cursor: pointer;" alt="Chữ ký báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesSignature)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát: </label>
+                                @if (itemVNP.ImagesDelivery.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var j = 0; j < itemVNP.ImagesDelivery.Count; j++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesDelivery[j]" style="cursor: pointer;" alt="Hình ảnh báo phát @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesDelivery)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else if (Model.SearchKey == "AUTHOR")
+                    {
+                        foreach (var itemVNP in Model.ListVNPSignaruteAndImageInformation)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA): </label>
+                                @if (itemVNP.Images.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemVNP.Images.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.Images[i]" style="cursor: pointer;" alt="Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.Images)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát cập nhật bổ sung: </label>
+                                @if (itemVNP.ImagesPlus.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var j = 0; j < itemVNP.ImagesPlus.Count; j++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesPlus[j]" style="cursor: pointer;" alt="Hình ảnh báo phát cập nhật bổ sung @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesPlus)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <span>Không tồn tại dữ liệu.</span>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+

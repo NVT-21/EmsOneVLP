@@ -1,0 +1,27 @@
+﻿@model List<EMS.MVC.Frontend.Models.ImageZoomAndSliderViewModel>
+
+
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-touch="false" data-bs-interval="false" @*data-bs-ride="carousel"*@>
+    <div class="carousel-indicators" style="position: fixed;">
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" class="@Model[i].IsActive" aria-current="true" aria-label="Slide @i"></button>
+        }
+    </div>
+    <div class="carousel-inner">
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            <div class="carousel-item @Model[i].IsActive">
+                <img src="@Model[i].Url" class="image-zoom-modal-content" alt="@Model[i].Title">
+            </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" style="position: fixed;" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" style="position: fixed;" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>

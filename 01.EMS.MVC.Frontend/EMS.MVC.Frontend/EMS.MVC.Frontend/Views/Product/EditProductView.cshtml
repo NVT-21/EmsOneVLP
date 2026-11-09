@@ -1,0 +1,323 @@
+﻿@model EMS.MVC.Frontend.Models.EditProductViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" id="ProductID" value="@Model.ID" />
+<div class="container-fluid pb-100">
+    <div class="container-medium mb-5">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Thông tin</h4>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Mã sản phẩm<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Code" maxlength="19" oninput="this.value = this.value.toUpperCase()" autocomplete="off" placeholder="Mã sản phẩm" value="@Model.Code">
+                        <span class="text-danger" id="errCode"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Name" maxlength="150" autocomplete="off" placeholder="Tên sản phẩm" value="@Model.Name">
+                        <span class="text-danger" id="errName"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Nhóm sản phẩm</label>
+                        @Html.DropDownListFor(model => model.ProductGroupID, new SelectList(Model.ListProductGroup, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                            <input type="text" id="Price" data-inputmask="'alias': 'currency'" class="form-control" placeholder="Giá bán" value="@Model.PricesSell" maxlength="14">
+                            <span class="props">d</span>
+                        </div>
+                        <span class="text-danger" id="errPrice"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Đơn vị tính</label>
+                        @Html.DropDownListFor(model => model.Unit, new SelectList(Model.ListProductUnit, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+                        <div class="input-group mt-2 d-none" id="ShowUnitDifferent">
+                            <input type="text" class="form-control d-inline-block text-truncate" id="UnitDifferent" style="text-transform: capitalize;" placeholder="Vui lòng nhập đơn vị khác" autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="btnAddUnitDifferent">Thêm</button>
+                            </div>
+                        </div>
+                        <span class="text-danger" id="errUnitDifferent"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="form-label">Kích thước (Dài x Rộng x Cao)</label>
+                        <div class="row">
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Length" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều dài" autocomplete="off" value="@Model.Length" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Width" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều rộng" autocomplete="off" value="@Model.Width" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Height" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều cao" autocomplete="off" value="@Model.Height" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Khối lượng</label>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="Weight" placeholder="Nhập khối lượng" autocomplete="off" value="@Model.Weight" maxlength="6">
+                            <span class="props">gr</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" rows="4" id="Description" placeholder="Mô tả" maxlength="250">@Model.Description</textarea>
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescription">@Model.Description.Length</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" id="VariantManagement">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Biến thể
+                </h4>
+                <div id="ProductOptionData" class="table-responsive table-secondary border">
+                    @{ Html.RenderAction("ProductOptionDataByProductID", "Product", new { ProductID = Model.ID }); }
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mt-2 mb-2">
+                        <button class="btn tp-btn btn-secondary font-w600" style="display:block;" onclick="btnAddVariantView(@Model.ID)">
+                            <i class="ti-plus"></i>
+                            Thêm biến thể
+                        </button>
+                    </div>
+                </div>
+                <h5 class="fs-16 font-w600">Danh sách biến thể</h5>
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <div id="ProductVariantData" class="table-secondary border">
+                            @{
+                                Html.RenderAction("ProductVariantDataByProductID", "Product", new { ProductID = Model.ID, VariantID = 0 });
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card ImagesView">
+            @{
+                Html.RenderAction("ImagesView", "Product", new { ProductID = Model.ID, Page = "Product" });
+            }
+        </div>
+    </div>
+</div>
+<div class="bottom-group">
+    <div class="float-end">
+        <button type="button" class="btn btn-outline-dark" onclick="location.href = '@Url.Action("ProductView","Product")'">Hủy bỏ</button>
+        <button type="button" class="btn btn-primary" id="btnSave">Cập nhật</button>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        //OnlyNumber("#Length, #Width, #Height");
+        ShowInputLength("Description", "ShowLengthDescription", 250);
+
+        var Name = $('#Name').val();
+        var Code = $('#Code').val();
+        var ProductGroupID = $('#ProductGroupID').val();
+        var ProductID = $('#ProductID').val();
+
+        $(document).ready(function () {
+            $("#AttributeValue").select2({ tags: true, width: "100%" });
+            $("#footer").addClass("d-none");
+            $('select.select2').select2(AttributeSelect2);
+
+            $("<option/>", {
+                value: "Different",
+                text: "--- Khác ---"
+            }).appendTo("#Unit");
+        });
+
+        $('#Code').on('change', function () {
+            var isError = false;
+            isError = CheckNullAndRegexValue($("#Code").val().trim(), 'ProductCode', 'Code', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            if (isError == true) {
+                return;
+            }
+        });
+        $('#Name').on('change', function () {
+            var isError = false;
+            isError = CheckNullAndRegexValue($("#Name").val().trim(), 'Vietnamese', 'Name', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            if (isError == true) {
+                return;
+            }
+        });
+        $("#Unit").on("change", function () {
+            if ($("#Unit").val() == "Different") {
+                $("#ShowUnitDifferent").removeClass("d-none");
+            } else {
+                $("#ShowUnitDifferent").addClass("d-none");
+            }
+        });
+        $("#Price").on("change", function () {
+            if ($(this).val() == "" || $(this).val() == "0") {
+                $("#errPrice").text("Vui lòng nhập giá bán");
+            } else {
+                $("#errPrice").text("");
+            }
+        });
+        $("#btnAddUnitDifferent").on("click", function () {
+            var isError = false;
+            var data = {
+                UnitName: $("#UnitDifferent").val().trim()
+            }
+            isError = CheckNullAndRegexValue(data.UnitName, 'Vietnamese', 'UnitDifferent', 'Trường này không được để trống.', 'Giá trị hợp lệ không bao gồm ký tự đặc biệt.', isError);
+            if (isError) {
+                return;
+            };
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn thêm đơn vị tính không?",
+                buttons: {
+                    confirm: {
+                        text: "CÓ",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "KHÔNG",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddProductUnit", "Product")',
+                        dataType: 'json',
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    timer: 1500,
+                                    button: false
+                                }).then(function () {
+                                    $("#Unit option[value='Different']").remove();
+                                    $("<option/>", {
+                                        value: res.Data,
+                                        text: data.UnitName
+                                    }).attr("selected", "selected").appendTo("#Unit");
+                                    $("<option/>", {
+                                        value: "Different",
+                                        text: "--- Khác ---"
+                                    }).appendTo("#Unit");
+                                    $("#ShowUnitDifferent").addClass("d-none");
+                                    $("#UnitDifferent").val("");
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+        $('#btnSave').on('click', function () {
+            var isError = false;
+            var Length = $('#Length').val().replaceAll(',', '');
+            var Width = $('#Width').val().replaceAll(',', '');
+            var Height = $('#Height').val().replaceAll(',', '');
+
+            var data = {
+                ID: ProductID,
+                Name: $('#Name').val().trim(),
+                Code: $('#Code').val().trim(),
+                ProductGroupID: $('#ProductGroupID').val(),
+                PricesSell: $('#Price').val().replaceAll(',',''),
+                Weight: $('#Weight').val().replaceAll(',', ''),
+                Length: Length,
+                Width: Width,
+                Height: Height,
+                Description: $('#Description').val().trim(),
+                Unit: $('#Unit').val().trim(),
+            };
+
+            isError = CheckNullAndRegexValue(data.Code, 'ProductCode', 'Code', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            isError = CheckNullValue(data.Name, 'Name', 'Trường này không được để trống.', isError);
+            //isError = CheckNullValue(Number(data.PricesSell), "Price", "Vui lòng nhập giá bán.", isError);
+
+            if (isError == true) {
+                return;
+            };
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn sửa thông tin sản phẩm?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JEditProduct", "Product")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        function btnAddVariantView(ProductID) {
+            window.location.href = '@Url.Action("ProductVariantIndex", "Product")?ProductID=' + ProductID;
+        }
+    </script>
+}

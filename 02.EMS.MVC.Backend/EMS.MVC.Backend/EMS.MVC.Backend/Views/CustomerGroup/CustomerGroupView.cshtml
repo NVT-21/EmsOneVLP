@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("CustomerGroupView", "CustomerGroup")">Quản lý nhóm khách hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-lg-5 col-md-12 mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="AddCustomerGroup" style="font-size: initial;background-color: #0072BC; color: white; border-radius: 10px; padding: 3px 5px; width: fit-content; cursor: pointer;" title="Thêm nhóm khách hàng">
+                                <i class="fa fa-plus-circle mr-2"></i>Nhóm khách hàng
+                            </div>
+                            <div class="row ml-1 mt-1 CustomScrollBar" id="TreeView" style="overflow-x: auto; height: 520px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-7 col-md-12" id="ShowInfoCustomerGroup">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        var to = false;
+        $('#SearchNodeTree').keyup(function () {
+            if (to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#SearchNodeTree').val();
+                $('#TreeView').jstree(true).search(v);
+            }, 250);
+        });
+
+        $("#TreeView").jstree({
+            "core": {
+                "themes": {
+                    "icons": false
+                },
+                "data": {
+                    "url": function (node) {
+                        return "@Url.Action("JSearchListCustomerGroupTree", "CustomerGroup")?ParentID=" + node.id;
+                    },
+                    "data": function (node) {
+                        return { 'id': node.id };
+                    },
+                    "dataType": "json"
+                },
+            },
+        }).on("loaded.jstree", function (event, data) {
+        }).on("select_node.jstree", function (e, data) {
+            var ParentID = data.node.parent;
+            if (data.node.parent == "#") {
+                ParentID = 0;
+                data.instance.open_node(data.node); // click vào là open node luôn
+            }
+            GetInfoCustomerGroup(data.node.id, ParentID);
+        });
+
+        function GetInfoCustomerGroup(customerGroupID) {
+            $.post('@Url.Action("DetailCustomerGroupView", "CustomerGroup")', {
+                id: customerGroupID,
+            }, function (htmlString) {
+                $("#ShowInfoCustomerGroup").html(htmlString);
+            });
+        }
+
+        $("#AddCustomerGroup").on("click", function () {
+            $.get('@Url.Action("AddCustomerGroupView", "CustomerGroup")', {
+                ParentID: 0
+            }, function (data) {
+                $('#modal-common-container').html(data);
+                $('#modal-common').modal('show');
+            });
+        });
+    </script>
+}

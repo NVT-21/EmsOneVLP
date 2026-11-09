@@ -1,0 +1,304 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListGrabOrderViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th class="border-b"></th>
+            @if (ViewBag.CheckCustomerCode == 2)
+            {
+                <th class="text-start align-middle border-b" colspan="6">Tổng</th>
+            }
+            else
+            {
+                <th class="text-start align-middle border-b" colspan="5">Tổng</th>
+            }
+            <th class="text-right border-b">@Model.Sum(m => m.TransportFee).ToString("N0") đ</th>
+            <th class="text-right border-b">@Model.Sum(m => m.PaymentFreightVat).ToString("N0") đ</th>
+            <th class="text-right border-b">@Model.Sum(m => m.TotalCOD).ToString("N0") đ</th>
+            <th class="align-middle border-b" colspan="2"></th>
+        </tr>
+        <tr>
+            <th hidden></th>
+            <th class="align-middle">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th class="align-middle">Mã đơn hàng</th>
+            <th class="align-middle">Mã bưu gửi</th>
+            @if (ViewBag.CheckCustomerCode == 2)
+            {
+                <th class="align-middle"> Mã PP/CRM </th>
+            }
+            <th class="align-middle">Thông tin gửi</th>
+            <th class="align-middle">Thông tin nhận</th>
+            <th class="align-middle">Nội dung</th>
+            <th class="align-middle">Cước tạm tính</th>
+            <th class="align-middle">Cước thực tế</th>
+            <th class="align-middle">Thu hộ</th>
+            <th class="align-middle">Dịch vụ</th>
+            <th class="align-middle" style="width: 50px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.ShippingCode || @item.OrderCode || @item.ReceiverPhone</td>
+                <td class="py-2">
+                    @if (item.ShopID == ViewBag.ShopID)
+                    {
+                        <div class="form-check custom-checkbox ">
+                            <input type="checkbox" class="form-check-input" id="SelectData" data-EMSOneCode="@item.EMSOneCode" data-ShopID="@item.ShopID" data-OrderStatus="@item.OrderStatus" value="@item.OrderID">
+                            <label class="form-check-label" for="checkbox1"></label>
+                        </div>
+                    }
+                </td>
+                <td class="py-2" style="max-width: 150px">
+                    <ul>
+                        <li>
+                            <a href="#" onclick="btnDetailOrder(@item.OrderID,@item.ShopID)">@item.OrderCode</a>
+                        </li>
+                        <li>
+                            @item.CreatedDate
+                        </li>
+                    </ul>
+                </td>
+                <td class="py-2">
+                    <ul>
+                        <li>
+                            <a href="@Url.Action("GrabDetailShippingView", "GrabOrder", new { ShippingID = EMS.Library.Security.EncodeBase64(item.ShippingID)})" target="_blank">@item.ShippingCode</a>
+                        </li>
+                        <li>
+                            <span class="text-green">@item.OrderStatusName</span>
+                        </li>
+                    </ul>
+                </td>
+                @if (ViewBag.CheckCustomerCode == 2)
+                {
+                    <td class="py-2" style="vertical-align: middle;">@item.CrmOrPaypostCode</td>
+                }
+                <td class="py-2">
+                    <ul>
+                        <li>@item.SenderName</li>
+                        <li class="fs-12 text-2">
+                            @item.SenderPhone
+                        </li>
+                        <li class="fs-12 text-2">
+                            @item.SenderFullAddress
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>@item.ReceiverName</li>
+                        <li class="fs-12 text-2">
+                            @item.ReceiverPhone
+                        </li>
+                        <li class="fs-12 text-2">
+                            @if (!string.IsNullOrEmpty(item.ReceiverFullAddress))
+                            {
+                                var index = item.ReceiverFullAddress.Trim().LastIndexOf(',') + 1;
+                                @item.ReceiverFullAddress.Trim().Substring(0, index) <b> @item.ReceiverFullAddress.Trim().Substring(index)</b>
+                            }
+                        </li>
+                    </ul>
+                </td>
+                <td class="py-2">
+                    <span class="text-break">@item.Message</span>
+                </td>
+                <td class="py-2 ">
+                    @item.TransportFee.ToString("N0") đ
+                </td>
+                <td class="py-2 ">
+                    @item.PaymentFreightVat.ToString("N0") đ
+                </td>
+                <td class="py-2 ">
+                    @item.TotalCOD.ToString("N0") đ
+                </td>
+                <td class="py-2 ">
+                    @if (!string.IsNullOrEmpty(item.TransportMainServiceCode))
+                    {
+                        <div class="tooltip">
+                            <span style="cursor: pointer; color: #0054a6; font-size: 12.2px;">
+                                [@item.TransportMainServiceCode]
+                                @if (!string.IsNullOrEmpty(item.TransportExtraServiceCode))
+                                {
+                                    <br />
+                                    Write("[" + item.TransportExtraServiceCode + "]");
+                                }
+                            </span>
+                            <span class="tooltiptop">
+                                Dịch vụ chính: @item.TransportMainServiceName
+                                @if (!string.IsNullOrEmpty(item.TransportExtraServiceName))
+                                {
+                                    <br />
+                                    Write("Dịch vụ cộng thêm:");
+                                    <br />
+                                    var SplitTransportExtraServiceName = item.TransportExtraServiceName.Split(',');
+                                    for (var i = 0; i < SplitTransportExtraServiceName.Length; i++)
+                                    {
+                                        <span class="ms-1">+ @SplitTransportExtraServiceName[i]</span>
+                                        <br />
+                                    }
+                                }
+                            </span>
+                        </div>
+                    }
+                </td>
+                <td class="py-2 text-start">
+                    @if (item.OrderStatus != "C")
+                    {
+                        <button class="btn" type="button" id="order-dropdown-1"
+                                data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                aria-expanded="false">
+                            <span>
+                                Chọn
+                            </span>
+                            <i class="icon-arrow-b"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                            <div class="py-2">
+                                @if (item.OrderStatus == "N" || item.OrderStatus == "W")
+                                {
+                                    <a class="dropdown-item" href="#" onclick="btnCancelOrder(@item.OrderID)">Hủy đơn hàng</a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot style="background-color: #f7f8fa;">
+        <tr>
+            <th hidden></th>
+            <th class="border-b"></th>
+            @if (ViewBag.CheckCustomerCode == 2)
+            {
+                <th class="text-start border-b" colspan="6">Tổng</th>
+            }
+            else
+            {
+                <th class="text-start border-b" colspan="5">Tổng</th>
+            }
+            <th class="text-right border-b">0 đ</th>
+            <th class="text-right border-b">0 đ</th>
+            <th class="text-right border-b">0 đ</th>
+            <th class="border-b" colspan="2"></th>
+        </tr>
+    </tfoot>
+</table>
+<script>
+    $(document).ready(function () {
+        var SearchOrderStatus = '@ViewBag.SearchOrderStatus';
+        var CheckCustomerCode = '@ViewBag.CheckCustomerCode';
+        $('#SearchListDataTable').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            "language": {
+                "sSearch": "",
+                "searchPlaceholder": "Tìm kiếm nhanh",
+                "emptyTable": "Không có dữ liệu",
+                "zeroRecords": "Không có dữ liệu",
+                "sInfo": "_START_ - _END_ trên _TOTAL_",
+                "infoEmpty": "0 - 0 trên 0",
+                "infoFiltered": "(Tìm kiếm từ _MAX_ bản ghi)",
+                "oPaginate": {
+                    "sFirst": "Trang đầu",
+                    "sPrevious": "<",
+                    "sNext": ">",
+                    "sLast": "Trang cuối"
+                },
+                "lengthMenu": "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "searching": false,
+            "stateSave": true,
+            "dom": "tr<'row'<'col-4'l><'col-8 d-flex justify-content-end m-auto'<'mt-1 me-3'i>p>>",
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,đ]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                var j = 0;
+                var max = 0;
+                if (CheckCustomerCode == 2) {
+                    if (SearchOrderStatus == "L") {
+                        j = 7;
+                        max = 9;
+                    } else {
+                        j = 8;
+                        max = 10;
+                    }
+                } else {
+                    if (SearchOrderStatus == "L") {
+                        j = 6;
+                        max = 8;
+                    } else {
+                        j = 7;
+                        max = 9;
+                    }
+                }
+                while (j <= max) {
+                    pageTotal = api
+                        .column(j, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    $(api.column(j).footer()).html(
+                        pageTotal.toLocaleString() + " đ"
+                    );
+                    j++;
+                }
+            },
+        });
+
+        $("#SearchListDataTable").removeClass('dataTable');
+
+        if ('@ViewBag.ReloadStatusNumber' == "Y") {
+            LoadCountStatus();
+        }
+    });
+
+    function LoadCountStatus() {
+        var data = @Html.Raw(Json.Encode(ViewBag.OrderStatusNumber));
+        var TotalOrder = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Count >= 1000) {
+                $("#OrderStatus" + data[i].Status).text("(999+)");
+            } else {
+                $("#OrderStatus" + data[i].Status).text("(" + data[i].Count + ")");
+            }
+            if (data[i].Status != "C" && data[i].Status != "D") {
+                TotalOrder += data[i].Count;
+            }
+        }
+        if (TotalOrder >= 1000) {
+            $("#StatusAll").text("(999+)");
+        } else {
+            $("#StatusAll").text("(" + TotalOrder + ")");
+        }
+    }
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 1);
+    });
+
+    function btnDetailOrder(OrderID, ShopID) {
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: OrderID, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+</script>

@@ -1,0 +1,1227 @@
+﻿@model EMS.MVC.Frontend.Models.EditOrderBatchViewModel
+
+<div class="container-fluid pb-100">
+    <div class="order">
+        <div class="CustomScrollBar order-left" data-bs-spy="scroll" data-bs-target="#ListTab" data-bs-offset="0" tabindex="0" style="width: calc(100% - 80px); position: relative; overflow: auto; height: 780px;">
+            <div class="card" id="TabCustomer">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin khách hàng</h5>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-6 col-md-12 mb-2">
+                            <div class="form-search">
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                          fill="#86909C" />
+                                </svg>
+                                @*<select id="SearchCustomer">
+                                    <option value="@Model.ShipmentInfo.Buyer.MobileNumber" selected="selected">@Model.ShipmentInfo.Buyer.FullName</option>
+                                </select>*@
+                                <input type="text" class="form-control" id="SearchCustomer" value="@Model.ShipmentInfo.Buyer.MobileNumber" placeholder="Tìm thông tin KH">
+                                <span class="text-danger" id="errSearchCustomer"></span>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-md-8 mb-2">
+                            <button class="btn btn-secondary text-white font-w600" onclick="ShowAddCustomerView()">
+                                <i class="ti-plus"></i>
+                                Thêm mới khách hàng
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ShowSearchCustomerView">
+                        @{
+                            Html.RenderAction("SearchCustomerView", "Order", new { Sender = Model.ShipmentInfo.Sender, Receiver = Model.ShipmentInfo.Receiver, PickUpAddressID = Model.ShipmentInfo.Sender.PickUpAddressID, MobileNumber = Model.ShipmentInfo.Buyer.MobileNumber, IsTransport = "Y" });
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="TabTransport">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin vận chuyển</h5>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                            <label class="mb-1">Xuất kho <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.WareHouseID, new SelectList(Model.ListWareHouse, "ID", "WareHouseName"), new { @class = "select2" })
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                            <label class="mb-1">Hình thức thu gom <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.CollectionType, 1, new { @class = "form-check-input", @checked = "checked" })
+                                    <label class="form-check-label" for="13">
+                                        Thu gom tận nơi
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.CollectionType, 2, new { @class = "form-check-input" })
+                                    <label class="form-check-label " for="23">
+                                        Gửi hàng tại bưu cục
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                            <label class="mb-1">Người trả cước <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.TransportPayer, 1, new { @class = "form-check-input", @checked = "checked", @id = "TransportPayer1" })
+                                    <label class="form-check-label" for="13">
+                                        Shop trả
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.TransportPayer, 2, new { @class = "form-check-input", @id = "TransportPayer2" })
+                                    <label class="form-check-label " for="23">
+                                        Người nhận
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="mb-1">Dịch vụ vận chuyển chính <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), "-- Chọn --", new { @class = "select2" })
+                            <span class="text-danger" id="errMainTransportServiceID"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="mb-1">Dịch vụ vận chuyển cộng thêm </label>
+                            @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                            <span class="text-danger" id="errExtraTransportServiceID"></span>
+                        </div>
+                        <div id="ShowTotalCOD" class="col-xl-4 col-lg-4 col-md-4 mb-2 @{if (!Model.ExtraTransportServiceID.Contains("108")){ Write("d-none"); }}">
+                            <div class="custom-props">
+                                <label class="mb-1">Tiền thu hộ <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.TotalCOD, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tiền thu hộ", @data_inputmask = "'alias': 'currency'", @maxlength = "10" } })
+                                <span class="props">đ</span>
+                            </div>
+                            <span class="text-danger" id="errTotalCOD"></span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <p class="font-w500">Cước tạm tính (Đã bao gồm VAT)</p>
+                    <div class="row" id="TemporaryTransportServiceFee">
+                        <div class="col-xl-4 col-lg-4 col-md-4">
+                            <p class="mb-0">Tổng cước tạm tính</p>
+                            <p class="font-w600" id="TotalFee">0 <span>đ</span></p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4">
+                            <p class="mb-0">Cước chính</p>
+                            <p class="font-w600" id="MainFee">0 <span>đ</span></p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4">
+                            <p class="mb-0">Cước cộng thêm</p>
+                            <p class="font-w600" id="ExtraFee">0 <span>đ</span></p>
+                        </div>
+                        <span class="text-danger" id="errTemporaryTransportServiceFee"></span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Ghi chú đơn hàng</label>
+                            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Nhập ghi chú đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Kênh bán hàng</label>
+                            @Html.DropDownListFor(model => model.Channel, new SelectList(Model.ListChannel, "Value", "Text"), new { @class = "select2" })
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mt-3">
+                            <table class="table table-clear">
+                                <tbody>
+                                    <tr>
+                                        <td class="left"><strong>Tổng tiền hàng</strong></td>
+                                        <td class="right"><span id="TotalMoney">@Model.TotalAmount.ToString("N0")</span>đ</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="TabListBatch">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin bưu gửi</h5>
+                    <span class="text-danger" id="errListOrderInfo"></span>
+                    <div class="table-primary table-responsive MouseScrollX">
+                        <table class="table table-bordered" style="width: 100%;">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>
+                                        <button class="btn btn-sm btn-secondary" type="button" id="btnAddRow" title="Thêm">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </th>
+                                    <th hidden></th>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Tên đơn hàng</th>
+                                    <th>Số lượng</th>
+                                    <th>Dài (cm)</th>
+                                    <th>Rộng (cm)</th>
+                                    <th>Cao (cm)</th>
+                                    <th>Khối lượng (gr)</th>
+                                    <th>Giá trị đơn hàng (VNĐ)</th>
+                                    <th>Phí hủy đơn hàng (VNĐ)</th>
+                                    <th>Nội dung đơn hàng</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Thao tác</th>
+                                    <th hidden></th>
+                                    <th hidden></th>
+                                    <th hidden></th>
+                                    <th hidden></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBody">
+                                @{
+                                    Html.RenderAction("EditOrderBatchOrderInfoView", "OrderBatch", new { ListOrderInfo = Model.ListOrderInfo });
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fixed-tr">
+            <div id="ListTab" class="list-group bg-white">
+                <a class="list-group-item list-group-item-action" href="#TabCustomer" title="Thông tin khách hàng">
+                    <i class="fas fa-user fa-lg"></i>
+                </a>
+                <a class="list-group-item list-group-item-action" href="#TabTransport" title="Thông tin vận chuyển">
+                    <i class="fas fa-truck fa-lg"></i>
+                </a>
+                <a class="list-group-item list-group-item-action" href="#TabListBatch" title="Thông tin bưu gửi">
+                    <i class="fas fa-archive fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bottom-group">
+    <div class="float-end">
+        @if (Model.Status == "D")
+        {
+            <button type="button" class="btn btn-outline-dark" onclick="btnEditOrder(4)">Cập nhật</button>
+            <button type="button" class="btn btn-outline-primary" onclick="btnEditOrder(1)">Tạo đơn hàng</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary" onclick="btnEditOrder(4)">Cập nhật</button>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#SearchCustomer').focus();
+
+        //$('#SearchCustomer').select2({
+        //    selectOnClose: true,
+        //    width: '100%',
+        //    language: {
+        //        noResults: function () {
+        //            return 'Không tìm thấy dữ liệu.';
+        //        },
+        //    },
+        //    ajax: {
+        //        url: "/Handle/SearchListCustomer",
+        //        dataType: 'json',
+        //        delay: 1500,
+        //        data: function (params) {
+        //            return {
+        //                SearchKey: params.term, // search term
+        //                page: params.page,
+        //                type: 'public'
+        //            };
+        //        },
+        //        processResults: function (data, params) {
+        //            var arr = [];
+
+        //            $.each(data, function (index, value) {
+        //                arr.push({
+        //                    id: value.MobileNumber,
+        //                    text: value.FullName,
+        //                });
+        //            });
+
+        //            params.page = params.page || 1;
+
+        //            var obj = {};
+
+        //            obj.results = arr;
+        //            obj.pagination = {
+        //                more: (params.page * 30) < data.length
+        //            };
+
+        //            return obj;
+        //        },
+        //        cache: true
+        //    },
+        //    placeholder: 'Tìm kiếm khách hàng',
+        //    minimumInputLength: 1,
+        //    templateResult: formatRepoSelectioning,
+        //    templateSelection: formatRepoSelected
+        //});
+
+        $("#ExtraTransportServiceID").selectpicker("refresh");
+        $("#ExtraTransportServiceID").selectpicker("val", @Html.Raw(Json.Encode(Model.ExtraTransportServiceID.Split(','))));
+
+        var ExtraTransportServiceID = $("#ExtraTransportServiceID").val();
+        if (ExtraTransportServiceID.includes("421")) {
+            for (var i = 1; i < @Model.ListOrderInfo.Count + 1; i++) {
+                $("#ShowTotalPHU_" + i).removeClass("d-none");
+            }
+        }
+
+        $("#footer").addClass("d-none");
+        $(".content-body").css("min-height", "");
+        FillTotalMoney("OrderValue");
+        HandleDataCharged();
+    });
+
+    CustomerAutocomplete("SearchCustomer");
+
+    //function formatRepoSelectioning(data) {
+    //    if (data.loading) {
+    //        return "Đang tìm kiếm....";
+    //    }
+
+    //    //var content = "";
+    //    //content += "<div class='row'>";
+    //    //content += "<div class='col-xl-3 col-lg-3 col-md-3'><img src='/Assets/images/default/avatar.jpg' class='img-fluid' /></div>";
+    //    //content += "<div class='col-xl-9 col-lg-9 col-md-9'>";
+    //    //content += "<div class='row'>";
+    //    //content += "<div class='col-xl-12 col-lg-12 col-md-12'>" + data.text + "</div>";
+    //    //content += "<div class='col-xl-12 col-lg-12 col-md-12'>" + data.MobileNumber + "</div>";
+    //    //content += "</div>";
+    //    //content += "</div>";
+    //    //content += "</div>";
+
+    //    var content = "";
+    //    content += "<div class='row'>";
+    //    content += "<div class='col-xl-12 col-lg-12 col-md-12'>" + data.text + "</div>";
+    //    content += "<div class='col-xl-12 col-lg-12 col-md-12'>" + data.id + "</div>";
+    //    content += "</div>";
+
+    //    return $(content);
+    //}
+
+    //function formatRepoSelected(data) {
+    //    var Title = "";
+    //    if (data.id) {
+    //        Title = data.text + " - " + data.id;
+    //    } else {
+    //        Title = data.text;
+    //    }
+    //    return Title;
+    //}
+
+    ScrollX(".MouseScrollX");
+
+    //OnlyNumber("#SearchCustomer");
+
+    var TotalRow = @Model.NumberOfDetail;
+
+    $("#btnAddRow").on("click", function () {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AddOrderBatchOrderInfoView", "OrderBatch")',
+            dataType: 'html',
+            loading: true,
+            data: {
+                NumberOfDetail: TotalRow,
+            },
+            beforeSend: function () {
+                $("#btnAddRow").attr("disabled", true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+            },
+            success: function (data) {
+                TotalRow = TotalRow + 1;
+                $('#tBody').append(data);
+
+                var ExtraTransportServiceID = $("#ExtraTransportServiceID").val();
+
+                var isServicePHU = ExtraTransportServiceID.includes("421");
+                if (isServicePHU == true) {
+                    $('.row-item').each(function () {
+                        var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                        $("#ShowTotalPHU_" + NumberOfDetail).removeClass("d-none");
+                    });
+                }
+
+                $("#errListOrderInfo").text("");
+
+                HandleDataCharged();
+            },
+            complete: function () {
+                $("#btnAddRow").attr("disabled", false).find("i#iLoading").remove();
+            }
+        })
+    });
+
+    $("input[name='TransportPayer']").on("change", function () {
+        var value = $(this).val();
+        if (value == 2) {
+            $("#MainTransportServiceID").change();
+        }
+    });
+
+    //$('#SearchCustomer').keypress(function (event) {
+    //    if (event.keyCode == 13) {
+    //        SearchCustomer($(this).val().trim());
+    //    }
+    //});
+
+    $('#SearchCustomer').on("change", function () {
+        SearchCustomer($(this).val().trim());
+    });
+
+    $("input").on("focus", function () {
+        $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", true);
+    });
+
+    $("input").on("focusout", function () {
+        $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", false);
+    });
+
+    $('#MainTransportServiceID, #ExtraTransportServiceID, #TotalCOD').on('change', function () {
+        var DivID = this.id;
+        var isError = false;
+        var data = {
+            MainTransportServiceID: $('#MainTransportServiceID').val(),
+            ExtraTransportServiceID: $('#ExtraTransportServiceID').val().toString(),
+            TotalCOD: NumberReplace($('#TotalCOD').val()),
+            TransportPayer: $("input[name='TransportPayer']:checked").val()
+        };
+
+        if (DivID == "MainTransportServiceID") {
+            if (data.MainTransportServiceID) {
+                if (data.TransportPayer == 2) {
+                    switch (data.MainTransportServiceID) {
+                        //case "141":
+                        //case "360":
+                        case "481":
+                            if (data.ExtraTransportServiceID.includes("108") == false) {
+                                if (data.ExtraTransportServiceID) {
+                                    data.ExtraTransportServiceID += ",108";
+                                } else {
+                                    data.ExtraTransportServiceID = "108";
+                                }
+
+                                $("#ExtraTransportServiceID").selectpicker("val", data.ExtraTransportServiceID.split(","));
+                                $("#ExtraTransportServiceID").change();
+                            }
+                            break;
+                        default:
+                            if (data.ExtraTransportServiceID.includes("300") == false && data.ExtraTransportServiceID.includes("221") == false) {
+                                CreateCustomSwal("error", "Vui lòng sử dụng dịch vụ Thu phí ship hàng (PSH) để thu cước người nhận");
+                                $("#TransportPayer1").click();
+                            }
+                            break;
+                    }
+                }
+                $('#errMainTransportServiceID').text("");
+            } else {
+                $('#errMainTransportServiceID').text("Vui lòng chọn dịch vụ vận chuyển chính");
+                isError = true;
+            }
+        } else if (DivID == "ExtraTransportServiceID") {
+            if (data.TransportPayer == 2) {
+                switch (data.MainTransportServiceID) {
+                    case "141":
+                    case "360":
+                    case "481":
+                        if (data.ExtraTransportServiceID.includes("108") == false) {
+                            if (data.ExtraTransportServiceID) {
+                                data.ExtraTransportServiceID += ",108";
+                            } else {
+                                data.ExtraTransportServiceID = "108";
+                            }
+
+                            $("#ExtraTransportServiceID").selectpicker("val", data.ExtraTransportServiceID.split(","));
+                            $("#ExtraTransportServiceID").change();
+                        }
+                        break;
+                    default:
+                        $("#TransportPayer1").click();
+                        break;
+                }
+            }
+
+            var isServiceCOD = data.ExtraTransportServiceID.includes("108");
+            if (isServiceCOD == true) {
+                $("#ShowTotalCOD").removeClass("d-none");
+
+                var TotalMoney = 0;
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    var OrderValue = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+                    TotalMoney += OrderValue;
+                });
+
+                $("#TotalMoney").text(NumberFormat(TotalMoney));
+            } else {
+                $("#ShowTotalCOD").addClass("d-none");
+
+                var TotalMoney = 0;
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    var OrderValue = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+                    TotalMoney += OrderValue;
+                });
+
+                $("#TotalMoney").text(NumberFormat(TotalMoney));
+            }
+
+            var isServicePHU = data.ExtraTransportServiceID.includes("421");
+            if (isServicePHU == true) {
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    $("#ShowTotalPHU_" + NumberOfDetail).removeClass("d-none");
+                });
+            } else {
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    $("#ShowTotalPHU_" + NumberOfDetail).addClass("d-none");
+                });
+            }
+
+            var isServiceKG = data.ExtraTransportServiceID.includes("103");
+            if (isServiceKG == true) {
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    var OrderValue = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+                    if (OrderValue == 0) {
+                        isError = true;
+                        $("#errOrderValue_" + NumberOfDetail).text("Vui lòng nhập giá trị đơn hàng");
+                    } else if (OrderValue > 100000000) {
+                        isError = true;
+                        $("#errOrderValue_" + NumberOfDetail).text("Giá trị đơn hàng không vượt quá 100 triệu đồng.");
+                    } else {
+                        $("#errOrderValue_" + NumberOfDetail).text("");
+                    }
+                });
+            } else {
+                $('.row-item').each(function () {
+                    var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+                    $("#errOrderValue_" + NumberOfDetail).text("");
+                });
+            }
+
+        } else if (DivID == "TotalCOD") {
+            if (data.TotalCOD > 50000000) {
+                isError = true;
+                $('#errTotalCOD').text('Số tiền COD tối đa 50 triệu đồng/BG.');
+            } else {
+                $('#errTotalCOD').text('');
+            }
+
+            FillTotalMoney("TotalCOD");
+        }
+
+        if (isError == true) {
+            return;
+        } else {
+            HandleDataCharged();
+        }
+    });
+
+    function btnRemoveRow(this1) {
+        var NumberOfRow = $(".row-item").length;
+        if (NumberOfRow > 2) {
+            $(this1).parents("tr").remove();
+            HandleDataCharged();
+        } else {
+            CreateCustomSwal("error", "Đơn hàng tối thiếu 2 bưu gửi");
+        }
+    }
+
+    function btnPlus(VariantID, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        $("#NumberOfProduct_" + VariantID).val(parseInt(value) + 1);
+        $("#NumberOfProduct_" + VariantID).change();
+    }
+
+    function btnMinus(VariantID, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        if (value > 1) {
+            $("#NumberOfProduct_" + VariantID).val(parseInt(value) - 1);
+            $("#NumberOfProduct_" + VariantID).change();
+        }
+    }
+
+    function CheckNumberOfProductInWareHouseQuantity(VariantID, WareHouseQuantity, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        if (parseInt(value) > parseInt(WareHouseQuantity)) {
+            $("#errVariant_" + VariantID).text("Số lượng mua vượt quá số lượng trong kho");
+        } else {
+            $("#errVariant_" + VariantID).text("");
+        }
+    }
+
+    function btnSearchProduct(NumberOfDetail) {
+        var arr = [];
+        $('.row-item-product-' + NumberOfDetail).each(function () {
+            var obj = {};
+            obj.VariantID = $(this).attr("data-VariantID");
+            obj.NumberOfProduct = $(this).attr("data-NumberOfProduct");
+            arr.push(obj);
+        });
+
+        $.post('@Url.Action("SearchProductView", "OrderBatch")', {
+            ListProductInfo: arr,
+            NumberOfDetail: NumberOfDetail
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function SearchCustomer(MobileNumber) {
+        if (MobileNumber) {
+            var isError = CheckNullAndRegexValue(MobileNumber, "MobileNumber", "SearchCustomer", "Số điện thoại không được để trống.", "Số điện thoại không hợp lệ.", false);
+            if (isError == false) {
+                $.post('@Url.Action("SearchCustomerView","Order")', {
+                    MobileNumber: MobileNumber, IsTransport: "Y",
+                }, function (data) {
+                    $("#ShowSearchCustomerView").html(data);
+                    if ($("#Receiver_ID").val() > 0) {
+                        //Load hàm tính phí
+                        HandleDataCharged();
+                    }
+                });
+            }
+        }
+    }
+
+    function ShowAddCustomerView() {
+        $.post('@Url.Action("AddCustomerView", "Customer")', { IsReload: "N"}, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function changeOrderCode(NumberOfDetail) {
+        var OrderCode = $("#OrderCode_" + NumberOfDetail).val().trim();
+        if (OrderCode) {
+            var isError = CheckRegexValue(OrderCode, "SpecialCharButNotVietnamese", "OrderCode_" + NumberOfDetail, "Mã đơn hàng không hợp lệ", false);
+            if (isError == true) {
+                $("#OrderCode_" + NumberOfDetail).focus();
+            } else {
+                $('.row-item').each(function () {
+                    var NumberOfDetailTemp = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+
+                    if (NumberOfDetail != NumberOfDetailTemp) {
+                        var OrderCodeTemp = $("#OrderCode_" + NumberOfDetailTemp).val().trim();
+                        if (OrderCode == OrderCodeTemp) {
+                            $("#errOrderCode_" + NumberOfDetail).text("Mã đơn hàng đã tồn tại.");
+                        }
+                    }
+                });
+            }
+        } else {
+            $("#errOrderCode_" + NumberOfDetail).text("");
+        }
+    }
+
+    function changeOrderQuantity(NumberOfDetail) {
+        var OrderQuantity = NumberReplace($("#OrderQuantity_" + NumberOfDetail).val());
+        if (OrderQuantity) {
+            $("#errOrderQuantity_" + NumberOfDetail).text("");
+            HandleDataCharged();
+        } else {
+            $("#errOrderQuantity_" + NumberOfDetail).text("Vui lòng nhập Số lượng sản phẩm.");
+        }
+    }
+
+    function changeLength(NumberOfDetail) {
+        var Length = NumberReplace($("#Length_" + NumberOfDetail).val());
+        if (Length) {
+            $("#errLength_" + NumberOfDetail).text("");
+            HandleDataCharged();
+        }
+    }
+
+    function changeWidth(NumberOfDetail) {
+        var Width = NumberReplace($("#Width_" + NumberOfDetail).val());
+        if (Width) {
+            $("#errWidth_" + NumberOfDetail).text("");
+            HandleDataCharged();
+        }
+    }
+
+    function changeHeight(NumberOfDetail) {
+        var Height = NumberReplace($("#Height_" + NumberOfDetail).val());
+        if (Height) {
+            $("#errHeight_" + NumberOfDetail).text("");
+            HandleDataCharged();
+        }
+    }
+
+    function changeWeight(NumberOfDetail) {
+        var Weight = NumberReplace($("#Weight_" + NumberOfDetail).val());
+        if (Weight > 0) {
+            $("#errWeight_" + NumberOfDetail).text("");
+            HandleDataCharged();
+        } else {
+            $("#errWeight_" + NumberOfDetail).text("Vui lòng nhập khối lượng.");
+        }
+    }
+
+    function changeOrderValue(NumberOfDetail) {
+        var OrderValue = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+        if (OrderValue) {
+            if (OrderValue > 100000000) {
+                $("#errOrderValue_" + NumberOfDetail).text("Giá trị đơn hàng không vượt quá 100 triệu đồng.");
+            } else {
+                $("#errOrderValue_" + NumberOfDetail).text("");
+                HandleDataCharged();
+            }
+        } else {
+            var isServiceKG = $("#ExtraTransportServiceID").val().includes("103");
+            if (isServiceKG == true) {
+                $("#errOrderValue_" + NumberOfDetail).text("Vui lòng nhập giá trị đơn hàng.");
+            } else {
+                $("#errOrderValue_" + NumberOfDetail).text("");
+            }
+        }
+
+        FillTotalMoney("OrderValue");
+    }
+
+    function changeTotalPHU(NumberOfDetail) {
+        var TotalPHU = NumberReplace($("#TotalPHU_" + NumberOfDetail).val());
+        if (TotalPHU) {
+            $("#errTotalPHU_" + NumberOfDetail).text("");
+        } else {
+            $("#errTotalPHU_" + NumberOfDetail).text("Vui lòng nhập tiền thu phí hủy đơn.");
+        }
+    }
+
+    function FillTotalMoney(EventChange) {
+        var isProduct = false;
+        var isTotalCOD = false;
+        var TotalAmount = 0;
+        var TotalOrderValue = 0;
+        $('.row-item').each(function () {
+            var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+            var NumberOfProduct = $(".row-item-product-" + NumberOfDetail).length;
+            var OrderValue = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+            if (NumberOfProduct > 0) {
+                TotalAmount += OrderValue;
+                isProduct = true;
+            }
+            TotalOrderValue += OrderValue;
+        });
+
+        if ($("#ExtraTransportServiceID").val().toString().includes("108") == true) {
+            isTotalCOD = true;
+        }
+
+        var TotalMoney = 0;
+        if (isProduct == true) {
+            switch (EventChange) {
+                case "TotalCOD":
+                    TotalMoney = TotalAmount;
+                    break;
+                case "OrderValue":
+                    TotalMoney = TotalOrderValue;
+                    break;
+                case "Product":
+                    TotalMoney = TotalAmount;
+                    $("#TotalCOD").val(TotalMoney);
+                    break;
+            };
+        } else {
+            switch (EventChange) {
+                case "TotalCOD":
+                    TotalMoney = NumberReplace($("#TotalCOD").val());
+                    break;
+                case "OrderValue":
+                    TotalMoney = isTotalCOD == true ? NumberReplace($("#TotalCOD").val()) : TotalOrderValue;
+                    break;
+            };
+        }
+
+        $("#TotalMoney").text(NumberFormat(TotalMoney));
+    }
+
+    function HandleDataCharged() {
+        var isError = false, isMessage = "";
+        var data = {
+            MainServiceID: $("#MainTransportServiceID").val(),
+            ExtraServiceIDs: $("#ExtraTransportServiceID").val().toString(),
+            FromProvinceID: $("#Sender_Province_ID").val() === undefined ? 0 : $("#Sender_Province_ID").val(),
+            FromWardID: $("#Sender_Ward_ID").val() === undefined ? 0 : $("#Sender_Ward_ID").val(),
+            ToProvinceID: $("#Receiver_Province_ID").val() === undefined ? 0 : $("#Receiver_Province_ID").val(),
+            ToWardID: $("#Receiver_Ward_ID").val() === undefined ? 0 : $("#Receiver_Ward_ID").val(),
+            Weight: 0,
+            TransportSizeLength: 0,
+            TransportSizeWidth: 0,
+            TransportSizeHeight: 0,
+            Quantity: 0,
+            Amount: 0,
+            COD: 0,
+        };
+
+        if (data.ExtraServiceIDs.includes("108") == true) {
+            data.COD = NumberReplace($("#TotalCOD").val());
+        }
+
+        if (!data.MainServiceID || !data.FromProvinceID || !data.ToProvinceID) {
+            $("#errTemporaryTransportServiceFee").text("Chưa đủ thông tin để tính cước");
+            return;
+        }
+
+        var TotalFee = 0;
+        var MainFee = 0;
+        var ExtraFee = 0;
+        $('.row-item').each(function () {
+            var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+            data.Quantity = NumberReplace($("#OrderQuantity_" + NumberOfDetail).val());
+            //data.TransportSizeLength = NumberReplace($("#Length_" + NumberOfDetail).val());
+            //data.TransportSizeWidth = NumberReplace($("#Width_" + NumberOfDetail).val());
+            //data.TransportSizeHeight = NumberReplace($("#Height_" + NumberOfDetail).val());
+            data.TransportSizeLength = $("#Length_" + NumberOfDetail).val();
+            data.TransportSizeWidth = $("#Width_" + NumberOfDetail).val();
+            data.TransportSizeHeight = $("#Height_" + NumberOfDetail).val();
+            data.Weight = NumberReplace($("#Weight_" + NumberOfDetail).val());
+            data.Amount = NumberReplace($("#OrderValue_" + NumberOfDetail).val());
+
+            if (data.Weight > 0) {
+                $("#errWeight_" + NumberOfDetail).text("");
+            } else {
+                $("#errWeight_" + NumberOfDetail).text("Vui lòng nhập khối lượng.");
+                isError = true;
+            }
+
+            if (isError == true) {
+                isMessage = "Chưa đủ thông tin để tính cước";
+            } else {
+                var res = TransportPostageCharged(data).responseJSON;
+                if (res.Code == "00") {
+                    var responseData = JSON.parse(res.Data);
+                    TotalFee += responseData.TotalAmount;
+                    MainFee += responseData.MainFee + responseData.Surcharge;
+                    ExtraFee += responseData.ExtraFee;
+                    DisplayMoneyFee(NumberOfDetail, responseData.TotalAmount, responseData.MainFee + responseData.Surcharge, responseData.ExtraFee, "");
+                } else {
+                    isMessage = res.Message;
+                    isError = true;
+                    return false;
+                }
+            }
+        });
+
+        if (isError == true) {
+            DisplayMoneyFee(0, 0, 0, 0, isMessage);
+            return;
+        }
+
+        DisplayMoneyFee(0, TotalFee, MainFee, ExtraFee, "");
+    }
+
+    function DisplayMoneyFee(NumberOfDetail, TotalFee, MainFee, ExtraFee, Message) {
+        if (NumberOfDetail > 0) {
+            $("#TotalFee_" + NumberOfDetail).text(TotalFee);
+            $("#MainFee_" + NumberOfDetail).text(MainFee);
+            $("#ExtraFee_" + NumberOfDetail).text(ExtraFee);
+        } else {
+            $("#TotalFee").text(NumberFormat(TotalFee));
+            $("#MainFee").text(NumberFormat(MainFee));
+            $("#ExtraFee").text(NumberFormat(ExtraFee));
+        }
+        $("#errTemporaryTransportServiceFee").text(Message);
+    }
+
+    function FillProductInfo(NumberOfDetail) {
+        var OrderName = "";
+        var TotalProduct = 0;
+        var TotalPrice = 0;
+        var TotalWeight = 0;
+
+        $('.row-item-product-' + NumberOfDetail).each(function () {
+            if (!OrderName) {
+                OrderName = $(this).attr("data-ProductName");
+            }
+
+            var Price = NumberReplace($(this).attr("data-Price"));
+            var NumberOfProduct = NumberReplace($(this).attr("data-NumberOfProduct"));
+            var Weight = NumberReplace($(this).attr("data-Weight"));
+
+            TotalProduct += NumberOfProduct;
+            TotalPrice += Price * NumberOfProduct;
+            TotalWeight += Weight * NumberOfProduct;
+        });
+
+        $("#OrderName_" + NumberOfDetail).val(OrderName);
+        $("#OrderQuantity_" + NumberOfDetail).val(TotalProduct);
+        $("#OrderValue_" + NumberOfDetail).val(TotalPrice).change();
+        $("#errOrderValue_" + NumberOfDetail).text("");
+        $("#Weight_" + NumberOfDetail).val(TotalWeight);
+
+        FillTotalMoney("Product");
+        //$("#TotalCOD").val(TotalPrice).change();
+        //$("#TotalMoney").text(NumberFormat(TotalPrice));
+
+        HandleDataCharged();
+    }
+
+    function btnEditOrder(ActionType) {
+        var isError = false, MessageNotify = "", MessageSuccess = "", isMessage = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            BatchCode: '@Model.BatchCode',
+            SearchCustomer: $("#SearchCustomer").val(),
+            ShipmentInfo: {
+                Buyer: {
+                    ID: $("#Receiver_ID").val() === undefined ? 0 : $("#Receiver_ID").val(),
+                },
+                Sender: {
+                    FullName: "",
+                    MobileNumber: "",
+                    Province: {
+                        ID: 0
+                    },
+                    Ward: {
+                        ID: 0
+                    },
+                    Street: "",
+                    PickUpAddressID: 0,
+                },
+                Receiver: {
+                    FullName: "",
+                    MobileNumber: "",
+                    Province: {
+                        ID: 0
+                    },
+                    Ward: {
+                        ID: 0
+                    },
+                    Street: "",
+                    IsChange: "",
+                },
+            },
+            WareHouseID: $("#WareHouseID").val(),
+            CollectionType: $("input[name='CollectionType']:checked").val(),
+            TransportPayer: $("input[name='TransportPayer']:checked").val(),
+            MainTransportServiceID: $("#MainTransportServiceID").val(),
+            ExtraTransportServiceID: $("#ExtraTransportServiceID").val().toString(),
+            TotalCOD: NumberReplace($("#TotalCOD").val().trim()),
+            Note: $("#Note").val().trim(),
+            Channel: $("#Channel").val(),
+            ListOrderInfo: [],
+            ActionType: "",
+        };
+
+        if (data.ShipmentInfo.Buyer.ID > 0) {
+            data.ShipmentInfo.Sender.FullName = $("#Sender_FullName").val().trim();
+            data.ShipmentInfo.Sender.MobileNumber = $("#Sender_MobileNumber").val().trim();
+            data.ShipmentInfo.Sender.Province.ID = $("#Sender_Province_ID").val();
+            data.ShipmentInfo.Sender.Ward.ID = $("#Sender_Ward_ID").val();
+            data.ShipmentInfo.Sender.Street = $("#Sender_Street").val().trim();
+            data.ShipmentInfo.Sender.PickUpAddressID = $("#PickUpAddressID").val();
+
+            data.ShipmentInfo.Receiver.FullName = $("#Receiver_FullName").val().trim();
+            data.ShipmentInfo.Receiver.MobileNumber = $("#Receiver_MobileNumber").val().trim();
+            data.ShipmentInfo.Receiver.Province.ID = $("#Receiver_Province_ID").val();
+            data.ShipmentInfo.Receiver.Ward.ID = $("#Receiver_Ward_ID").val();
+            data.ShipmentInfo.Receiver.Street = $("#Receiver_Street").val().trim();
+            data.ShipmentInfo.Receiver.IsChange = $("input[name='IsUpdateReceiver']:checked").val();
+        }
+
+        $('.row-item').each(function () {
+            var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+            var objOrderInfo = {
+                OrderID: $("#OrderID_" + NumberOfDetail).val().trim(),
+                OrderCode: $("#OrderCode_" + NumberOfDetail).val().trim(),
+                OrderName: $("#OrderName_" + NumberOfDetail).val().trim(),
+                OrderQuantity: NumberReplace($("#OrderQuantity_" + NumberOfDetail).val().trim()),
+                OrderValue: NumberReplace($("#OrderValue_" + NumberOfDetail).val().trim()),
+                TransportFee: $("#TotalFee_" + NumberOfDetail).text(),
+                TotalAmount: 0,
+                TotalDiscount: 0,
+                //Length: NumberReplace($("#Length_" + NumberOfDetail).val().trim()),
+                //Width: NumberReplace($("#Width_" + NumberOfDetail).val().trim()),
+                //Height: NumberReplace($("#Height_" + NumberOfDetail).val().trim()),
+                Length: $("#Length_" + NumberOfDetail).val().trim(),
+                Width: $("#Width_" + NumberOfDetail).val().trim(),
+                Height: $("#Height_" + NumberOfDetail).val().trim(),
+                Weight: NumberReplace($("#Weight_" + NumberOfDetail).val().trim()),
+                ExchangeWeight: 0,
+                TotalPHU: NumberReplace($("#TotalPHU_" + NumberOfDetail).val().trim()),
+                Message: $("#Message_" + NumberOfDetail).val().trim(),
+                ListProductInfo: []
+            };
+
+            if (objOrderInfo.OrderCode) {
+                var ExistOrderCode = data.ListOrderInfo.filter(function (obj) {
+                    return obj.OrderCode == objOrderInfo.OrderCode;
+                });
+
+                if (ExistOrderCode.length > 0) {
+                    isError = true;
+                    $("#OrderCode_" + NumberOfDetail).focus();
+                    $("#errOrderCode_" + NumberOfDetail).text('Mã đơn hàng đã tồn tại.');
+                } else {
+                    isError = CheckRegexValue(objOrderInfo.OrderCode, "SpecialCharButNotVietnamese", "OrderCode_" + NumberOfDetail, isMessage, isError);
+                }
+            }
+
+            if (data.ExtraTransportServiceID.includes("103") == true && objOrderInfo.OrderValue == false) {
+                isError = true;
+                $("#OrderValue_" + NumberOfDetail).focus();
+                $("#errOrderValue_" + NumberOfDetail).text('Vui lòng nhập giá trị đơn hàng.');
+            }
+
+            if (objOrderInfo.OrderValue > 100000000) {
+                isError = true;
+                $("#OrderValue_" + NumberOfDetail).focus();
+                $("#errOrderValue_" + NumberOfDetail).text('Giá trị đơn hàng không vượt quá 100 triệu đồng.');
+            }
+
+            if (data.ExtraTransportServiceID.includes("421") == false) {
+                objOrderInfo.TotalPHU = 0;
+            } else if (data.ExtraTransportServiceID.includes("421") == true && objOrderInfo.TotalPHU == false) {
+                isError = true;
+                $("#TotalPHU_" + NumberOfDetail).focus();
+                $("#errTotalPHU_" + NumberOfDetail).text('Vui lòng nhập tiền thu phí hủy đơn.');
+            }
+
+            if (objOrderInfo.Length > 0 && objOrderInfo.Width > 0 && objOrderInfo.Height > 0) {
+                var convertWeight = 0;
+                if (data.MainTransportServiceID == 581 || data.MainTransportServiceID == 601) {
+                    convertWeight = Math.round((objOrderInfo.Length * objOrderInfo.Width * objOrderInfo.Height) / 5);
+                } else {
+                    convertWeight = Math.round((objOrderInfo.Length * objOrderInfo.Width * objOrderInfo.Height) / 6);
+                }
+                if (data.MainTransportServiceID == 141 || data.MainTransportServiceID == 360) {
+                    var getMax = Math.max(objOrderInfo.Length, objOrderInfo.Width, objOrderInfo.Height);
+                    if (getMax > 50) {
+                        objOrderInfo.ExchangeWeight = convertWeight;
+                    }
+                } else {
+                    if (convertWeight > objOrderInfo.Weight) {
+                        objOrderInfo.ExchangeWeight = convertWeight;
+                    }
+                }
+            }
+
+            if (objOrderInfo.Weight > 0) {
+                $("#errWeight_" + NumberOfDetail).text("");
+            } else {
+                $("#errWeight_" + NumberOfDetail).text("Vui lòng nhập khối lượng.");
+                isError = true;
+            }
+
+            var isProduct = $('.row-item-product-' + NumberOfDetail).length;
+
+            if (isProduct == 0) {
+                if (data.ExtraTransportServiceID.includes("108") == true) {
+                    //objOrderInfo.TotalAmount = data.TotalCOD;
+                    if (data.TotalCOD != objOrderInfo.OrderValue) {
+                        objOrderInfo.TotalAmount = objOrderInfo.OrderValue;
+                    } else {
+                        objOrderInfo.TotalAmount = data.TotalCOD;
+                    }
+                } else {
+                    objOrderInfo.TotalAmount = objOrderInfo.OrderValue;
+                }
+            } else {
+                $('.row-item-product-' + NumberOfDetail).each(function () {
+                    var objProductInfo = {
+                        ProductID: $(this).attr("data-ProductID"),
+                        VariantID: $(this).attr("data-VariantID"),
+                        NumberOfProduct: $(this).attr("data-NumberOfProduct"),
+                        Price: $(this).attr("data-Price"),
+                    }
+
+                    objOrderInfo.TotalAmount += objProductInfo.NumberOfProduct * objProductInfo.Price;
+
+                    objOrderInfo.ListProductInfo.push(objProductInfo);
+                });
+
+                if (objOrderInfo.TotalAmount != objOrderInfo.OrderValue) {
+                    objOrderInfo.TotalAmount = objOrderInfo.OrderValue;
+                }
+            }
+
+            data.ListOrderInfo.push(objOrderInfo);
+        });
+
+        if (data.ListOrderInfo.length == 0) {
+            $("#errListOrderInfo").text("Vui lòng nhập thông tin đơn hàng.");
+            isError = true;
+        } else
+        if (data.ListOrderInfo.length < 2)
+        {
+            $("#errListOrderInfo").text("Đơn hàng tối thiếu 2 bưu gửi");
+            isError = true;
+        } else {
+            var TotalWeight = data.ListOrderInfo.reduce((accumulator, object) => {
+                return accumulator + object.Weight;
+            }, 0);
+
+            if (TotalWeight < 2000 || TotalWeight > 200000) {
+                CreateCustomSwal("error", "Tổng khối lượng của đơn hàng lô phải từ 2,000gr - 200,000gr");
+                isError = true;
+            }
+
+            var TotalOrderValue = data.ListOrderInfo.reduce((accumulator, object) => {
+                return accumulator + object.OrderValue;
+            }, 0);
+
+            if (TotalOrderValue > 100000000) {
+                CreateCustomSwal("error", "Giá trị đơn lô không vượt quá 100 triệu đồng.");
+                isError = true;
+            }
+        }
+
+        isError = CheckNullValue(data.SearchCustomer, "SearchCustomer", "Vui lòng nhập số điện thoại và tìm kiếm.", isError);
+
+        if (data.SearchCustomer && data.ShipmentInfo.Buyer.ID == 0) {
+            $('#errReceiver_ID').css("color", "red");
+            $('#SearchCustomer').focus();
+            isError = true;
+        }
+
+        if (data.ShipmentInfo.Buyer.ID > 0) {
+            isError = CheckNullValue(data.ShipmentInfo.Sender.FullName, "Sender_FullName", "Vui lòng nhập Họ và tên.", isError);
+            isError = CheckNullAndRegexValue(data.ShipmentInfo.Sender.MobileNumber, "MobileNumber", "Sender_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Sender.Province.ID, "Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Sender.Ward.ID, "Sender_Ward_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Sender.Street, "Sender_Street", "Vui lòng nhập địa chỉ.", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Sender.PickUpAddressID, "PickUpAddressID", "Vui lòng chọn địa chỉ lấy hàng.", isError);
+
+            isError = CheckNullAndRegexValue(data.ShipmentInfo.Receiver.FullName, "Vietnamese", "Receiver_FullName", "Vui lòng nhập Họ và tên.", isMessage, isError);
+            isError = CheckNullAndRegexValue(data.ShipmentInfo.Receiver.MobileNumber, "MobileNumber", "Receiver_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Receiver.Province.ID, "Receiver_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Receiver.Ward.ID, "Receiver_Ward_ID", "Vui lòng chọn Phường/ Xã.", isError);
+            isError = CheckNullValue(data.ShipmentInfo.Receiver.Street, "Receiver_Street", "Vui lòng nhập địa chỉ.", isError);
+        }
+
+        isError = CheckNullValue(data.WareHouseID, "WareHouseID", "Vui lòng chọn kho cần xuất", isError);
+
+        if (data.TransportPayer == 2) {
+            switch (data.MainTransportServiceID) {
+                //case "141":
+                //case "360":
+                case "481":
+                    if (data.ExtraTransportServiceID.includes("108") == false) {
+                        if (data.ExtraTransportServiceID) {
+                            data.ExtraTransportServiceID += ",108";
+                        } else {
+                            data.ExtraTransportServiceID = "108";
+                        }
+
+                        $("#ExtraTransportServiceID").selectpicker("val", data.ExtraTransportServiceID.split(","));
+                        $("#ExtraTransportServiceID").change();
+                    }
+                    break;
+                default:
+                    if (data.ExtraTransportServiceID.includes("300") == false && data.ExtraTransportServiceID.includes("221") == false) {
+                        isError = true;
+                        CreateCustomSwal("error", "Vui lòng sử dụng dịch vụ Thu phí ship hàng (PSH) để thu cước người nhận");
+                        $("#TransportPayer1").click();
+                    }
+                    break;
+            }
+        }
+
+        isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", isError);
+
+        if (data.ExtraTransportServiceID.includes("108") == false) {
+            data.TotalCOD = 0;
+        } else if (data.ExtraTransportServiceID.includes("108") == true && data.TotalCOD > 50000000) {
+            $('#errTotalCOD').text('Số tiền COD tối đa 50 triệu đồng/BG.');
+            $('#TotalCOD').focus();
+            isError = true;
+        }
+
+        if (data.MainTransportServiceID && data.ExtraTransportServiceID) {
+            if ((data.MainTransportServiceID == 102 || data.MainTransportServiceID == 141 || data.MainTransportServiceID == 502 || data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543)
+                && (data.ExtraTransportServiceID.includes("104") == true || data.ExtraTransportServiceID.includes("105") == true || data.ExtraTransportServiceID.includes("106") == true)) {
+                //Nếu DV chính là Phát hỏa tốc, CPN TMĐT đồng giá TMĐ, CPN Tài liệu, EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                //Thì không được chọn các DV cộng thêm là Hàng nhạy cảm EMS - VUN, Dịch vụ EMS cây cảnh, Dịch vụ EMS thực phẩm
+                isError = true;
+                $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+            } else if ((data.MainTransportServiceID == 502 || data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543)
+                && (data.ExtraTransportServiceID.includes("108") == true || data.ExtraTransportServiceID.includes("341") == true || data.ExtraTransportServiceID.includes("342") == true || data.ExtraTransportServiceID.includes("420") == true)) {
+                //Nếu DV chính là CPN Tài liệu, EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                //Thì không được chọn các DV cộng thêm là Thu hộ - chi hộ, Bốc xếp khâu chấp nhận, Bốc xếp khâu phát hàng, Phát hàng siêu thị
+                isError = true;
+                $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+            } else if ((data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543) && (data.ExtraTransportServiceID.includes("462") == true)) {
+                //Nếu DV chính là EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                //Thì không được chọn các DV cộng thêm là Phát hàng một phần chiều đến
+                isError = true;
+                $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+            }
+        }
+
+        switch (ActionType) {
+            case 1:
+                data.ActionType = "N";
+                MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                MessageSuccess = "Tạo đơn hàng thành công";
+                break;
+            case 4:
+                data.ActionType = "U";
+                MessageNotify = "Bạn chắc chắn cập nhật thông tin đơn hàng?";
+                MessageSuccess = "Cập nhật thông tin thành công";
+                break;
+        };
+
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: MessageNotify,
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditOrderBatch", "OrderBatch")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", MessageSuccess, '@Url.Action("OrderView", "Order")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>
+

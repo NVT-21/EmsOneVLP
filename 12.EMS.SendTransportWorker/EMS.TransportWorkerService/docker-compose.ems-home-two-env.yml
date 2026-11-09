@@ -1,0 +1,155 @@
+# Đặt tại /home/ems/docker-compose.yml (cùng cấp thư mục ems-send-transport-uat, ems-send-transport-product).
+#
+# Hai worker: UAT + Product — chung Rabbit/Mongo; khác queue + Mongo DB + EMS + Oracle (qua biến .env).
+# Tạo /home/ems/.env (không commit) ví dụ:
+#   CONNECTION_STRING_UAT=...
+#   CONNECTION_STRING_PROD=...
+#   EMS_API_URL_UAT=https://...
+#   EMS_API_URL_PROD=https://...
+
+services:
+  redis:
+    image: redis:8
+    container_name: redis-container
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass "Tungkx@123"
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq-container
+    hostname: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ems_user
+      RABBITMQ_DEFAULT_PASS: Tungkx@123
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  order-import-worker:
+    build:
+      context: ./ems-import/OrderImportWorker
+      dockerfile: Dockerfile
+    container_name: order-import-worker
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - rabbitmq
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      RabbitMq__Host: rabbitmq
+      RabbitMq__UserName: ems_user
+      RabbitMq__Password: Tungkx@123
+      RabbitMq__QueueName: order.import.queue
+      RabbitMq__ExchangeName: order.import.exchange
+      RabbitMq__RoutingKey: order.import
+      Redis__ConnectionString: redis:6379,password=Tungkx@123,abortConnect=false
+      Import__MaxRowConcurrency: 30
+      ApiSync__BaseUrl: https://gatewayapi.ems.com.vn/
+      ApiSync__SearchPath: api/Map/VMap/Search
+
+  ems-transport-worker-uat:
+    build:
+      context: ./ems-send-transport-uat
+      dockerfile: Dockerfile
+    image: ems-transport-worker:uat
+    container_name: ems-transport-worker-uat
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__EMSONE: "${CONNECTION_STRING_UAT:-Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle-host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EMSONEDB)));User Id=emsone;Password=CHANGE_ME_UAT;}"
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UseSsl: "false"
+      RabbitMQ__SslServerName: ""
+      RabbitMQ__VirtualHost: "/"
+      RabbitMQ__AmqpUri: ""
+      RabbitMQ__UserName: ems_user
+      RabbitMQ__Password: Tungkx@123
+      RabbitMQ__QueueName: transport_queue_uat
+      Mongo__ConnectionString: mongodb://admin:ems14052026@mongodb:27017/
+      Mongo__DatabaseName: "${MONGO_DB_UAT:-emsonelog_uat}"
+      Mongo__CollectionName: "${MONGO_COLLECTION_UAT:-OrderSendTransport}"
+      EMS__ApiUrl: "${EMS_API_URL_UAT:-http://222.255.250.237:8060/}"
+      EMS__ApiKey: "${EMS_API_KEY_UAT:-}"
+      EMS__Authorization: "${EMS_AUTHORIZATION_UAT:-}"
+      EMS__TransportKey: "${EMS_TRANSPORT_KEY_UAT:-}"
+      SyncGateway__BaseUrl: "${SYNC_GATEWAY_BASE_URL_UAT:-}"
+
+  ems-transport-worker-product:
+    build:
+      context: ./ems-send-transport-product
+      dockerfile: Dockerfile
+    image: ems-transport-worker:product
+    container_name: ems-transport-worker-product
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__EMSONE: "${CONNECTION_STRING_PROD:-Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle-host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EMSONEDB)));User Id=emsone;Password=CHANGE_ME_PROD;}"
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UseSsl: "false"
+      RabbitMQ__SslServerName: ""
+      RabbitMQ__VirtualHost: "/"
+      RabbitMQ__AmqpUri: ""
+      RabbitMQ__UserName: ems_user
+      RabbitMQ__Password: Tungkx@123
+      RabbitMQ__QueueName: transport_queue_product
+      Mongo__ConnectionString: mongodb://admin:ems14052026@mongodb:27017/
+      Mongo__DatabaseName: "${MONGO_DB_PROD:-emsonelog_product}"
+      Mongo__CollectionName: "${MONGO_COLLECTION_PROD:-OrderSendTransport}"
+      EMS__ApiUrl: "${EMS_API_URL_PROD:-http://222.255.250.237:8060/}"
+      EMS__ApiKey: "${EMS_API_KEY_PROD:-}"
+      EMS__Authorization: "${EMS_AUTHORIZATION_PROD:-}"
+      EMS__TransportKey: "${EMS_TRANSPORT_KEY_PROD:-}"
+      SyncGateway__BaseUrl: "${SYNC_GATEWAY_BASE_URL_PROD:-}"
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb-log
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ems14052026
+    volumes:
+      - mongodb_log_data:/data/db
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  portainer_data:
+  mongodb_log_data:

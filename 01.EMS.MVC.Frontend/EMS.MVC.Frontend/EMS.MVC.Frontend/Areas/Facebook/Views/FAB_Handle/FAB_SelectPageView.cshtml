@@ -1,0 +1,55 @@
+﻿@{
+    Layout = null;
+}
+<div style="min-width: 220px;">
+    <select class="select2" id="selPageID" onchange="fnChangePageConnect()">
+        @if (ViewBag.ListPageConnect.Count > 0)
+        {
+            foreach (var item in ViewBag.ListPageConnect)
+            {
+                if (item.Value == ViewBag.PageID)
+                {
+                    <option value="@item.Value" selected>@item.Text</option>
+                }
+                else
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+        }
+    </select>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    function fnChangePageConnect() {
+        var PageID = $("#selPageID").val();
+        RedirectFacebook(PageID);
+    }
+    function RedirectFacebook(PageID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRedirectFacebook", "Channel", new { area = "" })',
+            dataType: 'json',
+            loading: true,
+            data: {
+                PageID: PageID
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    window.location.href = '@Url.Action("FAB_DashboardView", "FAB_Home", new { area = "Facebook" })';
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+</script>

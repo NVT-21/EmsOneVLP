@@ -1,0 +1,236 @@
+﻿@model EMS.MVC.Frontend.Models.DetailRequestSupportViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="header-content">
+        <p class="fs-20 font-w600">Mã yêu cầu @Model.RequestSupportCode</p>
+    </div>
+    <div class="row">
+        <div class="col-xl-7 col-lg-7 col-md-7">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin yêu cầu</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <span class="text-2">Nhóm yêu cầu: </span>
+                                <label class="text-2">@Model.RequestGroup</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Loại yêu cầu: </span>
+                                <label class="text-2">@Model.RequestType</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Nội dung yêu cầu: </span>
+                                <label class="text-2">@Model.RequestSupportDescription</label>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.NewUpdateInformation))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-2">Thông tin ban đầu: </span>
+                                    <label class="text-2">
+                                        @if (Model.RequestType == "Sửa tiền đơn hàng (tiền COD)")
+                                        {
+                                            Write(Convert.ToInt64(Model.OldUpdateInformation).ToString("N0"));
+                                        }
+                                        else
+                                        {
+                                            Write(Model.OldUpdateInformation);
+                                        }
+                                    </label>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="text-2">Thông tin thay đổi: </span>
+                                    <label class="text-2">
+                                        @if (Model.RequestType == "Sửa tiền đơn hàng (tiền COD)")
+                                        {
+                                            Write(Convert.ToInt64(Model.NewUpdateInformation).ToString("N0"));
+                                        }
+                                        else
+                                        {
+                                            Write(Model.NewUpdateInformation);
+                                        }
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <span class="text-2">Người yêu cầu: </span>
+                                <label class="text-2">@Model.EmployeeName</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Thời gian yêu cầu: </span>
+                                <label class="text-2">@Model.CreatedDate</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Trạng thái: </span>
+                                <label class="text-2">@Model.RequestSupportStatus.Name</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Đơn vị tiếp nhận: </span>
+                                <label class="text-2">@Model.PosC</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-5 col-lg-5 col-md-5">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin khách hàng</p>
+                    <div class="col-md-12">
+                        <div class="mb-2">
+                            <span class="text-2">Mã khách hàng: </span>
+                            <label class="text-2">@Model.ShopCode</label>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-2">Mã CRM: </span>
+                            <label class="text-2">@Model.CrmOrPaypostCode</label>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-2">Số điện thoại: </span>
+                            <label class="text-2">@Model.ShopPhone</label>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-2">Địa chỉ khách hàng: </span>
+                            <label class="text-2">@Model.ShopFullAddress</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin bưu gửi</p>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="mb-2">
+                                <span class="text-2">Mã bưu gửi: </span>
+                                <label class="text-2"><a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(Model.EShippingCode), ShopID = EMS.Library.Security.EncodeBase64(Model.ShopID.ToString()) })" target="_blank">@Model.EShippingCode</a></label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Mã đơn hàng: </span>
+                                <label class="text-2"><a href="#" onclick="btnDetailOrder(@Model.OrderID, @Model.ShopID)">@Model.OrderCode</a></label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Nội dung: </span>
+                                <label class="text-2">@Model.OrderMessage</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="mb-2">
+                                <span class="text-2">Khối lượng: </span>
+                                <label class="text-2">@Model.WeightBefore</label>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-2">Khối lượng thực tế: </span>
+                                <label class="text-2">@Model.WeightAfter</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 mt-4">
+                            <div class="fs-18 mb-2">Người gửi</div>
+                            <div class="mb-2"><span class="text-2">Họ và tên: </span><label class="text-2">@Model.SenderName</label> </div>
+                            <div class="mb-2"><span class="text-2">Số điện thoại: </span><label class="text-2">@Model.SenderPhone</label></div>
+                            <div class="mb-2"><span class="text-2">Địa chỉ: </span><label class="text-2">@Model.SenderFullAddress</label></div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mt-4">
+                            <div class="fs-18 mb-2">Người nhận</div>
+                            <div class="mb-2"><span class="text-2">Họ và tên: </span><label class="text-2">@Model.ReceiverName</label></div>
+                            <div class="mb-2"><span class="text-2">Số điện thoại: </span> <label class="text-2">@Model.ReceiverPhone</label> </div>
+                            <div class="mb-2"><span class="text-2">Địa chỉ: </span> <label class="text-2">@Model.ReceiverFullAddress</label> </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 mt-4">
+                            <div class="mb-2"><span class="text-2">Trạng thái: </span> <label class="text-2">@Model.OrderStatus.Name</label> </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4">
+                            <div class="mb-2"><span class="text-2">Giá trị (VNĐ): </span> <label class="text-2">@Model.TransportOrderValue.ToString("N0") đ</label> </div>
+                            <div class="mb-2"><span class="text-2">Dịch vụ chính: </span> <label class="text-2">@Model.TransportMainService</label> </div>
+                            <div class="mb-2"><span class="text-2">Dịch vụ cộng thêm: </span> <label class="text-2">@Model.TransportExtraService</label> </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mt-4">
+                            <div class="mb-2"><span class="text-2">COD (VNĐ): </span> <label class="text-2">@Model.TotalCOD.ToString("N0") đ</label> </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mt-4">
+                            <div class="mb-2"><span class="text-2">Cước (VNĐ): </span> <label class="text-2">@Model.TransportFee.ToString("N0") đ</label> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Tiến trình xử lý yêu cầu</p>
+                    <div class="table-responsive table-secondary">
+                        <table class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Thời gian</th>
+                                    <th>Người xử lý</th>
+                                    <th>Nội dung xử lý</th>
+                                    <th>Lý do</th>
+                                    <th>Tài liệu</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (Model.ListSearchHistory.Count > 0)
+                                    {
+                                        var stt = 1;
+                                        foreach (var item in Model.ListSearchHistory)
+                                        {
+                                            <tr>
+                                                <td>@(stt++)</td>
+                                                <td>@item.CreatedDate</td>
+                                                <td>@item.CreatedName</td>
+                                                <td style="max-width: 260px; white-space: inherit; text-align: justify; vertical-align: middle; line-height: 1.4rem;">@item.Description</td>
+                                                <td style="max-width: 260px; white-space: inherit; text-align: justify; vertical-align: middle; line-height: 1.4rem;">@item.Reason</td>
+                                                <td>
+                                                    @if (item.ResultDocument != "")
+                                                    {
+                                                        <a class="text-primary" target="_blank" href="@XHelper.pathRequestSupport@item.ResultDocument">Xem</a>
+                                                    }
+                                                </td>
+                                                <td>@item.Status.Name</td>
+                                            </tr>
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7">Dữ liệu không tồn tại.</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        function btnDetailOrder(OrderID, ShopID) {
+            $.post('@Url.Action("DetailOrderView", "Order")', {
+                OrderID: OrderID, ShopID: ShopID
+            }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        }
+    </script>
+}

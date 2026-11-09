@@ -1,0 +1,156 @@
+﻿@using EMS.Library
+@model List<EMS.MVC.Frontend.Models.RequestOrderListViewModel>
+@{
+    Layout = null;
+}
+<table class="table table-responsive-md" id="tableListDivisionAgainOrder">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th class="text-center"><input class="dt-body-center" type="checkbox" name="select_all" value="1" id="SelectAll" style="accent-color: #0072BC;"></th>
+            <th>Họ và tên</th>
+            <th>Số điện thoại</th>
+            <th>Kênh bán hàng</th>
+            <th>Sản phẩm</th>
+            <th>Người xử lý</th>
+            <th>Thời gian tạo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@item.FullName || @item.MobileNumber</td>
+                    <td class="text-center"><input type="checkbox" id="SelectData" class="checkMe" value="@item.ID" style="accent-color: #0072BC;" /></td>
+                    <td>@item.FullName</td>
+                    <td>@item.MobileNumber</td>
+                    <td><span class="text-facebook">@item.Channel</span></td>
+                    <td>
+                        @{
+                            var ProductName = item.Product.Split('|');
+                            if (ProductName.Length > 0)
+                            {
+                                for (var i = 0; i < ProductName.Length - 1; i++)
+                                {
+                                    <span style="line-height: 1.4rem;">@ProductName[i]</span>
+                                    if (i + 1 <= ProductName.Length - 2)
+                                    {
+                                        <br />
+                                    }
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (item.RecieverName == "")
+                        {
+                            Write("Không xác định");
+                        }
+                        else
+                        {
+                            Write(item.RecieverName);
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var splitCreatedDate = item.CreatedDate.Split(' ');
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+<input type="hidden" id="CountRequestOrderDivisionAgain" value="@Model.Count" />
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        table = $("#tableListDivisionAgainOrder").DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            "language": {
+                "sSearch": "",
+                "searchPlaceholder": "Tìm kiếm nhanh",
+                "emptyTable": "Không có dữ liệu",
+                "zeroRecords": "Không có dữ liệu",
+                "sInfo": "_START_ - _END_ trên _TOTAL_",
+                "infoEmpty": "0 - 0 trên 0",
+                "infoFiltered": "(Tìm kiếm từ _MAX_ bản ghi)",
+                "oPaginate": {
+                    "sFirst": "Trang đầu",
+                    "sPrevious": "<",
+                    "sNext": ">",
+                    "sLast": "Trang cuối"
+                },
+                "lengthMenu": "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "searching": false,
+            "stateSave": true,
+            //"dom": "tr<'d-flex align-items-center justify-content-between flex-wrap'l <'row'<'col-6'i><'col-6'p>>>"
+            "dom": "tr<'row'<'col-4'l><'col-8 d-flex justify-content-end m-auto'<'mt-1 me-3'i>p>>"
+        });
+
+        $("#tableListDivisionAgainOrder").removeClass('dataTable');
+        //MyCreateDataTable("tableListDivisionAgainOrder");
+        debugger
+        //var allPages = table.fnGetNodes();
+
+        $('#SelectAll').click(function () {
+            $('.checkMe').prop("checked", $("#SelectAll").is(":checked"));
+        });
+    });
+
+    $("#AllDate").on('change', function () {
+        //debugger
+        var AllDateValue = $("#AllDate").val();
+        if (AllDateValue) {
+            var SplitAllDateValue = AllDateValue.split('-');
+            $('#FromDate').val(SplitAllDateValue[0].trim());
+            $('#ToDate').val(SplitAllDateValue[1].trim());
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var listFromDate = FromDate.split("/");
+            var fromDate = listFromDate[2] + listFromDate[1] + listFromDate[0];
+            var listToDate = ToDate.split("/");
+            var toDate = listToDate[2] + listToDate[1] + listToDate[0];
+            table = document.getElementById("tableListDivisionAgainOrder");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[7];
+                if (td) {
+                    txtValue = td.textContent.split("\n")[1].trim() || td.innerText.split("\n")[1].trim();
+                    var listtxtValue = txtValue.split("/");
+                    var intValue = listtxtValue[2] + listtxtValue[1] + listtxtValue[0];
+                    if (parseInt(fromDate) == parseInt(toDate)) {
+                        if (parseInt(intValue) == parseInt(fromDate)) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (parseInt(fromDate) <= parseInt(intValue) && parseInt(intValue) <= parseInt(toDate)) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    
+</script>
+

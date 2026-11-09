@@ -1,0 +1,192 @@
+﻿@model EMS.MVC.Backend.Models.ProcessRequestSupportViewModel
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Xử lý yêu cầu</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.RequestSupportID)
+            @Html.HiddenFor(m => m.ShopID)
+            <div class="row">
+                <div class="col-lg-12 mb-2">
+                    <label for="">Nội dung <span class="text-danger">(*)</span></label>
+                    @Html.EditorFor(model => model.ResultDescription, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Nội dung" } })
+                    <span class="text-danger" id="errResultDescription"></span>
+                </div>
+                <div class="col-lg-12 mb-2">
+                    <label for="">Bồi thường<span class="text-danger">(*)</span></label>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" id="rdoIndemnifyValue1" name="rdoIndemnify" value="Y" /> Có bồi thường
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" id="rdoIndemnifyValue2" name="rdoIndemnify" value="N" checked /> Không bồi thường
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <span class="text-danger" id="errRdoIndemnify"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 mb-2">
+                    <label for="">Kết quả yêu cầu <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.ResultRequestSupport, new SelectList(Model.ListResultRequestSupport, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+                    <span class="text-danger" id="errResultRequestSupport"></span>
+                </div>
+                <div class="col-lg-12 mb-2">
+                    <label for="">Tài liệu đính kèm</label>
+                    <form id="DocumentUpload" enctype="multipart/form-data">
+                        <input type="file" class="form-control" id="Document" style="height: 2.9rem;">
+                    </form>
+                    <span id="notifyDocument"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12 col-md-12">
+                <div class="row justify-content-between">
+                    <button type="button" class="btn btn-sm btn-danger form-control col-lg-3 col-md-4" id="btnCloseModalProcessRequestSupport" data-dismiss="modal" aria-label="Close">HUỶ BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary form-control col-lg-3 col-md-4" id="btnModalProcessRequestSupport">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    CheckChangeValue("ResultDescription", "Vui lòng nhập nội dung", "", "Y");
+    CheckChangeValue("ResultRequestSupport", "Vui lòng chọn kết quả yêu cầu", "", "Y");
+
+    $("#btnModalProcessRequestSupport").on("click", function () {
+        var isError = false;
+        var data = {
+            RequestSupportID: $("#RequestSupportID").val(),
+            ShopID: $("#ShopID").val(),
+            ResultDocument: FileName,
+            ResultDescription: $("#ResultDescription").val().trim(),
+            ResultIndemnify: $("input[name='rdoIndemnify']:checked").val(),
+            ResultRequestSupport: $("#ResultRequestSupport").val(),
+        }
+
+        isError = CheckNullValue(data.ResultDescription, "ResultDescription", "Vui lòng nhập nội dung", isError);
+        isError = CheckNullValue(data.ResultRequestSupport, "ResultRequestSupport", "Vui lòng chọn kết quả yêu cầu", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JProcessStatus", "RequestSupport")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message, '@Url.Action("RequestSupportView", "RequestSupport")');
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+
+    $("#Document").on("click", function () {
+        $("#notifyDocument").text("");
+        $('#DocumentUpload')[0].reset();
+    });
+    var FileName = "";
+    $("#Document").on("change", function () {
+        var TypeFile = ["JPG", "JPEG", "PNG", "DOC", "DOCX", "XLS", "XLSX", "PDF"];
+        var formdata = new FormData(); //FormData object
+        var fileInput = document.getElementById('Document');
+        var filename = fileInput.files[0].name;
+        var filesize = fileInput.files[0].size;
+        var extension = filename.split('.').pop().toUpperCase();
+        var check = TypeFile.includes(extension);
+        if (check == false) {
+            FileName = "";
+            $('#DocumentUpload')[0].reset();
+            $("#notifyDocument").text("Hệ thống chỉ hỗ trợ tải tập tin dạng ảnh, Word, Excel, PDF.");
+            $("#notifyDocument").css("color", "red");
+        } else if (filesize >= 5242880) {
+            //5MB
+            FileName = "";
+            $('#DocumentUpload')[0].reset();
+            $("#notifyDocument").text("Hệ thống hỗ trợ tải tệp tin kích thước tối đa 5 MB.");
+            $("#notifyDocument").css("color", "red");
+        } else {
+            for (i = 0; i < fileInput.files.length; i++) {
+                formdata.append(fileInput.files[i].name, fileInput.files[i]);
+            }
+            $.ajax({
+                url: '@Url.Action("UploadFile", "DataFile")',
+                type: 'POST',
+                data: formdata,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        var resData = JSON.parse(res.Data);
+                        FileName = resData[0].FileName;
+                        $("#notifyDocument").text(res.Message);
+                        $("#notifyDocument").css("color", "green");
+                    } else {
+                        FileName = "";
+                        $("#notifyDocument").text(res.Message);
+                        $("#notifyDocument").css("color","red");
+                    };
+                },
+                error: function (xhr, status, error) {
+                    //var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: error,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                },
+                //complete: function (data) {
+                //    $('#PDFUpload')[0].reset(); // this will reset the form fields
+                //}
+            });
+        }
+    });
+</script>

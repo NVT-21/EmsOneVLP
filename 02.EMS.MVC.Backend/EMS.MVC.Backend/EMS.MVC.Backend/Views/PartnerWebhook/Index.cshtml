@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","PartnerWebhook")">Khai báo đối tác Webhook</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btnAdd" class="btn btn-primary btn-sm mb-2"><i class="fa fa-plus text-white"></i>&nbsp;Thêm mới</button>
+            </div>
+            <div id="tbl-data" class="table-responsive">
+                @{Html.RenderAction("ListData", "PartnerWebhook", new { });}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#btnAdd').on('click', function () {
+        $.get('@Url.Action("Add", "PartnerWebhook")', function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    });
+</script>

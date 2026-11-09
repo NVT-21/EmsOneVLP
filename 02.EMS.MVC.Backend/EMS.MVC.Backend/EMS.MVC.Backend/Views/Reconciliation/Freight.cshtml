@@ -1,0 +1,195 @@
+﻿@model EMS.MVC.Backend.Models.ReconciliationViewModel
+@{
+    ViewBag.Title = "CODMoney";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Freight","Reconciliation")">Quản lý đối soát tiền cước</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                @*<div class="col-lg-3 mb-2">
+                    <label>Loại ngày</label>
+                    <select class="select2 form-control" id="TypeDate">
+                        @foreach (var item in ViewBag.ReconciliationTypeDate)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>*@
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-3">
+                    <label>&nbsp;</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Từ</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="FromDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.FromDate" />
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Đến</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="ToDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.ToDate">
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-2">
+                    <label>Mã PayPost/CRM</label>
+                    <input class="form-control" id="CustomerPPCRM" name="CustomerPPCRM" placeholder="Mã PayPost/CRM" type="text">
+                </div>
+                <div class="col-lg-4 mb-2">
+                    <label>Mã khách hàng</label>
+                    <input class="form-control" id="CustomerCode" name="CustomerCode" placeholder="Mã khách hàng" type="text">
+                </div>
+                @*<div class="col-lg-3 mb-2">
+                    <label>Trạng thái đối soát</label>
+                    <select class="select2 form-control" id="FreightReconciliationStatus">
+                        @foreach (var item in ViewBag.ReconciliationStatus)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>*@
+                <div class="col-lg-2 mb-2">
+                    <label>&nbsp;</label>
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-lg-2 mb-2 mb-2">
+                    <label>&nbsp;</label>
+                    <button type="button" id="btnExportExcel" class="btn btn-sm btn-dribbble form-control">
+                        <i class="fa fa-file-excel-o mr-2"></i>&nbsp; EXPORT EXCEL
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data" class="table-responsive">
+                @*@{Html.RenderAction("GetDataFreight", "Reconciliation",new { FromDate = Model.FromDate, ToDate = Model.ToDate });}*@
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Assets/js/js.js?n=2"></script>
+<script>
+    $(document).ready(function () {
+        CreateDatePicker("#FromDate, #ToDate");
+    });
+    $('#btnSearch').on('click', function () {
+        var errMsg = '', isError = false;
+        var agrs = {
+            TypeDate: $('#TypeDate').val(),
+            FromDate: $('#FromDate').val(),
+            ToDate: $('#ToDate').val(),
+            CustomerPPCRM: $('#CustomerPPCRM').val().trim(),
+            CustomerCode: $('#CustomerCode').val().trim(),
+            Status: $('#FreightReconciliationStatus').val()
+        };
+        if (agrs.CustomerPPCRM == "") {
+            if (agrs.CustomerCode == "") {
+                errMsg = 'Vui nhập mã PayPost/CRM hoặc mã Khách Hàng';
+                isError = true;
+            }
+        }
+        if (agrs.FromDate == "") {
+            errMsg = 'Vui lòng chọn Từ ngày';
+            isError = true;
+        }
+        if (agrs.ToDate == "") {
+            errMsg = 'Vui lòng chọn Đến ngày';
+            isError = true;
+        }
+
+        var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+        if (check_date < 0) {
+            errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+            isError = true;
+        }
+        if (check_date > 93) {
+            errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 3 tháng.';
+            isError = true;
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+
+            })
+            return;
+        }
+
+        $.get('@Url.Action("GetDataFreight", "Reconciliation")', agrs, function (htmlString) {
+            $('#tbl-data').html(htmlString);
+        });
+    });
+    $("#btnExportExcel").on("click", function () {
+        var errMsg = '', isError = false;
+        var agrs = {
+            TypeDate: $('#TypeDate').val(),
+            FromDate: $('#FromDate').val(),
+            ToDate: $('#ToDate').val(),
+            CustomerPPCRM: $('#CustomerPPCRM').val().trim(),
+            CustomerCode: $('#CustomerCode').val().trim(),
+            Status: $('#FreightReconciliationStatus').val()
+        };
+        if (agrs.CustomerPPCRM == "") {
+            if (agrs.CustomerCode == "") {
+                errMsg = 'Vui nhập mã PayPost/CRM hoặc mã Khách Hàng';
+                isError = true;
+            }
+        }
+        if (agrs.FromDate == "") {
+            errMsg = 'Vui lòng chọn Từ ngày';
+            isError = true;
+        }
+        if (agrs.ToDate == "") {
+            errMsg = 'Vui lòng chọn Đến ngày';
+            isError = true;
+        }
+
+        var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+        if (check_date < 0) {
+            errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+            isError = true;
+        }
+        if (check_date > 93) {
+            errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 3 tháng.';
+            isError = true;
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+
+            })
+            return;
+        }
+        window.location.href = "@Url.Action("ExportExcelDataFreight", "Reconciliation")?CustomerPPCRM=" + agrs.CustomerPPCRM + "&CustomerCode=" + agrs.CustomerCode + "&Status=" + agrs.Status + "&TypeDate=" + agrs.TypeDate + "&FromDate=" + agrs.FromDate + "&ToDate=" + agrs.ToDate;
+    });
+</script>

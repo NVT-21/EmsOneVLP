@@ -1,0 +1,67 @@
+﻿@model EMS.MVC.Backend.Models.PeriodDetailViewModel
+@{
+    ViewBag.Title = "Detail";
+    Layout = null;
+}
+<div class="row">
+    <div class="col-6">
+        <table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+            <thead>
+                <tr class="table-info text-center">
+                    <th class="align-middle"> Kỳ đối soát COD</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.COD != null)
+                {
+                    foreach (var item in Model.COD)
+                    {
+                        <tr>
+                            <td>
+                                @item
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-6">
+        <table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+            <thead>
+                <tr class="table-info text-center">
+                    <th class="align-middle"> Kỳ đối soát cước vận chuyển</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Fee != null)
+                {
+                    foreach (var item in Model.Fee)
+                    {
+                        <tr>
+                            <td>
+                                @item
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListProductGroupViewModel>
+
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Mã nhóm sản phẩm</th>
+            <th>Tên nhóm sản phẩm</th>
+            <th>Số lượng sản phẩm</th>
+            <th>Tổng giá bán</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.ProductGroupCode || @item.ProductGroupName</td>
+                <td>@item.ProductGroupCode</td>
+                <td style="max-width: 200px; white-space: pre-line; line-height: inherit; text-align: left; vertical-align:baseline;">@item.ProductGroupName</td>
+                <td>@item.CountProduct.ToString("N0")</td>
+                <td>@item.TotalPriceProduct.ToString("N0")</td>
+                <td class="text-center">
+                    <a href="@Url.Action("EditProductGroupView","ProductGroup", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ProductGroupID.ToString())})" type="button" class="btn btn-info light">
+                        <i class="icon-edit fs-18"></i>
+                    </a>
+                    <a href="@Url.Action("SearchListProductView","ProductGroup", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ProductGroupID.ToString())})" type="button" class="btn btn-view light">
+                        <i class="icon-eye fs-20"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

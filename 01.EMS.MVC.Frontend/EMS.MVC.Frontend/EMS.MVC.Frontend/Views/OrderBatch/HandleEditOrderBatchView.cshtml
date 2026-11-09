@@ -1,0 +1,20 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="ShowData">
+
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $.post('@Url.Action("EditOrderBatchView", "OrderBatch")', {
+                SearchKey: localStorage.getItem('EditOrderBatchView')
+            }, function (data) {
+                $("#ShowData").html(data);
+            });
+        });
+    </script>
+}
+

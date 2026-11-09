@@ -1,0 +1,228 @@
+﻿<div class="row" id="tree" style="height: 375px;">
+</div>
+<script>
+    $(document).ready(function () {
+        var res = SearchTemplatePrint('@ViewBag.PrintType');
+        var LoadData = [];
+        var TemplatePrintData = {};
+        TemplatePrintData.PrintType = '@ViewBag.PrintType';
+        //debugger;
+        if (res.Code == "00") {
+            var ResponseData = JSON.parse(res.Data);
+            ResponseData.forEach(function (item, i) {
+                var obj = {
+                    "id": item.TemplatePrintID.toString(),
+                    "parent": item.TemplatePrintParent == 0 ? "#" : item.TemplatePrintParent.toString(),
+                    "text": item.Title,
+                    "state": {
+                        "checked": item.IsChoose == "Y" ? true : false
+                    }
+                };
+                LoadData.push(obj);
+
+                if (TemplatePrintData.PrintType == "A4") {
+                    switch (item.TemplatePrintID) {
+                        case 4:
+                            TemplatePrintData.SenderName = item.IsChoose;
+                            break;
+                        case 5:
+                            TemplatePrintData.SenderAddress = item.IsChoose;
+                            break;
+                        case 6:
+                            TemplatePrintData.SenderDistrict = item.IsChoose;
+                            break;
+                        case 7:
+                            TemplatePrintData.SenderProvince = item.IsChoose;
+                            break;
+                        case 8:
+                            TemplatePrintData.SenderPhone = item.IsChoose;
+                            break;
+
+                        case 11:
+                            TemplatePrintData.ReceiverDistrict = item.IsChoose;
+                            break;
+                        case 12:
+                            TemplatePrintData.ReceiverProvince = item.IsChoose;
+                            break;
+                        case 13:
+                            TemplatePrintData.ReceiverPhone = item.IsChoose;
+                            break;
+
+                        case 14:
+                            TemplatePrintData.OrderCode = item.IsChoose;
+                            break;
+                        case 17:
+                            TemplatePrintData.Quantity = item.IsChoose;
+                            break;
+                        case 18:
+                            TemplatePrintData.Weight = item.IsChoose;
+                            break;
+                    }
+                } else if (TemplatePrintData.PrintType == "A6") {
+                    switch (item.TemplatePrintID) {
+                        case 25:
+                            TemplatePrintData.ReceiverPhone = item.IsChoose;
+                            break;
+                        //case 26:
+                        //    TemplatePrintData.TransportFee = item.IsChoose;
+                        //    break;
+                        case 27:
+                            TemplatePrintData.Message = item.IsChoose;
+                            break;
+
+                        case 29:
+                            TemplatePrintData.Note = item.IsChoose;
+                            break;
+
+                        //case 30:
+                        //    TemplatePrintData.SenderName = item.IsChoose;
+                        //    break;
+
+                        case 101:
+                            TemplatePrintData.SenderName = item.IsChoose;
+                            break;
+                        case 102:
+                            TemplatePrintData.SenderPhone = item.IsChoose;
+                            break;
+                        case 103:
+                            TemplatePrintData.SenderAddress = item.IsChoose;
+                            break;
+
+                        case 104:
+                            TemplatePrintData.ReceiverAddress = item.IsChoose;
+                            break;
+
+                        case 106:
+                            TemplatePrintData.TransportMainServiceCode = item.IsChoose;
+                            break;
+                        case 107:
+                            TemplatePrintData.TransportMainServiceName = item.IsChoose;
+                            break;
+
+                        case 108:
+                            TemplatePrintData.TransportExtraServiceCode = item.IsChoose;
+                            break;
+                    }
+                } else if (TemplatePrintData.PrintType == "B1") {
+                    switch (item.TemplatePrintID) {
+                        case 40:
+                            TemplatePrintData.SenderName = item.IsChoose;
+                            break;
+                        //case 42:
+                        //    TemplatePrintData.PostOffice = item.IsChoose;
+                        //    break;
+                        case 43:
+                            TemplatePrintData.OrderCode = item.IsChoose;
+                            break;
+
+                        case 45:
+                            TemplatePrintData.ReceiverPhone = item.IsChoose;
+                            break;
+
+                        //case 47:
+                        //    TemplatePrintData.TotalAmount = item.IsChoose;
+                        //    break;
+                    }
+                } else if (TemplatePrintData.PrintType == "B2") {
+                    switch (item.TemplatePrintID) {
+                        case 51:
+                            TemplatePrintData.SenderName = item.IsChoose;
+                            break;
+
+                        case 53:
+                            TemplatePrintData.ReceiverPhone = item.IsChoose;
+                            break;
+                        //case 54:
+                        //    TemplatePrintData.TransportFee = item.IsChoose;
+                        //    break;
+                    }
+                } else if (TemplatePrintData.PrintType == "Label") {
+                    switch (item.TemplatePrintID) {
+                        //case 58:
+                        //    TemplatePrintData.SenderName = item.IsChoose;
+                        //    break;
+
+                        case 60:
+                            TemplatePrintData.ReceiverPhone = item.IsChoose;
+                            break;
+                        //case 61:
+                        //    TemplatePrintData.TransportFee = item.IsChoose;
+                        //    break;
+
+                        case 62:
+                            TemplatePrintData.Message = item.IsChoose;
+                            break;
+
+                        case 64:
+                            TemplatePrintData.Note = item.IsChoose;
+                            break;
+
+                        case 109:
+                            TemplatePrintData.SenderName = item.IsChoose;
+                            break;
+                        case 110:
+                            TemplatePrintData.SenderPhone = item.IsChoose;
+                            break;
+                        case 111:
+                            TemplatePrintData.SenderAddress = item.IsChoose;
+                            break;
+
+                        case 112:
+                            TemplatePrintData.ReceiverAddress = item.IsChoose;
+                            break;
+
+                        case 114:
+                            TemplatePrintData.TransportMainServiceCode = item.IsChoose;
+                            break;
+                        case 115:
+                            TemplatePrintData.TransportMainServiceName = item.IsChoose;
+                            break;
+
+                        case 116:
+                            TemplatePrintData.TransportExtraServiceCode = item.IsChoose;
+                            break;
+                    }
+                }
+            });
+
+            $.post('@Url.Action("TemplatePrintData", "TemplatePrint")', TemplatePrintData, function (htmlString) {
+                $("#ShowTemplatePrintData").html(htmlString);
+            });
+        } else {
+             $.post('@Url.Action("TemplatePrintData", "TemplatePrint")', TemplatePrintData, function (htmlString) {
+                $("#ShowTemplatePrintData").html(htmlString);
+            });
+        }
+
+        $(function () {
+            $("#tree").jstree({
+                "core": {
+                    "themes": {
+                        "icons": false
+                    },
+                    "data": LoadData
+                },
+                "checkbox": {
+                    "keep_selected_style": false,
+                    //"three_state": false,
+                    //"whole_node": false,
+                    "tie_selection": false
+                },
+                "plugins": ["checkbox"]
+            }).on("check_node.jstree uncheck_node.jstree", function (e, data) {
+                var ElementID = data.node.id;
+                var IsChecked = data.node.state.checked;
+                if (IsChecked == true) {
+                    $(".T_" + ElementID).css("text-decoration", "");
+                    $(".T_" + ElementID).css("color", "");
+                } else {
+                    $(".T_" + ElementID).css("text-decoration", "line-through");
+                    $(".T_" + ElementID).css("color", "red");
+                }
+            }).on('loaded.jstree', function (e, data) {
+                $("#tree").jstree(true).open_all();
+            });
+        });
+    });
+</script>
+

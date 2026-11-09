@@ -1,0 +1,169 @@
+﻿@model EMS.MVC.Backend.Models.PeriodViewModel
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-6">
+        <h4>Kỳ đối soát COD</h4>
+        <div id="COD">
+            @*@{Html.RenderAction("SearchListPeriodView", "Shop", new { PeriodType = Model.CODPeriodType, Type = "COD", ShopID = Model.ShopID });}*@
+        </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6">
+        <h4>Kỳ đối soát cước vận chuyển</h4>
+        <div id="FEE">
+            @*@{Html.RenderAction("SearchListPeriodView", "Shop", new { PeriodType = Model.FeePeriodType, Type = "FEE", ShopID = Model.ShopID });}*@
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadListPeriodType(@Model.CODPeriodType, "COD");
+        LoadListPeriodType(@Model.FeePeriodType, "FEE");
+    });
+
+    function LoadListPeriodType(PeriodType, Type) {
+        $.get('@Url.Action("SearchListPeriodView", "Shop")', {
+            PeriodType: PeriodType,
+            Type: Type,
+            ShopID : @Model.ShopID,
+        }, function (htmlString) {
+            $('#' + Type).html(htmlString);
+        });
+    }
+
+    function btnAdd(Type) {
+        var isError = false;
+        var data = {
+            Value: $("#Value_" + Type).val(),
+            Type: Type,
+            ShopID: @Model.ShopID,
+        };
+
+        isError = CheckNullValue(data.Value, "#errValue_" + data.Type, "Vui lòng chọn Giá trị", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddPeriod", "Shop")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    switch (data.Type) {
+                        case "COD":
+                            LoadListPeriodType(@Model.CODPeriodType, "COD");
+                            break;
+                        case "FEE":
+                            LoadListPeriodType(@Model.FeePeriodType, "FEE");
+                            break;
+                        default:
+                            CreateCustomSwal("error", "Không xác định được loại kỳ. Vui lòng thử lại hoặc liên hệ quản trị.");
+                            break;
+                    };
+                } else
+                if (res.Code == "01") /*Chưa chọn loại kỳ đối soát -> tới trang chọn kỳ */
+                {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    }).then(function(){
+                        window.location.reload();
+                    });
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    };
+
+    function btnRemove(ID, Type) {
+        var data = {
+            ID: ID,
+            ShopID: @Model.ShopID,
+            Type: Type
+        };
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xóa?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemovePeriod", "Shop")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            switch (data.Type) {
+                                case "COD":
+                                    LoadListPeriodType(@Model.CODPeriodType, "COD");
+                                    break;
+                                case "FEE":
+                                    LoadListPeriodType(@Model.FeePeriodType, "FEE");
+                                    break;
+                                default:
+                                    CreateCustomSwal("error", "Không xác định được loại kỳ. Vui lòng thử lại hoặc liên hệ quản trị.");
+                                    break;
+                            };
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+</script>

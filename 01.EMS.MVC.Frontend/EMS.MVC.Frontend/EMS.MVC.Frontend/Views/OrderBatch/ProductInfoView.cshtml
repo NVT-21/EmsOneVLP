@@ -1,0 +1,12 @@
+﻿@model EMS.MVC.Frontend.Models.AddOrderBatchOrderInfoViewModel
+
+@if (Model.ListProductInfo != null)
+{
+    foreach (var item in Model.ListProductInfo)
+    {
+        <div class="row-item-product-@Model.NumberOfDetail" data-ProductID="@item.ProductID" data-ProductName="@item.ProductName" data-VariantID="@item.VariantID" data-NumberOfProduct="@item.NumberOfProduct" data-Price="@item.Price" data-Weight="@item.Weight">
+            <span>@item.ProductName (@item.VariantName) x @item.NumberOfProduct</span>
+        </div>
+    }
+}
+

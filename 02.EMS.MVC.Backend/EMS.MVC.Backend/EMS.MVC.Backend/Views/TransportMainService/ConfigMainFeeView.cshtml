@@ -1,0 +1,53 @@
+﻿@model EMS.MVC.Backend.Models.ConfigMainFeeViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView", "TransportMainService")">Danh sách bảng cước</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("EditFreightChargesView","TransportMainService", new { TransportPostageID = Model.TransportPostageID, TransportPostageCode = Model.TransportPostageCode})">@Model.TransportPostageCode</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cấu hình cước dịch vụ chính</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body overflow-auto">
+            <div class="col-12">
+                <button class="btn btn-sm btn-warning text-white pull-right mb-4" id="ExportExcel">Xuất Excel</button>
+            </div>
+            <div id="Data">
+                @if (Model.TransportPostageRange != 0)
+                {
+                    Html.RenderAction("ConfigMainFeeDetailView", "TransportMainService", new { TransportPostageID = Model.TransportPostageID, TransportPostageRange = Model.TransportPostageRange });
+                }
+                else
+                {
+                    <p>Chưa xác định loại phạm vi. Không thể cấu cước dịch vụ chính.</p>
+                    <p>Cập nhật loại phạm vi </p>
+                    <a href="@Url.Action("EditFreightChargesView","TransportMainService", new { TransportPostageID = Model.TransportPostageID, TransportPostageCode = Model.TransportPostageCode})">Tại đây</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $("#ExportExcel").on("click", function () {
+            var param = String.format("TransportPostageID={0}&TransportPostageName={1}&TransportPostageRange={2}", @Model.TransportPostageID, '@Model.TransportPostageName', @Model.TransportPostageRange);
+            window.location.href = "@Url.Action("ExportExcelConfigMainService", "TransportMainService")?" + param;
+        });
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿@model List<EMS.MVC.Frontend.Models.PromotionProductVariantViewModel>
+@{
+    Layout = null;
+}
+
+@if (Model.Count > 0)
+{
+    <tbody style="">
+        @for (int i = 0; i < (Model.Count); i++)
+        {
+            <tr style="background-color: white;">
+                <td style="width:53px;" class="p-1 border-right-0">
+                    <img class="img-thumbnail" style="width:50px;height:50px;" src="@XHelper.pathImages@Model[i].VariantImage" />
+                </td>
+                <td class="p-0 border-left-0">
+                    <p style="margin-bottom:2px!important; padding-right:10px;"><b>@Model[i].ProductName</b></p>
+                    <span style="padding-right: 10px;">@Model[i].VariantName</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+}

@@ -1,0 +1,107 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_UserInformationOfConversionViewModel
+
+<div class="p-2 border-bottom d-none d-lg-block">
+    <div class="d-flex align-items-center py-1">
+        <div class="position-relative">
+            <img src="@ViewBag.Avatar" class="rounded-circle mr-1" alt="@ViewBag.DisplayName" width="40" height="40">
+        </div>
+        <div class="flex-grow-1">
+            <div class="ms-3">
+                @if (string.IsNullOrEmpty(ViewBag.ProfileLink))
+                {
+                    <strong class="ms-2">@ViewBag.DisplayName</strong>
+                }
+                else
+                {
+                    <strong><a href="@ViewBag.ProfileLink" target="_blank">@ViewBag.DisplayName</a></strong>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pt-2 border-bottom">
+    <div class="row">
+        <div class="col-6" style="text-align: start;"><h5 class="fw-bold">Thông tin</h5></div>
+        <div class="col-6" style="text-align: end;">
+            <a href="#" id="UpdateUserInformation"><h6 style="color:#0054A6;"><b>Cập nhật</b></h6></a>
+        </div>
+    </div>
+    @if (Model == null)
+    {
+        <span>Vui lòng cập nhật thông tin.</span>
+    }
+    else
+    {
+        if (Model.MobileNumber == "" || Model.MobileNumber == null)
+        {
+            <span>Vui lòng cập nhật thông tin.</span>
+        }
+        else
+        {
+            <div class="col-12 p-1" title="Họ và tên">
+                <i class="fa fa-user"></i><b class="ms-1 me-1">Họ và tên:</b>@Model.FullName
+            </div>
+            <div class="col-12 p-1" title="Số điện thoại">
+                <i class="fa fa-mobile"></i><b class="ms-1 me-1">Số điện thoại:</b>@Model.MobileNumber
+            </div>
+            <div class="col-12 p-1" title="Địa chỉ email">
+                <i class="fa fa-envelope"></i><b class="ms-1 me-1">Email:</b>@Model.Email
+            </div>
+            <div class="col-12 p-1" title="Địa chỉ">
+                <i class="fa fa-building"></i><b class="ms-1 me-1">Địa chỉ:</b>@Model.FullAddress
+            </div>
+            if (Model.IsBlackList == "Y")
+            {
+                <div class="col-12 p-1" title="Danh sách đen">
+                    <i class="fa fa-times-circle mr-1"></i> <span class="text-danger fw-bold">Khách hàng nằm trong danh sách đen</span>
+                </div>
+            }
+        }
+
+    }
+</div>
+<div class="pt-2 pb-2 border-bottom">
+    @{
+        if (string.IsNullOrEmpty(Model.MobileNumber) == false)
+        {
+            Html.RenderAction("FAB_OrderSuccessHistoryOfUserView", "FAB_LiveChat", new { MobileNumber = Model.MobileNumber, area = "Facebook" });
+        }
+    }
+</div>
+@*<div class="pt-2 pb-2">
+        <div class="row">
+            <div class="col-6" style="text-align: left;"><h5>Lịch sử y/c đặt hàng</h5></div>
+            <div class="col-6" style="text-align: end;">
+                <a href="#" id="AddRequestOrder"><h6>Tạo y/c đặt hàng</h6></a>
+            </div>
+        </div>
+        <div class="table-responsive table-primary">
+            @if (Model.MobileNumber != "" || Model.MobileNumber != null)
+            {
+                Html.RenderAction("FAB_RequestOrderHistoryOfUser", "FAB_LiveChat", new { MobileNumber = Model.MobileNumber, area = "Facebook" });
+            }
+        </div>
+    </div>*@
+<script>
+    @*$("#AddRequestOrder").on("click", function () {
+        $.post('@Url.Action("AddRequestOrderView", "Facebook")', @Html.Raw(Json.Encode(Model)),function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });*@
+    var MobileNumber = "";
+    MobileNumber = '@Model.MobileNumber';
+
+    $("#UpdateUserInformation").on("click", function () {
+        $.post('@Url.Action("FAB_UpdateUserInformationView", "FAB_LiveChat")', @Html.Raw(Json.Encode(Model)),function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+    function btnAddOrderView(MobileNumber) {
+        var link = document.createElement('a');
+        link.target = "_blank";
+        link.href = '@Url.Action("AddOrderView", "Order", new { area = ""})';
+        link.click();
+    }
+</script>

@@ -1,0 +1,243 @@
+﻿@using EMS.MVC.Backend.Models;
+@{
+    UserProfile session = new UserProfile();
+    if (XHelper.SessionUser != null)
+    {
+        session = (UserProfile)Session[XHelper.SessionUser];
+    }
+}
+@{
+    if (session != null)
+    {
+        switch (session.GroupCode)
+        {
+            case ".0.0.":
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">
+                            <i class="fa fa-home fa-lg mr-2"></i>
+                            <span class="menu-title">Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#menu-account-shop" aria-expanded="false" aria-controls="menu-postage">
+                            <i class="fa fa-address-book fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý tài khoản KH</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-account-shop">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("ShopView", "Shop", new { area = "" })">Tài khoản khách hàng</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("CustomerGroupView", "CustomerGroup", new { area = "" })">Nhóm tài khoản</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("UserView", "User", new { area = "" })">
+                            <i class="fa fa-user fa-lg mr-2"></i>
+                            <span class="menu-title">Tài khoản vận hành</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#menu-postage" aria-expanded="false" aria-controls="menu-postage">
+                            <i class="fa fa-truck fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý cước vận chuyển</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-postage">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index", "Transport")">Cấu hình</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("TransportFeeView", "TransportFee")">Ước tính cước phí</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "ShopGroupPermission", new { area = "" })">
+                            <i class="fa fa-users fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý nhóm quyền CH</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("OrderView", "Order", new { area = "" })">
+                            <i class="fa fa-shopping-cart fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("CollectionPostOfficeView", "CollectionPostOffice", new { area = "" })">
+                            <i class="fa fa-building fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý bưu cục thu gom</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RequestSupportView", "RequestSupport", new { area = "" })">
+                            <i class="fa fa-envelope fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Yêu cầu hỗ trợ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#menu-reconciliation" aria-expanded="false" aria-controls="menu-postage">
+                            <i class="fa fa-book fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý đối soát</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-reconciliation">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("CODMoney", "Reconciliation")">Tiền COD</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Freight", "Reconciliation")">Cước vận chuyển</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("FeeAdjustingJournalEntries", "Reconciliation")">Bút toán điều chỉnh</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("FeeDetailEditedItemCode", "Reconciliation")">Chi tiết điều chỉnh</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("PostageRefund", "Reconciliation")">Bưu gửi hoàn cước</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("ReconciliationFeeReport", "Reconciliation")">Báo cáo đồng bộ</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("DebtNotices", "Reconciliation")">Giấy báo cước phí</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#menu-payment" aria-expanded="false" aria-controls="menu-postage">
+                            <i class="fa fa-paypal fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý thanh toán</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-payment">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("PaymentCOD", "Payment")">Tiền COD</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="~/Assets/file/[EMSONE]TailieuHDSD_V2.0.pdf" target="_blank" title="Hướng dẫn sử dụng">
+                            <i class="fa fa-book fa-lg mr-2" style="line-height: 0px;"></i>
+                            <span class="menu-title">Hướng dẫn sử dụng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "PartnerWebhook", new { area = "" })">
+                            <i class="fa fa-cube fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Khai báo đối tác Webhook</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("OrderReportView", "OrderReport", new { area = "" })">
+                            <i class="fa fa-industry fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Báo cáo sản lượng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("NotifyView", "NotifyControl", new { area = "" })">
+                            <i class="fa fa-bell fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý thông báo</span>
+                        </a>
+                    </li>
+                </ul>
+                break;
+            case ".3.0.":
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">
+                            <i class="fa fa-home fa-lg mr-2"></i>
+                            <span class="menu-title">Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#menu-postage" aria-expanded="false" aria-controls="menu-postage">
+                            <i class="fa fa-truck fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý cước vận chuyển</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-postage">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("TransportFeeView", "TransportFee")">Ước tính cước phí</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("OrderView", "Order", new { area = "" })">
+                            <i class="fa fa-shopping-cart fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RequestSupportView", "RequestSupport", new { area = "" })">
+                            <i class="fa fa-envelope fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Yêu cầu hỗ trợ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="~/Assets/file/[EMSONE]TailieuHDSD_V2.0.pdf" target="_blank" title="Hướng dẫn sử dụng">
+                            <i class="fa fa-book fa-lg mr-2" style="line-height: 0px;"></i>
+                            <span class="menu-title">Hướng dẫn sử dụng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("NotifyView", "NotifyControl", new { area = "" })">
+                            <i class="fa fa-bell fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý thông báo</span>
+                        </a>
+                    </li>
+                </ul>
+                break;
+            case ".4.0.":
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("ShopView", "Shop", new { area = "" })">
+                            <i class="fa fa-address-book fa-lg mr-2"></i>
+                            <span class="menu-title">Tài khoản khách hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("UserView", "User", new { area = "" })">
+                            <i class="fa fa-user fa-lg mr-2"></i>
+                            <span class="menu-title">Tài khoản vận hành</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("OrderView", "Order", new { area = "" })">
+                            <i class="fa fa-shopping-cart fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RequestSupportView", "RequestSupport", new { area = "" })">
+                            <i class="fa fa-envelope fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Yêu cầu hỗ trợ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="~/Assets/file/[EMSONE]TailieuHDSD_V2.0.pdf" target="_blank" title="Hướng dẫn sử dụng">
+                            <i class="fa fa-book fa-lg mr-2" style="line-height: 0px;"></i>
+                            <span class="menu-title">Hướng dẫn sử dụng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("NotifyView", "NotifyControl", new { area = "" })">
+                            <i class="fa fa-bell fa-lg mr-2" aria-hidden="true"></i>
+                            <span class="menu-title">Quản lý thông báo</span>
+                        </a>
+                    </li>
+                </ul>
+                break;
+            default:
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">
+                            <i class="fa fa-home fa-lg mr-2"></i>
+                            <span class="menu-title">Trang chủ</span>
+                        </a>
+                    </li>
+                </ul>
+                break;
+        }
+    }
+    else
+    {
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Index", "Home")">
+                    <i class="fa fa-home fa-lg mr-2"></i>
+                    <span class="menu-title">Trang chủ</span>
+                </a>
+            </li>
+        </ul>
+    }
+}

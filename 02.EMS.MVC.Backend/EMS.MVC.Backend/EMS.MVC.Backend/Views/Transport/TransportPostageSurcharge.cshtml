@@ -1,0 +1,437 @@
+﻿@model EMS.MVC.Backend.Models.TransportPostageSurchargeModel
+@{
+    ViewBag.Title = "TransportPostageSurcharge";
+    Layout = null;
+}
+<div class="form-group row">
+    <div class="col-lg-12 pt-0">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="Surcharge_VAT" @{ if (Model.SurchargeVAT == "Y") { Write("checked"); } }>
+                Cước đã bao gồm VAT
+                <i class="input-helper"></i>
+            </label>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-auto">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="cbFuel" onclick="checkboxHideShow('Fuel')" @{ if (Model.Fuel.Checked == "Y") { Write("checked"); } }>
+                        Xăng dầu
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 border-bottom mb-3" id="Fuel" style="display:@{ if (Model.Fuel.Checked == "Y") { Write("block"); } else { Write("none");} };">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Đơn vị tính</label>
+                <select class="form-control" onchange="SurchargeUnit(this)" id="FuelUnit">
+                    @{
+                        if (Model.Fuel != null && Model.Fuel.Unit == 2)
+                        {
+                            <option value="1">Việt nam đồng (VNĐ)</option>
+                            <option value="2" selected>Phần trăm (%)</option>
+                        }
+                        else
+                        {
+                            <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                            <option value="2">Phần trăm (%)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 mb-3 SurchargeValue" style="display:@{ if (Model.Fuel != null && Model.Fuel.Unit == 2) { Write("none"); } else { Write("block");} };">
+                <label>Giá trị</label>
+                <input class="form-control text-right DefaultValue" type="text" id="FuelValue" name="Value" value="@Model.Fuel.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" onkeyup="checkNull(this.value, '#errFuelValue', '');" />
+                <span class="error-message" id="errFuelValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.Fuel != null && Model.Fuel.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Giá trị</label>
+                <input class="form-control text-right DefaultValue" type="text" id="FuelValue2" name="Value" value="@Model.Fuel.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'percentage'" onkeyup="checkNull(this.value, '#errFuelValue2', '');" />
+                <span class="error-message" id="errFuelValue2"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.Fuel != null && Model.Fuel.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối thiểu</label>
+                <input class="form-control" id="FuelMinValue" value="@Model.Fuel.MinValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errFuelMinValue', '');"*@ />
+                <span class="error-message" id="errFuelMinValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.Fuel != null && Model.Fuel.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối đa</label>
+                <input class="form-control" id="FuelMaxValue" value="@Model.Fuel.MaxValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errFuelMaxValue', '');"*@ />
+                <span class="error-message" id="errFuelMaxValue"></span>
+            </div>
+            <div class="col-3 offset-6">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="FuelInOfProvince" @{ if (Model.Fuel.InOfProvince == "Y") { Write("checked"); } }>
+                        Nội tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+                <span class="error-message" id="errFuelInOfProvince"></span>
+            </div>
+            <div class="col-3">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="FuelOutOfProvince" @{ if (Model.Fuel.OutOfProvince == "Y") { Write("checked"); } }>
+                        Liên tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-auto">
+                <div class="form-check" id="RemoteAreaView">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="cbRemoteArea" onclick="checkboxHideShow('RemoteArea')" @{ if (Model.RemoteArea.Checked == "Y") { Write("checked"); } }>
+                        Vùng xa
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 border-bottom mb-3" id="RemoteArea" style="display:@{ if (Model.RemoteArea.Checked == "Y") { Write("block"); } else { Write("none");} };">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Đơn vị tính</label>
+                <select class="form-control" onchange="SurchargeUnit(this)" id="RemoteAreaUnit">
+                    @if (Model.RemoteArea != null && Model.RemoteArea.Unit == 2)
+                    {
+                        <option value="1">Việt nam đồng (VNĐ)</option>
+                        <option value="2" selected>Phần trăm (%)</option>
+                    }
+                    else
+                    {
+                        <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                        <option value="2">Phần trăm (%)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 SurchargeValue mb-3" style="display:@{ if (Model.RemoteArea != null && Model.RemoteArea.Unit == 2) { Write("none"); } else { Write("block");} };">
+                <label>Giá trị</label>
+                <input class="form-control DefaultValue" id="RemoteAreaValue" value="@Model.RemoteArea.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" onkeyup="checkNull(this.value, '#errRemoteAreaValue', '');" />
+                <span class="error-message" id="errRemoteAreaValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.RemoteArea != null && Model.RemoteArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Giá trị</label>
+                <input class="form-control DefaultValue" id="RemoteAreaValue2" value="@Model.RemoteArea.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'percentage'" onkeyup="checkNull(this.value, '#errRemoteAreaValue2', '');" />
+                <span class="error-message" id="errRemoteAreaValue2"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.RemoteArea != null && Model.RemoteArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối thiểu</label>
+                <input class="form-control" id="RemoteAreaMinValue" value="@Model.RemoteArea.MinValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errRemoteAreaMinValue', '');"*@ />
+                <span class="error-message" id="errRemoteAreaMinValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.RemoteArea != null && Model.RemoteArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối đa</label>
+                <input class="form-control" id="RemoteAreaMaxValue" value="@Model.RemoteArea.MaxValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errRemoteAreaMaxValue', '');"*@ />
+                <span class="error-message" id="errRemoteAreaMaxValue"></span>
+            </div>
+            <div class="col-3 offset-6">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="RemoteAreaInOfProvince" @{ if (Model.RemoteArea.InOfProvince == "Y") { Write("checked"); } }>
+                        Nội tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+                <span class="error-message" id="errRemoteAreaInOfProvince"></span>
+            </div>
+            <div class="col-3">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="RemoteAreaOutOfProvince" @{ if (Model.RemoteArea.OutOfProvince == "Y") { Write("checked"); } }>
+                        Liên tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-auto">
+                <div class="form-check" id="IslandsAreaView">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="cbIslandsArea" onclick="checkboxHideShow('IslandsArea')" @{ if (Model.IslandsArea.Checked == "Y") { Write("checked"); } }>
+                        Vùng hải đảo
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 border-bottom mb-2" id="IslandsArea" style="display:@{ if (Model.IslandsArea.Checked == "Y") { Write("block"); } else { Write("none");} };">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Đơn vị tính</label>
+                <select class="form-control" onchange="SurchargeUnit(this)" id="IslandsAreaUnit">
+                    @if (Model.IslandsArea != null && Model.IslandsArea.Unit == 2)
+                    {
+                        <option value="1">Việt nam đồng (VNĐ)</option>
+                        <option value="2" selected>Phần trăm (%)</option>
+                    }
+                    else
+                    {
+                        <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                        <option value="2">Phần trăm (%)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 mb-3 SurchargeValue" style="display:@{ if (Model.IslandsArea != null && Model.IslandsArea.Unit == 2) { Write("none"); } else { Write("block");} };">
+                <label>Giá trị</label>
+                <input class="form-control DefaultValue" id="IslandsAreaValue" value="@Model.IslandsArea.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" onkeyup="checkNull(this.value, '#errIslandsAreaValue', '');" />
+                <span class="error-message" id="errIslandsAreaValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.IslandsArea != null && Model.IslandsArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Giá trị</label>
+                <input class="form-control DefaultValue" id="IslandsAreaValue2" value="@Model.IslandsArea.Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'percentage'" onkeyup="checkNull(this.value, '#errIslandsAreaValue2', '');" />
+                <span class="error-message" id="errIslandsAreaValue2"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.IslandsArea != null && Model.IslandsArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối thiểu</label>
+                <input class="form-control" id="IslandsAreaMinValue" value="@Model.IslandsArea.MinValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errIslandsAreaMinValue', '');"*@ />
+                <span class="error-message" id="errIslandsAreaMinValue"></span>
+            </div>
+            <div class="col-md-6 mb-3 SurchargePercent" style="display:@{ if (Model.IslandsArea != null && Model.IslandsArea.Unit == 2) { Write("block"); } else { Write("none");} };">
+                <label>Số tiền tối đa</label>
+                <input class="form-control" id="IslandsAreaMaxValue" value="@Model.IslandsArea.MaxValue" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" @*onkeyup="checkNull(this.value, '#errIslandsAreaMaxValue', '');"*@ />
+                <span class="error-message" id="errIslandsAreaMaxValue"></span>
+            </div>
+            <div class="col-3 offset-6">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="IslandsAreaInOfProvince" @{ if (Model.IslandsArea.InOfProvince == "Y") { Write("checked"); } }>
+                        Nội tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+                <span class="error-message" id="errIslandsAreaInOfProvince"></span>
+            </div>
+            <div class="col-3">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="IslandsAreaOutOfProvince" @{ if (Model.IslandsArea.OutOfProvince == "Y") { Write("checked"); } }>
+                        Liên tỉnh
+                        <i class="input-helper"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 pt-3 pb-3">
+    @if (Model.Status == "U" || Model.Status == "E")//U:Chưa xác nhận, E:Đã hết hạn
+    {
+        <button class="btn btn-sm btn-success pull-left text-left w-auto" onclick="Confirm()">Xác nhận</button>
+
+        <button class="btn btn-sm btn-primary pull-right" onclick="UpdateSurcharge('Reload')">Cập nhật</button>
+    }
+</div>
+
+
+<script>
+
+    var ROOT = window.location.origin;
+    loadjs(ROOT + '/Assets/js/inputmask.js');
+    var model = @Html.Raw(Json.Encode(Model));
+    $(document).ready(function () {
+
+        //$('#FuelValue').mask('##0,00%', { reverse: true });
+        //if (model.SurchargeVAT == "Y") {
+        //    $('#Surcharge_VAT').prop('checked', true);
+        //}
+        //if (model.Fuel.Checked == "Y") {
+        //    $('#cbFuel').click();
+        //    $('#FuelUnit').change();
+        //}
+        //if (model.RemoteArea.Checked == "Y") {
+        //    $('#cbRemoteArea').click();
+        //    $('#RemoteAreaUnit').change();
+        //}
+        //if (model.IslandsArea.Checked == "Y") {
+        //    $('#cbIslandsArea').click();
+        //    $('#IslandsAreaUnit').change();
+        //}
+        //if (model.MainFeeRange == 2) {
+        //    $('#cbMainFee_Range').prop('checked', true);
+        //}
+        //else {
+        //    $('#MainFee_Range1').prop('checked', true);
+        //}
+        //if (model.MainFeeRange != 0) {
+        //    //$('#cbMainFee_RangeView').prop('checked', true);
+        //    $('#cbMainFee_RangeView').click();
+        //}
+        //if (model.TwoWay == "Y") {
+        //    $('#TwoWay').prop('checked', true);
+        //}
+        //if (model.MainFeeRemoteArea == "Y") {
+        //    $('#cbRemoteAreaView').prop('checked', true);
+        //}
+        //if (model.MainFeeIslandsArea == "Y") {
+        //    $('#cbIslandsAreaView').prop('checked', true);
+        //}
+    });
+
+
+    $('#FuelInOfProvince, #FuelOutOfProvince').on('change', function () {
+        $('#errFuelInOfProvince').text("");
+    });
+
+    $('#RemoteAreaInOfProvince, #RemoteAreaOutOfProvince').on('change', function () {
+        $('#errRemoteAreaInOfProvince').text("");
+    });
+
+    $('#IslandsAreaInOfProvince, #IslandsAreaOutOfProvince').on('change', function () {
+        $('#errIslandsAreaInOfProvince').text("");
+    });
+    function UpdateSurcharge(Value) {
+        debugger;
+        let isError = false;
+        let PostageID = model.PostageID
+        let agrs = {
+            PostageID: PostageID,
+            SurchargeVAT: getCheckboxValue("Surcharge_VAT")
+        };
+        let objFuel = {}, objRemoteArea = {}, objIslandsArea = {};
+        objFuel.Checked = getCheckboxValue("cbFuel");
+        objRemoteArea.Checked = getCheckboxValue("cbRemoteArea");
+        objIslandsArea.Checked = getCheckboxValue("cbIslandsArea");
+        
+
+        if (objFuel.Checked == "Y") {
+            objFuel.Unit = $('#FuelUnit').val();
+            objFuel.InOfProvince = getCheckboxValue("FuelInOfProvince");
+            objFuel.OutOfProvince = getCheckboxValue("FuelOutOfProvince");
+            if (objFuel.InOfProvince == "N" && objFuel.OutOfProvince == "N") {
+                isError = true;
+                $('#errFuelInOfProvince').text("Phải chọn ít nhất 1 phạm vi");
+            }
+            if (objFuel.Unit == 2) {
+                objFuel.Value = $('#FuelValue2').val().replaceAll(',', '');
+                objFuel.MinValue = $('#FuelMinValue').val().replaceAll(',', '');
+                objFuel.MaxValue = $('#FuelMaxValue').val().replaceAll(',', '');
+                isError = checkNull(objFuel.Value, '#errFuelValue2', isError);
+                /*isError = checkNull(objFuel.MinValue, '#errFuelMinValue', isError);*/
+                /*isError = checkNull(objFuel.MaxValue, '#errFuelMaxValue', isError);*/
+                if (objFuel.MaxValue == "" || objFuel.MaxValue == 0) {
+                    objFuel.MaxValue = 9999999999;
+                }
+            }
+            else {
+                objFuel.Value = $('#FuelValue').val().replaceAll(',', '');
+                isError = checkNull(objFuel.Value, '#errFuelValue', isError);
+            }
+        }
+        if (objRemoteArea.Checked == "Y") {
+            objRemoteArea.Unit = $('#RemoteAreaUnit').val();
+            objRemoteArea.InOfProvince = getCheckboxValue("RemoteAreaInOfProvince");
+            objRemoteArea.OutOfProvince = getCheckboxValue("RemoteAreaOutOfProvince");
+            if (objRemoteArea.InOfProvince == "N" && objRemoteArea.OutOfProvince == "N") {
+                isError = true;
+                $('#errRemoteAreaInOfProvince').text("Phải chọn ít nhất 1 phạm vi");
+            }
+            if (objRemoteArea.Unit == 2) {
+                objRemoteArea.Value = $('#RemoteAreaValue2').val().replaceAll(',', '');
+                objRemoteArea.MinValue = $('#RemoteAreaMinValue').val().replaceAll(',', '');
+                objRemoteArea.MaxValue = $('#RemoteAreaMaxValue').val().replaceAll(',', '');
+                isError = checkNull(objRemoteArea.Value2, '#errRemoteAreaValue2', isError);
+                /*isError = checkNull(objRemoteArea.MinValue, '#errRemoteAreaMinValue', isError);*/
+                //isError = checkNull(objRemoteArea.MaxValue, '#errRemoteAreaMaxValue', isError);
+                if (objRemoteArea.MaxValue == "" || objRemoteArea.MaxValue == 0) {
+                    objRemoteArea.MaxValue = 9999999999;
+                }
+            }
+            else {
+                objRemoteArea.Value = $('#RemoteAreaValue').val().replaceAll(',', '');
+                isError = checkNull(objRemoteArea.Value, '#errRemoteAreaValue', isError);
+            }
+        }
+        if (objIslandsArea.Checked == "Y") {
+            objIslandsArea.Unit = $('#IslandsAreaUnit').val();
+            objIslandsArea.InOfProvince = getCheckboxValue("IslandsAreaInOfProvince");
+            objIslandsArea.OutOfProvince = getCheckboxValue("IslandsAreaOutOfProvince");
+            if (objIslandsArea.InOfProvince == "N" && objIslandsArea.OutOfProvince == "N") {
+                isError = true;
+                $('#errIslandsAreaInOfProvince').text("Phải chọn ít nhất 1 phạm vi");
+            }
+            if (objIslandsArea.Unit == 2) {
+                objIslandsArea.Value = $('#IslandsAreaValue2').val().replaceAll(',', '');
+                objIslandsArea.MinValue = $('#IslandsAreaMinValue').val().replaceAll(',', '');
+                objIslandsArea.MaxValue = $('#IslandsAreaMaxValue').val().replaceAll(',', '');
+                isError = checkNull(objIslandsArea.Value, '#errIslandsAreaValue2', isError);
+                /*isError = checkNull(objIslandsArea.MinValue, '#errIslandsAreaMinValue', isError);*/
+                //isError = checkNull(objIslandsArea.MaxValue, '#errIslandsAreaMaxValue', isError);
+                if (objIslandsArea.MaxValue == "" || objIslandsArea.MaxValue == 0) {
+                    objIslandsArea.MaxValue = 9999999999;
+                }
+            }
+            else {
+                objIslandsArea.Value = $('#IslandsAreaValue').val().replaceAll(',', '');
+                isError = checkNull(objIslandsArea.Value, '#errIslandsAreaValue', isError);
+            }
+        }
+        agrs.Fuel = objFuel;
+        agrs.RemoteArea = objRemoteArea;
+        agrs.IslandsArea = objIslandsArea;
+        //Lỗi - trả về
+        if (isError) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportPostageSurchargeEdit", "Transport")',
+            dataType: 'json',
+            loading: true,
+            data: agrs,
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        timer: 1500,
+                        button: false
+                    }).then(function () {
+                        $('#step3').click();
+                    });
+                } else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>

@@ -1,0 +1,11 @@
+﻿@{
+    var AreaName = HttpContext.Current.Request.RequestContext.RouteData.DataTokens["area"];
+    if (AreaName == null)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else if (AreaName.ToString() == "Zalo")
+    {
+        Layout = "~/Areas/Zalo/Views/Shared/_Layout.cshtml";
+    }
+}

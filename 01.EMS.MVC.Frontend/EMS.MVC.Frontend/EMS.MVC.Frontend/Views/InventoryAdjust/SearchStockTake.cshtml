@@ -1,0 +1,68 @@
+﻿@model List<EMS.MVC.Frontend.Models.InventoryAdjustSearchStockTakeViewModel>
+@{
+    Layout = null;
+}
+<table class="table table-responsive-md" id="ListDataTableSearch">
+    <thead>
+        <tr>
+            <th class="text-center">Chọn</th>
+            <th class="text-center">Mã phiếu điều chỉnh</th>
+            <th class="text-center">Thời gian kiểm kho</th>
+            <th class="text-center">Thời gian xác nhận</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr onclick="checkedRadio(this)">
+                    <td class="text-center">
+                        <div class="form-group">
+                            <div class="form-check form-check-primary text-center">
+                                <label class="form-check-label text-center">
+                                    <input class="form-check-input" type="radio" name="StockTakeID" value="@item.ID" />
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">@item.Code</td>
+                    <td class="text-center">
+                        @{
+                            var splitCreatedDate = item.CreatedDate.Split(' ');
+                            <span>@item.CreatedName</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            if (item.UpdatedDate != "")
+                            {
+                                var splitUpdatedDate = item.UpdatedDate.Split(' ');
+                                <span>@item.UpdatedName</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitUpdatedDate[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitUpdatedDate[1]</span>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("ListDataTableSearch");
+    });
+
+    function checkedRadio(This) {
+        $(This).find('input:radio').prop('checked', true);
+    }
+</script>

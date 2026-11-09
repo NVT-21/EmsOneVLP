@@ -1,0 +1,76 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_CommentViewModel
+@{
+    Layout = "~/Areas/Facebook/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.PageID)
+@Html.HiddenFor(m => m.PageName)
+@Html.HiddenFor(m => m.PageAvatar)
+<style>
+    .image-default-css {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+<div class="d-none" id="Info-@Model.PageID" data-DisplayName="@Model.PageName" data-Avatar="@Model.PageAvatar"></div>
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-0">
+                    <div class="col-md-4 col-lg-4 col-xl-3 border-right p-0">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control my-3" placeholder="Tìm kiếm bài đăng ..." style="border-top-left-radius: 10px;
+                                  border-top-right-radius: 10px;
+                                  border-bottom-left-radius: 10px;
+                                  border-bottom-right-radius: 10px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ListFeed" class="CustomScrollBar" style="height: 750px; overflow-y: scroll; overflow-x: hidden; width: 400px;">
+                            @{
+                                Html.RenderAction("FAB_ListFeedForCommentView", "FAB_Comment", new { area = "Facebook" });
+                            }
+                        </div>
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-xl-9 p-0 d-none mb-0" id="CommentOfFeed" style="height: 750px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("div.nav-control").click();
+            $("#footer").addClass("d-none");
+            $(".content-body").css("min-height", "");
+            var CommentViewFeedID = sessionStorage.getItem('CommentViewFeedID');
+            if (CommentViewFeedID) {
+                $("#feed-" + CommentViewFeedID).click();
+                sessionStorage.removeItem("CommentViewFeedID");
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,130 @@
+﻿@model List<EMS.MVC.Backend.Models.ShopHistoryViewModel>
+@{
+    var stt = 1;
+}
+<table id="data-table" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle" style="max-width: 100px;"> STT </th>
+            <th class="align-middle" style="max-width: 100px;"> Thời gian </th>
+            <th class="align-middle" style="max-width: 100px;"> Thao tác </th>
+            <th class="align-middle" style="max-width: 100px;"> Người thực hiện </th>
+            <th class="align-middle" style="width: 500px;"> Mô tả </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(stt++)</td>
+                <td>
+                    @item.CreatedDate
+                </td>
+                <td>
+                    @item.ActionName
+                </td>
+                <td>
+                    @item.CreatedName
+                </td>
+                <td style="max-width: 500px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: inherit;">
+                    @{
+                        if (item.ActionCode == "UPDATE_PICK_UP_ADDRESS")
+                        {
+                            var SplitDescription = item.Description.Split('|');
+                            for (var i = 0; i < SplitDescription.Length; i++)
+                            {
+                                if (!string.IsNullOrEmpty(SplitDescription[i]))
+                                {
+                                    if (i == 0)
+                                    {
+                                        <span><b>Tên địa chỉ: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        <span><b>Họ và tên: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 2)
+                                    {
+                                        <span><b>Số điện thoại: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 3)
+                                    {
+                                        <span><b>Địa chỉ: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 4)
+                                    {
+                                        <span>
+                                            <b>Mặc định: </b>
+                                            @{
+                                                System.Text.StringBuilder sb = new System.Text.StringBuilder(SplitDescription[i]);
+                                                sb.Replace("N", "Không");
+                                                sb.Replace("Y", "Có");
+                                                Write(sb.ToString());
+                                            }
+                                        </span> <br />
+                                    }
+                                }
+                            }
+                        }
+                        else if (item.ActionCode == "REMOVE_PICK_UP_ADDRESS")
+                        {
+                            var SplitDescription = item.Description.Split('|');
+
+                            if (SplitDescription.Length == 1)
+                            {
+                                <span>@SplitDescription[0]</span>
+                            }
+                            else
+                            {
+                                <span><b>Tên địa chỉ: </b> @SplitDescription[0]</span> <br />
+                                <span><b>Mẫu in: </b></span> <br />
+                                for (var i = 1; i < SplitDescription.Length; i++)
+                                {
+                                    <span>@SplitDescription[i]</span><br />
+                                }
+                            }
+                        }
+                        else if (item.ActionCode == "UPDATE_LABEL_PRINT")
+                        {
+                            var SplitDescription = item.Description.Split('|');
+                            for (var i = 0; i < SplitDescription.Length; i++)
+                            {
+                                if (!string.IsNullOrEmpty(SplitDescription[i]))
+                                {
+                                    if (i == 0)
+                                    {
+                                        <span><b>Họ và tên: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        <span><b>Số điện thoại: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 2)
+                                    {
+                                        <span><b>Địa chỉ: </b> @SplitDescription[i]</span> <br />
+                                    }
+                                    else if (i == 3)
+                                    {
+                                        <span>
+                                            <b>Mặc định: </b>
+                                            @{
+                                                System.Text.StringBuilder sb = new System.Text.StringBuilder(SplitDescription[i]);
+                                                sb.Replace("N", "Không");
+                                                sb.Replace("Y", "Có");
+                                                Write(sb.ToString());
+                                            }
+                                        </span> <br />
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <span>@item.Description</span>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

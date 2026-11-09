@@ -1,0 +1,909 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A816901A-7A6D-4903-BA2B-FEF82AF06CFD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EMS.Entity</RootNamespace>
+    <AssemblyName>EMS.Entity</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DnsClient, Version=1.6.1.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\DnsClient.1.6.1\lib\net471\DnsClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\Microsoft.Extensions.Logging.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=3.7.1.0, Culture=neutral, PublicKeyToken=94992a530f44e321, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\MongoDB.Bson.3.7.1\lib\net472\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=3.7.1.0, Culture=neutral, PublicKeyToken=94992a530f44e321, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\MongoDB.Driver.3.7.1\lib\net472\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\EMS.Library\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpCompress, Version=0.30.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\SharpCompress.0.30.1\lib\net461\SharpCompress.dll</HintPath>
+    </Reference>
+    <Reference Include="Snappier, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a1b25124e6e13a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\Snappier.1.0.0\lib\netstandard2.0\Snappier.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Diagnostics.DiagnosticSource.6.0.1\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.AccessControl.5.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZstdSharp, Version=0.7.3.0, Culture=neutral, PublicKeyToken=8d151af33a4ad5cf, processorArchitecture=MSIL">
+      <HintPath>..\..\..\EmsOne\packages\ZstdSharp.Port.0.7.3\lib\net461\ZstdSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GrabUpdateTransportSuccessRequest.cs" />
+    <Compile Include="XCustomeImportOrderJobInfo.cs" />
+    <Compile Include="XTokenModel.cs" />
+    <Compile Include="XTransportServiceModel.cs" />
+    <Compile Include="ZApiLogRequest.cs" />
+    <Compile Include="ZBaseResponseAPI.cs" />
+    <Compile Include="ZCMSRequest.cs" />
+    <Compile Include="ZCollectionPostOfficeSearchListRecentRequest.cs" />
+    <Compile Include="ZConversationStickerAddRequest.cs" />
+    <Compile Include="ZCountryListResponse.cs" />
+    <Compile Include="ZCustomerGroupAddRequest.cs" />
+    <Compile Include="ZCustomerGroupEditRequest.cs" />
+    <Compile Include="ZCustomerGroupGetByIDResponse.cs" />
+    <Compile Include="ZCustomerGroupSearchListRequest.cs" />
+    <Compile Include="ZCustomerGroupSearchListResponse.cs" />
+    <Compile Include="ZDistrictGetByProvinceIDRequest.cs" />
+    <Compile Include="ZEMSSignaruteAndImageInformationRequest.cs" />
+    <Compile Include="ZEMSRequest.cs" />
+    <Compile Include="ZErrorDataListRequest.cs" />
+    <Compile Include="ZFacebookGetCommentRequest.cs" />
+    <Compile Include="ZFacebookGetConversationRequest.cs" />
+    <Compile Include="ZFacebookGetFeedRequest.cs" />
+    <Compile Include="ZFacebookGetMessageRequest.cs" />
+    <Compile Include="ZFacebookSendCommentRequest.cs" />
+    <Compile Include="ZFacebookSubcribedRequest.cs" />
+    <Compile Include="ZGetImportOrderRequest.cs" />
+    <Compile Include="ZGetReceiverInforRequest.cs" />
+    <Compile Include="ZGrabDeliveryCancelRequest.cs" />
+    <Compile Include="ZGrabDeliveryOrderRequest.cs" />
+    <Compile Include="ZGrabDeliveryDetailRequest.cs" />
+    <Compile Include="ZGrabDeliveryDistrictResponse.cs" />
+    <Compile Include="ZGrabDeliveryProvinceResponse.cs" />
+    <Compile Include="ZGrabDeliveryQuotationRequest.cs" />
+    <Compile Include="ZGrabDeliveryServiceResponse.cs" />
+    <Compile Include="ZCollectionPostOfficeAddRequest.cs" />
+    <Compile Include="ZCollectionPostOfficeEditRequest.cs" />
+    <Compile Include="ZCollectionPostOfficeGetByIDRequest.cs" />
+    <Compile Include="ZCollectionPostOfficeSearchListByParentIDRequest.cs" />
+    <Compile Include="ZCollectionPostOfficeSearchListRequest.cs" />
+    <Compile Include="ZCustomerGetByOrderCodeRequest.cs" />
+    <Compile Include="ZCustomerImportExcelRequest.cs" />
+    <Compile Include="ZCustomerIsExistRequest.cs" />
+    <Compile Include="ZGrabDeliveryStatusResponse.cs" />
+    <Compile Include="ZGrabDeliveryWardResponse.cs" />
+    <Compile Include="ZGrabDetailByShippingIDRequest.cs" />
+    <Compile Include="ZGrabOrderSearchListRequest.cs" />
+    <Compile Include="ZGrabReceiveStatusRequest.cs" />
+    <Compile Include="ZGrabRequest.cs" />
+    <Compile Include="ZGrabTransportFeeRequest.cs" />
+    <Compile Include="ZInternationalOrderAddRequest.cs" />
+    <Compile Include="ZInventoryOutputDetailInfoRequest.cs" />
+    <Compile Include="ZInventoryOutputInfoRequest.cs" />
+    <Compile Include="ZNotifyControlAddRequest.cs" />
+    <Compile Include="ZNotifyListRequest.cs" />
+    <Compile Include="ZOrderBatchAddRequest.cs" />
+    <Compile Include="ZOrderBatchCancelOrderInfoRequest.cs" />
+    <Compile Include="ZOrderBatchCancelTransportDataRequest.cs" />
+    <Compile Include="ZOrderBatchCancelTransportInfoRequest.cs" />
+    <Compile Include="ZOrderBatchCancelTransportRequest.cs" />
+    <Compile Include="ZOrderBatchCoppyInfoRequest.cs" />
+    <Compile Include="ZOrderBatchDetailByBatchCodeRequest.cs" />
+    <Compile Include="ZOrderBatchEditRequest.cs" />
+    <Compile Include="ZOrderBatchNewStatusRequest.cs" />
+    <Compile Include="ZOrderBatchEditInfoRequest.cs" />
+    <Compile Include="ZOrderBatchSendTransportInfoRequest.cs" />
+    <Compile Include="ZOrderBatchSendTransportRequest.cs" />
+    <Compile Include="ZOrderBatchSendTransportDataRequest.cs" />
+    <Compile Include="ZOrderBatchSendTransportErrorRequest.cs" />
+    <Compile Include="ZOrderBatchSendTransportSuccessRequest.cs" />
+    <Compile Include="ZOrderBESearchListRequest.cs" />
+    <Compile Include="ZOrderCancelOrderInfoRequest.cs" />
+    <Compile Include="ZOrderCancelOrderStatusRequest.cs" />
+    <Compile Include="ZOrderCancelTransportDataRequest.cs" />
+    <Compile Include="ZOrderCancelTransportErrorRequest.cs" />
+    <Compile Include="ZOrderCancelTransportSuccessRequest.cs" />
+    <Compile Include="ZOrderConvertToOrderCodeRequest.cs" />
+    <Compile Include="ZOrderDetailByOrderIDRequest.cs" />
+    <Compile Include="ZOrderEditReceiverAddressRequest.cs" />
+    <Compile Include="ZOrderFEPaginationSearchListRequest.cs" />
+    <Compile Include="ZOrderImportSearchListRequest.cs" />
+    <Compile Include="ZOrderItemGetByOrderIDRequest.cs" />
+    <Compile Include="ZOrderMultipleCancelStatusRequest.cs" />
+    <Compile Include="ZOrderMultipleCancelTransportRequest.cs" />
+    <Compile Include="ZOrderNewStatusRequest.cs" />
+    <Compile Include="ZOrderPaginationRequest.cs" />
+    <Compile Include="ZOrderSearchInfoAcceptStatusRequest.cs" />
+    <Compile Include="ZOrderCancelTransportInfoRequest.cs" />
+    <Compile Include="ZOrderMultipleSendTransportRequest.cs" />
+    <Compile Include="ZOrderSendTransportRequest.cs" />
+    <Compile Include="ZOrderSendTransportErrorRequest.cs" />
+    <Compile Include="ZOrderSendTransportDataRequest.cs" />
+    <Compile Include="ZOrderSendTransportSuccessRequest.cs" />
+    <Compile Include="ZOtpAddRequest.cs" />
+    <Compile Include="ZOtpVerifyCodeRequest.cs" />
+    <Compile Include="ZPalletRequest.cs" />
+    <Compile Include="ZPartnerAnalysticOrderAddRequest.cs" />
+    <Compile Include="ZPartnerHMOrderAddResponse.cs" />
+    <Compile Include="ZPartnerInfoRequest.cs" />
+    <Compile Include="ZPartnerInternalOrderAddRequest.cs" />
+    <Compile Include="ZPartnerOrderAddV2Request.cs" />
+    <Compile Include="ZPartnerOrderBatchAddRequest.cs" />
+    <Compile Include="ZPartnerProductAddRequest.cs" />
+    <Compile Include="ZPartnerProductSearchListRequest.cs" />
+    <Compile Include="ZPartnerProductVarianttSearchListRequest.cs" />
+    <Compile Include="ZPartnerSearchListRequest.cs" />
+    <Compile Include="ZPartnerTemuOrderAddRequest.cs" />
+    <Compile Include="ZPartnerTransportPostageChargedRequest.cs" />
+    <Compile Include="ZPartnerTransportServiceSearchListRequest.cs" />
+    <Compile Include="ZPartnerVIBOrderAddRequest.cs" />
+    <Compile Include="ZPartnerVinaphoneOrderAddRequest.cs" />
+    <Compile Include="ZPartnerVLPSyncOrderRequest.cs" />
+    <Compile Include="ZPartnerWareHouseAddRequest.cs" />
+    <Compile Include="ZPartnerWareHouseSearchListRequest.cs" />
+    <Compile Include="ZPickUpAddressRequest.cs" />
+    <Compile Include="ZProductImportExcelRequest.cs" />
+    <Compile Include="ZProductVariantSearchListRequest.cs" />
+    <Compile Include="ZReconciliationSearchDebtNoticesRequest.cs" />
+    <Compile Include="ZReconciliationSearchPostageRefundRequest.cs" />
+    <Compile Include="ZReconciliationSearchSummaryOfDebtNoticesResponse.cs" />
+    <Compile Include="ZReportCODMoneyRequest.cs" />
+    <Compile Include="ZRequestSupportBESearchListRequest.cs" />
+    <Compile Include="ZRequestSupportHistorySearchListUpdateInformationRequest.cs" />
+    <Compile Include="ZRequestSupportSearchInfoSendEMSRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateEditCODMoneyRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateOrderInformationRequest.cs" />
+    <Compile Include="ZExpectedDeliverySearchDateRequest.cs" />
+    <Compile Include="ZSendReceiverInforRequest.cs" />
+    <Compile Include="ZShopForgetPasswordByEmailRequest.cs" />
+    <Compile Include="ZShopForgetPasswordUpdateRequest.cs" />
+    <Compile Include="ZShopSearchInfoSendEmailRequest.cs" />
+    <Compile Include="ZTikConfigProductRequest.cs" />
+    <Compile Include="ZTikOrderInventorySyncRequest.cs" />
+    <Compile Include="ZTikProductNotLinkedYetListRequest.cs" />
+    <Compile Include="ZTikProductUpdateConnectionRequest.cs" />
+    <Compile Include="ZTikProductListRequest.cs" />
+    <Compile Include="ZTikProductProcessListRequest.cs" />
+    <Compile Include="ZTikProductUpdateFromServiceRequest.cs" />
+    <Compile Include="ZTikReceiveStatusRequest.cs" />
+    <Compile Include="ZTiktokShopGetPackageDetailRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopGetWareHouseRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopGetWarehouseResponse.cs" />
+    <Compile Include="ZTiktokShopOrderDetailRequest.cs" />
+    <Compile Include="ZTiktokShopOrderDetailRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopOrderListRequest.cs" />
+    <Compile Include="ZTiktokShopOrderListRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopProductDetailRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopProductListRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopProductSyncRequest.cs" />
+    <Compile Include="ZTiktokShopProductUpdatePriceRequest.cs" />
+    <Compile Include="ZTiktokShopProductUpdatePriceRequest_v202309.cs" />
+    <Compile Include="ZTiktokShopProductUpdateStockRequest.cs" />
+    <Compile Include="ZTiktokShopProductUpdateInventoryRequest_v202309.cs" />
+    <Compile Include="ZTikWebhookAddDataLogRequest.cs" />
+    <Compile Include="ZTikWebhookSearchListDataLogRequest.cs" />
+    <Compile Include="ZTransportExchangeTransportWeightRequest.cs" />
+    <Compile Include="ZTransportQueueMongo.cs" />
+    <Compile Include="ZTransportServiceSearchListByShopIDRequest.cs" />
+    <Compile Include="ZShopTokenAccessUpdateRequest.cs" />
+    <Compile Include="ZUserGetByIDRequest.cs" />
+    <Compile Include="ZUserGetByUserNameRequest.cs" />
+    <Compile Include="ZUserInCollectionPostOfficeSearchListByUserIDRequest.cs" />
+    <Compile Include="ZUserInCollectionPostOfficeSearchListRequest.cs" />
+    <Compile Include="ZVLPRequest.cs" />
+    <Compile Include="ZVNPPickupInformationResponse.cs" />
+    <Compile Include="ZVNPSignaruteAndImageInformationRequest.cs" />
+    <Compile Include="ZVNPRequest.cs" />
+    <Compile Include="ZWardGetByDistrictIDRequest.cs" />
+    <Compile Include="ZZohoSendMailRequest.cs" />
+    <Compile Include="ZBaseRequest.cs" />
+    <Compile Include="ZPaypostEditCODMoneyRequest.cs" />
+    <Compile Include="ZCommentDeleteRequest.cs" />
+    <Compile Include="ZCommentUpdateReactionRequest.cs" />
+    <Compile Include="ZCustomerRequest.cs" />
+    <Compile Include="ZEmployeeRequest.cs" />
+    <Compile Include="ZEMSMapSearchRequest.cs" />
+    <Compile Include="ZEMSPushAffairRequest.cs" />
+    <Compile Include="ZCMSResultRequestSupportRequest.cs" />
+    <Compile Include="ZDataTableAjaxPostRequest.cs" />
+    <Compile Include="FBGatewayGetMessengerListRequest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XBaseModel.cs" />
+    <Compile Include="XCommentModel.cs" />
+    <Compile Include="XFacebookCommentModel.cs" />
+    <Compile Include="XFacebookFeedModel.cs" />
+    <Compile Include="XFacebookModel.cs" />
+    <Compile Include="XFeedModel.cs" />
+    <Compile Include="ZEditCODRequest.cs" />
+    <Compile Include="ZEmployeeGetByMobileNumberRequest.cs" />
+    <Compile Include="ZEMSLoginRequest.cs" />
+    <Compile Include="ZFacebookGetInfoPageResponse.cs" />
+    <Compile Include="ZFacebookListAutoAvailableRequest.cs" />
+    <Compile Include="ZFacebookListAutoHiddenRequest.cs" />
+    <Compile Include="ZFacebookListAutoLikeRequest.cs" />
+    <Compile Include="ZFacebookPageFeedbackRequest.cs" />
+    <Compile Include="ZFacebookUpdateSendMassMessagesRequest.cs" />
+    <Compile Include="ZFeedDeleteRequest.cs" />
+    <Compile Include="ZFunctionalChangeRequest.cs" />
+    <Compile Include="ZFunctionalListMenuRequest.cs" />
+    <Compile Include="ZInventoryDeleteRequest.cs" />
+    <Compile Include="ZInventoryImportAcceptRequest.cs" />
+    <Compile Include="ZInventoryImportAddRequest.cs" />
+    <Compile Include="ZInventoryImportDetailAddRequest.cs" />
+    <Compile Include="ZInventoryImportDetailEditRequest.cs" />
+    <Compile Include="ZInventoryImportDetailGetByInventoryIDRequest.cs" />
+    <Compile Include="ZInventoryImportEditRequest.cs" />
+    <Compile Include="ZInventoryImportGetByIDRequest.cs" />
+    <Compile Include="ZInventoryImportRejectRequest.cs" />
+    <Compile Include="ZInventoryImportRemoveRequest.cs" />
+    <Compile Include="ZInventoryImportSearchListRequest.cs" />
+    <Compile Include="ZInventoryOutputAcceptRequest.cs" />
+    <Compile Include="ZInventoryOutputAddRequest.cs" />
+    <Compile Include="ZInventoryOutputDetailAddRequest.cs" />
+    <Compile Include="ZInventoryOutputDetailEditRequest.cs" />
+    <Compile Include="ZInventoryOutputDetailGetByInventoryIDRequest.cs" />
+    <Compile Include="ZInventoryOutputEditRequest.cs" />
+    <Compile Include="ZInventoryOutputGetByIDRequest.cs" />
+    <Compile Include="ZInventoryOutputProcessRequest.cs" />
+    <Compile Include="ZInventoryOutputRejectRequest.cs" />
+    <Compile Include="ZInventoryOutputSearchListRequest.cs" />
+    <Compile Include="ZLabelPrintAddRequest.cs" />
+    <Compile Include="ZLabelPrintDefaultAccordingToPickUpAddressRequest.cs" />
+    <Compile Include="ZLabelPrintGetByIDRequest.cs" />
+    <Compile Include="ZLabelPrintRemoveRequest.cs" />
+    <Compile Include="ZLabelPrintSearchListRequest.cs" />
+    <Compile Include="ZLabelPrintUpdateRequest.cs" />
+    <Compile Include="ZMapsGetByMBC2017CodeRequest.cs" />
+    <Compile Include="ZOrderAddMultipleRequest.cs" />
+    <Compile Include="XOrderModel.cs" />
+    <Compile Include="XPickupInformationModel.cs" />
+    <Compile Include="XProductVariantModel.cs" />
+    <Compile Include="XProviderModel.cs" />
+    <Compile Include="XShopInformationModel.cs" />
+    <Compile Include="XShowListErrorMultipleSelectModel.cs" />
+    <Compile Include="XStatusModel.cs" />
+    <Compile Include="XStockTakeModel.cs" />
+    <Compile Include="XValueModel.cs" />
+    <Compile Include="XWarehouseModel.cs" />
+    <Compile Include="XWebhookModel.cs" />
+    <Compile Include="XZaloModel.cs" />
+    <Compile Include="XZohoModel.cs" />
+    <Compile Include="ZApiRequest.cs" />
+    <Compile Include="ZApiResponse.cs" />
+    <Compile Include="ZCMSAddRequestSupportRequest.cs" />
+    <Compile Include="ZCommentAddSyncRequest.cs" />
+    <Compile Include="ZCommentSearchListRequest.cs" />
+    <Compile Include="ZConnectPageAddRequest.cs" />
+    <Compile Include="ZConnectPageCountFollowRequest.cs" />
+    <Compile Include="ZConnectPageResetRequest.cs" />
+    <Compile Include="ZConnectPageSearchListRequest.cs" />
+    <Compile Include="ZConnectPageSearchListTokenExpiredRequest.cs" />
+    <Compile Include="ZConnectPageUpdateRequest.cs" />
+    <Compile Include="ZControlPeriodRequest.cs" />
+    <Compile Include="ZConversionSearchListRequest.cs" />
+    <Compile Include="ZCustomerGroupModel.cs" />
+    <Compile Include="ZCustomerRemoveStickerRequest.cs" />
+    <Compile Include="ZCustomerStickerAddRequest.cs" />
+    <Compile Include="ZCustomerStickerListRequest.cs" />
+    <Compile Include="ZCustomerStickerRemoveRequest.cs" />
+    <Compile Include="ZDeliveryNoteGetByOrderIDRequest.cs" />
+    <Compile Include="ZDistrictGetByProvinceNameRequest.cs" />
+    <Compile Include="ZDistrictGetByVMapCodeRequest.cs" />
+    <Compile Include="ZDistrictSearchRequest.cs" />
+    <Compile Include="ZEmployeeChangeReadyReceiveRequestOrderRequest.cs" />
+    <Compile Include="ZEmployeeGroupChangeIsLockRequest.cs" />
+    <Compile Include="ZEmployeeGroupGetByIDRequest.cs" />
+    <Compile Include="ZEmployeeListEmployeeByEmployeeGroupIDRequest.cs" />
+    <Compile Include="ZEmployeeListEmployeeInPermissionRequest.cs" />
+    <Compile Include="ZEmployeeShopAddRequest.cs" />
+    <Compile Include="ZEmployeeShopEditRequest.cs" />
+    <Compile Include="ZEMSEnterpriseTransportFeeGetItemInfoRequest.cs" />
+    <Compile Include="ZFacebookAddMessageCampaignRequest.cs" />
+    <Compile Include="ZFacebookAddMessageRequest.cs" />
+    <Compile Include="ZFacebookConnectPageRequest.cs" />
+    <Compile Include="ZFacebookConnectRequest.cs" />
+    <Compile Include="ZFacebookGetProfileRequest.cs" />
+    <Compile Include="ZFacebookGetUserInfoByUserIDRequest.cs" />
+    <Compile Include="ZFacebookLoginRequest.cs" />
+    <Compile Include="ZFacebookReceivedMessageRequest.cs" />
+    <Compile Include="ZFacebookReplyCommentRequest.cs" />
+    <Compile Include="ZFacebookSearchCommentRequest.cs" />
+    <Compile Include="ZFacebookSearchFeedRequest.cs" />
+    <Compile Include="ZFacebookSeenMessageRequest.cs" />
+    <Compile Include="ZFacebookSendMessageRequest.cs" />
+    <Compile Include="ZFeedAddSyncRequest.cs" />
+    <Compile Include="ZFeedSearchListRequest.cs" />
+    <Compile Include="ZFunctionalGroupListRequest.cs" />
+    <Compile Include="ZInventoryAddRequest.cs" />
+    <Compile Include="ZInventoryCancelRequest.cs" />
+    <Compile Include="ZInventoryConfirmRequest.cs" />
+    <Compile Include="ZInventoryDetailAddRequest.cs" />
+    <Compile Include="ZInventoryDetailEditRequest.cs" />
+    <Compile Include="ZInventoryDetailGetByInventoryIDRequest.cs" />
+    <Compile Include="ZInventoryDetailRemoveRequest.cs" />
+    <Compile Include="ZInventoryEditRequest.cs" />
+    <Compile Include="ZInventoryGetByIDRequest.cs" />
+    <Compile Include="ZInventoryGetProductVariantByIDRequest.cs" />
+    <Compile Include="ZInventoryRejectRequest.cs" />
+    <Compile Include="ZInventorySearchListRequest.cs" />
+    <Compile Include="ZInventoryUpdateStatusRequest.cs" />
+    <Compile Include="ZMapsGetByPWDNameRequest.cs" />
+    <Compile Include="ZMapsGetByVMapCodeRequest.cs" />
+    <Compile Include="ZMessageAddSyncRequest.cs" />
+    <Compile Include="ZMessageSearchListRequest.cs" />
+    <Compile Include="ZOptionDataByVariantIDRequest.cs" />
+    <Compile Include="ZOptionRemoveByIDRequest.cs" />
+    <Compile Include="ZOrderCancelTransportRequest.cs" />
+    <Compile Include="ZOrderCancelStatusRequest.cs" />
+    <Compile Include="ZOrderCancelTransportStatusRequest.cs" />
+    <Compile Include="ZOrderCheckCodeRequest.cs" />
+    <Compile Include="ZOrderCoppyRequest.cs" />
+    <Compile Include="ZOrderDetailByShippingCodeRequest.cs" />
+    <Compile Include="ZOrderEditRequest.cs" />
+    <Compile Include="ZOrderGetByShippingCodeRequest.cs" />
+    <Compile Include="ZOrderImportAddCommitRequest.cs" />
+    <Compile Include="ZOrderImportAddTempRequest.cs" />
+    <Compile Include="ZOrderItemRequest.cs" />
+    <Compile Include="ZOrderMultipleNewStatusRequest.cs" />
+    <Compile Include="ZOrderPrintRequest.cs" />
+    <Compile Include="ZOrderReportRequest.cs" />
+    <Compile Include="ZOrderRequest.cs" />
+    <Compile Include="ZOrderSearchHistoryDeliveryResponse.cs" />
+    <Compile Include="ZOrderSearchHistoryRequest.cs" />
+    <Compile Include="ZOrderSendTransportInfoRequest.cs" />
+    <Compile Include="ZOrderSendTransportStatusRequest.cs" />
+    <Compile Include="ZOrderSuccessHistoryRequest.cs" />
+    <Compile Include="ZOrderUpdateAmndStateRequest.cs" />
+    <Compile Include="ZOrderUpdatePrintStatusRequest.cs" />
+    <Compile Include="ZPartnerOrderAddRequest.cs" />
+    <Compile Include="ZPartnerOrderCancelRequest.cs" />
+    <Compile Include="ZPartnerOrderCheckRequest.cs" />
+    <Compile Include="ZPartnerOrderCreateShippingCodeRequest.cs" />
+    <Compile Include="ZPartnerOrderInfoRequest.cs" />
+    <Compile Include="ZPartnerOrderPrintRequest.cs" />
+    <Compile Include="ZPartnerWebhookAddPartnerRegisterRequest.cs" />
+    <Compile Include="ZPartnerWebhookListHistoryStatusRequest.cs" />
+    <Compile Include="ZPaymentListCODRequest.cs" />
+    <Compile Include="ZPayPostControlFreighGetItemInfoRequest.cs" />
+    <Compile Include="ZPDWImportExcelRequest.cs" />
+    <Compile Include="ZPeriodAddRequest.cs" />
+    <Compile Include="ZPeriodListRequest.cs" />
+    <Compile Include="ZPeriodRemoveRequest.cs" />
+    <Compile Include="ZPermissionAllowListRequest.cs" />
+    <Compile Include="ZPermissionChangeRequest.cs" />
+    <Compile Include="ZFunctionalCheckRequest.cs" />
+    <Compile Include="ZPermissionListMenuRequest.cs" />
+    <Compile Include="ZPermissionListRequest.cs" />
+    <Compile Include="ZPermissionMenuListRequest.cs" />
+    <Compile Include="ZPickUpAddressAddRequest.cs" />
+    <Compile Include="ZPickUpAddressGetByIDRequest.cs" />
+    <Compile Include="ZPickUpAddressRemoveRequest.cs" />
+    <Compile Include="ZPickUpAddressSearchListRequest.cs" />
+    <Compile Include="ZPickUpAddressUpdateRequest.cs" />
+    <Compile Include="ZProductGroupGetByCodeRequest.cs" />
+    <Compile Include="ZProductGroupSearchListProductRequest.cs" />
+    <Compile Include="ZProductRequest.cs" />
+    <Compile Include="ZProductUnitAddRequest.cs" />
+    <Compile Include="ZProductUnitSearchListRequest.cs" />
+    <Compile Include="ZProductVariantRequest.cs" />
+    <Compile Include="ZProviderRequest.cs" />
+    <Compile Include="ZProvinceSearchRequest.cs" />
+    <Compile Include="ZReconciliationListNotifyRequest.cs" />
+    <Compile Include="ZReconciliationSearchFeeReportRequest.cs" />
+    <Compile Include="ZReconciliationSearchListCODFollowRequest.cs" />
+    <Compile Include="ZReconciliationSearchListCODRequest.cs" />
+    <Compile Include="ZReconciliationSearchListFeeFollowRequest.cs" />
+    <Compile Include="ZRequestOrderAddV2Request.cs" />
+    <Compile Include="ZRequestSupportAddProcessRequest.cs" />
+    <Compile Include="ZRequestSupportAddProcessResultRequest.cs" />
+    <Compile Include="ZRequestSupportEditCODRequest.cs" />
+    <Compile Include="ZRequestSupportExistStatusRequest.cs" />
+    <Compile Include="ZRequestSupportLockAcceptedStatusRequest.cs" />
+    <Compile Include="ZRequestSupportSearchProcessRequest.cs" />
+    <Compile Include="ZRequestSupportSendRequest.cs" />
+    <Compile Include="ZRequestSupportUnLockAcceptedStatusRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateAmndStateProcessRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateClickNotifyRequest.cs" />
+    <Compile Include="ZRequestSupportSearchInfoSendMailRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateStatusSendEMSRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateStatusSendMailRequest.cs" />
+    <Compile Include="ZShopGetByCrmOrPaypostCodeRequest.cs" />
+    <Compile Include="ZShopGetByIDRequest.cs" />
+    <Compile Include="ZShopGetListCrmOrPaypostCodeRequest.cs" />
+    <Compile Include="ZShopLockRequest.cs" />
+    <Compile Include="ZShopRemoveRequest.cs" />
+    <Compile Include="ZShopTransportServiceByShopIDRequest.cs" />
+    <Compile Include="ZShopTransportServiceEditRequest.cs" />
+    <Compile Include="ZShopChangeLabelPrintRequest.cs" />
+    <Compile Include="ZShopUpdateTransportServiceRequest.cs" />
+    <Compile Include="ZStatisticalDashboardRequest.cs" />
+    <Compile Include="ZStatisticalDeliveryTransportRequest.cs" />
+    <Compile Include="ZStatisticalSearchProductRequest.cs" />
+    <Compile Include="ZStatisticalSearchTurnoverRequest.cs" />
+    <Compile Include="ZStockTakeGetByIDRequest.cs" />
+    <Compile Include="ZStockTakeRejectRequest.cs" />
+    <Compile Include="ZTemplatePrintGetByPrintTypeRequest.cs" />
+    <Compile Include="ZTemplatePrintSearchListRequest.cs" />
+    <Compile Include="ZTemplatePrintUpdateRoleRequest.cs" />
+    <Compile Include="ZTiktokConnectShopRequest.cs" />
+    <Compile Include="ZTiktokShopProductDetailRequest.cs" />
+    <Compile Include="ZTiktokShopProductListRequest.cs" />
+    <Compile Include="ZTiktokShopRequest.cs" />
+    <Compile Include="ZTransportPostageChargedV2Request.cs" />
+    <Compile Include="ZTransportPostageSearchHistoryRequest.cs" />
+    <Compile Include="ZPrepaidFreightPaymentRequest.cs" />
+    <Compile Include="ZProductDataImagesByIDRequest.cs" />
+    <Compile Include="ZProductEditImagesRequest.cs" />
+    <Compile Include="ZProductOptionAddRequest.cs" />
+    <Compile Include="ZProductOptionGetByProductIDRequest.cs" />
+    <Compile Include="ZProductOptionRemoveByNameRequest.cs" />
+    <Compile Include="ZProductVariantCheckSKURequest.cs" />
+    <Compile Include="ZProductVariantDataByIDRequest.cs" />
+    <Compile Include="ZProductVariantGetByWareHouseIDRequest.cs" />
+    <Compile Include="ZProviderAddRequest.cs" />
+    <Compile Include="ZProviderChangeIsLockRequest.cs" />
+    <Compile Include="ZProviderEditRequest.cs" />
+    <Compile Include="ZProviderGetByIDRequest.cs" />
+    <Compile Include="ZProviderImportAddCommitRequest.cs" />
+    <Compile Include="ZProviderImportAddTempRequest.cs" />
+    <Compile Include="ZReconciliationSearchListFeeRequest.cs" />
+    <Compile Include="ZRequestOrderAddRequest.cs" />
+    <Compile Include="ZRequestOrderDashboardRequest.cs" />
+    <Compile Include="ZRequestOrderUpdateRequest.cs" />
+    <Compile Include="ZRequestSupportAcceptedStatusRequest.cs" />
+    <Compile Include="ZRequestSupportAddRequest.cs" />
+    <Compile Include="ZRequestSupportCloseStatusRequest.cs" />
+    <Compile Include="ZRequestSupportDetailRequest.cs" />
+    <Compile Include="ZRequestSupportGetByIDRequest.cs" />
+    <Compile Include="ZRequestSupportFESearchListRequest.cs" />
+    <Compile Include="ZRequestSupportGroupListRequest.cs" />
+    <Compile Include="ZRequestSupportNotifyListRequest.cs" />
+    <Compile Include="ZRequestSupportProcessStatusRequest.cs" />
+    <Compile Include="ZRequestSupportReOpenStatusRequest.cs" />
+    <Compile Include="ZRequestSupportSearchHistoryRequest.cs" />
+    <Compile Include="ZRequestSupportUnAcceptedStatusRequest.cs" />
+    <Compile Include="ZRequestSupportUpdateStatusRequest.cs" />
+    <Compile Include="ZRequestSupportSearchInfoSendCMSRequest.cs" />
+    <Compile Include="ZShopDocumentAddRequest.cs" />
+    <Compile Include="ZShopAddRequest.cs" />
+    <Compile Include="ZShopChangePickUpAddressRequest.cs" />
+    <Compile Include="ZCustomerCheckBlackListRequest.cs" />
+    <Compile Include="ZCustomerCheckIDByMobileNumberRequest.cs" />
+    <Compile Include="ZEmployeeCheckConditionRequest.cs" />
+    <Compile Include="ZEmployeeCountAccountRequest.cs" />
+    <Compile Include="ZEmployeeListAcountRequest.cs" />
+    <Compile Include="ZFacebookAddFeedbackAutoRequest.cs" />
+    <Compile Include="ZFacebookAddSendMassMessagesRequest.cs" />
+    <Compile Include="ZProductVariantGetByIDsRequest.cs" />
+    <Compile Include="ZProductVariantRemoveRequest.cs" />
+    <Compile Include="ZRequestOrderDivisionAgainRequest.cs" />
+    <Compile Include="ZShopDocumentDataByIDRequest.cs" />
+    <Compile Include="ZShopGetHistoryByIDRequest.cs" />
+    <Compile Include="ZShopGetPickupInformationRequest.cs" />
+    <Compile Include="ZShopGroupPermissionAddRequest.cs" />
+    <Compile Include="ZShopGroupPermissionChangeIsLockRequest.cs" />
+    <Compile Include="ZShopGroupPermissionEditRequest.cs" />
+    <Compile Include="ZShopGroupPermissionGetByIDRequest.cs" />
+    <Compile Include="ZShopGroupPermissionListRequest.cs" />
+    <Compile Include="ZShopImagesByShopIDRequest.cs" />
+    <Compile Include="ZShopLevelAddRequest.cs" />
+    <Compile Include="ZShopLevelEditRequest.cs" />
+    <Compile Include="ZShopLevelGetByParentIDRequest.cs" />
+    <Compile Include="ZShopUpdateAutoRequestOrderRequest.cs" />
+    <Compile Include="ZShopUpdatePaymentInformationRequest.cs" />
+    <Compile Include="ZStatisticalSearchCashflowRequest.cs" />
+    <Compile Include="ZStatisticalSearchCustomerRequest.cs" />
+    <Compile Include="ZStatisticalSearchOrderRequest.cs" />
+    <Compile Include="ZStatisticalSearchTransportRequest.cs" />
+    <Compile Include="ZStatusProcessAddRequest.cs" />
+    <Compile Include="ZStatusProcessChangeIsLockRequest.cs" />
+    <Compile Include="ZStatusProcessListRequest.cs" />
+    <Compile Include="ZStatusProcessRemoveRequest.cs" />
+    <Compile Include="ZStockTakeAcceptRequest.cs" />
+    <Compile Include="ZStockTakeAddRequest.cs" />
+    <Compile Include="ZStockTakeDetailAddRequest.cs" />
+    <Compile Include="ZStockTakeDetailEditRequest.cs" />
+    <Compile Include="ZStockTakeDetailModel.cs" />
+    <Compile Include="ZStockTakeDetailRequest.cs" />
+    <Compile Include="ZStockTakeDetailTotalRequest.cs" />
+    <Compile Include="ZStockTakeEditRequest.cs" />
+    <Compile Include="ZStockTakeGetByCodeRequest.cs" />
+    <Compile Include="ZStockTakeGetByStockCodeRequest.cs" />
+    <Compile Include="ZStockTakeSearchListRequest.cs" />
+    <Compile Include="ZStockTakeRemoveRequest.cs" />
+    <Compile Include="ZTransportRegionGetByParentIDRequest.cs" />
+    <Compile Include="ZTransportPostageMainServiceBasicAddRequest.cs" />
+    <Compile Include="ZTransportPostageGetByTransportPostageIDRequest.cs" />
+    <Compile Include="ZTransportPostageMainServiceBasicEditRequest.cs" />
+    <Compile Include="ZTransportPostageChargedRequest.cs" />
+    <Compile Include="ZTransportPostageConfirmRequest.cs" />
+    <Compile Include="ZTransportPostageDetailAddRequest.cs" />
+    <Compile Include="ZTransportPostageDetailGetByTransportPostageIDRequest.cs" />
+    <Compile Include="ZTransportPostageDetailEditRequest.cs" />
+    <Compile Include="ZTransportPostageDetailRemoveRequest.cs" />
+    <Compile Include="ZTransportPostageExtraServiceAddRequest.cs" />
+    <Compile Include="ZTransportPostageExtraServiceBasicAddRequest.cs" />
+    <Compile Include="ZTransportPostageExtraServiceByIDRequest.cs" />
+    <Compile Include="ZTransportPostageExtraServiceEditRequest.cs" />
+    <Compile Include="ZTransportPostageSearchListRequest.cs" />
+    <Compile Include="ZTransportPostageChangeIsLockRequest.cs" />
+    <Compile Include="ZTransportPostageMainFeeByIDRequest.cs" />
+    <Compile Include="ZTransportPostageMainServiceFeeEditRequest.cs" />
+    <Compile Include="ZTransportPostageRangeAddRequest.cs" />
+    <Compile Include="ZTransportPostageRangeSearchRequest.cs" />
+    <Compile Include="ZTransportPostageRangeWeightAddRequest.cs" />
+    <Compile Include="ZTransportPostageSurchargeByIDRequest.cs" />
+    <Compile Include="ZTransportPostageSurchargeEditRequest.cs" />
+    <Compile Include="ZTransportPostageUnConfirmRequest.cs" />
+    <Compile Include="ZTransportPostageWeightAddRequest.cs" />
+    <Compile Include="ZTransportPostageWeightSearchRequest.cs" />
+    <Compile Include="ZTransportRegionAddRequest.cs" />
+    <Compile Include="ZTransportRegionGroupAddRequest.cs" />
+    <Compile Include="ZTransportRegionGroupSearchListRequest.cs" />
+    <Compile Include="ZTransportRegionSearchListRequest.cs" />
+    <Compile Include="ZTransportSearchEmsBarCodeCancelRequest.cs" />
+    <Compile Include="ZTransportSearchListRequest.cs" />
+    <Compile Include="ZTransportServiceAddRequest.cs" />
+    <Compile Include="ZTransportServiceGetByIDRequest.cs" />
+    <Compile Include="ZTransportServiceCheckByCodeRequest.cs" />
+    <Compile Include="ZTransportServiceCheckRequest.cs" />
+    <Compile Include="ZTransportServiceEditRequest.cs" />
+    <Compile Include="ZTransportServiceSearchListRequest.cs" />
+    <Compile Include="ZTransportServiceLockRequest.cs" />
+    <Compile Include="ZTransportServiceRoleListRequest.cs" />
+    <Compile Include="ZTransportServiceUnLockRequest.cs" />
+    <Compile Include="ZTransportShippingCancelDataRequest.cs" />
+    <Compile Include="ZProductUpdateProductGroupRequest.cs" />
+    <Compile Include="ZUserAddRequest.cs" />
+    <Compile Include="ZUserChangePasswordRequest.cs" />
+    <Compile Include="ZUserChangeToLockedRequest.cs" />
+    <Compile Include="ZUserChangeToUnlockedRequest.cs" />
+    <Compile Include="ZUserChannelGetByChannelUserIDRequest.cs" />
+    <Compile Include="ZUserChannelSearchInformationRequest.cs" />
+    <Compile Include="ZUserChannelSearchListRequest.cs" />
+    <Compile Include="ZUserChannelServiceUpdateInformationRequest.cs" />
+    <Compile Include="ZUserChannelWebUpdateInformationRequest.cs" />
+    <Compile Include="ZUserCheckConditionRequest.cs" />
+    <Compile Include="ZUserEditRequest.cs" />
+    <Compile Include="ZUserGroupSearchListRequest.cs" />
+    <Compile Include="ZUserSearchListRequest.cs" />
+    <Compile Include="ZUserLoginRequest.cs" />
+    <Compile Include="ZUserResetPasswordRequest.cs" />
+    <Compile Include="ZVNPMapsAutocompleteRequest.cs" />
+    <Compile Include="ZVNPMapsSearchRequest.cs" />
+    <Compile Include="ZWardGetByParentNameRequest.cs" />
+    <Compile Include="ZWardGetByVMapCodeRequest.cs" />
+    <Compile Include="ZWardGetsRequest.cs" />
+    <Compile Include="ZWardSearchRequest.cs" />
+    <Compile Include="ZWareHouseGetByCodeRequest.cs" />
+    <Compile Include="ZWarehouseGetDefaultWarehouseRequest.cs" />
+    <Compile Include="ZWarehouseImportAddDetailRequest.cs" />
+    <Compile Include="ZWarehouseImportAddRequest.cs" />
+    <Compile Include="ZWarehouseImportCompleteRequest.cs" />
+    <Compile Include="ZWarehouseImportGetDataByIDRequest.cs" />
+    <Compile Include="ZWarehouseImportGetDataByShopIDRequest.cs" />
+    <Compile Include="ZWarehouseImportGetDetailByIDRequest.cs" />
+    <Compile Include="ZWarehouseImportRemoveDetailRequest.cs" />
+    <Compile Include="ZWarehouseImportRemoveRequest.cs" />
+    <Compile Include="ZWarehouseIsDefaultRequest.cs" />
+    <Compile Include="ZWareHouseChangeIsLockRequest.cs" />
+    <Compile Include="ZWarehouseProductGetByVariantIDRequest.cs" />
+    <Compile Include="ZWarehouseProductUpdateRequest.cs" />
+    <Compile Include="ZBaseModel.cs" />
+    <Compile Include="ZCorporationAddNewRequest.cs" />
+    <Compile Include="ZCorporationRemoveEmployeeRequest.cs" />
+    <Compile Include="ZCorporationRemoveRequest.cs" />
+    <Compile Include="ZCorporationEditRequest.cs" />
+    <Compile Include="ZCorporationGetByIDRequest.cs" />
+    <Compile Include="ZCorporationIsLockRequest.cs" />
+    <Compile Include="ZCorporationListRequest.cs" />
+    <Compile Include="ZCustomerAddNewGroupRequest.cs" />
+    <Compile Include="ZCustomerAddNewRequest.cs" />
+    <Compile Include="ZCustomerGetByCodeRequest.cs" />
+    <Compile Include="ZCustomerGetByIDRequest.cs" />
+    <Compile Include="ZCustomerGetByMobileNumberRequest.cs" />
+    <Compile Include="ZCustomerImportAddCommitRequest.cs" />
+    <Compile Include="ZCustomerImportAddTempRequest.cs" />
+    <Compile Include="ZDeliveryNoteAddNewRequest.cs" />
+    <Compile Include="ZDeliveryNoteByOrderIDRequest.cs" />
+    <Compile Include="ZDeliveryNoteChangeStatusRequest.cs" />
+    <Compile Include="ZDeliveryNoteGetByIDRequest.cs" />
+    <Compile Include="ZDeliveryNoteListRequest.cs" />
+    <Compile Include="ZEmployeeGetByGroupPermissionIDRequest.cs" />
+    <Compile Include="ZEmployeeListRequest.cs" />
+    <Compile Include="ZFacebookAccountPageResponse.cs" />
+    <Compile Include="ZFacebookAddPageAutoHiddenRequest.cs" />
+    <Compile Include="ZFacebookAddPageAutoLikeRequest.cs" />
+    <Compile Include="ZFacebookAddWorkingTimeRequest.cs" />
+    <Compile Include="ZFacebookAddWorkingTimeDetailRequest.cs" />
+    <Compile Include="ZFacebookChangeStatusPageAutoHiddenRequest.cs" />
+    <Compile Include="ZFacebookDeletePageAutoHiddenRequest.cs" />
+    <Compile Include="ZFacebookEditPageAutoHiddenRequest.cs" />
+    <Compile Include="ZFacebookGetAutoHiddenByIDRequest.cs" />
+    <Compile Include="ZFacebookSearchPageAutoHiddenRequest.cs" />
+    <Compile Include="ZImportExcelRequest.cs" />
+    <Compile Include="ZCustomerSearchListRequest.cs" />
+    <Compile Include="ZCustomerGetsRequest.cs" />
+    <Compile Include="ZCustomerEditRequest.cs" />
+    <Compile Include="ZCustomerSearchGroupRequest.cs" />
+    <Compile Include="ZDistrictListRequest.cs" />
+    <Compile Include="ZDistrictModel.cs" />
+    <Compile Include="ZEmployeeAddNewRequest.cs" />
+    <Compile Include="ZEmployeeAddTimeActiveRequest.cs" />
+    <Compile Include="ZEmployeeChangePasswordRequest.cs" />
+    <Compile Include="ZEmployeeCheckTimeActiveRequest.cs" />
+    <Compile Include="ZEmployeeEditRequest.cs" />
+    <Compile Include="ZEmployeeEditTimeActiveRequest.cs" />
+    <Compile Include="ZEmployeeGetByIDRequest.cs" />
+    <Compile Include="ZEmployeeGetTimeActiveRequest.cs" />
+    <Compile Include="ZEmployeeGroupAddRequest.cs" />
+    <Compile Include="ZEmployeeGroupEditRequest.cs" />
+    <Compile Include="ZEmployeeGroupPermissionGetFunctionalByGroupIDRequest.cs" />
+    <Compile Include="ZEmployeeGroupListRequest.cs" />
+    <Compile Include="ZEmployeeGroupPermissionRemoveRequest.cs" />
+    <Compile Include="ZEmployeeChangeIsLockRequest.cs" />
+    <Compile Include="ZEmployeeLevelGetsRequest.cs" />
+    <Compile Include="ZEmployeeLoginRequest.cs" />
+    <Compile Include="ZEmployeeProfile.cs" />
+    <Compile Include="ZEmployeeRemoveRequest.cs" />
+    <Compile Include="ZEmployeeResetPasswordRequest.cs" />
+    <Compile Include="ZFacebookAddConnectRequest.cs" />
+    <Compile Include="ZFacebookAddConversationRequest.cs" />
+    <Compile Include="ZFacebookAddConversationDetailListRequest.cs" />
+    <Compile Include="ZFacebookAddConversationListRequest.cs" />
+    <Compile Include="ZFacebookAssignAddRequest.cs" />
+    <Compile Include="ZFacebookCheckCustomerInfoRequestData.cs" />
+    <Compile Include="ZFacebookConverAssignToConversationRequest.cs" />
+    <Compile Include="ZFacebookMaskAsReadRequest.cs" />
+    <Compile Include="ZFacebookMaskAsViewedRequest.cs" />
+    <Compile Include="ZFacebookSearchConversationAssignRequest.cs" />
+    <Compile Include="ZFacebookSplitConversationRequest.cs" />
+    <Compile Include="ZFunctionalListRequest.cs" />
+    <Compile Include="ZOptionAddRequest.cs" />
+    <Compile Include="ZOptionGetDataByParentIDRequest.cs" />
+    <Compile Include="ZOptionGetDataByShopID.cs" />
+    <Compile Include="ZProductOptionGetNameByProductIDRequest.cs" />
+    <Compile Include="ZOrderAddRequest.cs" />
+    <Compile Include="ZOrderChangeStatusRequest.cs" />
+    <Compile Include="ZProductVariantAddRequest.cs" />
+    <Compile Include="ZPromotionGetByCodeRequest.cs" />
+    <Compile Include="ZRequestOrderDivisionRequest.cs" />
+    <Compile Include="ZOrderGetByIDRequest.cs" />
+    <Compile Include="ZOrderFESearchListRequest.cs" />
+    <Compile Include="ZOrderSearchProductRequest.cs" />
+    <Compile Include="ZPDWGetIDByPDWNameRequest.cs" />
+    <Compile Include="ZProductAddImageRequest.cs" />
+    <Compile Include="ZProductAddImagesRequest.cs" />
+    <Compile Include="ZProductAddRequest.cs" />
+    <Compile Include="ZProductEditRequest.cs" />
+    <Compile Include="ZProductGetByIdRequest.cs" />
+    <Compile Include="ZProductGetByVariantIDRequest.cs" />
+    <Compile Include="ZProductVariantGetByProductIDRequest.cs" />
+    <Compile Include="ZProductGroupAddRequest.cs" />
+    <Compile Include="ZProductGroupEditRequest.cs" />
+    <Compile Include="ZProductGroupGetByIDRequest.cs" />
+    <Compile Include="ZProductGroupListRequest.cs" />
+    <Compile Include="ZProductImageListRequest.cs" />
+    <Compile Include="ZProductListRequest.cs" />
+    <Compile Include="ZProductRemoveRequest.cs" />
+    <Compile Include="ZProductUpdateAvatarRequest.cs" />
+    <Compile Include="ZProductVariantEditRequest.cs" />
+    <Compile Include="ZProductVariantGetByIDRequest.cs" />
+    <Compile Include="ZProductVariantGetByShopIDRequest.cs" />
+    <Compile Include="ZProductVariantGetBySKURequest.cs" />
+    <Compile Include="ZProductVariantGetDetailByIDRequest.cs" />
+    <Compile Include="ZProductVariantListRequest.cs" />
+    <Compile Include="ZProductVariantUpdateImageRequest.cs" />
+    <Compile Include="ZPromotionAddNewCodeRequest.cs" />
+    <Compile Include="ZPromotionAddNewRequest.cs" />
+    <Compile Include="ZPromotionDeleteRequest.cs" />
+    <Compile Include="ZPromotionListRequest.cs" />
+    <Compile Include="ZPromotionIsLockRequest.cs" />
+    <Compile Include="ZProviderSearchListRequest.cs" />
+    <Compile Include="ZProvinceModel.cs" />
+    <Compile Include="ZProvincesListRequest.cs" />
+    <Compile Include="ZRequest.cs" />
+    <Compile Include="ZRequestOrderAcceptRequest.cs" />
+    <Compile Include="ZRequestOrderGetByIDRequest.cs" />
+    <Compile Include="ZRequestOrderImportAddCommitRequest.cs" />
+    <Compile Include="ZRequestOrderImportAddTempRequest.cs" />
+    <Compile Include="ZRequestOrderListRequest.cs" />
+    <Compile Include="ZRequestOrderRejectRequest.cs" />
+    <Compile Include="ZResponse.cs" />
+    <Compile Include="ZShopApprovedShopRequest.cs" />
+    <Compile Include="ZShopEditRequest.cs" />
+    <Compile Include="ZShopEditShopRequest.cs" />
+    <Compile Include="ZShopGetsRequest.cs" />
+    <Compile Include="ZShopListRegisterRequest.cs" />
+    <Compile Include="ZShopChangeIsLockRequest.cs" />
+    <Compile Include="ZShopLoginRequest.cs" />
+    <Compile Include="ZShopProfile.cs" />
+    <Compile Include="ZShopRegisterRequest.cs" />
+    <Compile Include="ZShopRejectShopRequest.cs" />
+    <Compile Include="ZShopResetPasswordShopRequest.cs" />
+    <Compile Include="ZShopSalesChannelAddRequest.cs" />
+    <Compile Include="ZShopSalesChannelListRequest.cs" />
+    <Compile Include="ZShopSalesChannelRemoveRequest.cs" />
+    <Compile Include="ZShopSearchListRequest.cs" />
+    <Compile Include="ZShopUnlockShopRequest.cs" />
+    <Compile Include="ZShopUpdateConfirmationEmailRequest.cs" />
+    <Compile Include="ZUploadImageFile.cs" />
+    <Compile Include="ZUserProfile.cs" />
+    <Compile Include="ZWardListRequest.cs" />
+    <Compile Include="ZWardModel.cs" />
+    <Compile Include="ZWareHouseAddInventoryRequest.cs" />
+    <Compile Include="ZWareHouseAddNewRequest.cs" />
+    <Compile Include="ZWareHouseEditRequest.cs" />
+    <Compile Include="ZWareHouseGetByIDRequest.cs" />
+    <Compile Include="ZWarehouseGetProductsByIDRequest.cs" />
+    <Compile Include="ZWareHouseListProductRequest.cs" />
+    <Compile Include="ZWareHouseSearchListRequest.cs" />
+    <Compile Include="ZWareHouseListProductByWareHouseIDRequest.cs" />
+    <Compile Include="ZWareHouseRequest.cs" />
+    <Compile Include="ZZaloAddFollowerTypeXMLRequest.cs" />
+    <Compile Include="ZZaloAddMessageRequest.cs" />
+    <Compile Include="ZAutoSendMessageAddRequest.cs" />
+    <Compile Include="ZAutoSendMessageDetailAddRequest.cs" />
+    <Compile Include="ZAutoSendMessageDetailSearchListRequest.cs" />
+    <Compile Include="ZAutoSendMessageSearchListRequest.cs" />
+    <Compile Include="ZAutoSendMessageUserSearchListRequest.cs" />
+    <Compile Include="ZAutoSendMessageServiceSearchListRequest.cs" />
+    <Compile Include="ZAutoSendMessageUpdateRequest.cs" />
+    <Compile Include="ZAutoSendMessageUserUpdateRequest.cs" />
+    <Compile Include="ZZaloConnectRequest.cs" />
+    <Compile Include="ZZaloConversionAddRequest.cs" />
+    <Compile Include="ZZaloConversionSearchListRequest.cs" />
+    <Compile Include="ZZaloDetailConversionRequest.cs" />
+    <Compile Include="ZZaloFollowOrUnFollowRequest.cs" />
+    <Compile Include="ZZaloGetByOfficialAccountIDRequest.cs" />
+    <Compile Include="ZZaloGetInfoOARequest.cs" />
+    <Compile Include="ZZaloGetProfileFollowerRequest.cs" />
+    <Compile Include="ZZaloListConversionRequest.cs" />
+    <Compile Include="ZZaloMessageSearchListRequest.cs" />
+    <Compile Include="ZZaloOASendTextToUserRequest.cs" />
+    <Compile Include="ZZaloReceivedMessageRequest.cs" />
+    <Compile Include="ZZaloSearchListFollowerRequest.cs" />
+    <Compile Include="ZZaloSearchListOARequest.cs" />
+    <Compile Include="ZZaloSeenMessageRequest.cs" />
+    <Compile Include="ZZaloUpdateSyncFirstRequest.cs" />
+    <Compile Include="ZZaloUpdateTokenRequest.cs" />
+    <Compile Include="ZZaloUserAuthenticationRequest.cs" />
+    <Compile Include="ZZaloUserSeenMessageRequest.cs" />
+    <Compile Include="ZZaloUserSendAudioToOARequest.cs" />
+    <Compile Include="ZZaloUserSendGifToOARequest.cs" />
+    <Compile Include="ZZaloUserSendImageToOARequest.cs" />
+    <Compile Include="ZZaloUserSendLinkToOARequest.cs" />
+    <Compile Include="ZZaloUserSendLocationToOARequest.cs" />
+    <Compile Include="ZZaloUserSendMessageToOARequest.cs" />
+    <Compile Include="ZZaloFollowSearchListRequest.cs" />
+    <Compile Include="ZZaloSendMessageRequest.cs" />
+    <Compile Include="ZZaloUserReceivedMessageRequest.cs" />
+    <Compile Include="ZZaloUserSendStickerToOARequest.cs" />
+    <Compile Include="ZZaloUserSendTextToOARequest.cs" />
+    <Compile Include="ZZaloUserSubmitInfoRequest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EMS.Library\EMS.Library.csproj">
+      <Project>{50CF9EC4-68D6-4F8E-A068-49861F1C25EE}</Project>
+      <Name>EMS.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

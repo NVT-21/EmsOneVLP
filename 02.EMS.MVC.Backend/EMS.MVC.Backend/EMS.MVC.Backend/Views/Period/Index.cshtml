@@ -1,0 +1,183 @@
+﻿@model EMS.MVC.Backend.Models.PeriodIndexModel
+
+<div class="row">
+    <div class="col-6">
+        <h4>Kỳ đối soát COD</h4>
+        <div id="COD">
+            @{Html.RenderAction("List", "Period", new { PeriodType = Model.CODPeriodType, Type = "COD", ShopID = Model.ShopID });}
+        </div>
+    </div>
+    <div class="col-6">
+        <h4>Kỳ đối soát cước vận chuyển</h4>
+        <div id="Fee">
+            @{Html.RenderAction("List", "Period", new { PeriodType = Model.FeePeriodType, Type = "FEE", ShopID = Model.ShopID });}
+        </div>
+    </div>
+</div>
+<script>
+    function btnAdd(Type) {
+        let isError = false;
+        let agrs = {
+            Value: $('#Value_' + Type).val(),
+            Type: Type,
+            ShopID: '@Model.ShopID'
+        }
+
+        isError = checkNull(agrs.Value, '#errValue_' + Type, isError);
+
+        if (isError) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAdd", "Period")',
+            data: agrs,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    if (Type == 'COD') {
+                        $.get('@Url.Action("List", "Period")?PeriodType='+ @Model.CODPeriodType+'&Type=COD&ShopID='+@Model.ShopID, function (htmlString) {
+                            $('#COD').html(htmlString);
+                        });
+                    }
+                    else if (Type == 'FEE') {
+                        $.get('@Url.Action("List", "Period")?PeriodType='+ @Model.FeePeriodType+'&Type=FEE&ShopID='+@Model.ShopID, function (htmlString) {
+                            $('#Fee').html(htmlString);
+                        });
+                    }
+                    else {
+                        swal({
+                            icon: "error",
+                            title: "Thông báo",
+                            text: "Không xác định được loại kỳ. Vui lòng thử lại hoặc liên hệ quản trị.",
+                            button: {
+                                text: "Đóng"
+                            }
+                        });
+                    }
+                }
+                else if (res.Code == "01") /*Chưa chọn loại kỳ đối soát -> tới trang chọn kỳ */
+                {
+
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    }).then(function(){
+                        window.location.reload();
+                    });
+                }
+                else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    };
+
+    function Remove(ID, Type) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xóa?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemove", "Period")',
+                    data: {
+                        ID: ID,
+                        ShopID: '@Model.ShopID'
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            if (Type == 'COD') {
+                                $.get('@Url.Action("List", "Period")?PeriodType='+ @Model.CODPeriodType+'&Type=COD&ShopID='+@Model.ShopID, function (htmlString) {
+                                    $('#COD').html(htmlString);
+                                });
+                            }
+                            else if (Type == 'FEE') {
+                                $.get('@Url.Action("List", "Period")?PeriodType='+ @Model.FeePeriodType+'&Type=FEE&ShopID='+@Model.ShopID, function (htmlString) {
+                                    $('#Fee').html(htmlString);
+                                });
+                            }
+                            else {
+                                swal({
+                                    icon: "error",
+                                    title: "Thông báo",
+                                    text: "Không xác định được loại kỳ. Vui lòng thử lại hoặc liên hệ quản trị.",
+                                    button: {
+                                        text: "Đóng"
+                                    }
+                                });
+                            }
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

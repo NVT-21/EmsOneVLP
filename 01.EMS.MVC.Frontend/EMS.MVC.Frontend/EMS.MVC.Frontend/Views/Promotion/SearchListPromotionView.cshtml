@@ -1,0 +1,117 @@
+﻿@model List<EMS.MVC.Frontend.Models.PromotionViewModel>
+<table class="table table-responsive-md" id="tablePromotionView">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Chi tiết</th>
+            <th>Số lần sử dụng</th>
+            <th>Thời gian tạo</th>
+            <th>Người tạo</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@item.PromotionCode</td>
+                    @if (item.PromotionCode != null && item.PromotionCode != "")
+                    {
+                        <td style=" max-width: 485px;">
+                            <p style=" max-width: 485px;">Mã khuyến mãi: <b>@item.PromotionCode</b></p>
+                            @if (item.ApplyForOption == 1)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName tất cả đơn hàng</p>
+                            }
+                            else if (item.ApplyForOption == 2)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName cho đơn hàng có giá trị từ @Convert.ToInt32(item.AfoChild).ToString("N0") đồng</p>
+                            }
+                            else if (item.ApplyForOption == 3)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName nhóm sản phẩm <a class="" href="#">@item.ProductGroupName</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 4)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName sản phẩm <a class="" href="#">@item.ProductName</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 5)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName khách hàng trong nhóm  <a class="" href="#">@item.CustomerGroupName</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 6)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName khách hàng <a href="@Url.Action("Detail","Customer", new { ID = Convert.ToInt32(item.AfoChild) })" target="_blank">@item.CustomerMobileNumber</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 7)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName <b>biến thể</b> @item.PromotionCodeEndName</p>
+                                <div class="position-relative w-100" style="height:0px;">
+                                    <table class="table-responsive PromotionVariationsHover shadow" style="border-radius: 5px;" name="VariantView">
+                                        @{
+                                            Html.RenderAction("PromotionVariations", "Promotion", new { IDs = item.AfoChild });
+                                        }
+                                    </table>
+                                </div>
+                            }
+
+                            @if (item.AllowUse == "Y")
+                            {
+                                <b>(Mã khuyến mãi có thể sử dụng chung với chương trình khuyến mãi)</b>
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td style=" max-width: 485px;">
+                            <p style=" max-width: 485px;">Chương trình khuyến mãi: <b>@item.PromotionName</b></p>
+                            @if (item.ApplyForOption == 3)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName nhóm sản phẩm <a class="" href="#">@item.ProductGroupName</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 4)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName sản phẩm <a class="" href="#">@item.ProductName</a> @item.PromotionCodeEndName</p>
+                            }
+                            else if (item.ApplyForOption == 7)
+                            {
+                                <p style=" max-width: 485px;">@item.PromotionCodeFirstName <b>biến thể</b> @item.PromotionCodeEndName</p>
+                                <div class="position-relative w-100" style="height:0px;">
+                                    <table class="table-responsive PromotionVariationsHover shadow" style="border-radius: 5px;" name="VariantView">
+                                        @{
+                                            Html.RenderAction("PromotionVariations", "Promotion", new { IDs = item.AfoChild });
+                                        }
+                                    </table>
+                                </div>
+                            }
+                        </td>
+                    }
+
+                    <td>
+                        <p>Số lần sử dụng mã khuyến mãi: <b>@item.NumberOfUseName</b></p>
+                        <p>Mỗi khách hàng được: <b>@item.NumberOfCustomerUseName</b></p>
+                    </td>
+                    <td>@item.StartDate</td>
+                    <td>@item.EmployeeName</td>
+
+                    <td class="text-center">
+                        <a href="./support-view.html" type="button" class="btn btn-lock light ">
+                            <i class="icon-lock fs-18"></i>
+                        </a>
+                        <a href="./support-view.html" type="button" class="btn btn-trash light ">
+                            <i class="icon-trash fs-18"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("tablePromotionView");
+    });
+</script>

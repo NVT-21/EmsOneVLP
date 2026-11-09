@@ -1,0 +1,70 @@
+﻿<canvas id="myChart"></canvas>
+<script>
+    var data = @Html.Raw(Json.Encode(Model));
+    var arrLable = [];
+    var arrDataQuantity = [];
+    var arrDataAmountOfmoney = [];
+    for (var i = 0; i < data.length; i++) {
+        arrLable.push(data[i].TimeRelease);
+        arrDataQuantity.push(data[i].Quantity);
+        arrDataAmountOfmoney.push(data[i].AmountOfMoney);
+    }
+    $(document).ready(function () {
+        DrawChart(arrLable, arrDataQuantity, arrDataAmountOfmoney);
+    });
+    function DrawChart(arrLable, arrDataQuantity, arrDataAmountOfmoney) {
+        const ctx = document.getElementById('myChart');
+        const mixedChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    label: 'Số tiền thanh toán',
+                    data: arrDataAmountOfmoney,
+                    yAxisID: 'A',
+                    type: 'line',
+                    borderColor: '#FF6384',
+                    backgroundColor: "transparent",
+                },{
+                    label: 'Sản lượng',
+                    data: arrDataQuantity,
+                    yAxisID: 'B',
+                    borderColor: '#0054A6',
+                    backgroundColor: '#0054A6',
+                }],
+                labels: arrLable
+            },
+            options: {
+                elements: {
+                    line: {
+                        tension: 0,
+                    },
+                },
+                scales: {
+                    yAxes: [{
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            callback: function (val, index) {
+                                return new Intl.NumberFormat('en').format(Math.round(val)) + ' VNĐ';
+                            },
+                        }
+                    }, {
+                        id: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            callback: function (val, index) {
+                                return new Intl.NumberFormat('en').format(Math.round(val)) + ' Bưu gửi';
+                            },
+                        }
+                    }]
+                }
+            }
+        });
+    }
+</script>

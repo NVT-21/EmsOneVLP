@@ -1,0 +1,222 @@
+﻿@model EMS.MVC.Backend.Models.OrderViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("OrderView", "Order")">Quản lý đơn hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-3">
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Từ</span>
+                        </div>
+                        @Html.EditorFor(model => model.FromDate, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Ngày/ Tháng/ Năm" } })
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Đến</span>
+                        </div>
+                        @Html.EditorFor(model => model.ToDate, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Ngày/ Tháng/ Năm" } })
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.EditorFor(model => model.OrderCode, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã đơn hàng" } })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.EditorFor(model => model.ShippingCode, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã bưu gửi" } })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.EditorFor(model => model.ShopCode, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã khách hàng" } })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.EditorFor(model => model.CrmOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã CRM/PP" } })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.ReceiverProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "Tỉnh/ Thành phố nhận", new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.TransportMainService, new SelectList(Model.ListMainTransportService, "ID", "Name"), "Dịch vụ chính", new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.TransportExtraService, new SelectList(Model.ListExtraTransportService, "ID", "Name"), "Dịch vụ cộng thêm", new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.PlaceOfCreateOrder, new SelectList(Model.ListPlaceOfCreateOrder, "Value", "Text"), "Nơi tạo", new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.TypeOrder, new SelectList(Model.ListTypeOrder, "Value", "Text"), "Loại đơn hàng", new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.PostalType, new SelectList(Model.ListPostalType, "Value", "Text"), new { @class = "select2" })
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.PartnerID, new SelectList(Model.ListPartner, "ID", "PartnerName"), "Đối tác", new { @class = "select2" })
+                </div>
+                @*<div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+            @Html.DropDownListFor(model => model.DeviceName, new SelectList(Model.ListDeviceName, "Value", "Text"), "Kênh tạo", new { @class = "select2" })
+        </div>*@
+                <div class="col-xl-2 col-lg-3 col-md-3">
+                    <button type="button" onclick="btnSearch('', 'Y')" class="btn btn-sm btn-primary form-control form-control-sm">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-3 mb-3">
+                    <button type="button" class="btn btn-sm btn-warning form-control form-control-sm text-white" id="btnPrintOrder">
+                        <i class="fa fa-print"></i> IN ĐƠN HÀNG
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="CustomScrollBar" class="mt-3 mb-3 d-none" style="width: 100%; overflow: auto;">
+                <ul class="nav nav-pills nav-pills-success" id="pills-tab" role="tablist" style="border-bottom: none; padding-bottom:0; cursor: pointer; width: max-content;">
+                    <li class="nav-item mb-2" style="margin-right: 0.4rem;">
+                        <a class="nav-link text-center active" data-toggle="pill" role="tab" aria-selected="true" data-status="" onclick="btnSearch(this, 'N')" style="padding: 0.5rem 1rem;">
+                            Tất cả
+                            <br />
+                            <span id="StatusAll"></span>
+                        </a>
+                    </li>
+                    @foreach (var item in Model.ListOrderStatus)
+                    {
+                        <li class="nav-item mb-2" style="margin-right: 0.4rem;">
+                            <a class="nav-link text-center" data-toggle="pill" role="tab" aria-selected="false" data-status="@item.Value" onclick="btnSearch(this, 'N')" style="padding: 0.5rem 1rem;">
+                                @item.Text
+                                <br />
+                                <span id="OrderStatus@(item.Value)"></span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div id="tbl-data" class="table-responsive">
+                @*@{
+                        Html.RenderAction("SearchListOrderView", "Order", new { FromDate = Model.FromDate, ToDate = Model.ToDate, ReloadStatusNumber = "Y" });
+                    }*@
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            CreateDatePicker("#FromDate, #ToDate");
+        });
+
+        function btnSearch(this1, ReloadStatusNumber) {
+            var OrderStatusValue = "";
+            var OrderStatusTab = $(this1).data("status");
+
+            if (OrderStatusTab != undefined) {
+                var OrderStatusNumber = OrderStatusTab == "" ? $("#StatusAll").text() : $("#OrderStatus" + OrderStatusTab).text();
+                if (OrderStatusNumber == "(0)") {
+                    OrderStatusValue = "ERROR";
+                } else {
+                    OrderStatusValue = OrderStatusTab;
+                }
+            } else {
+                OrderStatusValue = $("#pills-tab a.active").attr('data-status');
+            }
+
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                OrderStatus: OrderStatusValue,
+                OrderCode: $("#OrderCode").val().trim(),
+                ShippingCode: $("#ShippingCode").val().trim(),
+                ShopCode: $("#ShopCode").val().trim(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().trim(),
+                ReceiverProvinceID: $("#ReceiverProvinceID").val(),
+                TransportMainService: $("#TransportMainService").val(),
+                TransportExtraService: $("#TransportExtraService").val(),
+                PlaceOfCreateOrder: $("#PlaceOfCreateOrder").val(),
+                TypeOrder: $("#TypeOrder").val(),
+                PostalType: $("#PostalType").val(),
+                PartnerID: $("#PartnerID").val(),
+                ReloadStatusNumber: ReloadStatusNumber
+            };
+
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 61) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 2 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                swal({
+                    title: 'Thông báo',
+                    text: errMsg,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+
+                })
+                return;
+            }
+
+            $.post('@Url.Action("SearchListOrderView", "Order")', req, function (data) {
+                if ($("#CustomScrollBar").hasClass("d-none") == true) {
+                    $("#CustomScrollBar").removeClass("d-none");
+                }
+                $('#tbl-data').html(data);
+            });
+        }
+
+        $("#btnPrintOrder").on("click", function () {
+            $("#btnPrintOrderHidden").click();
+        });
+
+        function btnExportExcel() {
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                OrderStatus: $("#pills-tab a.active").attr('data-status'),
+                OrderCode: $("#OrderCode").val().trim(),
+                ShippingCode: $("#ShippingCode").val().trim(),
+                ShopCode: $("#ShopCode").val().trim(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().trim(),
+                ReceiverProvinceID: $("#ReceiverProvinceID").val(),
+                TransportMainService: $("#TransportMainService").val(),
+                TransportExtraService: $("#TransportExtraService").val(),
+                PlaceOfCreateOrder: $("#PlaceOfCreateOrder").val(),
+                TypeOrder: $("#TypeOrder").val(),
+                PostalType: $("#PostalType").val(),
+                PartnerID: $("#PartnerID").val(),
+            };
+            var param = String.format("FromDate={0}&ToDate={1}&OrderStatus={2}&OrderCode={3}&ShippingCode={4}&ShopCode={5}&CrmOrPaypostCode={6}&ReceiverProvinceID={7}&TransportMainService={8}&TransportExtraService={9}&PlaceOfCreateOrder={10}&TypeOrder={11}&PostalType={12}&PartnerID={13}",
+                req.FromDate, req.ToDate, req.OrderStatus, req.OrderCode, req.ShippingCode, req.ShopCode, req.CrmOrPaypostCode, req.ReceiverProvinceID, req.TransportMainService, req.TransportExtraService, req.PlaceOfCreateOrder, req.TypeOrder, req.PostalType, req.PartnerID);
+            window.location.href = '@Url.Action("ExportListOrder","Order")?' + param;
+        }
+    </script>
+}

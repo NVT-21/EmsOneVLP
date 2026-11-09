@@ -1,0 +1,28 @@
+# Một worker / một thư mục — triển khai 2 lần trên server:
+#   /opt/ems-transport-worker-uat/    (file .env riêng UAT)
+#   /opt/ems-transport-worker-product/ (file .env riêng Production)
+#
+# Gộp chung stack Redis/Rabbit/Mongo trên server: xem docker-compose.transport-worker.stack.yml
+#
+# Trong mỗi thư mục:
+#   cp .env.example .env && nano .env
+#   docker compose up -d --build
+#
+# Tên file compose mặc định là docker-compose.yml (đúng chuẩn Docker Compose).
+
+services:
+  transport-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ems-transport-worker:latest
+    container_name: ${WORKER_CONTAINER_NAME:-ems-transport-worker}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - ems-transport-net
+
+networks:
+  ems-transport-net:
+    driver: bridge

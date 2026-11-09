@@ -1,0 +1,149 @@
+﻿@model List<EMS.MVC.Backend.Models.DetailEditedItemCodeViewModel>
+@{
+    Layout = null;
+}
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Ngày điều chỉnh </th>
+            <th class="align-middle"> Mã bưu gửi </th>
+            <th class="align-middle"> Ngày phát hành</th>
+            <th class="align-middle"> Mã PP/CRM</th>
+            <th class="align-middle"> Bưu cục điều chỉnh </th>
+            <th class="align-middle"> KL</th>
+            <th class="align-middle"> KL Quy đổi</th>
+            <th class="align-middle"> Cước chính</th>
+            <th class="align-middle"> Cước DV</th>
+            <th class="align-middle"> Cước COD</th>
+            <th class="align-middle"> Tiền thu hộ</th>
+            <th class="align-middle" style="max-width: 260px;"> Lý do</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@item.NumRow</td>
+                    <td class="text-center">    
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].AdjustingDate
+                    </td>
+                    <td class="text-center">
+                        @*@item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].ItemCode
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />*@
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].ItemCode
+                    </td>
+                    <td class="text-center">
+                        @*@item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].TimeRelease
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />*@
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].TimeRelease
+                    </td>
+                    <td class="text-center">
+                        @*@item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].CustomerCode
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />*@
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].CustomerCode
+                    </td>
+                    <td class="text-left">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].AdjustingPostOffice
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].AdjustingPostOffice
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p style="font-weight: 700;">Số dư điều chỉnh</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].ProvisionalVolume.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].ProvisionalVolume.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceProvisionalVolume.ToString("N0")</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].ChargeableVolume.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].ChargeableVolume.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceChargeableVolume.ToString("N0")</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].MainFee.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].MainFee.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceMainFee.ToString("N0")</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].ServiceFee.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].ServiceFee.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceServiceFee.ToString("N0")</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].TransportFeePublic.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].TransportFeePublic.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceTransportFeePublic.ToString("N0")</p>
+                    </td>
+                    <td class="text-right">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 2].FeePublic.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].FeePublic.ToString("N0")
+                        <br />
+                        <hr style="border-top: 1px dashed gray;" />
+                        <p>@item.AdjBalanceFeePublic.ToString("N0")</p>
+                    </td>
+                    <td class="text-left" style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;">
+                        @item.ItemCodeDetail[item.ItemCodeDetail.Count - 1].Reason
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false
+        });
+    });
+</script>
+

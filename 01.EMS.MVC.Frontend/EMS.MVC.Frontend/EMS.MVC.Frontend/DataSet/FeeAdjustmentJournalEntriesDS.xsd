@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="FeeAdjustmentJournalEntriesDS" targetNamespace="http://tempuri.org/FeeAdjustmentJournalEntriesDS.xsd" xmlns:mstns="http://tempuri.org/FeeAdjustmentJournalEntriesDS.xsd" xmlns="http://tempuri.org/FeeAdjustmentJournalEntriesDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="FeeAdjustmentJournalEntriesDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="FeeAdjustmentJournalEntriesDS" msprop:Generator_UserDSName="FeeAdjustmentJournalEntriesDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="FeeEdited" msprop:Generator_TableClassName="FeeEditedDataTable" msprop:Generator_TableVarName="tableFeeEdited" msprop:Generator_TablePropName="FeeEdited" msprop:Generator_RowDeletingName="FeeEditedRowDeleting" msprop:Generator_RowChangingName="FeeEditedRowChanging" msprop:Generator_RowEvHandlerName="FeeEditedRowChangeEventHandler" msprop:Generator_RowDeletedName="FeeEditedRowDeleted" msprop:Generator_UserTableName="FeeEdited" msprop:Generator_RowChangedName="FeeEditedRowChanged" msprop:Generator_RowEvArgName="FeeEditedRowChangeEvent" msprop:Generator_RowClassName="FeeEditedRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="NumRow" msprop:Generator_ColumnVarNameInTable="columnNumRow" msprop:Generator_ColumnPropNameInRow="NumRow" msprop:Generator_ColumnPropNameInTable="NumRowColumn" msprop:Generator_UserColumnName="NumRow" type="xs:long" minOccurs="0" />
+              <xs:element name="AdjustingID" msprop:Generator_ColumnVarNameInTable="columnAdjustingID" msprop:Generator_ColumnPropNameInRow="AdjustingID" msprop:Generator_ColumnPropNameInTable="AdjustingIDColumn" msprop:Generator_UserColumnName="AdjustingID" type="xs:long" minOccurs="0" />
+              <xs:element name="AdjustingDate" msprop:Generator_ColumnVarNameInTable="columnAdjustingDate" msprop:Generator_ColumnPropNameInRow="AdjustingDate" msprop:Generator_ColumnPropNameInTable="AdjustingDateColumn" msprop:Generator_UserColumnName="AdjustingDate" type="xs:string" minOccurs="0" />
+              <xs:element name="AdjustingPostOffice" msprop:Generator_ColumnVarNameInTable="columnAdjustingPostOffice" msprop:Generator_ColumnPropNameInRow="AdjustingPostOffice" msprop:Generator_ColumnPropNameInTable="AdjustingPostOfficeColumn" msprop:Generator_UserColumnName="AdjustingPostOffice" type="xs:string" minOccurs="0" />
+              <xs:element name="ItemCode" msprop:Generator_ColumnVarNameInTable="columnItemCode" msprop:Generator_ColumnPropNameInRow="ItemCode" msprop:Generator_ColumnPropNameInTable="ItemCodeColumn" msprop:Generator_UserColumnName="ItemCode" type="xs:string" minOccurs="0" />
+              <xs:element name="TimeRelease" msprop:Generator_ColumnVarNameInTable="columnTimeRelease" msprop:Generator_ColumnPropNameInRow="TimeRelease" msprop:Generator_ColumnPropNameInTable="TimeReleaseColumn" msprop:Generator_UserColumnName="TimeRelease" type="xs:string" minOccurs="0" />
+              <xs:element name="ProvisionalVolume" msprop:Generator_ColumnVarNameInTable="columnProvisionalVolume" msprop:Generator_ColumnPropNameInRow="ProvisionalVolume" msprop:Generator_ColumnPropNameInTable="ProvisionalVolumeColumn" msprop:Generator_UserColumnName="ProvisionalVolume" type="xs:long" minOccurs="0" />
+              <xs:element name="ChargeableVolume" msprop:Generator_ColumnVarNameInTable="columnChargeableVolume" msprop:Generator_ColumnPropNameInRow="ChargeableVolume" msprop:Generator_ColumnPropNameInTable="ChargeableVolumeColumn" msprop:Generator_UserColumnName="ChargeableVolume" type="xs:long" minOccurs="0" />
+              <xs:element name="MainFee" msprop:Generator_ColumnVarNameInTable="columnMainFee" msprop:Generator_ColumnPropNameInRow="MainFee" msprop:Generator_ColumnPropNameInTable="MainFeeColumn" msprop:Generator_UserColumnName="MainFee" type="xs:long" minOccurs="0" />
+              <xs:element name="ServiceFee" msprop:Generator_ColumnVarNameInTable="columnServiceFee" msprop:Generator_ColumnPropNameInRow="ServiceFee" msprop:Generator_ColumnPropNameInTable="ServiceFeeColumn" msprop:Generator_UserColumnName="ServiceFee" type="xs:long" minOccurs="0" />
+              <xs:element name="TransportFeePublic" msprop:Generator_ColumnVarNameInTable="columnTransportFeePublic" msprop:Generator_ColumnPropNameInRow="TransportFeePublic" msprop:Generator_ColumnPropNameInTable="TransportFeePublicColumn" msprop:Generator_UserColumnName="TransportFeePublic" type="xs:long" minOccurs="0" />
+              <xs:element name="FeePublic" msprop:Generator_ColumnVarNameInTable="columnFeePublic" msprop:Generator_ColumnPropNameInRow="FeePublic" msprop:Generator_ColumnPropNameInTable="FeePublicColumn" msprop:Generator_UserColumnName="FeePublic" type="xs:long" minOccurs="0" />
+              <xs:element name="Reason" msprop:Generator_ColumnVarNameInTable="columnReason" msprop:Generator_ColumnPropNameInRow="Reason" msprop:Generator_ColumnPropNameInTable="ReasonColumn" msprop:Generator_UserColumnName="Reason" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

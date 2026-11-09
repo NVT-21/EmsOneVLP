@@ -1,0 +1,301 @@
+﻿@model IEnumerable<EMS.MVC.Frontend.Models.ProductImageViewModel>
+@{
+    Layout = null;
+    string strPage = ViewBag.Page;
+}
+<style>
+    .active-custom {
+        border: 1px solid blue !important;
+        box-shadow: 0 0 5px blue;
+    }
+</style>
+@if (strPage == "Variant")
+{
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cập nhật ảnh biến thể</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            @if (Model.Count() > 0)
+            {
+                <div class="modal-body">
+                    <div class="row Frames">
+                        <div class="list-form-img">
+                            @foreach (var item in Model)
+                            {
+                                <div class="col-md-3 col-lg-3 p-1">
+                                    <div class="img-item border rounded AspectRatio_1-1" name="VariantImage" onclick="FuncActive(this)" style="cursor:pointer;">
+                                        <img name="ImageOld" data-value="@item.Image" src="@XHelper.pathImages@item.Image">
+                                        <i class="close del" data-value="@item.Image">
+                                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <rect width="30" height="30" rx="15" fill="black" fill-opacity="0.48" />
+                                                <path d="M16.4099 15.0002L20.7099 10.7102C20.8982 10.5219 21.004 10.2665 21.004 10.0002C21.004 9.73388 20.8982 9.47849 20.7099 9.29019C20.5216 9.10188 20.2662 8.99609 19.9999 8.99609C19.7336 8.99609 19.4782 9.10188 19.2899 9.29019L14.9999 13.5902L10.7099 9.29019C10.5216 9.10188 10.2662 8.99609 9.99994 8.99609C9.73364 8.99609 9.47824 9.10188 9.28994 9.29019C9.10164 9.47849 8.99585 9.73388 8.99585 10.0002C8.99585 10.2665 9.10164 10.5219 9.28994 10.7102L13.5899 15.0002L9.28994 19.2902C9.19621 19.3831 9.12182 19.4937 9.07105 19.6156C9.02028 19.7375 8.99414 19.8682 8.99414 20.0002C8.99414 20.1322 9.02028 20.2629 9.07105 20.3848C9.12182 20.5066 9.19621 20.6172 9.28994 20.7102C9.3829 20.8039 9.4935 20.8783 9.61536 20.9291C9.73722 20.9798 9.86793 21.006 9.99994 21.006C10.132 21.006 10.2627 20.9798 10.3845 20.9291C10.5064 20.8783 10.617 20.8039 10.7099 20.7102L14.9999 16.4102L19.2899 20.7102C19.3829 20.8039 19.4935 20.8783 19.6154 20.9291C19.7372 20.9798 19.8679 21.006 19.9999 21.006C20.132 21.006 20.2627 20.9798 20.3845 20.9291C20.5064 20.8783 20.617 20.8039 20.7099 20.7102C20.8037 20.6172 20.8781 20.5066 20.9288 20.3848C20.9796 20.2629 21.0057 20.1322 21.0057 20.0002C21.0057 19.8682 20.9796 19.7375 20.9288 19.6156C20.8781 19.4937 20.8037 19.3831 20.7099 19.2902L16.4099 15.0002Z"
+                                                      fill="white" />
+                                            </svg>
+                                        </i>
+                                    </div>
+
+                                </div>
+                            }
+                            <label class="form-img" for="customFile">
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M25.6665 12.3327H15.6665V2.33268C15.6665 1.89065 15.4909 1.46673 15.1783 1.15417C14.8658 0.841611 14.4419 0.666016 13.9998 0.666016C13.5578 0.666016 13.1339 0.841611 12.8213 1.15417C12.5088 1.46673 12.3332 1.89065 12.3332 2.33268V12.3327H2.33317C1.89114 12.3327 1.46722 12.5083 1.15466 12.8208C0.842099 13.1334 0.666504 13.5573 0.666504 13.9993C0.666504 14.4414 0.842099 14.8653 1.15466 15.1779C1.46722 15.4904 1.89114 15.666 2.33317 15.666H12.3332V25.666C12.3332 26.108 12.5088 26.532 12.8213 26.8445C13.1339 27.1571 13.5578 27.3327 13.9998 27.3327C14.4419 27.3327 14.8658 27.1571 15.1783 26.8445C15.4909 26.532 15.6665 26.108 15.6665 25.666V15.666H25.6665C26.1085 15.666 26.5325 15.4904 26.845 15.1779C27.1576 14.8653 27.3332 14.4414 27.3332 13.9993C27.3332 13.5573 27.1576 13.1334 26.845 12.8208C26.5325 12.5083 26.1085 12.3327 25.6665 12.3327Z"
+                                          fill="#0054A6" />
+                                </svg>
+                                Thêm hình ảnh
+                                <input id="customFile" name="customFile" type="file" class="form-file-input form-control" data-page="Variant" accept="image/*" multiple="multiple" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal" id="Close">Hủy bỏ</button>
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Cập nhật</button>
+                </div>
+            }
+            else
+            {
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="list-form-img">
+                            <label class="form-img" for="customFile">
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M25.6665 12.3327H15.6665V2.33268C15.6665 1.89065 15.4909 1.46673 15.1783 1.15417C14.8658 0.841611 14.4419 0.666016 13.9998 0.666016C13.5578 0.666016 13.1339 0.841611 12.8213 1.15417C12.5088 1.46673 12.3332 1.89065 12.3332 2.33268V12.3327H2.33317C1.89114 12.3327 1.46722 12.5083 1.15466 12.8208C0.842099 13.1334 0.666504 13.5573 0.666504 13.9993C0.666504 14.4414 0.842099 14.8653 1.15466 15.1779C1.46722 15.4904 1.89114 15.666 2.33317 15.666H12.3332V25.666C12.3332 26.108 12.5088 26.532 12.8213 26.8445C13.1339 27.1571 13.5578 27.3327 13.9998 27.3327C14.4419 27.3327 14.8658 27.1571 15.1783 26.8445C15.4909 26.532 15.6665 26.108 15.6665 25.666V15.666H25.6665C26.1085 15.666 26.5325 15.4904 26.845 15.1779C27.1576 14.8653 27.3332 14.4414 27.3332 13.9993C27.3332 13.5573 27.1576 13.1334 26.845 12.8208C26.5325 12.5083 26.1085 12.3327 25.6665 12.3327Z"
+                                          fill="#0054A6" />
+                                </svg>
+                                Thêm hình ảnh
+                                <input id="customFile" name="customFile" type="file" class="form-file-input form-control" data-page="Variant" accept="image/*" multiple="multiple" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal" id="Close">Đóng</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (strPage == "Product")
+{
+    <div class="card-body">
+        <h4 class="card-title">
+            Hình ảnh
+        </h4>
+        <div class="list-form-img">
+            @{
+                if (Model.Count() > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <div class="img-item">
+                            <img name="ImageOld" data-value="@item.Image" src="@XHelper.pathImages@item.Image" alt="">
+                            <i class="close del" data-value="@item.Image">
+                                <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="30" height="30" rx="15" fill="black" fill-opacity="0.48" />
+                                    <path d="M16.4099 15.0002L20.7099 10.7102C20.8982 10.5219 21.004 10.2665 21.004 10.0002C21.004 9.73388 20.8982 9.47849 20.7099 9.29019C20.5216 9.10188 20.2662 8.99609 19.9999 8.99609C19.7336 8.99609 19.4782 9.10188 19.2899 9.29019L14.9999 13.5902L10.7099 9.29019C10.5216 9.10188 10.2662 8.99609 9.99994 8.99609C9.73364 8.99609 9.47824 9.10188 9.28994 9.29019C9.10164 9.47849 8.99585 9.73388 8.99585 10.0002C8.99585 10.2665 9.10164 10.5219 9.28994 10.7102L13.5899 15.0002L9.28994 19.2902C9.19621 19.3831 9.12182 19.4937 9.07105 19.6156C9.02028 19.7375 8.99414 19.8682 8.99414 20.0002C8.99414 20.1322 9.02028 20.2629 9.07105 20.3848C9.12182 20.5066 9.19621 20.6172 9.28994 20.7102C9.3829 20.8039 9.4935 20.8783 9.61536 20.9291C9.73722 20.9798 9.86793 21.006 9.99994 21.006C10.132 21.006 10.2627 20.9798 10.3845 20.9291C10.5064 20.8783 10.617 20.8039 10.7099 20.7102L14.9999 16.4102L19.2899 20.7102C19.3829 20.8039 19.4935 20.8783 19.6154 20.9291C19.7372 20.9798 19.8679 21.006 19.9999 21.006C20.132 21.006 20.2627 20.9798 20.3845 20.9291C20.5064 20.8783 20.617 20.8039 20.7099 20.7102C20.8037 20.6172 20.8781 20.5066 20.9288 20.3848C20.9796 20.2629 21.0057 20.1322 21.0057 20.0002C21.0057 19.8682 20.9796 19.7375 20.9288 19.6156C20.8781 19.4937 20.8037 19.3831 20.7099 19.2902L16.4099 15.0002Z"
+                                          fill="white" />
+                                </svg>
+                            </i>
+                        </div>
+                    }
+                }
+                else
+                {
+
+                    <div class="col-md-2">
+                        <span class="text-warning">Không tồn tại dữ liệu</span>
+                    </div>
+                }
+            }
+
+            <label class="form-img" for="customFile">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M25.6665 12.3327H15.6665V2.33268C15.6665 1.89065 15.4909 1.46673 15.1783 1.15417C14.8658 0.841611 14.4419 0.666016 13.9998 0.666016C13.5578 0.666016 13.1339 0.841611 12.8213 1.15417C12.5088 1.46673 12.3332 1.89065 12.3332 2.33268V12.3327H2.33317C1.89114 12.3327 1.46722 12.5083 1.15466 12.8208C0.842099 13.1334 0.666504 13.5573 0.666504 13.9993C0.666504 14.4414 0.842099 14.8653 1.15466 15.1779C1.46722 15.4904 1.89114 15.666 2.33317 15.666H12.3332V25.666C12.3332 26.108 12.5088 26.532 12.8213 26.8445C13.1339 27.1571 13.5578 27.3327 13.9998 27.3327C14.4419 27.3327 14.8658 27.1571 15.1783 26.8445C15.4909 26.532 15.6665 26.108 15.6665 25.666V15.666H25.6665C26.1085 15.666 26.5325 15.4904 26.845 15.1779C27.1576 14.8653 27.3332 14.4414 27.3332 13.9993C27.3332 13.5573 27.1576 13.1334 26.845 12.8208C26.5325 12.5083 26.1085 12.3327 25.6665 12.3327Z"
+                          fill="#0054A6" />
+                </svg>
+                Thêm hình ảnh
+                <input id="customFile" name="customFile" type="file" class="form-file-input form-control" data-page="Product" accept="image/*" multiple="multiple" />
+            </label>
+        </div>
+    </div>
+}
+<script>
+    var FileName = "";
+    $(document).on("click", "i.del", function () {
+        var Value = $(this).data('value');
+        var oProductID = $('#ProductID').val();
+        var Page = $('#customFile').attr('data-page');
+        var listImage = $(this).parent().parent().parent().find('[name=ImageOld]');
+        var Images = "";
+        for (var i = 0; i < listImage.length; i++) {
+            var Image = $(listImage[i]).data('value');
+            if (Image != Value) {
+                Images += Image + ";" ;
+            }
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá hình ảnh của sản phẩm?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditImages", "Product")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ProductID: oProductID,
+                        Images: Images
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: "Xoá hình ảnh thành công!",
+                                html: true,
+                                button: false,
+                                timer: 1000
+                            });
+                            $.get('@Url.Action("ImagesView", "Product")', { ProductID: oProductID, Page: Page}, function (data) {
+                                    $('.ImagesView').html(data);
+                                });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        CreateCustomSwal("error", err.Message);
+                        return;
+                    }
+                });
+            }
+        });
+    });
+    //Thêm ảnh
+    $('#customFile').on('change', function (e) {
+        var oProductID = $('#ProductID').val();
+        var Page = $('#customFile').attr('data-page');
+        //Danh sách Image hiện tại
+        var listImage = $(this).parent().parent().parent().find('[name=ImageOld]');
+        var Images = "";
+        for (var i = 0; i < listImage.length; i++) {
+            let Image = $(listImage[i]).data('value');
+            Images += Image + ";";
+        }
+         // Image thêm
+        let files = e.target.files;
+
+        //Check số lượng phải < 10
+        let count = 0;
+        count = listImage.length + files.length;
+        if (count > 10) {
+            CreateCustomSwal("error", "Ảnh sản phẩm không được lớn hơn 10 ảnh.");
+            return;
+        }
+        if (files.length > 0) {
+            var data = new FormData();
+            for (var x = 0; x < files.length; x++) {
+                data.append("file" + x, files[x]);
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UploadImage", "DataFile")',
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        //----start-add-images
+                        var list = JSON.parse(res.Data);
+                        for (var i = 0; i < list.length; i++) {
+                            let Image = list[i].FileName;
+                            Images += Image + ";";
+                        }
+                        var req = {
+                            ProductID: oProductID,
+                            Images: Images
+                        };
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("JEditImages", "Product")',
+                            dataType: 'json',
+                            loading: true,
+                            data: req,
+                            success: function (res) {
+                                if (res.Code == '00') {
+                                    swal({
+                                        title: "Thông báo",
+                                        icon: "success",
+                                        text: res.Message,
+                                        button: false,
+                                        timer: 1000
+                                    });
+                                }
+                                else {
+                                    CreateCustomSwal("error", res.Message);
+                                    return;
+                                }
+                                $.get('@Url.Action("ImagesView", "Product")', { ProductID: oProductID, Page: Page}, function (data) {
+                                    $('.ImagesView').html(data);
+                                });
+                            },
+                            error: function (error) {
+                                CreateCustomSwal("error", 'Vui lòng kiểm tra lại kết nối mạng');
+                                return;
+                            }
+                        });
+                        //----end-add-images
+                    }
+                    else {
+                        CreateCustomSwal("error", res.Message);
+                        return;
+                    }
+                },
+                error: function (error) {
+                    CreateCustomSwal("error", 'Vui lòng kiểm tra lại kết nối mạng');
+                    return;
+                }
+            });
+        }
+    });
+    function FuncActive(ctl) {
+        var list = document.getElementsByName('VariantImage');
+        for (var i = 0; i < list.length; i++) {
+            $(list[i]).removeClass('active-custom');
+        }
+        $(ctl).addClass('active-custom');
+        FileName = "";
+        FileName = $(ctl).children('img').attr('data-value');
+    }
+    //Cập nhật ảnh biến thể
+    $('#btnSubmit').on('click', function (e) {
+        $('#VariantImage').attr('src', '@XHelper.pathImages' + FileName);
+        $('#VariantImage').attr('data-filename', FileName);
+        $('#Close').click();
+    });
+</script>

@@ -1,0 +1,78 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListConversionViewModel
+@using Newtonsoft.Json;
+<a id="conversion-@Model.UserID"
+   data-Index="@Model.ConversionIndex"
+   data-ListSticker='@Html.Raw(JsonConvert.SerializeObject(Model.ListSticker))'
+   onclick="LoadContentConversion(@Model.ConversionID,'@Model.UserID','@Model.DisplayName','@Model.Avatar','@Model.ProfileLink')"
+   class="c-pointer text-black d-block m-1 p-2 bg-conversion-box rounded">
+    <div class="d-none" id="Info-@Model.UserID" data-ConversionID="@Model.ConversionID" data-UserID="@Model.UserID" data-SenderID="@Model.SenderID" data-DisplayName="@Model.DisplayName" data-Avatar="@Model.Avatar"></div>
+    <div class="d-flex align-items-start">
+        <img src="@Model.Avatar" class="rounded-circle me-1" alt="@Model.DisplayName" width="40" height="40">
+        <div class="flex-grow-1 me-3">
+            <span>@Model.DisplayName</span>
+            <div class="small text-muted mt-1" id="MessageOfConversion-@Model.UserID" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                @{
+                    if (Model.UserID != Model.SenderID)
+                    {
+                        Model.MessageText = "Bạn: " + Model.MessageText;
+                    }
+
+                    switch (Model.MessageType)
+                    {
+                        case "IMAGE":
+                            <i class="fas fa-image"></i> Write("[Hình ảnh]");
+                            break;
+                        case "FILE":
+                            <i class="fa fa-file"></i> Write("[File]");
+                            break;
+                        case "FALLBACK":
+                            <i class="fa fa-file"></i> Write("[Fallback]");
+                            break;
+                        case "VIDEO":
+                            <i class="fa fa-file-video-o"></i> Write("[Video]");
+                            break;
+                        case "AUDIO":
+                            <i class="fa fa-file-audio-o"></i> Write("[Ghi âm]");
+                            break;
+                        default:
+                            Write(Model.MessageText);
+                            break;
+                    }
+                }
+            </div>
+        </div>
+        <div class="m-auto">
+            <span class="badge badge-pill badge-danger @{if (Model.NumberOfMessage == 0) { Write("d-none"); } }" id="NumberOfMessage-@Model.UserID" style="background-color: #FF3B30;">@Model.NumberOfMessage</span>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        @{
+            var CreatedDateTemp = "";
+            var dtFormat = DateTime.Now.ToString("dd/MM/yyyy");
+            if (Model.UpdatedDate.Split(' ')[0] != CreatedDateTemp)
+            {
+                if (dtFormat == Model.UpdatedDate.Split(' ')[0])
+                {
+                    <small class="text-muted">@Model.UpdatedDate.Split(' ')[1]</small>
+                }
+                else
+                {
+                    <small class="text-muted">@Model.UpdatedDate.Split(' ')[0]</small>
+                }
+                CreatedDateTemp = Model.UpdatedDate.Split(' ')[0];
+            }
+        }
+    </div>
+    <div class="d-flex justify-content-end">
+        <div class="row">
+            <div class="col-12" id="iSticker_@Model.ConversionID">
+                @{
+                    foreach (var iSticker in Model.ListSticker)
+                    {
+                        <div id="iSticker_@Model.ConversionID@("_")@iSticker.StickerID" class="badge badge-outline-secondary m-1" style="color: @iSticker.StickerColor; border-color: @iSticker.StickerColor">@iSticker.StickerName</div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</a>

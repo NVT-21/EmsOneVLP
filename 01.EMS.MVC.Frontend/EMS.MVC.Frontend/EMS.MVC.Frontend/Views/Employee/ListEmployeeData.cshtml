@@ -1,0 +1,334 @@
+﻿@model List<EMS.MVC.Frontend.Models.EmployeeListViewModel>
+
+<div class="card-body">
+    <p class="fs-16 font-w600" id="Name_Store">@ViewBag.Name</p>
+    @*<form>*@
+        <div class="row">
+            <div class="col-md-5">
+                <div class="mb-3">
+                    <div class="form-search">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                  fill="#86909C" />
+                        </svg>
+                        <input type="text" class="form-control" id="EmployeeID" onkeyup="myFunction()" placeholder="Tìm theo số điện thoại, tên nhân viên" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7 d-flex align-items-end justify-content-end">
+                <div class=" mb-3">
+                    <button type="button" class="btn btn-primary" onclick="AddEmployeeModalView()">
+                        <i class="fa fa-plus me-1"></i>
+                        Thêm nhân viên
+                    </button>
+                </div>
+            </div>
+        </div>
+    @*</form>*@
+
+    <div class="table-responsive table-primary">
+        <input type="hidden" id="ShopID" value="@ViewBag.ShopID" />
+        <table class="table table-responsive-md" id="tableListEmployee">
+            <thead>
+                <tr>
+                    <th>Thông tin</th>
+                    <th>Nhóm quyền</th>
+                    <th>Người tạo</th>
+                    <th>Thời gian tạo</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li>@item.FullName</li>
+                                    <li class="fs-12 text-2">
+                                        @item.MobileNumber
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>
+                                @{
+                                    var split = item.GroupPermissionName.Split(',');
+                                    for (var i = 0; i < split.Length; i++)
+                                    {
+                                        <p>@split[i]</p>
+                                    }
+                                }
+                            </td>
+                            <td>@item.CreatedBy</td>
+                            <td>
+                                @{
+                                    var splitCreatedDate = item.CreatedDate.Split(' ');
+                                    <p>@splitCreatedDate[0]</p>
+                                    <p>@splitCreatedDate[1]</p>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.IsLock == "N")
+                                {
+                                    <button type="button" onclick="btnIsLock('@item.ID', 'Y')" class="btn btn-locked">
+                                        <i class="icon-lock fs-18"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" onclick="btnIsLock('@item.ID', 'N')" class="btn btn-locked">
+                                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.9987 15.0026C9.9987 15.4168 10.3345 15.7526 10.7487 15.7526C11.1629 15.7526 11.4987 15.4168 11.4987 15.0026H9.9987ZM11.4987 13.3359C11.4987 12.9217 11.1629 12.5859 10.7487 12.5859C10.3345 12.5859 9.9987 12.9217 9.9987 13.3359H11.4987ZM3.33203 10.8359V17.5026H4.83203V10.8359H3.33203ZM5.7487 19.9193H15.7487V18.4193H5.7487V19.9193ZM18.1654 17.5026V10.8359H16.6654V17.5026H18.1654ZM5.7487 9.91927H6.58203V8.41927H5.7487V9.91927ZM7.33203 9.16927V5.0026H5.83203V9.16927H7.33203ZM6.58203 9.91927H14.9154V8.41927H6.58203V9.91927ZM14.9154 9.91927H15.7487V8.41927H14.9154V9.91927ZM14.1654 5.0026V9.16927H15.6654V5.0026H14.1654ZM11.4987 15.0026V13.3359H9.9987V15.0026H11.4987ZM10.7487 1.58594C12.6357 1.58594 14.1654 3.11563 14.1654 5.0026H15.6654C15.6654 2.2872 13.4641 0.0859375 10.7487 0.0859375V1.58594ZM18.1654 10.8359C18.1654 9.50125 17.0834 8.41927 15.7487 8.41927V9.91927C16.255 9.91927 16.6654 10.3297 16.6654 10.8359H18.1654ZM15.7487 19.9193C17.0834 19.9193 18.1654 18.8373 18.1654 17.5026H16.6654C16.6654 18.0089 16.255 18.4193 15.7487 18.4193V19.9193ZM3.33203 17.5026C3.33203 18.8373 4.41401 19.9193 5.7487 19.9193V18.4193C5.24244 18.4193 4.83203 18.0089 4.83203 17.5026H3.33203ZM7.33203 5.0026C7.33203 3.11563 8.86173 1.58594 10.7487 1.58594V0.0859375C8.0333 0.0859375 5.83203 2.2872 5.83203 5.0026H7.33203ZM4.83203 10.8359C4.83203 10.3297 5.24244 9.91927 5.7487 9.91927V8.41927C4.41401 8.41927 3.33203 9.50125 3.33203 10.8359H4.83203Z"
+                                                  fill="#FF3B30" />
+                                        </svg>
+                                    </button>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-info light" onclick="btnDetail('@item.ID')">
+                                    <i class="icon-edit fs-18"></i>
+                                </button>
+                                <button type="button" class="btn btn-info light" onclick="btnReset('@item.ID', '@item.MobileNumber')">
+                                    <svg width="18" height="16" viewBox="0 0 18 16" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                              d="M9 2C7.27364 2 5.71921 2.7664 4.64496 3.99392C4.37218 4.30563 3.89835 4.33718 3.58664 4.06439C3.27494 3.79161 3.24339 3.31779 3.51617 3.00608C4.85893 1.47173 6.81696 0.5 9 0.5C13.0253 0.5 16.2699 3.79194 16.3485 7.84917L16.7137 7.47566C17.0033 7.1795 17.4782 7.17416 17.7743 7.46374C18.0705 7.75333 18.0758 8.22817 17.7863 8.52434L16.1363 10.2118C15.9952 10.3562 15.8018 10.4375 15.6 10.4375C15.3982 10.4375 15.2049 10.3562 15.0637 10.2118L13.4137 8.52434C13.1242 8.22817 13.1295 7.75333 13.4257 7.46375C13.7218 7.17416 14.1967 7.1795 14.4863 7.47566L14.8481 7.84574C14.7682 4.58822 12.1653 2 9 2ZM2.4 5.5625C2.60183 5.5625 2.79515 5.64385 2.93626 5.78816L4.58626 7.47566C4.87584 7.77183 4.8705 8.24667 4.57434 8.53625C4.27817 8.82584 3.80333 8.8205 3.51375 8.52434L3.15189 8.15426C3.23178 11.4118 5.83474 14 9 14C10.7264 14 12.2808 13.2336 13.355 12.0061C13.6278 11.6944 14.1016 11.6628 14.4134 11.9356C14.7251 12.2084 14.7566 12.6822 14.4838 12.9939C13.1411 14.5283 11.183 15.5 9 15.5C4.97468 15.5 1.73011 12.2081 1.65146 8.15083L1.28626 8.52434C0.996671 8.8205 0.521828 8.82584 0.225662 8.53625C-0.0705034 8.24667 -0.0758387 7.77183 0.213745 7.47566L1.86375 5.78816C2.00485 5.64385 2.19817 5.5625 2.4 5.5625Z"
+                                              fill="#4E5969" />
+                                    </svg>
+                                </button>
+                                <button type="button" class="btn btn-info light" onclick="btnRemoveEmployee('@item.ID')">
+                                    <i class="icon-trash fs-18"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("tableListEmployee");
+    })
+    function myFunction() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("EmployeeID");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tableListEmployee");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function btnIsLock(ID, IsLock) {
+        var text = "";
+        if (IsLock == "N") {
+            text = "Mở khoá";
+        } else {
+            text = "Khoá";
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn " + text + " tài khoản?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ChangeIsLock", "Employee")',
+                    data: {
+                        ID: ID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                LoadEmployeeListData($("#ShopID").val());
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function btnDetail(ID) {
+        var ShopID = $("#ShopID").val();
+            $.get('@Url.Action("DetailView", "Employee")', {
+                ID: ID,
+                ShopLevel: $("#click_tree_" + ShopID).attr("data-ShopLevel"),
+                ShopID: ShopID
+            }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+    }
+
+    function btnReset(ID, UserName) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có muốn đặt lại mật khẩu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ResetPassword", "Employee")',
+                    data: {
+                        ID: ID,
+                        UserName: UserName
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function AddEmployeeModalView(){
+        var ShopID = $("#ShopID").val();
+        $.post('@Url.Action("AddEmployeeView", "Employee")', {
+            ShopLevel: $("#click_tree_" + ShopID).attr("data-ShopLevel")
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnRemoveEmployee(ID) {
+        var dataE = {
+            ID: ID,
+            ShopID : $("#ShopID").val().trim()
+        };
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xóa tài khoản?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveEmployee", "Employee")',
+                    data: dataE,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                LoadEmployeeListData($("#ShopID").val());
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

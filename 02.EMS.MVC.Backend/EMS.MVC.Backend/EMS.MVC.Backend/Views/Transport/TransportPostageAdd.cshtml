@@ -1,0 +1,547 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    td {
+        padding: 5px 5px 5px 5px !important;
+    }
+
+    th {
+        padding: 10px 10px !important;
+        font-weight: 500 !important;
+    }
+
+    .datepicker-days .table-condensed {
+        margin-bottom: 20px;
+    }
+</style>
+<div class="col-12">
+    <div class="grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="template-demo">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-custom">
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                            <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView", "TransportMainService")">Danh sách bảng cước</a></li>
+                            <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="col-12 mb-4">
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 p-1">
+                        <button id="step1" class="btn btn-sm btn-primary w-100 h-100 text-left" style="line-height: 150%;">
+                            <b>1. Thông tin cơ bản</b>
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-md-3 p-1">
+                        <button id="step1" class="btn btn-sm btn-primary w-100 h-100 text-left" style="line-height: 150%;">
+                            <b>2. Khai báo cước chính</b>
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-md-3 p-1">
+                        <button id="step1" class="btn btn-sm btn-primary w-100 h-100 text-left" style="line-height: 150%;">
+                            <b>3. Khai báo phụ phí</b>
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-md-3 p-1">
+                        <button id="step1" class="btn btn-sm btn-primary w-100 h-100 text-left" style="line-height: 150%;">
+                            <b>4. Khai báo cước dịch vụ cộng thêm</b>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="Content">
+                @*-----Thông tin cơ bản-----*@
+                @{ Html.RenderAction("TransportPostageBasicInfoAdd", "Transport");}
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+    $('#SubjectsOfApplication').on('change', function () {
+        var value = $('#SubjectsOfApplication').val();
+        $('#ApplyToShopGroups').selectpicker('deselectAll');
+        $('#ApplyToShops').selectpicker('deselectAll');
+        $('#ApplyToProvinces').selectpicker('deselectAll');
+        $('#ApplicationObjectValue').html('');
+
+        if (value == "1") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').hide();
+        }
+        else if (value == "2") {
+            $('#ApplyToShopGroupsView').show();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').show();
+        }
+        else if (value == "3") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').show();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').show();
+        }
+        else if (value == "4") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').show();
+            $('#ApplicationObjectValueView').show();
+        }
+    });
+
+    //Kiểm tra thời gian sử dụng
+    $('#StartDate, #EndDate, #cbEndDate').on('change', function () {
+        var CheckEndDate = document.getElementById("cbEndDate").checked;
+        if (CheckEndDate) {
+            $('#EndDate').prop("disabled", false);
+        }
+        else {
+            $('#EndDate').val("");
+            $('#EndDate').prop("disabled", true);
+        }
+
+        let strStartDate = $('#StartDate').val();
+        let strEndDate = $('#EndDate').val();
+        if (strStartDate != "") {
+            $('#errStartDate').text('');
+        }
+        $('#errEndDate').text('');
+        if (strEndDate == "" && CheckEndDate) {
+            $('#errEndDate').text('Trường này không được để trống.');
+        }
+        if (CheckEndDate && strStartDate != "" && strEndDate != "") {
+            var StartDate = convertDate(strStartDate);
+            var EndDate = convertDate(strEndDate);
+            if (StartDate > EndDate) {
+                if (this.id == "StartDate") {
+                    $("#EndDate").datepicker("setDate", StartDate);
+                }
+                else {
+                    $("#StartDate").datepicker("setDate", EndDate);
+                }
+            }
+            else {
+                $('#errEndDate').text('');
+            }
+        }
+        else if (CheckEndDate && StartDate != "" && EndDate == "") {
+            $('#EndDate').val(StartDate);
+        }
+    });
+
+    $('#ApplyToShops, #ApplyToProvinces').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        var selectID = $(this).attr('ID');
+        var text = "";
+        $("#" + selectID + " option:selected").each(function () {
+            var $this = $(this);
+            if ($this.length) {
+                text += '<div class="col-3 pb-2">' + $this.text() + ' <i class="fa fa-times del text-danger" title="Xoá" onclick="removeThis(' + "'" + $this.val() + "'" + ',this,' + "'" + selectID + "'" + ');"></i> </div>';
+            }
+        });
+        $('#ApplicationObjectValue').html(text);
+    });
+
+    function removeThis(val, This, selectID) {
+        $("#" + selectID + " option[value='" + val + "']").prop("selected", false);
+        $(This).parent().remove();
+        var length = $("#" + selectID + " option:selected").length;
+        $('.filter-option-inner-inner').text(length + ' mục đã chọn');
+    }
+    function checkRange() {
+        var value = $('#radioRange input:radio:checked').val()
+        if (value == "1") {
+            $('#Range1').show();
+            $('#Range2').hide();
+        }
+        else if (value == "2") {
+            $('#Range2').show();
+            $('#Range1').hide();
+        }
+    }
+
+    //TAB-2 Căn cứ tính cước
+    $('#AddRangeWeight').on('click', function () {
+        $.get('@Url.Action("TransportPostageRangeWeight", "Transport")', function (htmlString) {
+            $('#Range_Weight_Body').append(htmlString);
+        })
+    });
+
+    $('#AddRange').on('click', function () {
+        $.get('@Url.Action("TransportPostageRange", "Transport")', function (htmlString) {
+            $('#Range_Body').append(htmlString);
+        })
+    });
+
+    $('#cbMainFee_Weight, .cbMainFee_Range, #cbMainFee_RangeView').on('change', function () {
+        var CheckedW = document.getElementById("cbMainFee_Weight").checked;
+        var CheckedR = document.getElementById("cbMainFee_Range").checked;
+        var CheckedRangeView = document.getElementById("cbMainFee_RangeView").checked;
+
+        if (CheckedW && CheckedR && CheckedRangeView) {
+            $('#MainFee_Weight').hide();
+            $('#MainFee_Range').hide();
+            $('#MainFee_Range_Weight').show();
+        }
+        else if (CheckedW) {
+            $('#MainFee_Range_Weight').hide();
+            $('#MainFee_Weight').show();
+        }
+        else if (CheckedR && CheckedRangeView) {
+            $('#MainFee_Range_Weight').hide();
+            $('#MainFee_Range').show();
+        }
+        else {
+            $('#MainFee_Weight').hide();
+            $('#MainFee_Range').hide();
+            $('#MainFee_Range_Weight').hide();
+        }
+    });
+    //-------------->
+
+    //TAB-4 Căn cứ tính cước
+    $('#ExtraService_AddRange').on('click', function () {
+        $.get('@Url.Action("TransportPostageExtraServiceRange", "Transport")', function (htmlString) {
+            $('#ExtraService_Range_Body').append(htmlString);
+        })
+    });
+
+    $('#ExtraService_AddRangeWeight').on('click', function () {
+        $.get('@Url.Action("TransportPostageExtraServiceRangeWeight", "Transport")', function (htmlString) {
+            $('#ExtraService_Range_Weight_Body').append(htmlString);
+        })
+    });
+
+    $('#cbExtraService_Weight, #cbExtraService_Range').on('change', function () {
+        var CheckedWeight = document.getElementById("cbExtraService_Weight").checked;
+        var CheckedRange = document.getElementById("cbExtraService_Range").checked;
+        if (CheckedWeight && CheckedRange) {
+            $('#ExtraService_Weight').hide();
+            $('#ExtraService_Range').hide();
+            $('#ExtraService_Range_Weight').show();
+        }
+        else if (CheckedWeight) {
+            $('#ExtraService_Range_Weight').hide();
+            $('#ExtraService_Weight').show();
+        }
+        else if (CheckedRange) {
+            $('#ExtraService_Range_Weight').hide();
+            $('#ExtraService_Range').show();
+        }
+        else {
+            $('#ExtraService_Weight').hide();
+            $('#ExtraService_Range').hide();
+            $('#ExtraService_Range_Weight').hide();
+        }
+    });
+    //------------->
+    function RemoveRange(This) {
+        $(This).parent().parent().parent().remove();
+    };
+
+    function SurchargeUnit(This) {
+        var val = $(This).val();
+        if (val == "2") {
+            $(This).parent().parent().find('.SurchargePercent').show();
+        }
+        else {
+            $(This).parent().parent().find('.SurchargePercent').hide();
+        }
+    };
+
+    function AddItemPostageWeight(This) {
+        var strHtml = '<tr>' +
+            '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+            '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+            '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập mức giá" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+            '<td class="text-center"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>' +
+            '</tr>'
+        $(This).parents('table').find('tbody').append(strHtml);
+
+        var ROOT = window.location.origin;
+        loadjs(ROOT + '/Assets/js/inputmask.js');
+    }
+
+    //function AddItemPostageExtraServiceWeight(This) {
+    //    var strHtml = '<tr>' +
+    //                    '<td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+    //                    '<td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+    //                    '<td class="col-8">'+
+    //                        '<div class="row">' +
+    //                            '<div class="col-md-6">' +
+    //                                '<select class="form-control form-control-sm" onchange="CheckUnit(this)">' +
+    //                                '<option value="1" selected>Việt nam đồng (VNĐ)</option>' +
+    //                                '<option value="2">Phần trăm (%)</option>' +
+    //                                '</select>' +
+    //                            '</div>' +
+    //                            '<div class="col-md-6">' +
+    //                                '<input class="form-control form-control-sm" type="text" name="Value" placeholder="Nhập giá trị" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+    //                            '</div>' +
+    //                            '<div class="col-md-6 mt-3 SurchargePercent d_none Percent">' +
+    //                                '<input class="form-control form-control-sm" name="Min" placeholder="Nhập số tiền tối thiểu" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+    //                            '</div>' +
+    //                            '<div class="col-md-6 mt-3 SurchargePercent d_none Percent">'+
+    //                                '<input class="form-control form-control-sm" name="Max" placeholder="Nhập số tiền tối đa" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+    //                            '</div>' +
+    //                        '</div>' +
+    //                    '</td>' +
+    //                    '<td class="text-center"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>'+
+    //                  '</tr>'
+    //    $(This).parents('table').find('tbody.BodyExtraServiceWeight').append(strHtml);
+
+    //    var ROOT = window.location.origin;
+    //    loadjs(ROOT + '/Assets/js/inputmask.js');
+    //}
+
+    function RemoveItemPostageWeight(This) {
+        $(This).parent().parent().remove();
+    }
+
+    //function AddItemPostageWeight(This) {
+    //    var strHtml = '<tr>' +
+    //        '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" /></td>' +
+    //        '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" /></td>' +
+    //        '<td><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập mức giá" /></td>' +
+    //        '<td class="text-center"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>' +
+    //        '</tr>'
+    //    $(This).parents('table').find('tbody').append(strHtml);
+    //}
+
+    //function RemoveItemPostageWeight(This) {
+    //    $(This).parent().parent().remove();
+    //}
+
+
+    //-------------TransportPostageExtraServiceRange----------------->
+    function CheckFromRangeType(This) {
+        var value = $(This).val();
+        if (value == "1") {
+            $(This).parent().parent().find('.FromRegion').show();
+            $(This).parent().parent().find('.FromProvince').hide();
+        }
+        else if (value == "2") {
+            $(This).parent().parent().find('.FromRegion').hide();
+            $(This).parent().parent().find('.FromProvince').show();
+        }
+    };
+
+    function CheckToRangeType(This) {
+        var value = $(This).val();
+        if (value == "1") {
+            $(This).parent().parent().find('.ToRegion').show();
+            $(This).parent().parent().find('.ToProvince').hide();
+        }
+        else if (value == "2") {
+            $(This).parent().parent().find('.ToRegion').hide();
+            $(This).parent().parent().find('.ToProvince').show();
+        }
+
+    };
+
+
+    //-------------END------TransportPostageExtraServiceRange----------------->
+
+    //---------------Submit------------------>
+    $('#btn-Submit').on('click', function () {
+        let ulError = document.getElementById("error-msg"), isError = false;
+        ulError.innerHTML = '';
+
+        // Ngày kết thúc
+        let EndDate = "";
+        let cbEndDate = getCheckboxValue("cbEndDate");
+        if (cbEndDate == "Y") {
+            EndDate = $('#EndDate').val();
+            isError = checkNull(EndDate, '#errEndDate', isError);
+        }
+
+
+        let agrs = {
+            //Tab 1 --- BasicInfo
+            Code: $('#Code').val(),
+            Name: $('#Name').val(),
+            StartDate: $('#StartDate').val(),
+            EndDate: EndDate,
+            MainServiceID: $('#MainServiceID').val(),
+            Area: 1, // 1 là Trong nước
+            RegionGroupID: $('#RegionGroupID').val(),
+            SubjectsOfApplication: $('#SubjectsOfApplication').val(),
+            //Tab 2 --- MainFee
+            MainFeeVAT: getCheckboxValue("MainFee_VAT"),
+            MainFeeWeight: getCheckboxValue("cbMainFee_Weight"),
+            //Tab 3 --- Surcharge
+            SurchargeVAT: getCheckboxValue("Surcharge_VAT"),
+            Fuel: getCheckboxValue("cbFuel"),
+            RemoteArea: getCheckboxValue("cbRemoteArea"),
+            IslandsArea: getCheckboxValue("cbIslandsArea"),
+            MainFeeRangeView: getCheckboxValue("cbMainFee_RangeView"),
+            //Tab 4 --- ExtraService
+            ExtraServiceID: $('#ExtraServiceID').val(),
+            ExtraServiceVAT: getCheckboxValue("ExtraService_VAT"),
+            ExtraServicePostage: getCheckboxValue("cbExtraService_Postage"),
+            ExtraServiceQuantity: getCheckboxValue("cbExtraService_Quantity"),
+            ExtraServiceHeavyGoods: getCheckboxValue("cbExtraService_HeavyGoods"),
+            ExtraServiceLightGoods: getCheckboxValue("cbExtraService_LightGoods"),
+            ExtraServiceRange: getCheckboxValue("cbExtraService_Range"),
+            ExtraServiceWeight: getCheckboxValue("cbExtraService_Weight"),
+            ExtraServiceDeclaredValue: getCheckboxValue("cbExtraService_DeclaredValue"),
+            ExtraServiceMainFee: getCheckboxValue("cbExtraService_MainFee"),
+            ExtraServiceSurcharge: getCheckboxValue("cbExtraService_Surcharge")
+        };
+
+        //checkNull
+        isError = checkNull(agrs.Code, '#errCode', isError);
+        isError = checkNull(agrs.Name, '#errName', isError);
+        isError = checkNull(agrs.StartDate, '#errStartDate', isError);
+        isError = checkNull(agrs.MainServiceID, '#errMainServiceID', isError);
+        isError = checkNull(agrs.RegionGroupID, '#errRegionGroupID', isError);
+        isError = checkNull(agrs.SubjectsOfApplication, '#errSubjectsOfApplication', isError);
+
+        //Thông tin cơ bản - Áp dụng cho
+        if (agrs.SubjectsOfApplication == 3) //Khách hàng
+        {
+            agrs.ApplicationObjectValue = $('#ApplyToShops').val();
+            isError = checkNull(agrs.ApplicationObjectValue, '.errApplicationObjectValue', isError);
+        }
+        else if (agrs.SubjectsOfApplication == 4)//Nơi xuất phát
+        {
+            agrs.ApplicationObjectValue = $('#ApplyToProvinces').val();
+            isError = checkNull(agrs.ApplicationObjectValue, '.errApplicationObjectValue', isError);
+        }
+
+        //Khai báo cước chính - Căn cứ tính cước
+        let cbMainFee_RangeView = getCheckboxValue("cbMainFee_RangeView"); // Phạm vi
+
+        if (agrs.MainFeeWeight == "Y" && cbMainFee_RangeView == "Y") //Khối lượng + Phạm vi
+        {
+            let cbMainFee_Range = getCheckboxValue("cbMainFee_Range");
+            if (cbMainFee_Range == "N") //Nội tỉnh
+            {
+                agrs.MainFeeRange = 1;
+                let MainFeeWeightValue = {};
+                let MainFee_Weight = $('#MainFee_Weight').find('tbody').find('tr')
+                MainFee_Weight
+
+            }
+            else if (cbMainFee_Range == "Y")//Liên Tỉnh
+            {
+                agrs.MainFeeRange = 2;
+            }
+
+            agrs.TwoWay = getCheckboxValue("TwoWay"); //Phạm vi - Hỗ trợ vận chuyển 2 chiều
+            agrs.MainFeeRemoteArea = getCheckboxValue("cbRemoteAreaView"); //Phạm vi - Vùng xa
+            agrs.MainFeeIslandsArea = getCheckboxValue("cbIslandsAreaView"); //Phạm vi - Vùng hải đảo
+        }
+
+
+
+
+        //Tên bảng cước
+        let Name = $('#Name').val();
+        isError = funcRequired('Name', isError);
+
+        //Ngày bắt đầu
+        let StartDate = $('#StartDate').val();
+        isError = funcRequired('StartDate', isError);
+
+        //Ngày kết thúc
+        var checkedEndDate = document.getElementById("cbEndDate").checked;
+        if (checkedEndDate) {
+            let EndDate = $('#EndDate').val();
+            isError = funcRequired('EndDate', isError);
+            if (EndDate != "") {
+                if (convertDate(StartDate) > convertDate(EndDate)) {
+                    $('#errEndDate').text('Thời gian không hợp lệ');
+                    isError = true;
+                }
+            }
+        }
+
+        console.log('log', isError);
+        if (isError) {
+            return;
+        };
+
+        swal({
+            title: 'Xác nhận hành động',
+            text: "Bạn chắc chắn muốn thêm chương trình khuyến mãi này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAddPromotion", "Promotions")',
+                    dataType: 'json',
+                    loading: true,
+                    data: agrs,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                icon: "success",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function () { window.location.href = "@Url.Action("Index", "Promotions")" }, 1200);
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+</script>

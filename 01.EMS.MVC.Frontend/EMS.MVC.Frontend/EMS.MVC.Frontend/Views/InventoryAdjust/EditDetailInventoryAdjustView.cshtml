@@ -1,0 +1,350 @@
+﻿@model EMS.MVC.Frontend.Models.EditDetailInventoryAdjustViewModel
+@{
+    ViewBag.Title = "EditDetailInventoryAdjustView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">        
+        <div class="card-body">
+            <div class="header-content">
+                <p class="fs-18 font-w600">Mã phiếu điều chỉnh @Model.InventoryCode</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-2">
+                    <label>Kho điều chỉnh: <b>@Model.Warehouse.Name</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Ngày điều chỉnh: <b>@Model.ImplementationDate</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Mã phiếu kiểm kho: <a href="@Url.Action("DetailStockTakeView", "StockTake", new { ID = Model.StockTake.ID })"></a></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Ghi chú: <b>@Model.Note</b></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive table-primary">
+                <span class="text-danger err" id="errOrderedProducts"></span>
+                <table id="tableOrderedProducts" class="table table-responsive-md">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Tên sản phẩm</th>
+                            <th class="text-center">Tồn kho hiện tại</th>
+                            @if (Model.StockTake.ID != 0)
+                            {
+                                <th class="text-center">
+                                    Số lượng chênh lệch
+                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Là số lượng chênh lệch sản phẩm theo phiếu kiểm"></i>
+                                </th>
+                            }
+                            <th class="text-center">Số lượng điều chỉnh</th>
+                            <th class="text-center">
+                                Số lượng sau điều chỉnh
+                                <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Số lượng sau điều chỉnh = Tồn kho hiện tại + Số lượng điều chỉnh"></i>
+                            </th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Products">
+                        @{
+                            Html.RenderAction("DetailByInventoryID", "InventoryAdjust", new { InventoryID = Model.InventoryID, StockTakeID = Model.StockTake.ID });
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-12">
+                <div class="d-lg-flex justify-content-end align-items-center">
+                    <button onclick="btnBack()" type="button" class="btn btn-outline-dark">Quay lại</button>
+                    <button id="btnReject" type="button" class="btn btn-danger">Từ chối</button>
+                    <button onclick="btnApprove(@Model.InventoryID)" type="button" class="btn btn-primary">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function funcTotalAmount() {
+        let TotalAmount = 0;
+        let list = $('#Products').find('tr');
+        for (let i = 0; i < list.length; i++) {
+            let Quantity = $(list[i]).find('[name=ProductQuantity]').text().replaceAll(',', '');
+            let Price = $(list[i]).find('[name=ProductPrice]').text().replaceAll(',', '');
+            TotalAmount += Number(Quantity * Price);
+        };
+        return TotalAmount;
+    }
+
+    function btnBack() {
+        window.location.href = '@Url.Action("InventoryAdjustView", "InventoryAdjust")';
+    }    
+
+    $("#btnReject").on("click", function () {
+        $.get('@Url.Action("RejectInventoryAdjust", "InventoryAdjust")', { ID: @Model.InventoryID }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    })
+
+    function btnApprove(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn gửi yêu cầu xác nhận phiếu này?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JConfirmInventoryAdjust", "InventoryAdjust")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: ID,
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = '@Url.Action("InventoryAdjustView", "InventoryAdjust")';
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function funcEditDetail(DetailID, This) {
+        let isError = false;
+        $('#errProductImportID').text('');
+        let agrs = {
+            DetailID: DetailID,
+            InventoryID: @Model.InventoryID,
+            Quantity: $('#QuantityAdjustment_' + DetailID).val().replaceAll(',', '')
+        };
+        isError = CheckNullValue(agrs.Quantity, '#errQuantityAdjustment_' + DetailID, isError);
+
+        if (isError) {
+            return;
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn chỉnh sửa sản phẩm này?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditDetailInventoryAdjust", "InventoryAdjust")',
+                    dataType: 'json',
+                    loading: true,
+                    data: agrs,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            $.get('@Url.Action("DetailByInventoryID", "InventoryAdjust")', { InventoryID: @Model.InventoryID, StockTakeID: @Model.StockTake.ID}, function (data) {
+                                $('#Products').html(data);
+                                $('#RequestConfirm').show();
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            };
+        });
+    }
+
+    function funcCancelEditDetail() {
+        $.get('@Url.Action("DetailByInventoryID", "InventoryAdjust")', { InventoryID: @Model.InventoryID, StockTakeID: @Model.StockTake.ID }, function (data) {
+            $('#Products').html(data);
+        });
+    }
+
+    function funcSetupEditDetail(DetailID) {
+        //Vô hiệu hoá thêm sản phẩm
+        $('#ProductVariantID').val('0');
+        $('#ProductVariantID').trigger('change');
+        $('#QuantityAdjustment').val('0');
+        $('#QuantityAfterAdjustment').text('0');
+        $('#ProductVariantID').prop('disabled', true);
+        $('#QuantityAdjustment').prop('disabled', true);
+        $('#btnAddDetail').prop('disabled', true);
+
+        //bỏ vô hiệu hoá input
+        $('#QuantityAdjustment_' + DetailID).prop('disabled', false);
+
+        ////hiện button xác nhận - huỷ
+        $('#EditConfirmation_' + DetailID).css('display', 'block');
+        $('#CancelEdit_' + DetailID).css('display', 'block');
+
+        //ẩn các button thêm - sửa - xoá
+        $('button[name="btnEditDetail"]').css('display', 'none');
+        $('button[name="btnRemoveDetail"]').css('display', 'none');
+    }
+    function funcRemoveDetail(DetailID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá sản phẩm này?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveDetail", "InventoryAdjust")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        DetailID: DetailID,
+                        InventoryID: @Model.InventoryID,
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                $.get('@Url.Action("DetailByInventoryID", "InventoryAdjust")', { InventoryID: @Model.InventoryID, StockTakeID: @Model.StockTake.ID }, function (data) {
+                                    $('#Products').html(data);
+                                    $('#RequestConfirm').show();
+                                });
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+    //ENTER
+    $('#ProductImportID, #ProductQuantity, #ProductPrice').keypress(function (e) {
+        if (e.keyCode === 13) {
+            $('#btnAddDetail').click();
+        }
+    });
+
+    $('#ProductQuantity, #ProductPrice').on('keyup', function () {
+        var ID = $(this).attr('ID');
+        funcRequired(ID);
+    });
+
+</script>
+

@@ -1,0 +1,144 @@
+﻿@model IEnumerable<EMS.MVC.Backend.Models.TransportPostageExtraServiceListViewModel>
+
+@{
+    ViewBag.Title = "TransportPostageExtraServiceList";
+    Layout = null;
+}
+<table id="dataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> Mã dịch vụ </th>
+            <th> Tên dịch vụ </th>
+            <th> Đã bao gồm VAT </th>
+            <th> Thời gian áp dụng </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td class="text-left">
+                        <a href="@Url.Action("TransportPostageBasicInfo", "Transport", new { PostageID = item.ID })" title="Thông tin chi tiết hồ sơ">@item.ServiceName</a>
+                    </td>*@
+                <td class="text-left">
+                    @item.ServiceCode
+                </td>
+                <td class="text-left">
+                    @item.ServiceName
+                </td>
+                <td class="text-center">
+                    @item.VAT
+                </td>
+                <td>
+                    <p>Từ @item.StartDate</p>
+                    @if (@item.EndDate != "")
+                    {
+                        <p>đến @item.EndDate</p>
+                    }
+                </td>
+                <td>
+                    <button type="button" title="Chi tiết" onclick="location.href = '@Url.Action("TransportPostageExtraServiceDetail", "Transport", new { PostageID = item.ID})'" class="badge badge-outline-primary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <button type="button" title="Sửa" onclick="location.href = '@Url.Action("TransportPostageExtraService", "Transport", new { PostageID = item.ID})'" class="badge badge-outline-warning">
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    @if (item.IsLock == "N")
+                    {
+                        <button type="button" title="Tạm dừng" onclick="Lock('@item.ID')" class="badge badge-outline-danger">
+                            <i class="fa fa-stop"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" title="Mở" onclick="Unlock('@item.ID')" class="badge badge-outline-primary">
+                            <i class="fa fa-play"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            aLengthMenu: [
+                [10, 15, -1],
+                [10, 15, "Tất cả"]
+            ],
+            info: true,
+            searching: true,
+            ordering: false,
+            paging: true,
+            iDisplayLength: 10,
+            bLengthChange: true,
+            language: {
+                sSearch: "Tìm kiếm",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ dòng',
+                oPaginate: {
+                    sFirst: 'Trang đầu',
+                    sPrevious: 'Trang trước',
+                    sNext: 'Trang sau',
+                    sLast: 'Trang cuối'
+                },
+                emptyTable: "Không có dữ liệu",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 dòng",
+                zeroRecords: "Không tìm thấy dòng phù hợp",
+                infoFiltered: "(tìm kiếm từ _MAX_ dòng)",
+                loadingRecords: "Đang tải...",
+                processing: "Đang xử lý...",
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            dom: 'Bfrtip',
+            buttons: [{
+                extend: 'excelHtml5',
+                //messageTop: 'Danh sách bảng cước chính',
+                text: 'Xuất Excel',
+                className: 'btn btn-sm btn-primary',
+                title: 'DANH_SACH_BANG_CUOC_DICH_VU_CONG_THEM',
+                //autoFilter: true,
+                customize: function (xlsx) {
+                    //    //console.log(xlsx);
+                    var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                    $('row c[r*="2"]', sheet).attr('s', '25');
+                    $('row c[r*="3"]', sheet).attr('s', '25');
+                    $('row c[r*="4"]', sheet).attr('s', '25');
+                    $('row c[r*="5"]', sheet).attr('s', '25');
+                    $('row c[r*="6"]', sheet).attr('s', '25');
+                    $('row c[r*="7"]', sheet).attr('s', '25');
+                    $('row c[r*="8"]', sheet).attr('s', '25');
+                    $('row c[r*="9"]', sheet).attr('s', '25');
+                    $('row c[r*="10"]', sheet).attr('s', '25');
+                    $('row c[r*="11"]', sheet).attr('s', '25');
+                    //    $('row c[r*="12"]', sheet).attr('s', '25');
+                    //    $('row c[r*="13"]', sheet).attr('s', '25');
+                    //    $('row c[r*="14"]', sheet).attr('s', '25');
+                    //    $('row c[r*="15"]', sheet).attr('s', '25');
+                    //    $('row c[r*="16"]', sheet).attr('s', '25');
+                    //    $('row c[r*="17"]', sheet).attr('s', '25');
+                    //    $('row c[r*="18"]', sheet).attr('s', '25');
+                    $('row c[r="1"]', sheet).attr('s', '2');
+                    //    $('row c[r="2"]', sheet).attr('s', '2');
+                    $('c[r=A1] t', sheet).text('Danh sách bảng cước dịch vụ cộng thêm');
+
+                },
+                exportOptions: {
+                    columns: [0, 1, 2, 3]
+                }
+            }]
+        });
+        $('#dataTable').each(function () {
+            var datatable = $(this);
+            // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            // LENGTH - Inline-Form control
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+</script>

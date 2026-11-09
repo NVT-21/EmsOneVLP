@@ -1,0 +1,347 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_UpdateUserInformationViewModel
+
+<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Cập nhật thông tin</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <input type="hidden" value="@Model.ChannelUserID" id="ChannelUserID" />
+            <input type="hidden" value="@Model.DisplayName" id="DisplayName" />
+            <input type="hidden" value="@Model.Avatar" id="Avatar" />
+            <div class="row mb-2" id="showUpdateCustomer" style="display: none;">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-3">
+                    <label class="mb-1">
+                        <span class="text-danger">
+                            <span class="text-danger">(*): </span>Khách hàng đã tồn tại trên EMSOne.<br />
+                            Bạn có muốn cập nhật thông tin khách hàng trên EMSOne theo khách hàng Facebook?
+                        </span>
+                    </label>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" value="Y" name="radioCheckUpdatedCustomer" id="YesCheckUpdatedCustomer">
+                        <label class="form-check-label">
+                            Có
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" value="N" name="radioCheckUpdatedCustomer" id="NoCheckUpdatedCustomer">
+                        <label class="form-check-label ">
+                            Không
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2" id="showUpdateCustomerNotExists" style="display: none;">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-3">
+                    <label class="mb-1">
+                        <span>
+                            (*): Khách hàng chưa có trên EMSOne.<br />
+                            Sau khi chỉnh sửa thông tin thành công, khách hàng này sẽ được thêm vào danh sách khách hàng trên EMSOne
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label for="MobileNumber">Số điện thoại <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="MobileNumber" placeholder="Nhập số điện thoại" autocomplete="off" value="@Model.MobileNumber" maxlength="11">
+                    <span class="text-danger" id="errMobileNumber"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="FullName">Họ và tên <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="FullName" placeholder="Nhập họ và tên" value="@Model.FullName" autocomplete="off">
+                    <span class="text-danger" id="errFullName"></span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label for="Email">Email</label>
+                    <input type="text" class="form-control" id="Email" placeholder="Nhập địa chỉ email" value="@Model.Email" autocomplete="off">
+                    <span class="text-danger" id="errEmail"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="IsBlackList">Danh sách đen</label>
+                    <select id="IsBlackList" class="select2">
+                        <option value="Y" @{ if (Model.IsBlackList == "Y") { Write("selected"); } }>Có</option>
+                        <option value="N" @{ if (Model.IsBlackList == "N") { Write("selected"); } }>Không</option>
+                    </select>
+                    <span class="text-danger" id="errIsBlackList"></span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-12">
+                    <label for="Address">Địa chỉ <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="Address" placeholder="Nhập địa chỉ" autocomplete="off" value="@Model.Address" maxlength="500">
+                    <span class="text-danger" id="errAddress"></span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label for="Province_ID">Tỉnh/ Thành phố <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.Province.ID, new SelectList(ViewBag.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @id = "mProvinceID", @onchange = "LoadListDistrict('mProvinceID', 'mDistrictID', 'mWardID')" })
+                    <span class="text-danger" id="errmProvinceID"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="District_ID">Quận/ Huyện <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.District.ID, new SelectList(ViewBag.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @id = "mDistrictID", @onchange = "LoadListWard('mDistrictID', 'mWardID')" })
+                    <span class="text-danger" id="errmDistrictID"></span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label for="Ward_ID">Phường/ Xã</label>
+                    @Html.DropDownListFor(model => model.Ward.ID, new SelectList(ViewBag.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2", @id = "mWardID", })
+                    <span class="text-danger" id="errmWardID"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Huỷ bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnModalUpdateUserInformation">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        CheckChangeValue("FullName", "Vui lòng nhập họ và tên", "Vietnamese", "Y");
+        OnlyNumber("#MobileNumber");
+        CheckChangeValue("MobileNumber", "Vui lòng nhập Số điện thoại", "MobileNumber", "Y");
+        CheckChangeValue("Email", "", "Email", "N");
+
+        CheckChangeValue("Address", "Địa chỉ không được để trống.", "", "Y");
+        CheckChangeValue("ProvinceID", "Tỉnh/ Thành phố không được để trống", "", "Y");
+        CheckChangeValue("DistrictID", "Quận/ Huyện không được để trống.", "", "Y");
+
+
+        if ('@Model.MobileNumber' == "" || '@Model.MobileNumber' == null) {
+            Disabled(true);
+        } else {
+            CheckExistMobileNumber('@Model.MobileNumber');
+        }
+    });
+    function CheckExistMobileNumber(MobileNumber) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_GetCustomerByMobileNumber", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'json',
+            loading: true,
+            data: {
+                MobileNumber: MobileNumber
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    $("#showUpdateCustomer").css("display", "block");
+                    $("#NoCheckUpdatedCustomer").attr("checked", true);
+                    if ($('input[type=radio][name=radioCheckUpdatedCustomer]:checked').val() == "N") {
+                        $('#MobileNumber').prop('readonly', false);
+                    } else {
+                        $('#MobileNumber').prop('readonly', true);
+                    }
+                } else {
+                    $("#showUpdateCustomerNotExists").css("display", "block");
+                }
+                Disabled(false);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+    function Disabled(IsDisabled) {
+        $('#FullName').attr("disabled", IsDisabled);
+        $('#Email').attr("disabled", IsDisabled);
+        $('#IsBlackList').attr("disabled", IsDisabled);
+        $('#mProvinceID').attr("disabled", IsDisabled);
+        $('#mDistrictID').attr("disabled", IsDisabled);
+        $('#mWardID').attr("disabled", IsDisabled);
+        $('#Address').attr("disabled", IsDisabled);
+    }
+    $("#MobileNumber").on("change", function () {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_GetCustomerByMobileNumber", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'json',
+            loading: true,
+            data: {
+                MobileNumber: $("#MobileNumber").val()
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    var data = JSON.parse(res.Data);
+                    $('#FullName').val(data.FullName);
+                    $('#Email').val(data.Email);
+                    $('#mProvinceID').val(data.Province.ID).change();
+                    $('#mDistrictID').val(data.District.ID).change();
+                    $('#mWardID').val(data.Ward.ID).change();
+                    $('#Address').val(data.Address);
+                    $("#showUpdateCustomer").css("display", "block");
+                    $("#NoCheckUpdatedCustomer").attr("checked", true);
+                    if ($('input[type=radio][name=radioCheckUpdatedCustomer]:checked').val() == "N") {
+                        $('#MobileNumber').prop('readonly', false);
+                    } else {
+                        $('#MobileNumber').prop('readonly', true);
+                    }
+                } else {
+                    $("#showUpdateCustomer").css("display", "none");
+                    $("#NoCheckUpdatedCustomer").attr("checked", true);
+                }
+                Disabled(false);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    });
+    $("#btnModalUpdateUserInformation").on("click", function () {
+        var isError = false, isValid = true;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            FullName: $("#FullName").val().trim(),
+            MobileNumber: $("#MobileNumber").val().trim(),
+            Email: $("#Email").val().trim(),
+            Province: {
+                ID: $("#mProvinceID").val()
+            },
+            District: {
+                ID: $("#mDistrictID").val()
+            },
+            Ward: {
+                ID: $("#mWardID").val()
+            },
+            Address: $("#Address").val().trim(),
+            UserChannelID: '@Model.UserChannelID',
+            IsBlackList: $("#IsBlackList").val(),
+            isUpdatedCustomer: $("input[name='radioCheckUpdatedCustomer']:checked").val() == undefined ? "" : $("input[name='radioCheckUpdatedCustomer']:checked").val(),
+        };
+
+        isError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "FullName", "Họ và tên không được để trống.", Message, isError);
+
+        isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "MobileNumber", "Số điện thoại không được để trống.", "Số điện thoại không hợp lệ", isError);
+
+        isError = CheckRegexValue(data.Email, "Email", "Email", "Email không hợp lệ", isError);
+
+        isError = CheckNullValue(data.Address, "Address", "Địa chỉ không được để trống", isError);
+
+        isError = CheckNullValue(data.Province.ID, "mProvinceID", "Tỉnh/ Thành phố không được để trống", isError);
+
+        isError = CheckNullValue(data.District.ID, "mDistrictID", "Quận/ Huyện không được để trống", isError);
+
+
+        //if (data.isUpdatedCustomer == "Y") {
+
+        //    isError = CheckNullValue(data.Province.ID, "mProvinceID", "Tỉnh/ Thành phố không được để trống", isError);
+
+        //    isError = CheckNullValue(data.District.ID, "mDistrictID", "Quận/ Huyện không được để trống", isError);
+        //} else {
+        //    if (data.Province.ID != "") {
+        //        isError = CheckRegexValue(data.Province.ID, "Code", "mProvinceID", Message, isError);
+        //    }
+
+        //    if (data.District.ID != "") {
+        //        isError = CheckRegexValue(data.District.ID, "Code", "mDistrictID", Message, isError);
+        //    }
+        //}
+
+        //if (data.Ward.ID != "") {
+        //    isError = CheckRegexValue(data.Ward.ID, "Code", "mWardID", Message, isError);
+        //}
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_UpdateUserInformation", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    LoadUserInformationInModal($("#ChannelUserID").val(), $("#DisplayName").val(), $("#Avatar").val());
+                    $('#ViewModal').modal('toggle');
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                } else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG"
+                    }
+                });
+                return;
+            }
+        });
+    });
+    function LoadUserInformationInModal(UserID, DisplayName, Avatar) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_UserInformationOfConversion", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'html',
+            loading: true,
+            global: false,
+            data: {
+                ChannelUserID: UserID,
+                DisplayName: DisplayName,
+                Avatar: Avatar
+            },
+            success: function (data) {
+                $("#UserInformation").html(data);
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+    $('input[type=radio][name=radioCheckUpdatedCustomer]').change(function () {
+        if (this.value == 'Y') {
+            $('#MobileNumber').prop('readonly', true);
+        }
+        else if (this.value == 'N') {
+            $('#MobileNumber').prop('readonly', false);
+        }
+    });
+</script>

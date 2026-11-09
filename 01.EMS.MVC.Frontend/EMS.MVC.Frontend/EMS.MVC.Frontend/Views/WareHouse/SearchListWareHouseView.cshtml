@@ -1,0 +1,163 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListWareHouseViewModel>
+
+<table id="ListDataTableSearch" class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Mã kho</th>
+            <th>Tên kho</th>
+            <th>Họ tên người liên hệ</th>
+            <th>SĐT người liên hệ</th>
+            <th>Địa chỉ</th>
+            <th>Người tạo</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.WareHouseCode || @item.WareHouseName || @item.FullAddress</td>
+                <td>@item.WareHouseCode</td>
+                <td>
+                    <span>@item.WareHouseName</span>
+                    @if (item.IsDefault == "Y")
+                    {
+                        <br />
+                        <div class="badge badge-outline-secondary">Kho mặc định</div>
+                    }
+                </td>
+                <td>@item.FullName</td>
+                <td>@item.MobileNumber</td>
+                <td>@item.FullAddress</td>
+                <td>@item.EmployeeName</td>
+                <td class="text-center">
+                    @if (item.IsDefault == "N")
+                    {
+                        if (item.IsLock == "N")
+                        {
+                            <button type="button" class="btn btn-locke" onclick="btnLock(@item.ID, '@item.WareHouseName', 'Y')" title="Khóa kho">
+                                <i class="icon-lock fs-18"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-locked" onclick="btnUnLock(@item.ID, '@item.WareHouseName', 'N')" title="Mở kho">
+                                <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.9987 15.0026C9.9987 15.4168 10.3345 15.7526 10.7487 15.7526C11.1629 15.7526 11.4987 15.4168 11.4987 15.0026H9.9987ZM11.4987 13.3359C11.4987 12.9217 11.1629 12.5859 10.7487 12.5859C10.3345 12.5859 9.9987 12.9217 9.9987 13.3359H11.4987ZM3.33203 10.8359V17.5026H4.83203V10.8359H3.33203ZM5.7487 19.9193H15.7487V18.4193H5.7487V19.9193ZM18.1654 17.5026V10.8359H16.6654V17.5026H18.1654ZM5.7487 9.91927H6.58203V8.41927H5.7487V9.91927ZM7.33203 9.16927V5.0026H5.83203V9.16927H7.33203ZM6.58203 9.91927H14.9154V8.41927H6.58203V9.91927ZM14.9154 9.91927H15.7487V8.41927H14.9154V9.91927ZM14.1654 5.0026V9.16927H15.6654V5.0026H14.1654ZM11.4987 15.0026V13.3359H9.9987V15.0026H11.4987ZM10.7487 1.58594C12.6357 1.58594 14.1654 3.11563 14.1654 5.0026H15.6654C15.6654 2.2872 13.4641 0.0859375 10.7487 0.0859375V1.58594ZM18.1654 10.8359C18.1654 9.50125 17.0834 8.41927 15.7487 8.41927V9.91927C16.255 9.91927 16.6654 10.3297 16.6654 10.8359H18.1654ZM15.7487 19.9193C17.0834 19.9193 18.1654 18.8373 18.1654 17.5026H16.6654C16.6654 18.0089 16.255 18.4193 15.7487 18.4193V19.9193ZM3.33203 17.5026C3.33203 18.8373 4.41401 19.9193 5.7487 19.9193V18.4193C5.24244 18.4193 4.83203 18.0089 4.83203 17.5026H3.33203ZM7.33203 5.0026C7.33203 3.11563 8.86173 1.58594 10.7487 1.58594V0.0859375C8.0333 0.0859375 5.83203 2.2872 5.83203 5.0026H7.33203ZM4.83203 10.8359C4.83203 10.3297 5.24244 9.91927 5.7487 9.91927V8.41927C4.41401 8.41927 3.33203 9.50125 3.33203 10.8359H4.83203Z"
+                                          fill="#FF3B30" />
+                                </svg>
+                            </button>
+                        }
+                    }
+
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-info light" onclick="btnEdit(@item.ID)" title="Sửa kho">
+                        <i class="icon-edit fs-18"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("ListDataTableSearch");
+    });
+
+    function btnEdit(WareHouseID){
+        $.post('@Url.Action("EditWareHouseView", "WareHouse")', {
+            ID: WareHouseID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    };
+
+    function btnLock(WareHouseID, WareHouseName, IsLock) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắn chắn muốn khoá kho " + WareHouseName + "?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeIsLock", "WareHouse")',
+                    data: {
+                        ID: WareHouseID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function btnUnLock(WareHouseID, WareHouseName, IsLock) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắn chắn muốn mở kho " + WareHouseName + "?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeIsLock", "WareHouse")',
+                    data: {
+                        ID: WareHouseID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,168 @@
+﻿<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Thêm mới thông tin đối tác Webhook</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Mã PP/CRM <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="PartnerCode" placeholder="Mã PP/CRM">
+                    <span class="text-danger" id="errPartnerCode"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tên đối tác <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="PartnerName" placeholder="Tên đối tác" maxlength="100">
+                    <span class="text-danger" id="errPartnerName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Link Webhook <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="PartnerUrl" placeholder="Link Webhook">
+                    <span class="text-danger" id="errPartnerUrl"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>API Key</label>
+                    <input type="text" class="form-control" id="PartnerKey" placeholder="API Key" maxlength="100">
+                    <span class="text-danger" id="errPartnerKey"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12 col-md-12">
+                <div class="row justify-content-between">
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-label="Close">HUỶ BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-submit">THÊM MỚI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("input[id=PartnerCode_tag]").keyup(function () {
+            var value = $(this).val();
+            $(this).val(value.toUpperCase());
+        });
+
+        $("input[id=PartnerCode_tag]").bind("paste", function (e) {
+            var source = "";
+
+            if (window.clipboardData !== undefined) {
+                source = window.clipboardData;
+            } else {
+                source = e.originalEvent.clipboardData;
+            }
+
+            var data = source.getData("Text");
+
+            var replaceSpace = data.split(/\s+/);
+
+            $.each(replaceSpace, function (idx, value) {
+                if (value.trim()) {
+                    $('#PartnerCode').tagsinput('add', value.toUpperCase());
+                }
+            });
+
+            e.preventDefault();
+        });
+    });
+
+    CheckChangeValue("PartnerName", "Vui lòng nhập tên đối tác.", "Vietnamese", "Y");
+    CheckChangeValue("PartnerUrl", "Vui lòng nhập link Webhook.", "", "Y");
+
+    $('#PartnerCode').tagsinput({
+        maxChars: 20,
+        trimValue: true,
+        confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+    });
+
+    $('#PartnerCode').on('beforeItemAdd', function (event) {
+        var CrmOrPaypostcode = event.item;
+        var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "PartnerCode", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+        if (isError == true) {
+            event.cancel = true;
+        }
+    });
+
+    $(".bootstrap-tagsinput input").attr("id", "PartnerCode_tag");
+
+    //$('.tags_edit').tagsInput({
+    //    'width': '100%',
+    //    'height': '75%',
+    //    'interactive': true,
+    //    'defaultText': 'Th\u{EA}m',
+    //    'removeWithBackspace': true,
+    //    'minChars': 0,
+    //    'maxChars': 50, // if not provided there is no limit
+    //    'placeholderColor': '#666666',
+    //    'onChange': function () {
+    //        checkCode_V2(this.value, '#errPartnerCode', '', false);
+    //    }
+    //});
+    //function checkPartnerCode(value, errWhere, isError, isCheckNull) {
+    //    if (value != "" && value != undefined) {
+    //        if (!value.match(/^[a-zA-Z0-9-,]+$/i)) {
+    //            $(errWhere).text("Chỉ được phép nhập chữ cái (a-z), số (0-9), dấu phẩy và dấu -");
+    //            return true;
+    //        }
+    //        else {
+    //            $(errWhere).text('');
+    //            return isError;
+    //        }
+    //    }
+    //    else if (isCheckNull) {
+    //        $(errWhere).text('Trường này không được để trống.');
+    //        return true;
+    //    }
+    //    return isError;
+    //}
+    $('#btn-submit').on('click', function () {
+        var isError = false;
+        var data = {
+            PartnerCode: $('#PartnerCode').val(),
+            PartnerName: $('#PartnerName').val().trim(),
+            PartnerUrl: $('#PartnerUrl').val().trim(),
+            PartnerKey: $('#PartnerKey').val().trim()
+        };
+
+        isError = CheckNullAndRegexValue(data.PartnerCode, "ChildCustomerCode", "PartnerCode", "Vui lòng nhập mã PP/CRM", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-z), số (0-9) và dấu -", isError);
+        isError = CheckNullAndRegexValue(data.PartnerName, "Vietnamese", "PartnerName", "Vui lòng nhập tên đối tác.", "Giá trị hợp lệ không bao gồm ký tự đặc biệt.", isError);
+        isError = CheckNullValue(data.PartnerUrl, "PartnerUrl", "Vui lòng nhập link Webhook", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAdd", "PartnerWebhook")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

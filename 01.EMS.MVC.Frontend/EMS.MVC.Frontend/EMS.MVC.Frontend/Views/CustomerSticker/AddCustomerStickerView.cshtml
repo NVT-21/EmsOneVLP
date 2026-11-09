@@ -1,0 +1,110 @@
+﻿@model EMS.MVC.Frontend.Models.AddCustomerStickerViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-720">
+    <div class="card">
+        <div class="card-header border-0 ">
+            <h5 class="card-title">Thêm nhãn khách hàng</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="form-label">Mã nhãn </label>
+                    <input type="text" id="StickerCode" class="form-control" placeholder="Nhập mã nhãn" maxlength="20">
+                    <span class="text-danger" id="errStickerCode"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="form-label">Tên nhãn <span class="text-danger">*</span></label>
+                    <input type="text" id="StickerName" class="form-control" placeholder="Nhập tên nhãn" maxlength="100">
+                    <span class="text-danger" id="errStickerName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="form-label">Khách hàng</label>
+                    <select id="CustomerID" class="selectpicker form-control form-control-sm" data-live-search="true" data-actions-box="true" data-dropup-auto="false" data-size="10" data-selected-text-format="count" multiple>
+                        @foreach (var item in Model.ListCustomer)
+                        {
+                            <option value="@item.ID" data-subtext="@item.MobileNumber">@item.FullName</option>
+                        }
+                    </select>
+                    <span class="text-danger" id="errCustomerID"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" class="btn btn-outline-dark" onclick="window.location.href = '@Url.Action("CustomerStickerView", "CustomerSticker")'">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Thêm mới</button>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#CustomerID").selectpicker("refresh");
+        });
+
+        CheckChangeValue("StickerCode", "", "Code", "N");
+        CheckChangeValue("StickerName", "Tên nhãn không được trống.", "Vietnamese", "Y");
+
+        $("#btnSubmit").on('click', function () {
+            var IsError = false;
+            var data = {
+                StickerCode: $("#StickerCode").val().trim(),
+                StickerName: $("#StickerName").val().trim(),
+                CustomerID: $("#CustomerID").val().join(",")
+            };
+
+            IsError = CheckRegexValue(data.StickerCode, "Code", "StickerCode", "Mã nhãn không hợp lệ.", IsError);
+            IsError = CheckNullAndRegexValue(data.StickerName, "Vietnamese", "StickerName", "Tên nhãn không được trống.", "Giá trị hợp lệ không bao gồm ký tự đặc biệt.", IsError);
+
+            if (IsError == true) {
+                return;
+            }
+
+            swal({
+                title: "Thông báo",
+                text: "Bạn có chắc chắc muốn thêm nhãn khách hàng",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddCustomerSticker", "CustomerSticker")',
+                        dataType: 'json',
+                        loading: true,
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("CustomerStickerView", "CustomerSticker")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+}
+
+
+
+
+
+

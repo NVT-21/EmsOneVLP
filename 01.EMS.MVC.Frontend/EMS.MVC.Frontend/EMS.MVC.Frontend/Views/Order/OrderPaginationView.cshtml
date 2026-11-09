@@ -1,0 +1,1435 @@
+﻿@model EMS.MVC.Frontend.Models.OrderViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    :root {
+        --ems-blue: #0054a6;
+        --ems-blue-dark: #003a75;
+        --ems-blue-light: #eaf3ff;
+        --ems-orange: #ff6b00;
+        --ems-orange-dark: #c94e00;
+        --ems-orange-light: #fff1e6;
+        --ems-border: #e5edf6;
+        --ems-text: #1f2937;
+        --ems-muted: #6b7280;
+        --ems-surface: #ffffff;
+        --ems-page: #f5f8fc;
+    }
+
+    .ems-order-page {
+        color: var(--ems-text);
+        padding-top: 4px;
+        padding-bottom: 18px;
+    }
+
+    .ems-page-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .ems-page-heading-main {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+    }
+
+    .ems-page-heading-icon {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        color: #fff;
+        background: linear-gradient(135deg, var(--ems-blue), var(--ems-blue-dark));
+        box-shadow: 0 7px 16px rgba(0, 84, 166, .20);
+        font-size: 18px;
+    }
+
+    .ems-page-heading h4 {
+        margin: 0;
+        color: var(--ems-blue-dark);
+        font-size: 1.05rem;
+        font-weight: 750;
+        letter-spacing: .1px;
+    }
+
+    .ems-page-heading p {
+        margin: 2px 0 0;
+        color: var(--ems-muted);
+        font-size: .74rem;
+    }
+
+    .ems-order-card {
+        overflow: visible;
+        margin-bottom: 12px;
+        border: 1px solid var(--ems-border);
+        border-radius: 14px;
+        background: var(--ems-surface);
+        box-shadow: 0 3px 14px rgba(0, 40, 90, .07);
+    }
+
+    .ems-order-card-filter {
+        border-top: 3px solid var(--ems-orange);
+    }
+
+    .ems-order-card .card-body {
+        padding: 14px 16px;
+    }
+
+    .ems-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-bottom: 9px;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .ems-section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: var(--ems-blue);
+        font-size: .82rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: .25px;
+    }
+
+    .ems-section-title i {
+        color: var(--ems-orange);
+    }
+
+    .ems-section-note {
+        color: #8491a5;
+        font-size: .68rem;
+        white-space: nowrap;
+    }
+
+    .ems-order-page label {
+        display: block;
+        margin-bottom: 5px;
+        color: #526174;
+        font-size: .69rem;
+        font-weight: 650;
+    }
+
+    .ems-order-page .form-control,
+    .ems-order-page .bootstrap-select > .dropdown-toggle,
+    .ems-order-page .select2-container .select2-selection--single,
+    .ems-order-page .select2-container .select2-selection--multiple {
+        min-height: 40px;
+        border: 1px solid #d9e3ef !important;
+        border-radius: 9px !important;
+        background: #fff !important;
+        color: var(--ems-text) !important;
+        box-shadow: none !important;
+        font-size: .75rem;
+        transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+
+    .ems-order-page .form-control:hover,
+    .ems-order-page .bootstrap-select > .dropdown-toggle:hover,
+    .ems-order-page .select2-container .select2-selection--single:hover,
+    .ems-order-page .select2-container .select2-selection--multiple:hover {
+        border-color: #aac7e5 !important;
+    }
+
+    .ems-order-page .form-control:focus,
+    .ems-order-page .bootstrap-select.show > .dropdown-toggle,
+    .ems-order-page .select2-container--open .select2-selection--single,
+    .ems-order-page .select2-container--open .select2-selection--multiple {
+        border-color: var(--ems-blue) !important;
+        box-shadow: 0 0 0 3px rgba(0, 84, 166, .10) !important;
+    }
+
+    .ems-order-page .bootstrap-select {
+        width: 100% !important;
+    }
+
+    /*
+     * Bootstrap Select được đưa ra body để menu không bị card kết quả phía dưới
+     * che hoặc giành sự kiện chuột khi danh sách khách hàng dài.
+     */
+    .ems-order-card-filter {
+        position: relative;
+        //z-index: 20;
+    }
+
+    .ems-order-card-filter.ems-select-open {
+        z-index: 1085;
+    }
+
+    body > .bs-container,
+    body > .bootstrap-select.bs-container {
+        z-index: 1095 !important;
+        pointer-events: auto !important;
+    }
+
+    body > .bs-container .dropdown-menu,
+    body > .bootstrap-select.bs-container .dropdown-menu {
+        overflow: visible;
+        border: 1px solid var(--ems-border) !important;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(0, 40, 90, .18);
+        pointer-events: auto !important;
+    }
+
+    body > .bs-container .dropdown-menu .inner,
+    body > .bootstrap-select.bs-container .dropdown-menu .inner {
+        max-height: 300px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+
+    body > .bs-container .bs-searchbox,
+    body > .bootstrap-select.bs-container .bs-searchbox {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding: 8px;
+        background: #fff;
+    }
+
+    body > .bs-container .bs-searchbox .form-control,
+    body > .bootstrap-select.bs-container .bs-searchbox .form-control {
+        min-height: 36px;
+        border: 1px solid #b8cee5 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+
+    body > .bs-container .bs-searchbox .form-control:focus,
+    body > .bootstrap-select.bs-container .bs-searchbox .form-control:focus {
+        border-color: var(--ems-blue) !important;
+        box-shadow: 0 0 0 3px rgba(0, 84, 166, .10) !important;
+    }
+
+    body > .bs-container .dropdown-item,
+    body > .bootstrap-select.bs-container .dropdown-item {
+        white-space: normal;
+        line-height: 1.35;
+    }
+
+    .ems-order-page .bootstrap-select > .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        padding: 7px 11px;
+    }
+
+    .ems-order-page .bootstrap-select .filter-option-inner-inner {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ems-order-page .select2-container {
+        width: 100% !important;
+    }
+
+    .ems-order-page .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+        padding-left: 11px;
+        padding-right: 30px;
+        color: var(--ems-text);
+    }
+
+    .ems-order-page .select2-container .select2-selection--single .select2-selection__arrow {
+        height: 38px;
+        right: 6px;
+    }
+
+    .ems-order-page .select2-container .select2-selection--multiple {
+        padding: 3px 7px;
+    }
+
+    .ems-order-page .dropdown-menu {
+        overflow: hidden;
+        border: 1px solid var(--ems-border) !important;
+        border-radius: 10px;
+        box-shadow: 0 12px 30px rgba(0, 40, 90, .14);
+    }
+
+    .ems-order-page .dropdown-item {
+        padding: 8px 13px;
+        color: #35445a;
+        font-size: .74rem;
+    }
+
+    .ems-order-page .dropdown-item:hover,
+    .ems-order-page .dropdown-item:focus {
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+    }
+
+    .ems-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .ems-search-box .ems-search-icon {
+        position: absolute;
+        left: 12px;
+        z-index: 2;
+        color: #7d8da4;
+        pointer-events: none;
+    }
+
+    .ems-search-box .form-control {
+        padding-left: 37px;
+        padding-right: 100px;
+    }
+
+    .ems-search-box .ems-search-button {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        bottom: 4px;
+        min-width: 88px;
+        padding: 0 12px;
+        border: none;
+        border-radius: 7px;
+        color: #fff;
+        background: var(--ems-blue);
+        font-size: .7rem;
+        font-weight: 700;
+        transition: background-color .15s ease, transform .15s ease;
+    }
+
+    .ems-search-box .ems-search-button:hover {
+        background: var(--ems-blue-dark);
+    }
+
+    .ems-action-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 40px;
+    }
+
+    .ems-btn {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 7px 13px;
+        border-radius: 9px;
+        font-size: .72rem;
+        font-weight: 700;
+        line-height: 1;
+        transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease;
+    }
+
+    .ems-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .ems-btn-outline {
+        border: 1px solid #b8cee5;
+        color: var(--ems-blue);
+        background: #fff;
+    }
+
+    .ems-btn-outline:hover,
+    .ems-btn-outline:focus {
+        border-color: var(--ems-blue);
+        color: #fff;
+        background: var(--ems-blue);
+        box-shadow: 0 6px 14px rgba(0, 84, 166, .16);
+    }
+
+    .ems-btn-primary {
+        border: 1px solid var(--ems-orange);
+        color: #fff;
+        background: linear-gradient(135deg, var(--ems-orange), var(--ems-orange-dark));
+        box-shadow: 0 6px 14px rgba(255, 107, 0, .16);
+    }
+
+    .ems-btn-primary:hover,
+    .ems-btn-primary:focus {
+        border-color: var(--ems-orange-dark);
+        color: #fff;
+        background: var(--ems-orange-dark);
+        box-shadow: 0 8px 18px rgba(255, 107, 0, .22);
+    }
+
+    .ems-status-tabs-wrap {
+        overflow-x: auto;
+        padding: 1px 1px 6px;
+        scrollbar-width: thin;
+    }
+
+    .ems-status-tabs {
+        width: max-content;
+        min-width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .ems-status-tabs .nav-link {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border: 1px solid #dce6f1 !important;
+        border-radius: 999px !important;
+        color: #526174;
+        background: #fff;
+        font-size: .7rem;
+        font-weight: 650;
+        white-space: nowrap;
+        transition: all .15s ease;
+    }
+
+    .ems-status-tabs .nav-link:hover {
+        border-color: #aac7e5 !important;
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+    }
+
+    .ems-status-tabs .nav-link.active {
+        border-color: var(--ems-blue) !important;
+        color: #fff !important;
+        background: linear-gradient(135deg, var(--ems-blue), var(--ems-blue-dark)) !important;
+        box-shadow: 0 5px 12px rgba(0, 84, 166, .18);
+    }
+
+    .ems-status-tabs .nav-link span:not(:empty) {
+        min-width: 19px;
+        height: 19px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        border-radius: 999px;
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        font-size: .61rem;
+        font-weight: 750;
+    }
+
+    .ems-status-tabs .nav-link.active span:not(:empty) {
+        color: var(--ems-blue-dark);
+        background: #fff;
+    }
+
+    .ems-result-area {
+        position: relative;
+        min-height: 100px;
+    }
+
+    .ems-order-page #data-wrapper {
+        position: relative;
+        margin: 0;
+        transition: opacity .18s ease;
+    }
+
+    /* Giữ nguyên dữ liệu cũ trong lúc tìm kiếm, chỉ báo tải nhẹ để tránh nhấp nháy. */
+    .ems-order-page #data-wrapper.is-loading {
+        pointer-events: none;
+    }
+
+    .ems-order-page #data-wrapper.is-loading > * {
+        opacity: .72;
+    }
+
+    .ems-order-page #data-wrapper.is-loading::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 30;
+        width: 35%;
+        height: 3px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--ems-blue), var(--ems-orange));
+        animation: ems-order-loading 1s ease-in-out infinite alternate;
+    }
+
+    .ems-order-page #data-wrapper.is-loading::after {
+        content: "Đang cập nhật dữ liệu...";
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        z-index: 30;
+        padding: 4px 9px;
+        border: 1px solid #cfe0f1;
+        border-radius: 999px;
+        color: var(--ems-blue);
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 4px 12px rgba(0, 40, 90, .08);
+        font-size: .66rem;
+        font-weight: 650;
+    }
+
+    @@keyframes ems-order-loading {
+        from { left: 0; }
+        to { left: 65%; }
+    }
+
+    .ems-order-page #data-wrapper > [class*="col-"] {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .ems-order-page #data-wrapper .card {
+        border: 1px solid var(--ems-border);
+        border-radius: 11px;
+        box-shadow: none;
+    }
+
+    .ems-order-page #data-wrapper .table-responsive {
+        border: 1px solid var(--ems-border);
+        border-radius: 10px;
+    }
+
+    .ems-order-page #data-wrapper table {
+        margin-bottom: 0;
+        font-size: .7rem;
+    }
+
+    .ems-order-page #data-wrapper table thead th {
+        border-color: #1766ad;
+        color: #fff;
+        background: var(--ems-blue);
+        font-weight: 700;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .ems-order-page #data-wrapper table tbody td {
+        border-color: #edf2f7;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    .ems-order-page #data-wrapper table tbody tr:nth-child(even) {
+        background: #fbfdff;
+    }
+
+    .ems-order-page #data-wrapper table tbody tr:hover {
+        background: var(--ems-blue-light);
+    }
+
+    .ems-order-page #data-wrapper .pagination .page-link {
+        border-color: #dce6f1;
+        color: var(--ems-blue);
+        font-size: .7rem;
+    }
+
+    .ems-order-page #data-wrapper .pagination .active .page-link {
+        border-color: var(--ems-orange);
+        color: #fff;
+        background: var(--ems-orange);
+    }
+
+    @@media (max-width: 1199px) {
+        .ems-action-group {
+            justify-content: flex-start;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .ems-page-heading {
+            align-items: flex-start;
+        }
+
+        .ems-page-heading p,
+        .ems-section-note {
+            display: none;
+        }
+
+        .ems-order-card .card-body {
+            padding: 12px;
+        }
+
+        .ems-action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+        }
+
+        .ems-action-group .dropdown,
+        .ems-action-group .ems-btn {
+            width: 100%;
+        }
+
+        .ems-action-group .dropdown .ems-btn {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .ems-action-group {
+            grid-template-columns: 1fr;
+        }
+
+        .ems-search-box .form-control {
+            padding-right: 40px;
+        }
+
+        .ems-search-box .ems-search-button {
+            width: 34px;
+            min-width: 34px;
+            padding: 0;
+            font-size: 0;
+        }
+
+        .ems-search-box .ems-search-button::before {
+            content: "⌕";
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="container-fluid ems-order-page">
+    <div class="ems-page-heading">
+        <div class="ems-page-heading-main">
+            <div class="ems-page-heading-icon">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div>
+                <h4>Quản lý đơn hàng</h4>
+                <p>Tra cứu, lọc và thực hiện các nghiệp vụ đơn hàng trên EMS ONE</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card ems-order-card ems-order-card-filter">
+                <div class="card-body">
+                    <div class="ems-section-head">
+                        <h6 class="ems-section-title">
+                            <i class="fa-solid fa-filter"></i>
+                            Bộ lọc đơn hàng
+                        </h6>
+                        <span class="ems-section-note">Dữ liệu tự động cập nhật khi thay đổi điều kiện lọc</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="AllDate">Thời gian</label>
+                            <div class="datepicker-form">
+                                @Html.EditorFor(model => model.AllDate, new { htmlAttributes = new { @type = "text", @class = "form-control input-daterange-datepicker" } })
+                                @Html.HiddenFor(model => model.FromDate)
+                                @Html.HiddenFor(model => model.ToDate)
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="CrmOrPaypostCode">Mã PP/CRM</label>
+                            @Html.DropDownListFor(model => model.CrmOrPaypostCode,
+                                new SelectList(Model.ListCrmOrPaypostCode, "CrmOrPaypostCode", "MobileAndCrmOrPaypostCode"),
+                                new {
+                                    @class = "selectpicker form-control form-control-sm",
+                                    @data_live_search = "true",
+                                    @data_actions_box = "true",
+                                    @data_dropup_auto = "false",
+                                    @data_container = "body",
+                                    @data_size = "8",
+                                    @data_selected_text_format = "count",
+                                    @multiple = "true"
+                                })
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="OrderStatus">Trạng thái đơn</label>
+                            @Html.DropDownListFor(model => model.OrderStatus,
+                                new SelectList(Model.ListOrderStatus, "Value", "Text"),
+                                "Tất cả",
+                                new { @class = "select2" })
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="PrintStatus">Trạng thái in</label>
+                            @Html.DropDownListFor(model => model.PrintStatus,
+                                new SelectList(Model.ListPrintStatus, "Value", "Text"),
+                                "Tất cả",
+                                new { @class = "select2" })
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="PostalType">Loại bưu gửi</label>
+                            @Html.DropDownListFor(model => model.PostalType,
+                                new SelectList(Model.ListPostalType, "Value", "Text"),
+                                new { @class = "select2" })
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="MainTransportService">Dịch vụ chính</label>
+                            @Html.DropDownListFor(model => model.MainTransportService,
+                                new SelectList(Model.ListMainTransportService, "ID", "Name"),
+                                new {
+                                    @class = "selectpicker form-control form-control-sm",
+                                    @data_live_search = "true",
+                                    @data_actions_box = "true",
+                                    @data_dropup_auto = "false",
+                                    @data_container = "body",
+                                    @data_size = "8",
+                                    @data_selected_text_format = "count",
+                                    @multiple = "true"
+                                })
+                        </div>
+
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                            <label for="ExtraTransportService">Dịch vụ cộng thêm</label>
+                            @Html.DropDownListFor(model => model.ExtraTransportService,
+                                new SelectList(Model.ListExtraTransportService, "ID", "Name"),
+                                new {
+                                    @class = "selectpicker form-control form-control-sm",
+                                    @data_live_search = "true",
+                                    @data_actions_box = "true",
+                                    @data_dropup_auto = "false",
+                                    @data_container = "body",
+                                    @data_size = "8",
+                                    @data_selected_text_format = "count",
+                                    @multiple = "true"
+                                })
+                        </div>
+
+                        <div class="col-xl-5 col-lg-8 col-md-12 col-12">
+                            <label for="SearchKey">Tìm kiếm nhanh</label>
+                            <div class="ems-search-box">
+                                <i class="fa-solid fa-magnifying-glass ems-search-icon"></i>
+                                @Html.EditorFor(model => model.SearchKey, new {
+                                    htmlAttributes = new {
+                                        @type = "text",
+                                        @class = "form-control",
+                                        @placeholder = "Mã đơn, mã bưu gửi, người gửi, người nhận...",
+                                        @autocomplete = "off"
+                                    }
+                                })
+                                <button class="ems-search-button" type="button" onclick="btnSearch()">Tìm kiếm</button>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-7 col-lg-12 col-md-12 col-12 d-flex align-items-end">
+                            <div class="ems-action-group w-100">
+                                <button class="btn ems-btn ems-btn-outline" type="button" onclick="btnExportExcel()">
+                                    <i class="icon-down fs-18"></i>
+                                    Xuất file
+                                </button>
+
+                                <div class="dropdown">
+                                    <button class="btn ems-btn ems-btn-outline" type="button" id="import-dropdown"
+                                            data-bs-toggle="dropdown" data-boundary="viewport"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-up fs-18"></i>
+                                        Nhập file
+                                        <i class="icon-arrow-b fs-16"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end py-1" aria-labelledby="import-dropdown">
+                                        <a class="dropdown-item" href="@Url.Action("ImportExcelView", "Order", new { Version = "EMSV2" })">
+                                            File Excel (EMSCode)
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn ems-btn ems-btn-outline" type="button"
+                                            id="order-dropdown-1" data-bs-toggle="dropdown"
+                                            data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                                        Thao tác hàng loạt
+                                        <i class="icon-arrow-b fs-16"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end py-1" aria-labelledby="order-dropdown-1">
+                                        <a class="dropdown-item d-none" id="btnAcceptOrder" href="#" onclick="btnAcceptOrder(null, null, null, null)">Duyệt đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnCancelOrder(null, null, null, null)">Hủy đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnPrintOrder(null, null)">In đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnSendTransport(null, null, null, null)">Gửi đơn vị vận chuyển</a>
+                                        <a class="dropdown-item" href="#" onclick="btnCancelTransport(null, null, null, null)">Hủy yêu cầu vận chuyển</a>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn ems-btn ems-btn-primary" type="button" id="add-order-dropdown"
+                                            data-bs-toggle="dropdown" data-boundary="viewport"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-plus"></i>
+                                        Tạo đơn hàng
+                                        <i class="icon-arrow-b fs-16"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end py-1" aria-labelledby="add-order-dropdown">
+                                        <a class="dropdown-item" href="@Url.Action("AddOrderView", "Order")" data-redirect="true">Tạo đơn hàng</a>
+                                        <a class="dropdown-item" href="@Url.Action("AddOrderBatchView", "OrderBatch")" data-redirect="true">Tạo đơn hàng lô</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card ems-order-card">
+                <div class="card-body">
+                    <div class="ems-section-head">
+                        <h6 class="ems-section-title">
+                            <i class="fa-solid fa-list-check"></i>
+                            Danh sách đơn hàng
+                        </h6>
+                        <span class="ems-section-note">Chọn tab để lọc nhanh theo trạng thái</span>
+                    </div>
+
+                    <div class="MouseScrollX ems-status-tabs-wrap">
+                        <ul class="nav nav-tabs ems-status-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="ActiveTab_" data-bs-toggle="tab" href="#"
+                                   role="tab" data-status="" onclick="btnSearch('ALL')">
+                                    Tất cả
+                                    <span id="StatusAll"></span>
+                                </a>
+                            </li>
+                            @foreach(var item in Model.ListOrderStatus)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" id="ActiveTab_@item.Value" data-bs-toggle="tab" href="#"
+                                       role="tab" data-status="@item.Value" onclick="btnSearch('@item.Value')">
+                                        @item.Text
+                                        <span id="OrderStatus@(item.Value)"></span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div id="tbl-data" class="table-primary table-responsive"></div>
+                    <div class="ems-result-area">
+                        <div class="row" id="data-wrapper"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+           $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        var SearchListOrder = [];
+        var currentOrderSearchRequest = null;
+        var orderSearchSequence = 0;
+        var suppressMultiSelectSearch = false;
+        var multiSelectCloseTimer = null;
+
+        $(document).ready(function () {
+            var $multiSelects = $("#CrmOrPaypostCode, #MainTransportService, #ExtraTransportService");
+            $multiSelects.selectpicker("refresh");
+            CreateDateTimeRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+
+            /*
+             * Bootstrap Select phát sinh sự kiện change sau MỖI lần chọn một giá trị.
+             * Không tìm kiếm ngay ở change; chỉ đánh dấu có thay đổi và tìm một lần
+             * khi người dùng đóng danh sách chọn.
+             */
+            $multiSelects.each(function () {
+                var $select = $(this);
+                $select.data("ems-selection-dirty", false);
+
+                /*
+                 * Ngăn các change handler dạng delegated ở script cũ nhận sự kiện
+                 * sau từng lần tick. Việc tìm kiếm chỉ thực hiện khi menu đóng.
+                 */
+                $select.off("change.emsOrderGuard")
+                    .on("change.emsOrderGuard", function (event) {
+                        event.stopPropagation();
+                    });
+
+                $select.off("show.bs.select.emsOrder shown.bs.select.emsOrder")
+                    .on("show.bs.select.emsOrder", function () {
+                        clearTimeout(multiSelectCloseTimer);
+                        $(this).closest('.ems-order-card-filter').addClass('ems-select-open');
+                    })
+                    .on("shown.bs.select.emsOrder", function () {
+                        /* Giữ menu ở lớp trên cùng sau khi Popper hoàn tất định vị. */
+                        $('.bs-container').css('z-index', 1095);
+                    });
+
+                $select.off("changed.bs.select.emsOrder")
+                    .on("changed.bs.select.emsOrder", function () {
+                        if (!suppressMultiSelectSearch) {
+                            $(this).data("ems-selection-dirty", true);
+                        }
+                    });
+
+                $select.off("hide.bs.select.emsOrder hidden.bs.select.emsOrder")
+                    .on("hide.bs.select.emsOrder", function () {
+                        clearTimeout(multiSelectCloseTimer);
+                    })
+                    .on("hidden.bs.select.emsOrder", function () {
+                        var $current = $(this);
+                        $current.closest('.ems-order-card-filter').removeClass('ems-select-open');
+
+                        if (!$current.data("ems-selection-dirty")) {
+                            return;
+                        }
+
+                        $current.data("ems-selection-dirty", false);
+
+                        // Mã PP/CRM không được để rỗng: khôi phục giá trị mặc định như logic cũ.
+                        if (this.id === "CrmOrPaypostCode" && (($current.val() || []).length === 0)) {
+                            suppressMultiSelectSearch = true;
+                            $current.selectpicker("val", "@Model.CrmOrPaypostCode");
+                            $current.selectpicker("refresh");
+                            suppressMultiSelectSearch = false;
+                        }
+
+                        /*
+                         * Chờ menu và lớp backdrop kết thúc xử lý click rồi mới cập nhật
+                         * vùng kết quả, tránh đóng/mở và nhấp nháy khi con trỏ đi xuống.
+                         */
+                        clearTimeout(multiSelectCloseTimer);
+                        multiSelectCloseTimer = setTimeout(function () {
+                            btnSearch();
+                        }, 180);
+                    });
+            });
+
+            var searchTimer = null;
+            $("#SearchKey").on("input", function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function () {
+                    btnSearch();
+                }, 500);
+            });
+
+            $("#SearchKey").on("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    clearTimeout(searchTimer);
+                    btnSearch();
+                }
+            });
+        });
+
+        ScrollX(".MouseScrollX");
+
+        // Các select nhiều giá trị được xử lý bằng hidden.bs.select ở trên.
+        // Chỉ các bộ lọc đơn giá trị mới tìm kiếm ngay khi change.
+        $("#AllDate, #OrderStatus, #PrintStatus, #PostalType").on("change", function () {
+            $("#btnAcceptOrder").addClass("d-none");
+            var DivID = this.id;
+
+            if (DivID == "AllDate") {
+                var AllDateValue = $("#AllDate").val();
+                if (AllDateValue) {
+                    var SplitAllDateValue = AllDateValue.split('-');
+                    $('#FromDate').val(SplitAllDateValue[0].trim());
+                    $('#ToDate').val(SplitAllDateValue[1].trim());
+                }
+            } else if (DivID == "OrderStatus") {
+                var OrderStatusValue = $("#OrderStatus").val();
+                $(".nav-link").removeClass("active");
+                $("#ActiveTab_" + OrderStatusValue).addClass("active");
+            }
+
+            btnSearch();
+        });
+
+        function btnSearch(OrderStatus, pageIndex, pageSize) {
+            var OrderStatusValue = "";
+            var ReloadStatusNumberValue = "";
+            if (OrderStatus) {
+                if (OrderStatus == "ALL") {
+                    OrderStatus = "";
+                }
+
+                if ($("#OrderStatus").val() == "") {
+                    OrderStatusValue = OrderStatus;
+                } else if ($("#OrderStatus").val() != "") {
+                    if (OrderStatus == $("#OrderStatus").val()) {
+                        OrderStatusValue = $("#OrderStatus").val();
+                    } else {
+                        if (OrderStatus == "" && ($("#OrderStatus").val() != "C" && $("#OrderStatus").val() != "D" && $("#OrderStatus").val() != "L")) {
+                            OrderStatusValue = $("#OrderStatus").val();
+                        } else {
+                            OrderStatusValue = "ERROR";
+                        }
+                    }
+                }
+                ReloadStatusNumberValue = "N";
+            } else {
+                OrderStatusValue = $("#OrderStatus").val();
+                ReloadStatusNumberValue = "Y";
+            }
+
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CrmOrPaypostCode: ($("#CrmOrPaypostCode").val() || []).join(","),
+                OrderStatus: OrderStatusValue,
+                PrintStatus: $('#PrintStatus').val(),
+                PostalType: $("#PostalType").val(),
+                MainTransportService: ($("#MainTransportService").val() || []).join(","),
+                ExtraTransportService: ($("#ExtraTransportService").val() || []).join(","),
+                SearchKey: ($("#SearchKey").val() || "").trim(),
+                ReloadStatusNumber: ReloadStatusNumberValue,
+                PageNumber: pageIndex || 1,
+                PageLimit: pageSize || 20
+            };
+
+            var requestSequence = ++orderSearchSequence;
+
+            // Hủy request cũ nếu người dùng đổi bộ lọc trước khi request đó hoàn tất.
+            if (currentOrderSearchRequest && currentOrderSearchRequest.readyState !== 4) {
+                currentOrderSearchRequest.abort();
+            }
+
+            $('#data-wrapper').addClass('is-loading');
+
+            currentOrderSearchRequest = $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SearchListOrderPaginationView", "Order")',
+                data: req,
+                global: false // Không bật/tắt ajax_loader toàn trang gây nhấp nháy.
+            }).done(function (data) {
+                // Chỉ request mới nhất được phép cập nhật giao diện.
+                if (requestSequence !== orderSearchSequence) {
+                    return;
+                }
+
+                $('#data-wrapper').html(data);
+
+                if (req.OrderStatus == "D") {
+                    $("#btnAcceptOrder").removeClass("d-none");
+                } else {
+                    $("#btnAcceptOrder").addClass("d-none");
+                }
+            }).fail(function (xhr, status) {
+                if (status !== 'abort') {
+                    console.error('Lỗi tải danh sách đơn hàng:', status, xhr);
+                }
+            }).always(function () {
+                if (requestSequence === orderSearchSequence) {
+                    $('#data-wrapper').removeClass('is-loading');
+                }
+            });
+        }
+
+        function btnExportExcel() {
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CrmOrPaypostCode: ($("#CrmOrPaypostCode").val() || []).join(","),
+                OrderStatus: $("#OrderStatus").val(),
+                PrintStatus: $('#PrintStatus').val(),
+                PostalType: $("#PostalType").val(),
+                MainTransportService: ($("#MainTransportService").val() || []).join(","),
+                ExtraTransportService: ($("#ExtraTransportService").val() || []).join(","),
+                SearchKey: ($("#SearchKey").val() || "").trim(),
+            };
+            var param = String.format("FromDate={0}&ToDate={1}&CrmOrPaypostCode={2}&OrderStatus={3}&PrintStatus={4}&PostalType={5}&MainTransportService={6}&ExtraTransportService={7}&SearchKey={8}",
+                req.FromDate, req.ToDate, req.CrmOrPaypostCode, req.OrderStatus, req.PrintStatus, req.PostalType, req.MainTransportService, req.ExtraTransportService, req.SearchKey);
+            window.location.href = '@Url.Action("ExportListOrder","Order")?' + param;
+        }
+
+        function btnAcceptOrder(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần duyệt.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn duyệt đơn hàng?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JNewOrder", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnCancelOrder(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần hủy.");
+                return;
+            }
+
+            $.post('@Url.Action("RejectOrderView", "Order")', { SearchKey: JSON.stringify(arr) }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        }
+
+        function btnPrintOrder(EMSOneCode, ShopID) {
+            var arr = [];
+
+            if (EMSOneCode && ShopID) {
+                var obj = {};
+                obj.EMSOneCode = EMSOneCode;
+                obj.ShopID = ShopID;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.EMSOneCode = $(this).attr("data-EMSOneCode");
+                    obj.ShopID = $(this).attr("data-ShopID");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần in.");
+                return;
+            }
+
+            localStorage.setItem('ListDataOrderPrint', JSON.stringify(arr));
+            var link = document.createElement('a');
+            link.target = "_blank";
+            //link.href = '@Url.Action("PrintOrderView", "Handle")';
+            link.href = '@Url.Action("PrintOrderView", "Order")';
+            link.click();
+        }
+
+        function btnSendTransport(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần gửi đơn vị vận chuyển.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn gửi đơn vị vận chuyển?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JSendTransport", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            }
+                            else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnCancelTransport(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần huỷ yêu cầu vận chuyển.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn huỷ yêu cầu vận chuyển?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JCancelTransport", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            }
+                            else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        //$("#SearchKey").on("keyup keydown", function () {
+        //    MySearchingDataTable(this, "SearchListDataTable");
+        //});
+    </script>
+}

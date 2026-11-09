@@ -1,0 +1,914 @@
+﻿@model EMS.MVC.Frontend.Models.ImportExcelViewModel
+@{
+    ViewBag.Title = "ImportExcelView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.License)
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header border-0 ">
+            <h5 class="card-title">Thêm nhà cung cấp bằng nhập file excel</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <form id="DocumentUpload" enctype="multipart/form-data">
+                            @Html.EditorFor(model => model.Document, new { htmlAttributes = new { @type = "file", @class = "form-control", @style = "padding: .3125rem 0.7rem;" } })
+                        </form>
+                        <span id="errDocument"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="d-flex align-items-center me-2" title="Số nhà cung cấp hợp lệ">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#34C759" />
+                        <path d="M9.6993 14.2821C9.51596 14.2821 9.3418 14.2088 9.21346 14.0805L6.6193 11.4863C6.35346 11.2205 6.35346 10.7805 6.6193 10.5146C6.88513 10.2488 7.32513 10.2488 7.59096 10.5146L9.6993 12.623L14.411 7.91129C14.6768 7.64546 15.1168 7.64546 15.3826 7.91129C15.6485 8.17712 15.6485 8.61712 15.3826 8.88296L10.1851 14.0805C10.0568 14.2088 9.88263 14.2821 9.6993 14.2821Z"
+                              fill="#34C759" />
+                    </svg>
+                    <span id="countHL">0/0</span>
+                </span>
+                <span class="d-flex align-items-center me-2" title="Số nhà cung cấp không hợp lệ">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#FF3B30" />
+                        <path d="M11.9717 11.0001L14.0801 8.89174C14.3459 8.62591 14.3459 8.18591 14.0801 7.92008C13.8142 7.65424 13.3742 7.65424 13.1084 7.92008L11.0001 10.0284L8.89174 7.92008C8.62591 7.65424 8.18591 7.65424 7.92008 7.92008C7.65424 8.18591 7.65424 8.62591 7.92008 8.89174L10.0284 11.0001L7.92008 13.1084C7.65424 13.3742 7.65424 13.8142 7.92008 14.0801C8.05758 14.2176 8.23174 14.2817 8.40591 14.2817C8.58008 14.2817 8.75424 14.2176 8.89174 14.0801L11.0001 11.9717L13.1084 14.0801C13.2459 14.2176 13.4201 14.2817 13.5942 14.2817C13.7684 14.2817 13.9426 14.2176 14.0801 14.0801C14.3459 13.8142 14.3459 13.3742 14.0801 13.1084L11.9717 11.0001Z"
+                              fill="#FF3B30" />
+                    </svg>
+                    <span id="countKHL">0/0</span>
+                </span>
+                <span class="d-flex align-items-center me-2" title="Số nhà cung cấp lỗi">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#FF9500" />
+                        <path d="M11 12.6045C10.6242 12.6045 10.3125 12.2928 10.3125 11.917V7.10449C10.3125 6.72866 10.6242 6.41699 11 6.41699C11.3758 6.41699 11.6875 6.72866 11.6875 7.10449V11.917C11.6875 12.2928 11.3758 12.6045 11 12.6045Z"
+                              fill="#FF9500" />
+                        <path d="M11.0007 15.8128C10.8815 15.8128 10.7623 15.7853 10.6523 15.7394C10.5331 15.6936 10.4415 15.6295 10.3498 15.547C10.2673 15.4553 10.2032 15.3544 10.1482 15.2444C10.1023 15.1344 10.084 15.0153 10.084 14.8961C10.084 14.6578 10.1756 14.4194 10.3498 14.2453C10.4415 14.1628 10.5331 14.0986 10.6523 14.0528C10.9915 13.9061 11.3948 13.9886 11.6515 14.2453C11.734 14.3369 11.7981 14.4286 11.844 14.5478C11.8898 14.6578 11.9173 14.7769 11.9173 14.8961C11.9173 15.0153 11.8898 15.1344 11.844 15.2444C11.7981 15.3544 11.734 15.4553 11.6515 15.547C11.4773 15.7211 11.2482 15.8128 11.0007 15.8128Z"
+                              fill="#FF9500" />
+                    </svg>
+                    <span id="countLoi">0/0</span>
+                </span>
+            </div>
+            <p class="text-secondary font-w600">
+                @*  Xuất file excel những thông tin tải lên bị lỗi*@
+            </p>
+            Lưu ý
+            <ul class="ps-4 mb-3">
+                <li>
+                    Tải mẫu file nhập <a href="~/Assets/file/MauImportNhaCungCap.xlsx">tại đây</a>.
+                </li>
+                <li>
+                    Hệ thống chỉ hỗ trợ file tối đa 1.000 dòng và có định dạng .xls, .xlsx hoặc .xlsm
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" class="btn btn-outline-dark" onclick="ExportExcel()">Xuất Excel</button>
+            <button type="button" class="btn btn-primary" onclick="ImportExcel()">Tạo nhà cung cấp</button>
+        </div>
+
+        <div class="card-body">
+            <div class="col-xl-12 col-lg-12 col-md-12" id="JSpreadSheet" style="width: 100%;">
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var JSpreadSheetLicense = $("#License").val();
+        var CheckBeforeUnload = false;
+        var TotalData = 0;
+        var ExcelUpload = false;
+        var HightExcel = window.innerHeight - 530;
+        var showJSpreadSheet = "";
+        var JSpreadSheetID = document.getElementById("JSpreadSheet");
+        var FileName = "";
+
+        window.addEventListener("beforeunload", function (e) {
+            if (CheckBeforeUnload) {
+                e.returnValue = "";
+            }
+        });
+        window.addEventListener("click", function (event) {
+            if (((event.srcElement.localName == "a" && event.srcElement.hash == "") || (event.srcElement.localName == "span" && event.srcElement.className == "menu-title" && event.srcElement.parentElement.hash == "")) && TotalData > 0) {
+                event.preventDefault();
+                swal({
+                    title: 'Thông báo',
+                    text: "Đang có dữ liệu chưa xử lý, bạn có muốn thoát trang không?",
+                    className: 'width-358',
+                    buttons: {
+                        confirm: {
+                            text: "Xác nhận",
+                            value: '1',
+                            visible: true,
+                            className: "btn btn-primary",
+                            closeModal: true
+                        },
+                        cancel: {
+                            text: "Đóng",
+                            value: '0',
+                            visible: true,
+                            className: "btn btn-danger",
+                            closeModal: true,
+                        }
+                    },
+                }).then((value) => {
+                    var href = "";
+                    if (event.srcElement.localName == "span") {
+                        href = event.srcElement.parentElement.href;
+                    }
+                    else {
+                        href = event.srcElement.href;
+                    }
+
+                    if (value == '1') {
+                        CheckBeforeUnload = false;
+                        window.location.href = href;
+                    }
+                    else if (value == '2') {
+                        CheckBeforeUnload = false;
+                        ExportExcel(href);
+                    }
+                });
+            }
+        });
+
+        jspreadsheet.setLicense(JSpreadSheetLicense);
+
+        var FilterListDistrict = function (o, cell, x, y, value, config) {
+            var ListDistrict = [];
+            var value = o.getValueFromCoords(x - 1, y);
+            if (value) {
+                ListDistrict = LoadListDistrict(value);
+            }
+            config.source = ListDistrict;
+            return config;
+        }
+
+        var FilterListWard = function (o, cell, x, y, value, config) {
+            var ListWard = [];
+            var valueP = o.getValueFromCoords(x - 2, y);
+            var valueD = o.getValueFromCoords(x - 1, y);
+            if (valueP != "" & valueD != "") {
+                ListWard = LoadListWard(valueD);
+            }
+            config.source = ListWard;
+            return config;
+        }
+
+        var ObjWorksheet = {
+            minDimensions: [13, 50],
+            filters: true,
+            columns: [
+                { type: 'text', title: 'Trạng thái', primaryKey: true, readOnly: true },
+                { type: 'text', title: 'Mã nhà cung cấp', width: 150, align: 'left' },
+                { type: 'text', title: 'Tên nhà cung cấp', width: 150, align: 'left', wrap: true },
+                { type: 'text', title: 'Tên viết tắt', width: 150, align: 'left', wrap: true },
+                { type: 'dropdown', title: 'Tỉnh/TP', width: 150, source: @Html.Raw(Json.Encode(Model.ListProvince)), autocomplete: true, align: 'left', wrap: true },
+                { type: 'dropdown', title: 'Quận/Huyện', width: 150, source: [], filterOptions: FilterListDistrict, autocomplete: true, align: 'left', wrap: true },
+                { type: 'dropdown', title: 'Phường/Xã', width: 150, source: [], filterOptions: FilterListWard, autocomplete: true, align: 'left', wrap: true },
+                { type: 'text', title: 'Địa chỉ chi tiết', width: 150, align: 'left', autocomplete: true, wrap: true },
+                { type: 'text', title: 'Số điện thoại', width: 150 },
+                { type: 'text', title: 'Email', width: 150, align: 'left', autocomplete: true, wrap: true },
+                { type: 'text', title: 'Mã số thuế', width: 150, align: 'left', wrap: true },
+                { type: 'text', title: 'Ghi chú', width: 150, align: 'left', autocomplete: true, wrap: true },
+                { type: 'dropdown', title: 'Trạng thái hoạt động', width: 150, source: @Html.Raw(Json.Encode(Model.ListActive)), autocomplete: true, align: 'left', wrap: true }
+            ],
+            allowComments: true,
+            tableOverflow: true,
+            tableHeight: HightExcel,
+            freezeColumns: 1,
+            allowInsertColumn: false,
+        };
+
+        var CustomToolbar = {
+            items: [
+                {
+                    content: 'search',
+                    onclick: function (a, b, c) {
+                        if (c.children[0].innerText == 'search') {
+                            jspreadsheet.current.showSearch();
+                            c.children[0].innerText = 'search_off';
+                        } else {
+                            jspreadsheet.current.hideSearch();
+                            c.children[0].innerText = 'search';
+                        }
+                    },
+                    tooltip: 'Toggle Search',
+                    updateState: function (a, b, c, worksheet) {
+                        // Call this one when the worksheet is opened and on the selection of any cells
+                        if (worksheet.options.search == true) {
+                            c.children[0].innerText = 'search_off';
+                        } else {
+                            c.children[0].innerText = 'search';
+                        }
+                    }
+                },
+                {
+                    content: 'fullscreen',
+                    onclick: function (a, b, c) {
+                        if (c.children[0].innerText == 'fullscreen') {
+                            jspreadsheet.current.fullscreen(true);
+                            c.children[0].innerText = 'fullscreen_exit';
+                        } else {
+                            jspreadsheet.current.fullscreen(false);
+                            c.children[0].innerText = 'fullscreen';
+                        }
+                    },
+                    tooltip: 'Toggle Fullscreen',
+                    updateState: function (a, b, c, d) {
+                        if (d.parent.config.fullscreen == true) {
+                            c.children[0].innerText = 'fullscreen_exit';
+                        } else {
+                            c.children[0].innerText = 'fullscreen';
+                        }
+                    }
+                },
+            ]
+        }
+
+        showJSpreadSheet = jspreadsheet(JSpreadSheetID, {
+            toolbar: CustomToolbar,
+            worksheets: [ObjWorksheet],
+            contextMenu: [],
+            onchange: function (worksheet, cell, c, r, value) {
+                JSpreadSheetChange(worksheet, cell, c, r, value);
+            },
+            onpaste: function (worksheet, data) {
+                JSpreadSheetPaste(worksheet, data);
+            },
+        });
+
+        function JSpreadSheetChange(worksheet, cell, c, r, value) {
+            c = Number(c);
+            r = Number(r);
+            if (c == 4 || c == 5) {
+                var ColumnName = jspreadsheet.helpers.getColumnNameFromCoords(c + 1, r);
+                worksheet.setValue(ColumnName, '');
+                CheckCell(c, r, value);
+            }
+            else if (c == 7) {
+                SearchListAddressAutoccomplete(c, r, value);
+                CheckCell(c, r, value);
+            }
+            else if (c != 0) {
+                CheckCell(c, r, value);
+            }
+        };
+
+        function JSpreadSheetPaste(worksheet, data) {
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].x == 5 ) {
+                    //Quận/Huyện
+                    var ProvinceID = showJSpreadSheet[0].getValueFromCoords(Number(data[i].x - 1), data[i].y);
+                    if (data[i].value != "" && ProvinceID != "") {
+                        SearchDistrictID(data[i].x, data[i].y, data[i].value, ProvinceID);
+                    }
+                } else if (data[i].x == 6 ) {
+                    //Phường/Xã
+                    var DistrictID = showJSpreadSheet[0].getValueFromCoords(Number(data[i].x - 1), data[i].y);
+                    if (data[i].value != "" && DistrictID != "") {
+                       SearchWardID(data[i].x, data[i].y, data[i].value, DistrictID);
+                    }
+                }
+            }
+        };
+
+        function SearchDistrictID(x, y, value, ProvinceID) {
+            var ListDistrict = LoadListDistrict(ProvinceID);
+            showJSpreadSheet[0].setCells('F' + Number(y + 1), { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: ListDistrict, filterOptions: FilterListDistrict, autocomplete: true, align: 'left' });
+            showJSpreadSheet[0].setValueFromCoords(x, y, value);
+        }
+
+        function SearchWardID(x, y, value, DistrictID) {
+            var ListWard = LoadListWard(DistrictID);
+            showJSpreadSheet[0].setCells('G' + Number(y + 1), { type: 'dropdown', title: 'Phường/Xã', width: 200, source: ListWard, filterOptions: FilterListWard, autocomplete: true, align: 'left' });
+            showJSpreadSheet[0].setValueFromCoords(x, y, value);
+        }
+
+        function LoadListDistrict(ProvinceID) {
+            var ListDistrict = [];
+            var Data = SearchListDistrict(ProvinceID);
+            var JSON = Data.responseJSON;
+            if (JSON.length > 0) {
+                $.each(JSON, function (index, value) {
+                    var Obj = {};
+                    Obj.id = value.ID;
+                    Obj.name = value.Name;
+                    ListDistrict.push(Obj);
+                });
+            }
+            return ListDistrict;
+        }
+
+        function LoadListWard(DistrictID) {
+            var ListWard = [];
+            var Data = SearchListWard(DistrictID);
+            var JSON = Data.responseJSON;
+            if (JSON.length > 0) {
+                $.each(JSON, function (index, value) {
+                    var Obj = {};
+                    Obj.id = value.ID;
+                    Obj.name = value.Name;
+                    ListWard.push(Obj);
+                });
+            }
+            return ListWard;
+        }
+
+        $("#Document").on('click', function () {
+            var fileInput = document.getElementById('Document');
+            fileInput.value = '';
+        });
+
+        $("#Document").on('change', function () {
+            ExcelUpload = true;
+            //var Url = "";
+            var Version = $("#Version").val();
+            @*if (Version == 1) {
+                Url = '@Url.Action("JImportExcelV1", "Order")';
+            } else {
+                Url = '@Url.Action("JImportExcelV2", "Order")';
+            }*@
+            var TypeFile = ["XLS", "XLSX", "XLSM"];
+            var ListExcel = new FormData(); //FormData object
+            var FileInput = document.getElementById('Document');
+            if (FileInput.files.length == 0) {
+                return;
+            }
+            var Filename = FileInput.files[0].name;
+            //var Filesize = FileInput.files[0].size;
+            var Extension = Filename.split('.').pop().toUpperCase();
+            var CheckExtension = TypeFile.includes(Extension);
+            if (CheckExtension) {
+                for (var i = 0; i < FileInput.files.length; i++) {
+                    ListExcel.append(FileInput.files[i].name, FileInput.files[i]);
+                }
+                $.ajax({
+                    url: '@Url.Action("JImportExcelData", "Provider")',
+                    dataType: "html",
+                    type: "post",
+                    data: ListExcel,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        var res = JSON.parse(data);
+                        if (res.Code == "00") {
+                            var ResponseData = JSON.parse(res.Data);
+                            showJSpreadSheet[0].deleteWorksheet(0);
+                            showJSpreadSheet = jspreadsheet(JSpreadSheetID, {
+                                toolbar: CustomToolbar,
+                                worksheets: [ObjWorksheet],
+                                onchange: function (worksheet, cell, c, r, value) {
+                                    if (!ExcelUpload) {
+                                        JSpreadSheetChange(worksheet, cell, c, r, value);
+                                    }
+                                }
+                            });
+                            showJSpreadSheet[0].setData(JSON.parse(res.Data));
+                            var row = 1;
+                            for (var j = 0; j < ResponseData.length; j++) {
+                                var DistrictName = "";
+                                var WardName = "";
+                                var ProvinceID = "";
+                                var DistrictID = "";
+                                var WardID = "";
+                                var ActiveID = "";
+                                //debugger
+                                if (ResponseData[j][12].toString() == "Hoạt động") {
+                                    showJSpreadSheet[0].setValue('M' + row, "Y", true);
+                                }
+                                if (ResponseData[j][12].toString() == "Ngừng hoạt động") {
+                                    showJSpreadSheet[0].setValue('M' + row, "N", true);
+                                }
+                                //Tỉnh Thành phố người nhận
+                                if (ResponseData[j][13].toString() != "0") {
+                                    ProvinceID = ResponseData[j][13].toString();
+                                    showJSpreadSheet[0].setValue('E' + row, ProvinceID, true);
+                                }
+
+                                //Quận Huyện người nhận
+                                if (ResponseData[j][5].toString() != "0") {
+                                    DistrictName = ResponseData[j][5];
+                                    DistrictID = ResponseData[j][14].toString();
+                                    showJSpreadSheet[0].setCells('F' + row, { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: [{ 'id': DistrictID, 'name': DistrictName }], filterOptions: FilterListDistrict, autocomplete: true, align: 'left' });
+                                    showJSpreadSheet[0].setValue('F' + row, DistrictID, true);
+                                }
+
+                                //Phường/Xã người nhận
+                                if (ResponseData[j][7].toString() != "0") {
+                                    WardName = ResponseData[j][6];
+                                    WardID = ResponseData[j][15].toString();
+                                    showJSpreadSheet[0].setCells('G' + row, { type: 'dropdown', title: 'Phường/Xã', width: 200, source: [{ 'id': WardID, 'name': WardName }], filterOptions: FilterListWard, autocomplete: true, align: 'left' });
+                                    showJSpreadSheet[0].setValue('G' + row, WardID, true);
+                                }
+                                CheckRow(j);
+                                row++;
+                            }
+
+                            ExcelUpload = false;
+                            CountOrder();
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    },
+                });
+
+            } else {
+                FileName = "";
+                $('#DocumentUpload')[0].reset();
+                $("#errDocument").text("Hệ thống chỉ hỗ trợ tải tập tin Excel định dạng xls, xlsx hoặc xlsm.");
+                $("#errDocument").css("color", "red");
+            }
+        });
+
+        function CheckCell(x, y, value) {
+            let Comment = "";
+            r = Number(y) + 1;
+            x = Number(x);
+            switch (x) {
+                case 1:
+                    //Mã nhà cung cấp
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('B' + r).toString(), 'B' + r, "Mã nhà cung cấp", 20, "SpecialCharButNotVietnamese", "N");
+                    break;
+                case 2:
+                    //Tên nhà cung cấp
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('C' + r).toString(), 'C' + r, "Tên nhà cung cấp", 200, "Vietnamese", "Y");
+                    break;
+                case 4:
+                    //Tỉnh/ Thành phố
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('E' + r), 'E' + r, "Tỉnh/TP", 255, "", "Y");
+                    break;
+                case 5:
+                    //Quận/ huyện
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('F' + r), 'F' + r, "Quận/Huyện", 255, "", "Y");
+                    break;
+                case 6:
+                    //Phường xã
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('G' + r), 'G' + r, "Phường/Xã", 255, "", "Y");
+                    break;
+                case 7:
+                    //Địa chỉ chi tiết
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('H' + r).toString(), 'H' + r, "Địa chỉ chi tiết", 400, "", "Y");
+                    break;
+                case 8:
+                    //Số điện thoại người nhận
+                    Comment = CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('I' + r).toString(), 'I' + r, "Số điện thoại", 11, "MobileNumber", "Y");
+                    break;
+                case 12:
+                    //Trạng thái hoạt động
+                    Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('M' + r).toString(), 'M' + r, "Trạng Thái hoạt động", 255, "Vietnamese", "Y");
+                    break;
+                default:
+                    break;
+            }
+
+            var oldComment = showJSpreadSheet[0].getComments('A' + r);
+            if (oldComment) {
+                if (Comment) {
+                    if (oldComment != "Không hợp lệ") {
+                        showJSpreadSheet[0].setValue('A' + r, 'Không hợp lệ', true);
+                        var tr = $('tbody').find('tr')[r - 1];
+                        $(tr).addClass("b-yellow");
+                    }
+                    ShowCommentError(r);
+                } else {
+                    if (oldComment != "Hợp lệ") {
+                        var IsError = ShowCommentError(r);
+                        if (!IsError) {
+                            showJSpreadSheet[0].setValue('A' + r, 'Hợp lệ', true);
+                            var tr = $('tbody').find('tr')[r - 1];
+                            $(tr).removeClass("b-yellow");
+                        }
+                    }
+                }
+            } else {
+                CheckRow(y);
+            }
+
+            CountOrder();
+        }
+
+        function CountOrder() {
+            var data = showJSpreadSheet[0].getColumnData(0);
+            CheckBeforeUnload = false;
+            var countHL = 0, countKHL = 0, countLoi = 0;
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] == "Hợp lệ") {
+                    countHL++;
+                } else if (data[i] == "Không hợp lệ") {
+                    countKHL++;
+                } else if (data[i] == "Lỗi") {
+                    countLoi++;
+                }
+            }
+            TotalData = countHL + countKHL + countLoi;
+            if (TotalData > 0) {
+                CheckBeforeUnload = true;
+            }
+            $('#countHL').html(countHL + "/" + TotalData);
+            $('#countKHL').html(countKHL + "/" + TotalData);
+            $('#countLoi').html(countLoi + "/" + TotalData);
+        }
+
+        function ShowCommentError(r) {
+            let CommentError = "";
+            let arr = ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
+            for (var k = 0; k < arr.length; k++) {
+                let iComment = showJSpreadSheet[0].getComments(arr[k] + r);
+                if (iComment != "") {
+                    CommentError += iComment;
+                }
+            };
+            showJSpreadSheet[0].setComments('A' + r, CommentError);
+            if (CommentError != "") {
+                return true;
+            }
+            return false;
+        }
+
+        function CheckRow(r) {
+            var Comment = "";
+            r = Number(r) + 1;
+            //Mã đơn hàng
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('B' + r).toString(), 'B' + r, "Mã nhà cung cấp", 20, "SpecialCharButNotVietnamese", "Y");
+            //Tên nhà cung cấp
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('C' + r).toString(), 'C' + r, "Tên nhà cung cấp", 200, "Vietnamese", "Y");
+            //Tên viết tắt
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('D' + r).toString(), 'D' + r, "Nội dung", 250, "", "N");
+            //Tỉnh/ thành phố
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('E' + r), 'E' + r, "Tỉnh/TP", 255, "", "Y");
+            //Quận/ huyện n
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('F' + r), 'F' + r, "Quận/Huyện", 255, "", "Y");
+            //Phường/ xã
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('G' + r), 'G' + r, "Phường/Xã", 255, "", "Y");
+            //Địa chỉ chi tiết
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('H' + r).toString(), 'H' + r, "Địa chỉ chi tiết", 400, "", "Y");
+            //Số điện thoại
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('I' + r).toString(), 'I' + r, "Số điện thoại", 11, "MobileNumber", "Y");
+            //Ghi chú
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('L' + r).toString(), 'L' + r, "Ghi chú", 250, "", "N");
+            //Trang thái hoạt động
+            Comment += CheckDataJSpreadSheet(showJSpreadSheet[0].getValue('M' + r).toString(), 'M' + r, "Trạng Thái hoạt động", 255, "Vietnamese", "Y");
+
+            if (Comment == "") {
+                showJSpreadSheet[0].setValue('A' + r, 'Hợp lệ', true);
+                showJSpreadSheet[0].setComments('A' + r, "");
+                let tr = $('tbody').find('tr')[r - 1];
+                $(tr).removeClass("b-yellow");
+            } else {
+                showJSpreadSheet[0].setValue('A' + r, 'Không hợp lệ', true);
+                showJSpreadSheet[0].setComments('A' + r, Comment);
+                let tr = $('tbody').find('tr')[r - 1];
+                $(tr).addClass("b-yellow");
+            }
+            CountOrder();
+        };
+
+        function SearchListAddressAutoccomplete(x, y, value) {
+            if (value.length >= 10) {
+                var Row = Number(y + 1);
+                var Data = PWDGetByVNPMapsAutocomplete(value);
+                var Response = Data.responseJSON;
+                if (Response.Code == "00") {
+                    var JSONParse = JSON.parse(Response.Data);
+                    showJSpreadSheet[0].setValue('E' + Row, JSONParse.ProvinceID, true);
+                    showJSpreadSheet[0].setCells('F' + Row, { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: [{ 'id': JSONParse.DistrictID, 'name': JSONParse.DistrictName }], filterOptions: FilterListDistrict, autocomplete: true, align: 'left' });
+                    showJSpreadSheet[0].setValue('F' + Row, JSONParse.DistrictID, true);
+                    //Phường/Xã
+                    showJSpreadSheet[0].setCells('G' + Row, { type: 'dropdown', title: 'Phường/Xã', width: 200, source: [{ 'id': JSONParse.WardID, 'name': JSONParse.WardName }], filterOptions: FilterListWard, autocomplete: true, align: 'left' });
+                    showJSpreadSheet[0].setValue('G' + Row, JSONParse.WardID, true);
+                } else {
+                    console.log("Lỗi phân tích địa chỉ: " + Response.Code + "||" + Response.Message)
+                }
+            }
+        };
+
+        function SearchDistrictIDByDistrictName(x, y, value, ProvinceID) {
+            var Data = SearchDistrictIDByDistrictName(ProvinceID, value);
+            var Response = Data.responseJSON;
+            if (Response.Code == "00") {
+                var JSONParse = JSON.parse(Response.Data);
+                showJSpreadSheet[0].setCells('F' + Number(y + 1), { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: [{ 'id': JSONParse.ID, 'name': value }], filterOptions: LoadListDistrict, autocomplete: true, align: 'left' });
+                showJSpreadSheet[0].setValueFromCoords(x, y, JSONParse.ID);
+              
+            }
+        }
+
+        function SearchWardIDByWardName(x, y, value, DistrictID) {
+            var Data = SearchWardIDByWardName(DistrictID, value);
+            var Response = Data.responseJSON;
+            if (Response.Code == "00") {
+                var JSONParse = JSON.parse(Response.Data);
+                showJSpreadSheet[0].setCells('G' + Number(y + 1), { type: 'dropdown', title: 'Phường/Xã', width: 200, source: [{ 'id': JSONParse.ID, 'name': value }], filterOptions: LoadListWard, autocomplete: true, align: 'left' });
+                showJSpreadSheet[0].setValueFromCoords(x, y, JSONParse.ID);
+
+            }
+        }
+
+        function ImportExcel() {
+            var data = showJSpreadSheet[0].getData(false, false);
+            var array = [];
+            var arrayKHL = [];
+            var countKHL = 0;
+            var countLoi = 0;
+
+            for (let i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    if (item[0] == "Hợp lệ") {
+                        var obj = {
+                            Code: item[1],
+                            Name: item[2],
+                            ShortName: item[3],
+                            ProvinceID: item[4],
+                            DistrictID: item[5],
+                            WardID: item[6],
+                            Address: item[7],
+                            MobileNumber: item[8] ,
+                            Email: item[9] ,
+                            TaxCode: item[10],
+                            Note: item[11],
+                            IsLock: item[12],
+                            ProvinceName: showJSpreadSheet[0].getValueFromCoords(4, i, true),
+                            DistrictName: showJSpreadSheet[0].getValueFromCoords(5, i, true),
+                            WardName: showJSpreadSheet[0].getValueFromCoords(6, i, true),
+                        };
+                        array.push(obj);
+                    } else {
+                        var ProvinceName = showJSpreadSheet[0].getValueFromCoords(4, i, true);
+                        var DistrictName = showJSpreadSheet[0].getValueFromCoords(5, i, true);
+                        var WardName = showJSpreadSheet[0].getValueFromCoords(6, i, true);
+
+                        item.push(ProvinceName);
+                        item.push(DistrictName);
+                        item.push(WardName);
+                   
+
+                        if (item[0] == "Không hợp lệ") {
+                            item.push("");
+                            arrayKHL.push(item);
+                            countKHL++;
+                        } else if (item[0] == "Lỗi") {
+                            var Comment = showJSpreadSheet[0].getComments('A' + Number(i + 1));
+                            item.push(Comment);
+                            arrayKHL.push(item);
+                            countLoi++;
+                        }
+                    }
+                }
+
+
+            if (array.length == 0) {
+                CreateCustomSwal("error", "Đơn không hợp lệ, vui lòng kiểm tra lại");
+                return;
+            };
+
+           $.ajax({
+                url: '@Url.Action("JImportExcel", "Provider")', //ReadExcelFile is a Action Name and ExcelUpload is Controller name
+                type: 'POST',
+                data: {
+                    data: array,
+                    countKHL: countKHL,
+                    countLoi: countLoi
+                },
+                dataType: 'json',
+                   success: function (res) {
+                      
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('float-left');
+                    wrapper.classList.add('text-left');
+                    wrapper.innerHTML = res.Message;
+                    if (res.Code == "00" && arrayKHL.length == 0) {
+                        swal({
+                            title: 'Thông báo',
+                            content: wrapper,
+                            timer: 2000
+                        }).then(function () {
+                            CheckBeforeUnload = false;
+                            window.location.href = '@Url.Action("ProviderView", "Provider")';
+                        });
+                    } else if (res.Code == "10" || res.Code == "00" && arrayKHL.length > 0) {
+                        swal({
+                            title: "Thông báo",
+                            content: wrapper,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        }).then(function () {
+                            showJSpreadSheet[0].deleteWorksheet(0);
+                            var ResponseData = JSON.parse(res.Data);
+                            var TotalRow = 50;
+                            if (res.Code == "10" && Number(ResponseData.length + arrayKHL.length) > TotalRow) {
+                                TotalRow = Number(ResponseData.length + arrayKHL.length);
+                            } else if (arrayKHL.length > TotalRow) {
+                                TotalRow = arrayKHL.length;
+                            }
+                            ExcelUpload = true;
+                            ObjWorksheet.minDimensions = [13, TotalRow];
+                            showJSpreadSheet = jspreadsheet(JSpreadSheetID, {
+                                toolbar: CustomToolbar,
+                                worksheets: [ObjWorksheet],
+                                onchange: function (worksheet, cell, c, r, value) {
+                                    if (!ExcelUpload) {
+                                        JSpreadSheetChange(worksheet, cell, c, r, value);
+                                    }
+                                }
+                            });
+
+                            var row = 0;
+                            if (res.Code == "10") {
+                                showJSpreadSheet[0].setData(JSON.parse(res.Data));
+                                for (let j = 0; j < ResponseData.length; j++) {
+                                    debugger;
+                                    row++;
+                                    var DistrictName = "";
+                                    var WardName = "";
+                                    var ProvinceID = 0;
+                                    var DistrictID = 0;
+                                    var WardID = 0;
+
+                                    //Tỉnh Thành phố người nhận
+                                    if (ResponseData[j][13].toString() != "0") {
+                                        ProvinceID = ResponseData[j][13].toString();
+                                        showJSpreadSheet[0].setValue('E' + row, ProvinceID, true);
+                                    }
+
+                                    //Quận Huyện người nhận
+                                    if (ResponseData[j][14].toString() != "0") {
+                                        DistrictName = ResponseData[j][5];
+                                        DistrictID = ResponseData[j][14].toString();
+                                        showJSpreadSheet[0].setCells('F' + row, { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: [{ 'id': DistrictID, 'name': DistrictName }], filterOptions: FilterListDistrict, autocomplete: true, align: 'left' });
+                                        showJSpreadSheet[0].setValue('F' + row, DistrictID, true);
+                                    }
+
+                                    //Phường/Xã người nhận
+                                    if (ResponseData[j][15].toString() != "0") {
+                                        WardName = ResponseData[j][6];
+                                        WardID = ResponseData[j][15].toString();
+                                        showJSpreadSheet[0].setCells('G' + row, { type: 'dropdown', title: 'Phường/Xã', width: 200, source: [{ 'id': WardID, 'name': WardName }], filterOptions: FilterListWard, autocomplete: true, align: 'left' });
+                                        showJSpreadSheet[0].setValue('G' + row, WardID, true);
+                                    }
+
+                                    //Kiểm tra dữ liệu
+                                    CheckRow(j);
+                                    //Lỗi
+                                    showJSpreadSheet[0].setValue('A' + row, 'Lỗi', true);
+                                    let tr = $('tbody').find('tr')[row - 1];
+                                    $(tr).addClass("b-yellow");
+                                    showJSpreadSheet[0].setComments('A' + row, ResponseData[j][16]);
+                                }
+                            }
+                            // Hiện lại - không hợp lệ
+                            for (let j = 0; j < arrayKHL.length; j++) {
+                                showJSpreadSheet[0].setRowData(row, arrayKHL[j], true);
+                                row++;
+                                var DistrictName = "";
+                                var WardName = "";
+                                var DistrictID = 0;
+                                var WardID = 0;
+
+
+                                //Quận Huyện người nhận
+                                if (ResponseData[j][5].toString() != "0") {
+                                    DistrictName = ResponseData[j][5];
+                                    DistrictID = ResponseData[j][14].toString();
+                                    showJSpreadSheet[0].setCells('F' + row, { type: 'dropdown', title: 'Quận/Huyện', width: 200, source: [{ 'id': DistrictID, 'name': DistrictName }], filterOptions: FilterListDistrict, autocomplete: true, align: 'left' });
+                                    showJSpreadSheet[0].setValue('F' + row, DistrictID, true);
+                                }
+
+                                //Phường/Xã người nhận
+                                if (ResponseData[j][6].toString() != "0") {
+                                    WardName = ResponseData[j][6];
+                                    WardID = ResponseData[j][15].toString();
+                                    showJSpreadSheet[0].setCells('G' + row, { type: 'dropdown', title: 'Phường/Xã', width: 200, source: [{ 'id': WardID, 'name': WardName }], filterOptions: FilterListWard, autocomplete: true, align: 'left' });
+                                    showJSpreadSheet[0].setValue('G' + row, WardID, true);
+                                }
+
+
+                                //Kiểm tra dữ liệu
+                                if (arrayKHL[j][16] == "") {
+                                    CheckRow(Number(row - 1));
+                                } else {
+                                    showJSpreadSheet[0].setComments('A' + row, arrayKHL[j][16]);
+                                    let tr = $('tbody').find('tr')[row - 1];
+                                    $(tr).addClass("b-yellow");
+                                }
+                            }
+                            ExcelUpload = false;
+                        });
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                },
+                complete: function (data) {
+                    $("#errDocument").text("");
+                    $('#DocumentUpload')[0].reset(); // this will reset the form fields
+                }
+            });
+        }
+
+         function ExportExcel(url) {
+             var data = showJSpreadSheet[0].getData(false, true);
+            var array = [];
+            for (let i = 0; i < data.length; i++) {
+                let item = data[i];
+                if (item[0] != "") {
+                    let msgError = "";
+                    if (item[0] == "Lỗi" || item[0] == "Không hợp lệ") {
+                        msgError = showJSpreadSheet[0].getComments('A' + Number(i + 1));
+                    }
+                    let obj = {
+                        Code: item[1],
+                        Name: item[2],
+                        ShortName: item[3],
+                        ProvinceName: item[4],
+                        DistrictName: item[5],
+                        WardName: item[6],
+                        Address: item[7],
+                        MobileNumber: item[8],
+                        Email: item[9],
+                        TaxCode: item[10],
+                        Note: item[11],
+                        IsLock: item[12],
+                        msgError: msgError
+                    };
+                    array.push(obj);
+                }
+            }
+
+            if (array.length == 0) {
+                CreateCustomSwal("error", "Không có dữ liệu để xuất Excel. Vui lòng kiểm tra lại.");
+                return;
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JExportExcel", "Provider")',
+                data: { data: array},
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(data);
+                    link.download = 'DanhSachNhaCungCap.xlsx';
+                    link.click();
+                    if (url) {
+                        window.location.href = url;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    let err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+    </script>
+}

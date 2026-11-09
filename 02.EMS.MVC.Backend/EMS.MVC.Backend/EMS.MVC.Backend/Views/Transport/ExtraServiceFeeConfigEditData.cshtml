@@ -1,0 +1,305 @@
+﻿@model List<EMS.MVC.Backend.Models.TransportPostageExtraDetailDataViewModel>
+@{
+    ViewBag.Title = "TransportPostageExtraDetailData";
+    Layout = null;
+    int temp = Model.Count - 1;
+}
+<style>
+    td {
+        vertical-align: top !important;
+    }
+</style>
+@if (Model.Count > 0)
+{
+    if (Model[temp].ChargingConditionsID == 4)//Cước chính
+    {
+        <table id="Datatable" class="table table-bordered">
+            <thead class="border text-center" style="background-color:aliceblue">
+                <tr>
+                    <th class="border text-left">Nấc tiền (VNĐ)<i class="fa fa-info-circle" title="Sẽ được tính từ số tiền cao nhất đã cấu hình trước đến số tiền này"></i></th>
+                    <th class="border text-right">Cước phí (VNĐ)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="Weight" value="0" placeholder="Nhập số tiền">
+                        <label class="error-message pt-1" id="errWeight"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee" value="0" placeholder="Nhập cước phí">
+                        <label class="error-message pt-1" id="errLocalFee"></label>
+                    </td>
+                    <td class="text-center vertical-top">
+                        <button class="btn btn-sm btn-primary w-auto float-left" id="Add_Detail" onclick="funcAdd()">Thêm</button>
+                    </td>
+                </tr>
+                @for (var i = 0; i < Model.Count - 1; i++)
+                {
+                    <tr>
+                        <td class="text-left">
+                            <p>@Model[i].Name</p>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[i].ID" value="@Model[i].LocalFee" disabled placeholder="Nhập cước nội tỉnh">
+                            <label class="error-message pt-1" id="errLocalFee_@Model[i].ID"></label>
+                        </td>
+                        <td class="form-group vertical-top" style="width:200px;">
+                            <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[i].ID','4','N')">Sửa</button>
+                            <button class="btn btn-sm btn-danger" name="btnRemoveDetail" onclick="funcRemoveDetail('@Model[i].ID')">Xoá</button>
+
+                            <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[i].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                            <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[i].ID" onclick="funcEditDetail('@Model[i].ID', '4', 'N')">Xác nhận</button>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td class="text-left vertical-top">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="form-control input-group-text text-black" style="color:black;">@Model[temp].Name</span>
+                            </div>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'percentage'" id="StepWeight" value="@Model[temp].Weight" disabled placeholder="Nhập khối lượng">
+                            <div class="input-group-append">
+                                <span class="form-control input-group-text text-black" style="color:black;">%</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="form-control input-group-text" style="color:black;">Giá trị tối thiểu </span>
+                            </div>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[temp].ID" value="@Model[temp].LocalFee" disabled placeholder="Nhập giá trị tối thiểu">
+                            <div class="input-group-append">
+                                <span class="form-control input-group-text" style="color:black;">VNĐ</span>
+                            </div>
+                        </div>
+                        <label class="error-message pt-1" id="errLocalFee_@Model[temp].ID"></label>
+                    </td>
+                    <td class="form-group vertical-top" style="width:200px;">
+                        <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[temp].ID','4','Y')">Sửa</button>
+                        <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[temp].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                        <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[temp].ID" onclick="funcEditDetail('@Model[temp].ID','4','Y')">Xác nhận</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    else if (Model[temp].ChargingConditionsID == 5) //Phạm vi
+    {
+        <table id="Datatable" class="table table-bordered">
+            <thead class="border text-center" style="background-color:aliceblue">
+                <tr>
+                    <th class="border text-center vertical-top" rowspan="2">Nấc khối lượng (gram)<i class="fa fa-info-circle" title="Sẽ được tính từ khối lượng cao nhất đã cấu hình trước đến khối lượng này"></i></th>
+                    <th class="border text-center vertical-top" rowspan="2">Cước nội tỉnh (VNĐ)</th>
+                    <th class="border text-center vertical-top" colspan="2">Cước liên tỉnh (VNĐ)</th>
+                    <th rowspan="2"></th>
+                </tr>
+                <tr>
+                    <th class="border text-center">Nội vùng</th>
+                    <th class="border text-center">Liên vùng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="Weight" value="0" placeholder="Nhập khối lượng">
+                        <label class="error-message pt-1" id="errWeight"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee" value="0" placeholder="Nhập cước nội tỉnh">
+                        <label class="error-message pt-1" id="errLocalFee"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1" value="0" placeholder="Nhập cước liên tỉnh">
+                        <label class="error-message pt-1" id="errIntercityFee1"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2" value="0" placeholder="Nhập cước liên tỉnh">
+                        <label class="error-message pt-1" id="errIntercityFee1"></label>
+                    </td>
+                    <td class="text-center vertical-top">
+                        <button class="btn btn-sm btn-primary w-auto float-left" id="Add_Detail" onclick="funcAdd()">Thêm</button>
+                    </td>
+                </tr>
+                @for (var i = 0; i < Model.Count - 1; i++)
+                {
+                    <tr>
+                        <td class="text-left">
+                            <p>@Model[i].Name</p>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[i].ID" value="@Model[i].LocalFee" disabled placeholder="Nhập cước nội tỉnh">
+                            <label class="error-message pt-1" id="errLocalFee_@Model[i].ID"></label>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1_@Model[i].ID" value="@Model[i].IntercityFee1" disabled placeholder="Nhập giá">
+                            <label class="error-message pt-1" id="errIntercityFee1_@Model[i].ID"></label>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2_@Model[i].ID" value="@Model[i].IntercityFee2" disabled placeholder="Nhập giá">
+                            <label class="error-message pt-1" id="errIntercityFee2_@Model[i].ID"></label>
+                        </td>
+                        <td class="form-group vertical-top" style="width:200px;">
+                            <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[i].ID','5','N')">Sửa</button>
+                            <button class="btn btn-sm btn-danger" name="btnRemoveDetail" onclick="funcRemoveDetail('@Model[i].ID')">Xoá</button>
+
+                            <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[i].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                            <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[i].ID" onclick="funcEditDetail('@Model[i].ID', '5','N')">Xác nhận</button>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td class="text-left">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="form-control input-group-text">Mỗi nấc</span>
+                            </div>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="StepWeight" value="@Model[temp].Weight" disabled placeholder="Nhập khối lượng">
+                            <div class="input-group-append">
+                                <span class="form-control input-group-text">tiếp theo</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[temp].ID" value="@Model[temp].LocalFee" disabled placeholder="Nhập cước nội tỉnh">
+                        <label class="error-message pt-1" id="errLocalFee_@Model[temp].ID"></label>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1_@Model[temp].ID" value="@Model[temp].IntercityFee1" disabled placeholder="Nhập giá">
+                        <label class="error-message pt-1" id="errIntercityFee1_@Model[temp].ID"></label>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2_@Model[temp].ID" value="@Model[temp].IntercityFee2" disabled placeholder="Nhập giá">
+                        <label class="error-message pt-1" id="errIntercityFee2_@Model[temp].ID"></label>
+                    </td>
+                    <td class="form-group vertical-top" style="width:200px;">
+                        <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[temp].ID','5','Y')">Sửa</button>
+                        <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[temp].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                        <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[temp].ID" onclick="funcEditDetail('@Model[temp].ID','5','Y')">Xác nhận</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    else if (Model[temp].ChargingConditionsID == 6) // Khối lượng và phạm vi
+    {
+        <table id="Datatable" class="table table-bordered">
+            <thead class="border text-center" style="background-color:aliceblue">
+                <tr>
+                    <th class="border text-center vertical-top" rowspan="2">Nấc khối lượng (gram)<i class="fa fa-info-circle" title="Sẽ được tính từ khối lượng cao nhất đã cấu hình trước đến khối lượng này"></i></th>
+                    <th class="border text-center vertical-top" rowspan="2">Cước nội tỉnh (VNĐ)</th>
+                    <th class="border text-center vertical-top" colspan="2">Cước liên tỉnh (VNĐ)</th>
+                    <th rowspan="3"></th>
+                </tr>
+                <tr>
+                    <th class="border text-center">Phát tại Hà Nội, Đà Nẵng, Hồ Chí Minh</th>
+                    <th class="border text-center">Phát tại các Tỉnh/TP còn lại</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="Weight" value="0" placeholder="Nhập khối lượng">
+                        <label class="error-message pt-1" id="errWeight"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee" value="0" placeholder="Nhập cước nội tỉnh">
+                        <label class="error-message pt-1" id="errLocalFee"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1" value="0" placeholder="Nhập cước liên tỉnh">
+                        <label class="error-message pt-1" id="errIntercityFee1"></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2" value="0" placeholder="Nhập cước liên tỉnh">
+                        <label class="error-message pt-1" id="errIntercityFee2"></label>
+                    </td>
+                    <td class="text-center vertical-top">
+                        <button class="btn btn-sm btn-primary w-auto float-left" id="Add_Detail" onclick="funcAdd()">Thêm</button>
+                    </td>
+                </tr>
+                @for (var i = 0; i < Model.Count - 1; i++)
+                {
+                    <tr>
+                        <td class="text-left">
+                            <p>@Model[i].Name</p>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[i].ID" value="@Model[i].LocalFee" disabled placeholder="Nhập cước nội tỉnh">
+                            <label class="error-message pt-1" id="errLocalFee_@Model[i].ID"></label>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1_@Model[i].ID" value="@Model[i].IntercityFee1" disabled placeholder="Nhập giá">
+                            <label class="error-message pt-1" id="errIntercityFee1_@Model[i].ID"></label>
+                        </td>
+                        <td class="text-right vertical-top">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2_@Model[i].ID" value="@Model[i].IntercityFee2" disabled placeholder="Nhập giá">
+                            <label class="error-message pt-1" id="errIntercityFee2_@Model[i].ID"></label>
+                        </td>
+                        <td class="form-group vertical-top" style="width:200px;">
+                            <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[i].ID','6','N')">Sửa</button>
+                            <button class="btn btn-sm btn-danger" name="btnRemoveDetail" onclick="funcRemoveDetail('@Model[i].ID')">Xoá</button>
+
+                            <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[i].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                            <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[i].ID" onclick="funcEditDetail('@Model[i].ID', '6','N')">Xác nhận</button>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td class="text-left">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="form-control input-group-text">Mỗi nấc</span>
+                            </div>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="StepWeight" value="@Model[temp].Weight" disabled placeholder="Nhập khối lượng">
+                            <div class="input-group-append">
+                                <span class="form-control input-group-text">tiếp theo</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="LocalFee_@Model[temp].ID" value="@Model[temp].LocalFee" disabled placeholder="Nhập cước nội tỉnh">
+                        <label class="error-message pt-1" id="errLocalFee_@Model[temp].ID"></label>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee1_@Model[temp].ID" value="@Model[temp].IntercityFee1" disabled placeholder="Nhập giá">
+                        <label class="error-message pt-1" id="errIntercityFee1_@Model[temp].ID"></label>
+                    </td>
+                    <td class="text-right vertical-top">
+                        <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="IntercityFee2_@Model[temp].ID" value="@Model[temp].IntercityFee2" disabled placeholder="Nhập giá">
+                        <label class="error-message pt-1" id="errIntercityFee1_@Model[temp].ID"></label>
+                    </td>
+                    <td class="form-group vertical-top" style="width:200px;">
+                        <button class="btn btn-sm btn-warning float-left mr-2" name="btnEditDetail" onclick="funcSetupEditDetail('@Model[temp].ID','6','Y')">Sửa</button>
+                        <button class="btn btn-sm btn-danger float-left mr-2 mb-2" style="display: none;" id="CancelEdit_@Model[temp].ID" onclick="funcCancelEditDetail()">Huỷ</button>
+                        <button class="btn btn-sm btn-primary" style="display:none;" id="EditConfirmation_@Model[temp].ID" onclick="funcEditDetail('@Model[temp].ID','6','Y')">Xác nhận</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Không xác định được loại căn cứ tính cước.</p>
+    }
+}
+else
+{
+    <p>Không lấy được dữ liệu bảng cước. Vui lòng thử lại hoặc liên hệ quản trị.</p>
+}
+<script>
+    function loadjs(file) {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = file;
+        document.body.appendChild(script);
+    }
+
+    var ROOT = window.location.origin;
+    loadjs(ROOT + '/Assets/js/inputmask.js');
+    loadjs(ROOT + '/Assets/js/select2.js');
+    $('#Weight').focus();
+</script>

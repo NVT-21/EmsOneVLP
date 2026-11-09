@@ -1,0 +1,738 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListRequestSupportViewModel>
+@using Newtonsoft.Json;
+<table id="SearchListDataTable" class="table table-bordered">
+    <thead>
+        <tr class="table-info text-center">
+            <th><input class="dt-body-center" type="checkbox" name="select_all" value="1" id="SelectAll"></th>
+            <th class="vertical-mid">STT</th>
+            <th class="vertical-mid">Thao tác</th>
+            <th class="vertical-mid">Mã yêu cầu</th>
+            <th class="vertical-mid">Mã khách hàng</th>
+            <th class="vertical-mid">Mã bưu gửi</th>
+            <th class="vertical-mid">Nhóm yêu cầu</th>
+            <th class="vertical-mid">Loại yêu cầu</th>
+            <th class="vertical-mid">Nội dung yêu cầu</th>
+            <th class="vertical-mid">Trạng thái</th>
+            <th class="vertical-mid">Ngày tạo</th>
+            <th class="vertical-mid">Ngày cập nhật</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @if (item.RequestSupportStatus.Code != "R" || (item.RequestSupportStatus.Code == "F" && item.RequestSupportGroup.ID == 1))
+                        {
+                            <input type="checkbox" id="SelectData" data-RequestSupportCode="@item.RequestSupportCode" data-ShopID="@item.ShopID" data-Status="@item.RequestSupportStatus.Code" value="@item.RequestSupportID" />
+                        }
+                    </td>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">
+                        @{
+                            List<EMS.MVC.Backend.Models.SearchListRequestSupportViewModel> oListTemp = new List<EMS.MVC.Backend.Models.SearchListRequestSupportViewModel>();
+                            oListTemp.Add(new EMS.MVC.Backend.Models.SearchListRequestSupportViewModel()
+                            {
+                                RequestSupportID = item.RequestSupportID,
+                                RequestSupportCode = item.RequestSupportCode,
+                                ShopID = item.ShopID
+                            });
+                        }
+
+                        @if (item.RequestSupportStatus.Code != "E" && item.RequestSupportStatus.Code != "R")
+                        {
+                            <button type="button" class="badge badge-outline-warning" id="ButtonMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Thao tác">
+                                <i class="fa fa-bars" aria-hidden="true"></i>
+                            </button>
+
+                            <div class="dropdown-menu" aria-labelledby="ButtonMenu">
+                                @if (item.RequestSupportStatus.Code == "N" || item.RequestSupportStatus.Code == "W" || item.RequestSupportStatus.Code == "O")
+                                {
+                                    <a class="dropdown-item" onclick="AcceptedStatus('@JsonConvert.SerializeObject(oListTemp)')" title="Duyệt">
+                                        <i class="fa fa-check mr-1"></i>Duyệt
+                                    </a>
+
+                                    <a class="dropdown-item" onclick="UnAcceptedStatus('@JsonConvert.SerializeObject(oListTemp)')" title="Không duyệt">
+                                        <i class="fa fa-times mr-1"></i>Không duyệt
+                                    </a>
+                                }
+                                else if (item.RequestSupportStatus.Code == "P")
+                                {
+                                    <a class="dropdown-item" onclick="DetailRequestSupport(@item.RequestSupportID, @item.ShopID)" title="Xử lý">
+                                        <i class="fa fa-edit mr-1"></i>Xử lý
+                                    </a>
+                                    <a class="dropdown-item" onclick="SearchResultRequestSupport('@JsonConvert.SerializeObject(oListTemp)')" title="Lấy KQ từ CMS">
+                                        <i class="fa fa-exchange mr-1"></i>Lấy KQ từ CMS
+                                    </a>
+                                }
+                                else if (item.RequestSupportStatus.Code == "T")
+                                {
+                                    <a class="dropdown-item" onclick="CloseStatus('@JsonConvert.SerializeObject(oListTemp)')" title="Đóng yêu cầu">
+                                        <i class="fa fa-thumb-tack mr-1"></i>Đóng yêu cầu
+                                    </a>
+                                }
+                                else if (item.RequestSupportStatus.Code == "F" && item.RequestSupportGroup.ID == 1)
+                                {
+                                    <a class="dropdown-item" onclick="ReOpenStatus('@JsonConvert.SerializeObject(oListTemp)')" title="Mở lại">
+                                        <i class="fa fa-refresh mr-1"></i>Mở lại
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </td>
+                    <td class="text-center"><a style="cursor:pointer;color: #007bff;" onclick="DetailRequestSupport(@item.RequestSupportID, @item.ShopID)">@item.RequestSupportCode</a></td>
+                    <td class="text-center">@item.CrmOrPaypostCode</td>
+                    <td class="text-center">
+                        <a href="#" onclick="btnDetailShippingCode('@item.EShippingCode',@item.ShopID)">@item.EShippingCode</a>
+                    </td>
+                    <td>@item.RequestSupportGroup.Name</td>
+                    <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: middle; line-height: 1.4rem;">@item.RequestSupportType.Name</td>
+                    <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: middle; line-height: 1.4rem;">@item.Description</td>
+                    <td class="text-center">@item.RequestSupportStatus.Name</td>
+                    <td class="text-center">
+                        @{
+                            var splitCreatedDate = item.CreatedDate.Split(' ');
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            var splitUpdatedDate = item.UpdatedDate.Split(' ');
+                            <span style="line-height: 1.4rem;">@splitUpdatedDate[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitUpdatedDate[1]</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        LoadCountStatus();
+        var table = $('#SearchListDataTable').dataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                'sSearch': "",
+                'searchPlaceholder': "Tìm kiếm nhanh",
+                'emptyTable': "Không có dữ liệu",
+                'zeroRecords': "Không có dữ liệu",
+                'sInfo': 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                'infoEmpty': "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                'infoFiltered': "(Tìm kiếm từ _MAX_ bản ghi)",
+                'oPaginate': {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                'lengthMenu': "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            'stateSave': true
+        });
+
+        var allPages = table.fnGetNodes();
+
+        $('#SelectAll').click(function () {
+            if ($(this).hasClass('allChecked')) {
+                $('input[type="checkbox"]', allPages).prop('checked', false);
+            } else {
+                $('input[type="checkbox"]', allPages).prop('checked', true);
+            }
+            $(this).toggleClass('allChecked');
+        });
+
+        $("#btnAcceptedStatus").on("click", function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {
+                    RequestSupportID: $(value).val(),
+                    RequestSupportCode: $(value).attr("data-RequestSupportCode"),
+                    ShopID: $(value).attr("data-ShopID"),
+                    Status: {
+                        Code: $(value).attr("data-Status")
+                    }
+                };
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn yêu cầu hỗ trợ cần duyệt.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
+            AcceptedStatus(JSON.stringify(arr));
+        });
+
+        $("#btnUnAcceptedStatus").on("click", function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {
+                    RequestSupportID: $(value).val(),
+                    RequestSupportCode: $(value).attr("data-RequestSupportCode"),
+                    ShopID: $(value).attr("data-ShopID"),
+                    Status: {
+                        Code: $(value).attr("data-Status")
+                    }
+                };
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn yêu cầu hỗ trợ không duyệt.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
+            UnAcceptedStatus(JSON.stringify(arr));
+        });
+
+        $("#btnCloseStatus").on("click", function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {
+                    RequestSupportID: $(value).val(),
+                    RequestSupportCode: $(value).attr("data-RequestSupportCode"),
+                    ShopID: $(value).attr("data-ShopID"),
+                    Status: {
+                        Code: $(value).attr("data-Status")
+                    }
+                };
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn yêu cầu hỗ trợ cần đóng.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
+            CloseStatus(JSON.stringify(arr));
+        });
+
+        $("#btnReOpenStatus").on("click", function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {
+                    RequestSupportID: $(value).val(),
+                    RequestSupportCode: $(value).attr("data-RequestSupportCode"),
+                    ShopID: $(value).attr("data-ShopID"),
+                    Status: {
+                        Code: $(value).attr("data-Status")
+                    }
+                };
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn yêu cầu hỗ trợ cần mở lại.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
+            ReOpenStatus(JSON.stringify(arr));
+        });
+
+        $("#btnSearchResultRequestSupport").on("click", function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {
+                    RequestSupportID: $(value).val(),
+                    RequestSupportCode: $(value).attr("data-RequestSupportCode"),
+                    ShopID: $(value).attr("data-ShopID"),
+                };
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn yêu cầu hỗ trợ cần lấy kết quả.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+
+            SearchResultRequestSupport(JSON.stringify(arr));
+        });
+    });
+
+    function LoadCountStatus() {
+        var data = @Html.Raw(Json.Encode(ViewBag.CountRequestSupportStatus));
+        for (var i = 0; i < data.length; i++) {
+            $("#Status_" + data[i].Status).text(data[i].Count);
+        }
+    }
+
+    function AcceptedStatus(oListTemp) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn duyệt yêu cầu hỗ trợ?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAcceptedStatus", "RequestSupport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        model: JSON.parse(oListTemp)
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else
+                        if (res.Code == "10") {
+                            swal({
+                               title: 'Thông báo',
+                               text: res.Message,
+                               buttons: {
+                                   confirm: {
+                                       text: "XEM CHI TIẾT",
+                                       value: true,
+                                       visible: true,
+                                       className: "btn btn-primary",
+                                       closeModal: true
+                                   },
+                                   cancel: {
+                                       text: "KHÔNG",
+                                       value: false,
+                                       visible: true,
+                                       className: "btn btn-danger",
+                                       closeModal: true,
+                                   }
+                               },
+                            }).then((value) => {
+                                if (value) {
+                                   $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                       Error: res.Data,
+                                       Controller: "RequestSupport"
+                                   }, function (data) {
+                                       $('#modal-common-container').html(data);
+                                       $('#modal-common').modal('show');
+                                   });
+                               } else {
+                                   window.location.reload();
+                               }
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function UnAcceptedStatus(oListTemp) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn không duyệt yêu cầu hỗ trợ?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.post('@Url.Action("UnAcceptedStatusView", "RequestSupport")', { model: JSON.parse(oListTemp) }, function (data) {
+                    $('#modal-common-container').html(data);
+                    $('#modal-common').modal('show');
+                });
+            }
+        });
+    }
+
+    function DetailRequestSupport(RequestSupportID, ShopID) {
+        var params = String.format("{0}&{1}", RequestSupportID, ShopID);
+        var url = '@Url.Action("DetailRequestSupportView", "RequestSupport")?SearchKey=' + btoa(params);
+        RedirectUsingAjax(url);
+    }
+
+    function CloseStatus(oListTemp) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn đóng yêu cầu hỗ trợ?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JCloseStatus", "RequestSupport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        model: JSON.parse(oListTemp)
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else
+                        if (res.Code == "10") {
+                            swal({
+                               title: 'Thông báo',
+                               text: res.Message,
+                               buttons: {
+                                   confirm: {
+                                       text: "XEM CHI TIẾT",
+                                       value: true,
+                                       visible: true,
+                                       className: "btn btn-primary",
+                                       closeModal: true
+                                   },
+                                   cancel: {
+                                       text: "KHÔNG",
+                                       value: false,
+                                       visible: true,
+                                       className: "btn btn-danger",
+                                       closeModal: true,
+                                   }
+                               },
+                            }).then((value) => {
+                               if (value) {
+                                   $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                       Error: res.Data,
+                                       Controller: "RequestSupport"
+                                   }, function (data) {
+                                       $('#modal-common-container').html(data);
+                                       $('#modal-common').modal('show');
+                                   });
+                               } else {
+                                   window.location.reload();
+                               }
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function ReOpenStatus(oListTemp) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn mở lại yêu cầu hỗ trợ?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JReOpenStatus", "RequestSupport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        model: JSON.parse(oListTemp)
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else
+                        if (res.Code == "10") {
+                            swal({
+                               title: 'Thông báo',
+                               text: res.Message,
+                               buttons: {
+                                   confirm: {
+                                       text: "XEM CHI TIẾT",
+                                       value: true,
+                                       visible: true,
+                                       className: "btn btn-primary",
+                                       closeModal: true
+                                   },
+                                   cancel: {
+                                       text: "KHÔNG",
+                                       value: false,
+                                       visible: true,
+                                       className: "btn btn-danger",
+                                       closeModal: true,
+                                   }
+                               },
+                            }).then((value) => {
+                               if (value) {
+                                   $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                       Error: res.Data,
+                                       Controller: "RequestSupport"
+                                   }, function (data) {
+                                       $('#modal-common-container').html(data);
+                                       $('#modal-common').modal('show');
+                                   });
+                               } else {
+                                   window.location.reload();
+                               }
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+
+    function SearchResultRequestSupport(oListTemp) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn lấy kết quả yêu cầu hỗ trợ?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAddResultRequestSupport", "RequestSupport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        model: JSON.parse(oListTemp)
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else
+                        if (res.Code == "10") {
+                            swal({
+                               title: 'Thông báo',
+                               text: res.Message,
+                               buttons: {
+                                   confirm: {
+                                       text: "CÓ",
+                                       value: true,
+                                       visible: true,
+                                       className: "btn btn-primary",
+                                       closeModal: true
+                                   },
+                                   cancel: {
+                                       text: "KHÔNG",
+                                       value: false,
+                                       visible: true,
+                                       className: "btn btn-danger",
+                                       closeModal: true,
+                                   }
+                               },
+                            }).then((value) => {
+                                if (value) {
+                                   $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                       Error: res.Data,
+                                       Controller: "RequestSupport"
+                                   }, function (data) {
+                                       $('#modal-common-container').html(data);
+                                       $('#modal-common').modal('show');
+                                   });
+                               } else {
+                                   window.location.reload();
+                               }
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+
+    function btnDetailShippingCode(ShippingCode, ShopID) {
+        var param = String.format("ShippingCode={0}", btoa(ShippingCode));
+        var link = document.createElement('a');
+        link.target = "_blank";
+        link.href = '@XHelper.Ems247Url@("tra-cuu-buu-gui?")' + param;
+        link.click();
+    };
+</script>

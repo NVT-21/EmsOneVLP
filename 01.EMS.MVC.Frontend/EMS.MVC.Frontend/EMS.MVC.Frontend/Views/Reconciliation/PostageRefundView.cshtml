@@ -1,0 +1,123 @@
+﻿@model EMS.MVC.Frontend.Models.PostageRefundViewModel
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Thời gian</span>
+                            </div>
+                            @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Tháng/ Năm" } })
+                        </div>
+                    </div>
+                    <div class="col-5">
+
+                    </div>
+                    <div class="col-4 d-flex justify-content-end align-items-end">
+                        <div class="mb-3 d-flex">
+                            <div class="dropdown me-2">
+                                <button class="btn btn-upload" type="button" id="btnExportExcel">
+                                    <i class="icon-down fs-18"></i>
+                                    Xuất file Excel
+                                </button>
+                            </div>
+                            <div class="dropdown ">
+                                <button class="btn btn-upload" id="btnExportPDF">
+                                    <i class="icon-down fs-18"></i> Xuất file PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body ">
+            <div id="tbl-data" class="table-primary table-responsive">
+                @*@{
+                        Html.RenderAction("DataPostageRefundView", "Reconciliation", new { MonthYear = 202304 });
+                    }*@
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+        $(document).ready(function () {
+            CreateMonthYearPicker("Time");
+            LoadDataSearch();
+        });
+        $('#Time').on('change', function () {
+            LoadDataSearch();
+        });
+        function LoadDataSearch() {
+            var errMsg = '', isError = false;
+            var myArray = $('#Time').val().trim().split("/");
+            var time = Number(myArray[1] + myArray[0]);
+            var agrs = {
+                MonthYear: time, //202304
+            };
+            if (agrs.MonthYear == 0) {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+
+            $.get('@Url.Action("DataPostageRefundView", "Reconciliation")', agrs, function (data) {
+                $('#tbl-data').html(data);
+            });
+        }
+        $("#btnExportExcel").on("click", function () {
+            var errMsg = '', isError = false;
+            var myArray = $('#Time').val().trim().split("/");
+            var time = Number(myArray[1] + myArray[0]);
+            var agrs = {
+                MonthYear: time, //202304
+            };
+            if (agrs.MonthYear == 0) {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("ExportExcelDataPostageRefund", "Reconciliation")?MonthYear=" + agrs.MonthYear;
+        });
+        $("#btnExportPDF").on("click", function () {
+            var errMsg = '', isError = false;
+            var myArray = $('#Time').val().trim().split("/");
+            var time = Number(myArray[1] + myArray[0]);
+            var agrs = {
+                MonthYear: time, //202304
+            };
+            if (agrs.MonthYear == 0) {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("ExportPDFDataPostageRefund", "Reconciliation")?MonthYear=" + agrs.MonthYear;
+        });
+    </script>
+}

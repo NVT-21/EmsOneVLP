@@ -1,0 +1,225 @@
+﻿@model EMS.MVC.Frontend.Models.SearchListTransportServiceViewModel
+
+@Html.HiddenFor(m => m.Type)
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="service-list" id="BodyService">
+                @foreach (var item in Model.ListTransportService)
+                {
+                    <div class="service-item rounded">
+                        <span class="font-w600 fs-16">@item.Name</span>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-tran light" data-toggle="tooltip" title="Lên đầu" onclick="UpTop(this)">
+                                <i class="icon-up fs-20"></i>
+                            </button>
+                            <button type="button" class="btn btn-tran light" data-toggle="tooltip" title="Lên 1 bậc" onclick="UpOne(this)">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12.5L10 7.5L15 12.5" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round" />
+                                    <rect x="0.75" y="0.75" width="18.5" height="18.5" rx="3.25" stroke="#1D2129"
+                                          stroke-width="1.5" />
+                                </svg>
+                            </button>
+
+                            @if (item.IsLock == "N")
+                            {
+                                <button type="button" class="btn btn-tran light" name="itemService" data-toggle="tooltip" title="Khóa" data-islock="N" data-id="@item.ID" onclick="funcLock(this)">
+                                    <i class="icon-lock fs-20"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-locked light" name="itemService" type="button" data-toggle="tooltip" title="Mở khóa" data-islock="Y" data-id="@item.ID" onclick="funcUnlock(this)">
+                                    <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.9987 15.0026C9.9987 15.4168 10.3345 15.7526 10.7487 15.7526C11.1629 15.7526 11.4987 15.4168 11.4987 15.0026H9.9987ZM11.4987 13.3359C11.4987 12.9217 11.1629 12.5859 10.7487 12.5859C10.3345 12.5859 9.9987 12.9217 9.9987 13.3359H11.4987ZM3.33203 10.8359V17.5026H4.83203V10.8359H3.33203ZM5.7487 19.9193H15.7487V18.4193H5.7487V19.9193ZM18.1654 17.5026V10.8359H16.6654V17.5026H18.1654ZM5.7487 9.91927H6.58203V8.41927H5.7487V9.91927ZM7.33203 9.16927V5.0026H5.83203V9.16927H7.33203ZM6.58203 9.91927H14.9154V8.41927H6.58203V9.91927ZM14.9154 9.91927H15.7487V8.41927H14.9154V9.91927ZM14.1654 5.0026V9.16927H15.6654V5.0026H14.1654ZM11.4987 15.0026V13.3359H9.9987V15.0026H11.4987ZM10.7487 1.58594C12.6357 1.58594 14.1654 3.11563 14.1654 5.0026H15.6654C15.6654 2.2872 13.4641 0.0859375 10.7487 0.0859375V1.58594ZM18.1654 10.8359C18.1654 9.50125 17.0834 8.41927 15.7487 8.41927V9.91927C16.255 9.91927 16.6654 10.3297 16.6654 10.8359H18.1654ZM15.7487 19.9193C17.0834 19.9193 18.1654 18.8373 18.1654 17.5026H16.6654C16.6654 18.0089 16.255 18.4193 15.7487 18.4193V19.9193ZM3.33203 17.5026C3.33203 18.8373 4.41401 19.9193 5.7487 19.9193V18.4193C5.24244 18.4193 4.83203 18.0089 4.83203 17.5026H3.33203ZM7.33203 5.0026C7.33203 3.11563 8.86173 1.58594 10.7487 1.58594V0.0859375C8.0333 0.0859375 5.83203 2.2872 5.83203 5.0026H7.33203ZM4.83203 10.8359C4.83203 10.3297 5.24244 9.91927 5.7487 9.91927V8.41927C4.41401 8.41927 3.33203 9.50125 3.33203 10.8359H4.83203Z"
+                                              fill="#FF3B30" />
+                                    </svg>
+                                </button>
+                            }
+
+                            <div class="form-check form-check-inline mb-0">
+                                <input type="radio" class="form-check-input" name="itemDefault" @{ if (item.IsDefault == "Y") { Write("checked"); }}>
+                                <label class="form-check-label " for="1">
+                                    Mặc định
+                                </label>
+                            </div>
+
+                            @*@if (item.IsDefault == "Y")
+                                {
+                                    <button disabled type="button" class="btn btn-tran light" name="itemService" data-toggle="tooltip" title="Khóa" data-islock="N" data-id="@item.ID" onclick="funcLock(this)">
+                                        <i class="icon-lock fs-20"></i>
+                                    </button>
+                                    <div class="form-check form-check-inline mb-0">
+                                        <input type="radio" class="form-check-input" name="isDefault" checked>
+                                        <label class="form-check-label " for="1">
+                                            Mặc định
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (item.IsLock == "N")
+                                    {
+                                        <button type="button" class="btn btn-tran light" name="itemService" data-toggle="tooltip" title="Khóa" data-islock="N" data-id="@item.ID" onclick="funcLock(this)">
+                                            <i class="icon-lock fs-20"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-locked light" name="itemService" type="button" data-toggle="tooltip" title="Mở khóa" data-islock="Y" data-id="@item.ID" onclick="funcUnlock(this)">
+                                            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.9987 15.0026C9.9987 15.4168 10.3345 15.7526 10.7487 15.7526C11.1629 15.7526 11.4987 15.4168 11.4987 15.0026H9.9987ZM11.4987 13.3359C11.4987 12.9217 11.1629 12.5859 10.7487 12.5859C10.3345 12.5859 9.9987 12.9217 9.9987 13.3359H11.4987ZM3.33203 10.8359V17.5026H4.83203V10.8359H3.33203ZM5.7487 19.9193H15.7487V18.4193H5.7487V19.9193ZM18.1654 17.5026V10.8359H16.6654V17.5026H18.1654ZM5.7487 9.91927H6.58203V8.41927H5.7487V9.91927ZM7.33203 9.16927V5.0026H5.83203V9.16927H7.33203ZM6.58203 9.91927H14.9154V8.41927H6.58203V9.91927ZM14.9154 9.91927H15.7487V8.41927H14.9154V9.91927ZM14.1654 5.0026V9.16927H15.6654V5.0026H14.1654ZM11.4987 15.0026V13.3359H9.9987V15.0026H11.4987ZM10.7487 1.58594C12.6357 1.58594 14.1654 3.11563 14.1654 5.0026H15.6654C15.6654 2.2872 13.4641 0.0859375 10.7487 0.0859375V1.58594ZM18.1654 10.8359C18.1654 9.50125 17.0834 8.41927 15.7487 8.41927V9.91927C16.255 9.91927 16.6654 10.3297 16.6654 10.8359H18.1654ZM15.7487 19.9193C17.0834 19.9193 18.1654 18.8373 18.1654 17.5026H16.6654C16.6654 18.0089 16.255 18.4193 15.7487 18.4193V19.9193ZM3.33203 17.5026C3.33203 18.8373 4.41401 19.9193 5.7487 19.9193V18.4193C5.24244 18.4193 4.83203 18.0089 4.83203 17.5026H3.33203ZM7.33203 5.0026C7.33203 3.11563 8.86173 1.58594 10.7487 1.58594V0.0859375C8.0333 0.0859375 5.83203 2.2872 5.83203 5.0026H7.33203ZM4.83203 10.8359C4.83203 10.3297 5.24244 9.91927 5.7487 9.91927V8.41927C4.41401 8.41927 3.33203 9.50125 3.33203 10.8359H4.83203Z"
+                                                      fill="#FF3B30" />
+                                            </svg>
+                                        </button>
+                                    }
+                                    <div class="form-check form-check-inline mb-0">
+                                        <input type="radio" class="form-check-input" name="isDefault">
+                                        <label class="form-check-label " for="1">
+                                            Mặc định
+                                        </label>
+                                    </div>
+                                }*@
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" id="btnSubmit" class="btn btn-sm btn-primary">Cập nhật</button>
+        </div>
+    </div>
+</div>
+<script>
+    //Khóa
+    function funcLock(This) {
+        $(This).attr('data-islock', 'Y');
+        $(This).attr('title', 'Mở khóa');
+        $(This).attr('onclick', 'funcUnlock(this)');
+        $(This).html('<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d = "M9.9987 15.0026C9.9987 15.4168 10.3345 15.7526 10.7487 15.7526C11.1629 15.7526 11.4987 15.4168 11.4987 15.0026H9.9987ZM11.4987 13.3359C11.4987 12.9217 11.1629 12.5859 10.7487 12.5859C10.3345 12.5859 9.9987 12.9217 9.9987 13.3359H11.4987ZM3.33203 10.8359V17.5026H4.83203V10.8359H3.33203ZM5.7487 19.9193H15.7487V18.4193H5.7487V19.9193ZM18.1654 17.5026V10.8359H16.6654V17.5026H18.1654ZM5.7487 9.91927H6.58203V8.41927H5.7487V9.91927ZM7.33203 9.16927V5.0026H5.83203V9.16927H7.33203ZM6.58203 9.91927H14.9154V8.41927H6.58203V9.91927ZM14.9154 9.91927H15.7487V8.41927H14.9154V9.91927ZM14.1654 5.0026V9.16927H15.6654V5.0026H14.1654ZM11.4987 15.0026V13.3359H9.9987V15.0026H11.4987ZM10.7487 1.58594C12.6357 1.58594 14.1654 3.11563 14.1654 5.0026H15.6654C15.6654 2.2872 13.4641 0.0859375 10.7487 0.0859375V1.58594ZM18.1654 10.8359C18.1654 9.50125 17.0834 8.41927 15.7487 8.41927V9.91927C16.255 9.91927 16.6654 10.3297 16.6654 10.8359H18.1654ZM15.7487 19.9193C17.0834 19.9193 18.1654 18.8373 18.1654 17.5026H16.6654C16.6654 18.0089 16.255 18.4193 15.7487 18.4193V19.9193ZM3.33203 17.5026C3.33203 18.8373 4.41401 19.9193 5.7487 19.9193V18.4193C5.24244 18.4193 4.83203 18.0089 4.83203 17.5026H3.33203ZM7.33203 5.0026C7.33203 3.11563 8.86173 1.58594 10.7487 1.58594V0.0859375C8.0333 0.0859375 5.83203 2.2872 5.83203 5.0026H7.33203ZM4.83203 10.8359C4.83203 10.3297 5.24244 9.91927 5.7487 9.91927V8.41927C4.41401 8.41927 3.33203 9.50125 3.33203 10.8359H4.83203Z" fill ="#FF3B30" /></svg>');
+        $(This).removeClass('btn-tran').addClass('btn-locked');
+    };
+
+    //Mở khóa
+    function funcUnlock(This) {
+        $(This).attr('data-islock', 'N');
+        $(This).attr('title', 'Khóa');
+        $(This).attr('onclick', 'funcLock(this)');
+        $(This).html('<i class="icon-lock fs-20"></i>');
+        $(This).removeClass('btn-locked').addClass('btn-tran');
+    };
+
+    //Lên 1 nấc
+    function UpOne(This) {
+        //hoán đổi chỗ item lên item1
+        var item = $(This).closest('.rounded');
+        var index = $(item).parent().children().index(item);
+        if (index > 0) {
+            var list = $(item).parent().children();
+            var item1HTML = $(list[index - 1]).html();
+            var itemHTML = $(list[index]).html();
+            $(list[index - 1]).html(itemHTML);
+            $(list[index]).html(item1HTML);
+        };
+    };
+
+    //Lên hàng đầu
+    function UpTop(This) {
+        var item = $(This).closest('.rounded');
+        var index = $(item).parent().children().index(item);
+        if (index > 0) {
+            var parent = $(item).parent();
+            var itemHTML = $(item).prop("outerHTML");
+            $(parent).prepend(itemHTML);
+            $(item).remove();
+        };
+    };
+
+    $('#btnSubmit').on('click', function () {
+        var isError = false;
+        var ServiceID = "";
+        var itemService = $('#BodyService').find('[name="itemService"]');
+        var itemDefault = $('#BodyService').find('[name="itemDefault"]');
+        for (var i = 0; i < itemService.length; i++) {
+            var id = $(itemService[i]).attr('data-id');
+            var isLock = $(itemService[i]).attr('data-islock');
+            var isDefault = $(itemDefault[i]).is(":checked") == true ? "Y" : "N";
+            if (isLock == "Y" && isDefault == "Y") {
+                CreateCustomSwal("error", "Dịch vụ khóa không thể chọn làm mặc định");
+                return;
+            }
+
+            ServiceID += id + "," + isLock + "," + isDefault + "|";
+        };
+
+        ServiceID = ServiceID.slice(0, -1);
+
+        var data = {
+            ServiceID: ServiceID,
+            Type: $("#Type").val()
+        };
+
+        if (data.ServiceID == "") {
+            CreateCustomSwal("error", "Vui lòng chọn dịch vụ");
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn chỉnh sửa?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUpdateTransportService", "TransportService")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+
+    $('#btnCancel').on('click', function () {
+        window.location.reload();
+    })
+</script>

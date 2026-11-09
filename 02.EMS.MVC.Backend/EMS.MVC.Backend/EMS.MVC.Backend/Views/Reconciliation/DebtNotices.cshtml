@@ -1,0 +1,232 @@
+﻿@model EMS.MVC.Backend.Models.ReconciliationViewModel
+@{
+    ViewBag.Title = "DebtNotices";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("DebtNotices","Reconciliation")">Giấy báo cước phí</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 mb-2">
+                    <label>Loại giấy báo</label>
+                    @Html.DropDownListFor(model => model.ReportType, new SelectList(Model.ListReportType, "Value", "Text"), new { @class = "select2" })
+                </div>
+                <div class="col-lg-3 mb-2">
+                    <label>&nbsp;</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Thời gian</span>
+                        </div>
+                        @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Tháng/ Năm" } })
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-2">
+                    <label>Mã PP/CRM</label>
+                    @Html.EditorFor(model => model.CustomerPPCRM, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã PP/CRM" } })
+                </div>
+                <div class="col-lg-3 mb-2">
+                    <label>&nbsp;</label>
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 mb-2 mb-2">
+                    <label>&nbsp;</label>
+                    <button type="button" id="btnExportExcel" class="btn btn-sm btn-dribbble form-control">
+                        <i class="fa fa-file-excel-o mr-2"></i>&nbsp; EXPORT EXCEL
+                    </button>
+                </div>
+                <div class="col-lg-3 mb-2 mb-2">
+                    <label>&nbsp;</label>
+                    <button type="button" id="btnExportPDF" class="btn btn-sm btn-behance form-control">
+                        <i class="fa fa-file-pdf-o mr-2"></i>&nbsp; EXPORT PDF
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $.fn.datepicker.dates['vi'] = {
+            days: ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
+            daysShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            daysMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            months: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+            monthsShort: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+            today: "Today",
+            clear: "Clear",
+            format: "mm/dd/yyyy",
+            titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
+            weekStart: 0
+        };
+        $("#Time").datepicker({
+            autoclose: true,
+            format: "mm/yyyy",
+            startView: "months",
+            minViewMode: "months",
+            language: "vi",
+            startDate: new Date('@(DateTime.Now.Year - 3)', '@(DateTime.Now.Month - 1)', '@DateTime.Now.Day', 0, 0, 0, 0),
+            endDate: new Date('@DateTime.Now.Year', '@(DateTime.Now.Month - 1)', '@DateTime.Now.Day', 0, 0, 0, 0),
+        });
+    });
+    $('#btnSearch').on('click', function () {
+        var errMsg = '', isError = false;
+        var myArray = $('#Time').val().trim().split("/");
+        var time = Number(myArray[1] + myArray[0]);
+        var agrs = {
+            ReportType: $('#ReportType').val(),
+            CustomerCode: $('#CustomerPPCRM').val().trim(),//"11527858438383",
+            MonthYear: time // 202304
+        };
+
+        if (agrs.MonthYear == 0) {
+            errMsg = 'Vui lòng chọn thời gian.';
+            isError = true;
+        }
+
+        if (agrs.CustomerCode == "") {
+            errMsg = 'Vui lòng nhập Mã khách hàng PP/CRM';
+            isError = true;
+        }
+
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            })
+            return;
+        }
+        switch (agrs.ReportType) {
+            case "O":
+                $.get('@Url.Action("DataSummaryOfDebtNotices", "Reconciliation")', agrs, function (htmlString) {
+                    $('#tbl-data').html(htmlString);
+                });
+                break;
+            case "D":
+                $.get('@Url.Action("DataDebtNotices", "Reconciliation")', agrs, function (htmlString) {
+                    $('#tbl-data').html(htmlString);
+                });
+                break;
+            default:
+                break;
+        }
+    });
+    $("#btnExportExcel").on("click", function () {
+        var errMsg = '', isError = false;
+        var myArray = $('#Time').val().trim().split("/");
+        var time = Number(myArray[1] + myArray[0]);
+        var agrs = {
+            ReportType: $('#ReportType').val(),
+            CustomerCode: $('#CustomerPPCRM').val().trim(),
+            MonthYear: time
+        };
+        if (agrs.MonthYear == 0) {
+            errMsg = 'Vui lòng chọn thời gian.';
+            isError = true;
+        }
+
+        if (agrs.CustomerCode == "") {
+            errMsg = 'Vui lòng nhập Mã khách hàng PP/CRM';
+            isError = true;
+        }
+
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            })
+            return;
+        }
+        switch (agrs.ReportType) {
+            case "O":
+                window.location.href = "@Url.Action("ExportExcelDataSummaryOfDebtNotices", "Reconciliation")?CustomerCode=" + agrs.CustomerCode + "&MonthYear=" + agrs.MonthYear;
+                break;
+            case "D":
+                window.location.href = "@Url.Action("ExportExcelDataDebtNotices", "Reconciliation")?CustomerCode=" + agrs.CustomerCode + "&MonthYear=" + agrs.MonthYear;
+                break;
+            default:
+                break;
+        }
+    });
+    $("#btnExportPDF").on("click", function () {
+        var errMsg = '', isError = false;
+        var myArray = $('#Time').val().trim().split("/");
+        var time = Number(myArray[1] + myArray[0]);
+        var agrs = {
+            ReportType: $('#ReportType').val(),
+            CustomerCode: $('#CustomerPPCRM').val().trim(),
+            MonthYear: time
+        };
+        if (agrs.MonthYear == 0) {
+            errMsg = 'Vui lòng chọn thời gian.';
+            isError = true;
+        }
+
+        if (agrs.CustomerCode == "") {
+            errMsg = 'Vui lòng nhập Mã khách hàng PP/CRM';
+            isError = true;
+        }
+
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            })
+            return;
+        }
+        switch (agrs.ReportType) {
+            case "O":
+                window.location.href = "@Url.Action("ExportPDFDataSummaryOfDebtNotices", "Reconciliation")?CustomerCode=" + agrs.CustomerCode + "&MonthYear=" + agrs.MonthYear;
+                break;
+            case "D":
+                window.location.href = "@Url.Action("ExportPDFDataDebtNotices", "Reconciliation")?CustomerCode=" + agrs.CustomerCode + "&MonthYear=" + agrs.MonthYear;
+                break;
+            default:
+                break;
+        }
+
+    });
+</script>

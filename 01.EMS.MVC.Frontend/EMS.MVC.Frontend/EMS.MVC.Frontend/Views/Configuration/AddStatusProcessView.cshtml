@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Thêm tình trạng xử lý";
+    Layout = null;
+}
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Thêm tình trạng xử lý</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Tình trạng xử lý <span class="text-danger">(*)</span></label>
+                        <input class="form-control" id="StatusProcess" placeholder="Tình trạng xử lý" autocomplete="off">
+                        <span class="text-danger" id="errStatusProcess"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    //$(document).ready(function () {
+    //    isValidCharacter("StatusProcess", "Vui lòng nhập tình trạng xử lý.", "Note", "Y");
+    //});
+    $("#btnSubmit").on("click", function () {
+        var isError = false, isValid = true;
+        var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            Note: $("#StatusProcess").val().trim()
+        };
+
+        if (data.Note == "") {
+            $("#errStatusProcess").text("Vui lòng nhập tình trạng xử lý.");
+            $("#StatusProcess").focus();
+            isError = true;
+        } else {
+            isValid = Validate("Note", data.Note);
+            if (isValid == false) {
+                $("#errStatusProcess").text(msgIsValid);
+                $("#StatusProcess").focus();
+                isError = true;
+            } else {
+                $("#errStatusProcess").text("");
+            }
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddStatusProcess", "Configuration")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                $(".btn-close").click();
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    });
+</script>

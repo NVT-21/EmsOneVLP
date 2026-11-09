@@ -1,0 +1,28 @@
+﻿@model EMS.MVC.Frontend.Models.TempGrabServiceFeeViewModel
+<div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Tổng cước tạm tính</p>
+        <p class="font-w600">@Model.TotalFreight.ToString("N0")đ</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Khoảng cách</p>
+        <p class="font-w600">@Model.Distance km</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Thời gian lấy hàng dự kiến</p>
+        <p class="font-w600">@Model.EstimatedTimeLinePickup</p>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4">
+        <p class="mb-0">Thời gian trả hàng dự kiến</p>
+        <p class="font-w600">@Model.EstimatedTimeLineDropoff</p>
+    </div>
+</div>
+<span class="text-danger" id="errTempGrabServiceFee">@Model.Message</span>
+
+<script>
+    $(document).ready(function () {
+        TransportFee = @Model.TotalFreight;
+    });
+</script>

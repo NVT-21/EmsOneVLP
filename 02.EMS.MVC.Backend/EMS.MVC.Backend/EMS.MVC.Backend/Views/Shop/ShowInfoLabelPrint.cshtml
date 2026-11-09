@@ -1,0 +1,226 @@
+﻿@model EMS.MVC.Backend.Models.ShowInfoLabelPrintViewModel
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="text-center" style="font-size: 20px;">ĐỊA CHỈ MẪU IN</h4>
+        <div class="row">
+            <div class="col-xl-6 col-lg-12 col-md-12 mb-2">
+                <label>Họ và tên <span class="text-danger">(*)</span></label>
+                @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "L_FullName", @placeholder = "Họ và tên" } })
+                <span class="text-danger" id="errL_FullName"></span>
+            </div>
+            <div class="col-xl-6 col-lg-12 col-md-12 mb-2">
+                <label>Số điện thoại <span class="text-danger">(*)</span></label>
+                @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "L_MobileNumber", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                <span class="text-danger" id="errL_MobileNumber"></span>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <label>Địa chỉ <span class="text-danger">(*)</span></label>
+                @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "L_Street", @placeholder = "Địa chỉ", @maxlength = "400", @autocomplete = "off" } })
+                <span class="text-danger" id="errL_Street"></span>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                <label>Tỉnh/ Thành phố <span class="text-danger">(*)</span></label>
+                @Html.DropDownListFor(model => Model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "-- Tỉnh/ Thành phố --", new { @class = "select2", @id = "L_ProvinceID", @onchange = "LoadListWardV2('L_ProvinceID', 'L_WardID')" })
+                <span class="text-danger" id="errL_ProvinceID"></span>
+            </div>
+            @*<div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                <label>Quận/ Huyện <span class="text-danger">(*)</span></label>
+                @Html.DropDownListFor(model => Model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "-- Quận/ Huyện --", new { @class = "select2", @id = "L_DistrictID", @onchange = "LoadListWard('L_DistrictID', 'L_WardID')" })
+                <span class="text-danger" id="errL_DistrictID"></span>
+            </div>*@
+            <div class="col-xl-4 col-lg-4 col-md-12 mb-2">
+                <label>Phường/ Xã <span class="text-danger">(*)</span></label>
+                @Html.DropDownListFor(model => Model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "-- Phường/ Xã --", new { @class = "select2", @id = "L_WardID" })
+                <span class="text-danger" id="errL_WardID"></span>
+            </div>
+            <div class="col-lg-12 col-md-12 col-xs-12 text-left mb-2">
+                <input type="checkbox" id="L_IsDefault" style="accent-color: #0072BC;" @{ if (Model.IsDefault == "Y") { Write("checked"); } } /> Đặt làm mẫu in mặc định cho địa chỉ này
+            </div>
+            @if (ViewBag.IsDisplay == "Y")
+            {
+                <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between" id="L_ShowButton">
+                    <button type="button" class="btn btn-sm btn-danger" id="btnL_Remove">XÓA</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnL_Submit">CẬP NHẬT</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        if ('@ViewBag.IsDisplay' == "N") {
+            //$("#L_ShowButton").addClass("d-none");
+            $("#L_FullName").attr("disabled", true);
+            $("#L_MobileNumber").attr("disabled", true);
+            $("#L_ProvinceID").attr("disabled", true);
+            //$("#L_DistrictID").attr("disabled", true);
+            $("#L_WardID").attr("disabled", true);
+            $("#L_Street").attr("disabled", true);
+            $("#L_IsDefault").attr("disabled", true);
+        }
+    });
+
+    VNPMapsAutocomplete('L_Street', 'L_ProvinceID', 'L_DistrictID', 'L_WardID');
+
+    OnlyNumber("#L_MobileNumber");
+    CheckChangeValue("L_FullName", "Vui lòng nhập Họ và tên.", "", "Y");
+    CheckChangeValue("L_MobileNumber", "Vui lòng nhập Số điện thoại.", "MobileNumber", "Y");
+    CheckChangeValue("L_ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+    //CheckChangeValue("L_DistrictID", "Vui lòng chọn Quận/ Huyện.", "", "Y");
+    CheckChangeValue("L_WardID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+    CheckChangeValue("L_Street", "Vui lòng nhập Địa chỉ.", "", "Y");
+
+    $("#btnL_Submit").on("click", function () {
+        var isError = false;
+        var data = {
+            LabelPrintID: @Model.LabelPrintID,
+            FullName: $("#L_FullName").val().trim(),
+            MobileNumber: $("#L_MobileNumber").val().trim(),
+            ProvinceID: $("#L_ProvinceID").val(),
+            //DistrictID: $("#L_DistrictID").val(),
+            WardID: $("#L_WardID").val(),
+            Street: $("#L_Street").val().trim(),
+            IsDefault: $('#L_IsDefault').is(':checked') ? "Y" : "N",
+            ShopID: @Model.ShopID,
+            IsDisplay: '@ViewBag.IsDisplay'
+        }
+
+        isError = CheckNullValue(data.FullName, "L_FullName", "Vui lòng nhập Họ và Tên.", isError);
+        isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "L_MobileNumber", "Vui lòng nhập Số điện thoại.", "Số điện thoại không hợp lệ.", isError);
+        isError = CheckNullValue(data.ProvinceID, "L_ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", isError);
+        //isError = CheckNullValue(data.DistrictID, "L_DistrictID", "Vui lòng chọn Quận/ Huyện", isError);
+        isError = CheckNullValue(data.WardID, "L_WardID", "Vui lòng chọn Phường/ Xã", isError);
+        isError = CheckNullValue(data.Street, "L_Street", "Vui lòng nhập Địa chỉ", isError);
+
+        if (data.IsDisplay == "N") {
+            return;
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn cập nhật thông tin mẫu in?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUpdateLabelPrint", "Shop")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+
+    $("#btnL_Default").on("click", function () {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn đặt lại giá trị mặc định cho mẫu in?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JDefaultLabelPrint", "Shop")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        LabelPrintID: @Model.LabelPrintID,
+                        ShopID: @Model.ShopID,
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                $.post('@Url.Action("ShowInfoLabelPrint", "Shop")', {
+                                    ShopID: @Model.ShopID,
+                                    LabelPrintID: @Model.LabelPrintID
+                                }, function (htmlString) {
+                                    $("#ShowInfoAddressOrLabelPrint").html(htmlString);
+                                });
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+
+    $("#btnL_Remove").on("click", function () {
+        RemoveLabelPrint(@Model.LabelPrintID, @Model.ShopID);
+    });
+</script>

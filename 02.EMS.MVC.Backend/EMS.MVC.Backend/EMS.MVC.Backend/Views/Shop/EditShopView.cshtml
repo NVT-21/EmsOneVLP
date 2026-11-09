@@ -1,0 +1,84 @@
+﻿@model EMS.MVC.Backend.Models.EditShopViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("ShopView", "Shop")">Quản lý tài khoản</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("EditShopView", "Shop", new { ID = Model.ID })">Sửa thông tin tài khoản</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.Code</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-pills nav-pills-success" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="info-tab" onclick="redirectTab(1)" data-toggle="pill" href="#InfoShopView" role="tab" aria-controls="info" aria-selected="true">Thông tin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="document-tab" onclick="redirectTab(2)" data-toggle="pill" href="#DocumentView" role="tab" aria-controls="document" aria-selected="false">Tài liệu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="reconciliation-tab" onclick="redirectTab(3)" data-toggle="pill" href="#Reconciliation" role="tab" aria-controls="reconciliation" aria-selected="false">Kỳ đối soát</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="addressandlabelprint-tab" onclick="redirectTab(4)" data-toggle="pill" href="#AddressAndLabelPrintView" role="tab" aria-controls="addressandlabelprint" aria-selected="false">Địa chỉ và mẫu in</a>
+                </li>
+            </ul>
+            <div class="tab-content pt-3">
+                <div class="tab-pane fade show active" id="ShowView" role="tabpanel">
+                    @{Html.RenderAction("InfoShopView", "Shop", Model);}
+                </div>
+                @*<div class="tab-pane fade show active" id="InfoShopView" role="tabpanel" aria-labelledby="info-tab">
+                        @{Html.RenderAction("InfoShopView", "Shop", Model);}
+                    </div>
+                    <div class="tab-pane fade" id="DocumentView" role="tabpanel" aria-labelledby="document-tab">
+                        @{Html.RenderAction("DocumentView", "Shop");}
+                    </div>
+                    <div class="tab-pane fade" id="Reconciliation" role="tabpanel" aria-labelledby="reconciliation-tab">
+                        @{Html.RenderAction("Index", "Period", new { CODPeriodType = Model.CODPeriodType, FeePeriodType = Model.FeePeriodType, ShopID = Model.ID });}
+                    </div>
+                    <div class="tab-pane fade" id="AddressAndLabelPrintView" role="tabpanel" aria-labelledby="addressandlabelprint-tab">
+                        @{Html.RenderAction("AddressAndLabelPrintView", "Shop", Model);}
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function redirectTab(Tab) {
+            var url = "";
+            switch (Tab) {
+                case 1:
+                    url = '@Url.Action("InfoShopView", "Shop")';
+                    break;
+                case 2:
+                    url = '@Url.Action("DocumentView", "Shop")';
+                    break;
+                case 3:
+                    url = '@Url.Action("PeriodView", "Shop")';
+                    break;
+                case 4:
+                    url = '@Url.Action("AddressAndLabelPrintView", "Shop")';
+                    break;
+            }
+
+            $.post(url, @Html.Raw(Json.Encode(Model)),function (htmlString) {
+                $("#ShowView").html(htmlString);
+            });
+        }
+    </script>
+}

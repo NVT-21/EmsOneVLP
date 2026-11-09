@@ -1,0 +1,94 @@
+﻿@model EMS.MVC.Frontend.Models.DetailOrderViewModel
+@using Newtonsoft.Json
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Thông tin đơn hàng Tiktok Shop - @Html.DisplayFor(m => m.OrderCode)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                @if (Model.Transport.Code == "Y")
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <p class="font-w600">Thông tin người nhận</p>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Họ tên:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.FullName)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Số điện thoại:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.MobileNumber)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Địa chỉ:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.FullAddress)</label>
+                        </div>
+                    </div>
+                }
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <p class="font-w600">Thông tin thanh toán</p>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Ghi chú đơn hàng:</label>
+                        <label class="font-w600 text-break">@Html.DisplayFor(m => m.Note)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Nội dung: </label>
+                        <label class="font-w600 text-break">@Html.DisplayFor(m => m.Message)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tổng tiền hàng:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalAmount)đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Giảm giá:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalDiscount)đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Phí vận chuyển: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ActualTransportFee)đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tổng giá trị đơn hàng:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalOrderValue)đ</label>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <p class="font-w600">Thông tin vận chuyển</p>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tên đơn hàng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderName)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Số lượng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderQuantity)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Giá trị đơn hàng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderValue)đ</label>
+                    </div>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <p class="font-w600 mb-0">
+                        Trạng thái đơn hàng: @Html.DisplayFor(m => m.OrderStatus.Name)
+                        @if (Model.OrderStatus.Code == "C")
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Lý do: </label>
+                                <label class="font-w600">@Model.ReasonCancel</label>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Thời gian: </label>
+                                <label class="font-w600">@Model.UpdatedDate</label>
+                            </div>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>

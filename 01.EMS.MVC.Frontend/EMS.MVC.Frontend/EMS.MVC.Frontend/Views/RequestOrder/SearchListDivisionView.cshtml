@@ -1,0 +1,102 @@
+﻿@using EMS.Library
+@model List<EMS.MVC.Frontend.Models.RequestOrderListViewModel>
+@{
+    Layout = null;
+}
+<table class="table table-responsive-md" id="tableListDivisionOrder">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Họ và tên</th>
+            <th>Số điện thoại</th>
+            <th>Kênh bán hàng</th>
+            <th>Sản phẩm</th>
+            <th>Thời gian tạo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@item.FullName || @item.MobileNumber</td>
+                    <td>@item.FullName</td>
+                    <td>@item.MobileNumber</td>
+                    <td><span class="text-facebook">@item.Channel</span></td>
+                    <td>
+                        @{
+                            var ProductName = item.Product.Split('|');
+                            if (ProductName.Length > 0)
+                            {
+                                for (var i = 0; i < ProductName.Length - 1; i++)
+                                {
+                                    <span style="line-height: 1.4rem;">@ProductName[i]</span>
+                                    if (i + 1 <= ProductName.Length - 2)
+                                    {
+                                        <br />
+                                    }
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var splitCreatedDate = item.CreatedDate.Split(' ');
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+<input type="hidden" id="CountRequestOrderDivision" value="@Model.Count" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("tableListDivisionOrder");
+    });
+    $("#AllDate").on('change', function () {
+        //debugger
+        var AllDateValue = $("#AllDate").val();
+        if (AllDateValue) {
+            var SplitAllDateValue = AllDateValue.split('-');
+            $('#FromDate').val(SplitAllDateValue[0].trim());
+            $('#ToDate').val(SplitAllDateValue[1].trim());
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var listFromDate = FromDate.split("/");
+            var fromDate = listFromDate[2] + listFromDate[1] + listFromDate[0];
+            var listToDate = ToDate.split("/");
+            var toDate = listToDate[2] + listToDate[1] + listToDate[0];
+            var table = document.getElementById("tableListDivisionOrder");
+            var tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[5];
+                if (td) {
+                    txtValue = td.textContent.split("\n")[1].trim() || td.innerText.split("\n")[1].trim();
+                    var listtxtValue = txtValue.split("/");
+                    var intValue = listtxtValue[2] + listtxtValue[1] + listtxtValue[0];
+                    if (parseInt(fromDate) == parseInt(toDate)) {
+                        if (parseInt(intValue) == parseInt(fromDate)) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (parseInt(fromDate) <= parseInt(intValue) && parseInt(intValue) <= parseInt(toDate)) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    })
+</script>

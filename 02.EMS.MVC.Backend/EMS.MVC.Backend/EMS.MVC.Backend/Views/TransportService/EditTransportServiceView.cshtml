@@ -1,0 +1,123 @@
+﻿@model EMS.MVC.Backend.Models.EditTransportServiceViewModel
+
+<div class="modal-dialog modal-700" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Cập nhật dịch vụ vận chuyển</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Mã dịch vụ <span class="text-danger">(*)</span></label>
+                    @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @type = "text", @class = "form-control text-uppercase", @placeholder = "Mã dịch vụ", @maxlength = "10", @disabled = "disabled" } })
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tên dịch vụ <span class="text-danger">(*)</span></label>
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên dịch vụ", @maxlength = "50" } })
+                    <span class="text-danger" id="errName"></span>
+                </div>
+                @if (Model.ParentID == 1)
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label>Loại hàng hóa</label>
+                        @Html.DropDownListFor(model => model.Classification, new SelectList(Model.ListTransportServiceClassification, "Value", "Text", "M"), new { @class = "select2" })
+                        <span class="text-danger" id="errClassification"></span>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label>Loại bưu gửi</label>
+                        @Html.DropDownListFor(model => model.Type, new SelectList(Model.ListTransportServiceType, "Value", "Text", "0"), new { @class = "select2" })
+                        <span class="text-danger" id="errType"></span>
+                    </div>
+                }
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Mô tả</label>
+                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mô tả", @maxlength = "200" } })
+                    <span class="text-danger" id="errDescription"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    @Html.CheckBoxFor(model => model.IsSpecial)
+                    <label>Dịch vụ đặc biệt</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content: space-between">
+            <button type="button" class="btn btn-sm btn-danger" id="btnClose" data-dismiss="modal" aria-label="Close">HỦY BỎ</button>
+            <button type="button" class="btn btn-sm btn-primary" id="btnSubmit">CẬP NHẬT</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    CheckChangeValue("Name", "Vui lòng nhập Tên dịch vụ", "Vietnamese", "Y");
+
+    $('#btnSubmit').on('click', function () {
+        var isError = false, messageError = "Giá trị hợp lệ không bao gồm ký tự đặc biệt";
+        var data = {
+            ID: @Model.ID,
+            ParentID: @Model.ParentID,
+            Name: $('#Name').val().trim(),
+            Description: $("#Description").val().trim(),
+            IsSpecial: $("#IsSpecial").is(":checked")
+        };
+
+        if (data.ParentID == 1) {
+            data.Classification = $("#Classification").val();
+            data.Type = $("#Type").val();
+        }
+
+        isError = CheckNullAndRegexValue(data.Name, "Vietnamese", "Name", "Vui lòng nhập Tên dịch vụ", messageError, isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEditTransportService", "TransportService")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        html: true,
+                        button: false,
+                        timer: 2000
+                    }).then(function () {
+                        $('#btnClose').click();
+                        $.get('@Url.Action("SearchListTransportServiceView", "TransportService")', {
+                            ParentID: data.ParentID
+                        }, function (htmlString) {
+                            $('#showData').html(htmlString);
+                        });
+                    });
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

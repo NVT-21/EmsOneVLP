@@ -1,0 +1,204 @@
+﻿@model EMS.MVC.Frontend.Models.TemplatePrintViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Thông tin</h4>
+                    <div class="row">
+                        <div class="col-lg-4 mb-2">
+                            <label>Tên mẫu in <span class="text-danger">(*)</span></label>
+                            <select class="select2" id="LabelPrint">
+                                <option value="">-- Chọn --</option>
+                                @foreach (var item in Model.ListLabelPrint)
+                                {
+                                    <option value="@item.LabelPrintID" data-ProvinceName="@item.ProvinceName" data-DistrictName="@item.DistrictName" data-WardName="@item.WardName" data-FullAddress="@item.FullAddress" data-FullName="@item.FullName" data-MobileNumber="@item.MobileNumber" @{ if (item.IsDefault == "Y") { Write("selected"); } }>@item.LabelName</option>
+                                }
+                            </select>
+                            <span class="text-danger" id="errLabelPrint"></span>
+                        </div>
+                        <div class="col-lg-4 mb-2">
+                            <label>Họ và tên <span class="text-danger">(*)</span></label>
+                            <input type="text" class="form-control" id="FullName" disabled />
+                        </div>
+                        <div class="col-lg-4 mb-2">
+                            <label>Số điện thoại <span class="text-danger">(*)</span></label>
+                            <input type="text" class="form-control" id="MobileNumber" disabled />
+                        </div>
+                        <div class="col-lg-4 mb-2">
+                            <label>Kiểu in <span class="text-danger">(*)</span></label>
+                            @Html.DropDownListFor(model => model.PrintType, new SelectList(Model.ListPrintType, "Value", "Text", Model.PrintTypeDefault), "-- Chọn --", new { @class = "select2" })
+
+                            @*<select class="select2" id="PrintType">
+                                <option value="">-- Chọn --</option>
+                                @foreach (var item in Model.ListPrintType)
+                                {
+                                    <option value="@item.Value" @{ if (item.Value == Model.PrintTypeDefault) { Write("selected"); } }>@item.Text</option>
+                                }
+                            </select>*@
+                            <span class="text-danger" id="errPrintType"></span>
+                        </div>
+                        <div class="col-lg-8 mb-2">
+                            <label>Địa chỉ <span class="text-danger">(*)</span></label>
+                            <textarea class="form-control" id="FullAddress" rows="2" style="line-height: inherit;" disabled></textarea>
+                        </div>
+                        <div class="col-lg-4 mb-2">
+                            <div class="col-md-6 float-start text-start mb-2">
+                                <input type="checkbox" id="IsDefault" style="accent-color: #0072BC;" /> Đặt làm kiểu in mặc định
+                            </div>
+                            <div class="col-md-6 float-end text-end mb-2">
+                                <a href="@Url.Action("TemplatePrintDetailView", "TemplatePrint")">Cấu hình in chi tiết</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 float-start text-start mb-2">
+                            <button class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Đơn hàng mẫu</h4>
+                    <center>
+                        <div class="col-lg-8">
+                            <div id="ShowLabelPrintData"></div>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#LabelPrint").change();
+            $("#PrintType").change();
+        });
+
+        $("#LabelPrint").on("change", function () {
+            if ($("#LabelPrint").val() == "") {
+                $("#errLabelPrint").text("Vui lòng chọn tên mẫu in.");
+                $("#LabelPrint").focus();
+                $("#PrintType").attr("disabled", true);
+                $("#IsDefault").attr("disabled", true);
+                $("#FullName").val('');
+                $("#MobileNumber").val('');
+                $("#FullAddress").val('');
+                $("#ShowLabelPrintData").html('');
+                return;
+            } else {
+                $("#PrintType").attr("disabled", false);
+                $("#IsDefault").attr("disabled", false);
+                $("#errLabelPrint").text("");
+                $("#FullName").val($("option:selected", this).attr("data-FullName"));
+                $("#MobileNumber").val($("option:selected", this).attr("data-MobileNumber"));
+                $("#FullAddress").val($("option:selected", this).attr("data-FullAddress"));
+                $.post('@Url.Action("LabelPrintData", "TemplatePrint")', {
+                    SenderFullName: $("#FullName").val(),
+                    SenderMobileNumber: $("#MobileNumber").val(),
+                    SenderProvinceName: $("option:selected", $("#LabelPrint")).attr("data-ProvinceName"),
+                    SenderDistrictName: $("option:selected", $("#LabelPrint")).attr("data-DistrictName"),
+                    SenderWardName: $("option:selected", $("#LabelPrint")).attr("data-WardName"),
+                    SenderFullAddress: $("#FullAddress").val(),
+                    PrintType: $("#PrintType").val()
+                }, function (htmlString) {
+                    $("#ShowLabelPrintData").html(htmlString);
+                });
+            }
+
+
+        });
+
+        $("#PrintType").on("change", function () {
+            var data = {
+                SenderFullName: $("#FullName").val(),
+                SenderMobileNumber: $("#MobileNumber").val(),
+                SenderProvinceName: $("option:selected", $("#LabelPrint")).attr("data-ProvinceName"),
+                SenderDistrictName: $("option:selected", $("#LabelPrint")).attr("data-DistrictName"),
+                SenderWardName: $("option:selected", $("#LabelPrint")).attr("data-WardName"),
+                SenderFullAddress: $("#FullAddress").val(),
+                PrintType: $("#PrintType").val()
+            }
+
+            if (data.PrintType == '@Model.PrintTypeDefault') {
+                $("#IsDefault").prop('checked', true);
+            } else {
+                $("#IsDefault").prop('checked', false);
+            }
+
+            if (data.PrintType == "") {
+                $("#errPrintType").text("Vui lòng chọn kiểu in.");
+                $("#PrintType").focus();
+                $("#ShowLabelPrintData").html("");
+                return;
+            } else {
+                $("#errPrintType").text("");
+            }
+
+            $.post('@Url.Action("LabelPrintData", "TemplatePrint")', data, function (htmlString) {
+                $("#ShowLabelPrintData").html(htmlString);
+            });
+        });
+
+        $("#btnSubmit").on("click", function () {
+            var isError = false;
+            var data = {
+                LabelPrintID: $("#LabelPrint").val(),
+                PrintType: $("#PrintType").val(),
+                PrintTypeDefault: $('#IsDefault').is(':checked') ? "Y" : "N"
+            }
+
+            isError = CheckNullValue(data.LabelPrintID, "LabelPrint", "Vui lòng chọn tên mẫu in.", isError);
+            isError = CheckNullValue(data.PrintType, "PrintType", "Vui lòng chọn kiểu in.", isError);
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn chọn mẫu in " + $("#LabelPrint option:selected").text() + "?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JChangeLabelPrint", "TemplatePrint")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

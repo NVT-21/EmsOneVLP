@@ -1,0 +1,195 @@
+﻿@model EMS.MVC.Frontend.Models.EmployeeDetailViewModel
+<input type="hidden" id="ID" value="@Model.ID" />
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Sửa nhân viên</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="FullName" value="@Model.FullName">
+                        <span class="text-danger" id="errFullName"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Số điện thoại
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="MobileNumber" value="@Model.MobileNumber" minlength="10" maxlength="11" disabled>
+                        <span class="text-danger" id="errMobileNumber"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="GroupPermissionID">Nhóm quyền <span class="text-danger">(*)</span></label>
+                        <select id="GroupPermissionID" class="selectpicker form-control" data-live-search="true" data-selected-text-format="count" data-actions-box="true" data-size="5" multiple>
+                            @if (ViewBag.ListGroupPermission != null)
+                            {
+                                List<int> lstTemp = new List<int>();
+                                if (Model.strGroupPermissionID != "")
+                                {
+                                    var split = Model.strGroupPermissionID.Split(',');
+                                    for (var i = 0; i < split.Length; i++)
+                                    {
+                                        lstTemp.Add(Convert.ToInt32(split[i]));
+                                    }
+                                }
+                                foreach (var item in ViewBag.ListGroupPermission)
+                                {
+                                    <option value="@item.Value" @{ if (lstTemp.Exists(m => m == Convert.ToInt32(item.Value))) { Write("Selected"); } else { Write(""); } }>@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger" id="errGroupPermissionID"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" rows="4" id="Description" placeholder="Mô tả" maxlength="250">@Model.Description</textarea>
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescription">@Model.Description.Length</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label me-4">Trạng thái</label>
+                        @if (Model.IsLock == "Y")
+                        {
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input isLock" type="radio" id="Unlock" name="gridRadios" value="N" />
+                                <label class="form-check-label" for="Unlock">
+                                    Mở
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input isLock" type="radio" id="Lock" name="gridRadios" value="Y" checked="checked" />
+                                <label class="form-check-label " for="Lock">
+                                    Khóa
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input isLock" type="radio" id="Unlock" name="gridRadios" value="N" checked="checked" />
+                                <label class="form-check-label" for="Unlock">
+                                    Mở
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input isLock" type="radio" id="Lock" name="gridRadios" value="Y" />
+                                <label class="form-check-label " for="Lock">
+                                    Khóa
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnModalEditEmployee">Cập nhật</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    CheckChangeValue("FullName", "Vui lòng nhập họ và tên", "Vietnamese", "Y");
+    CheckChangeValue("GroupPermissionID", "Vui lòng chọn nhóm quyền", "", "Y");
+    CheckChangeValue("IsLock", "Vui lòng chọn trạng thái", "", "Y");
+    ShowInputLength("Description", "ShowLengthDescription", 250);
+
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        $('#GroupPermissionID').selectpicker('refresh');
+    });
+
+    $('#btnModalEditEmployee').on('click', function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            ShopID: $("#ShopID").val(),
+            ID: $('#ID').val().trim(),
+            FullName: $('#FullName').val().trim(),
+            strGroupPermissionID: $('#GroupPermissionID').val().join(","),
+            IsLock: $(".isLock:checked").val(),
+            Description: $("#Description").val()
+        };
+
+        IsError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "FullName", "Vui lòng nhập họ và tên", Message, IsError);
+        IsError = CheckNullValue(data.strGroupPermissionID, "GroupPermissionID", "Vui lòng chọn nhóm quyền.", IsError);
+        IsError = CheckNullValue(data.IsLock, "IsLock", "Vui lòng chọn trạng thái.", IsError);
+
+
+        if (IsError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn lưu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EditEmployee", "Employee")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function () {
+                                $("#Name_" + data.ID).text(data.Name);
+                                LoadEmployeeListData(data.ShopID);
+                                $('#ViewModal').modal('hide');
+                                //$("#btnModalCloseDetailEmployee").click();
+                            }, 1200);
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

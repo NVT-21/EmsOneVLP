@@ -1,0 +1,156 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListFreightChargesViewModel>
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> Mã dịch vụ </th>
+            <th> Tên dịch vụ </th>
+            <th> Đã bao gồm VAT </th>
+            <th> Đối tượng áp dụng </th>
+            <th> Thời gian áp dụng </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td class="text-left">
+                        <a href="@Url.Action("TransportPostageBasicInfo", "Transport", new { PostageID = item.ID })" title="Thông tin chi tiết hồ sơ">@item.ServiceName</a>
+                    </td>*@
+                <td class="text-left">
+                    @item.TransportServiceCode
+                </td>
+                <td class="text-left">
+                    @item.TransportServiceName
+                </td>
+                <td class="text-center">
+                    @item.VAT.Name
+                </td>
+                <td style="line-height: 1.1rem;">
+                    @if (!string.IsNullOrEmpty(item.ListCrmOrPaypostCode))
+                    {
+                        var ItemCrmOrPaypostCode = item.ListCrmOrPaypostCode.Split(',');
+                        for (var i = 0; i < ItemCrmOrPaypostCode.Length; i++)
+                        {
+                            if (i < 5)
+                            {
+                                Write(ItemCrmOrPaypostCode[i]);
+                                <br />
+                            }
+                            else
+                            {
+                                Write("...");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Write("Tất cả");
+                    }
+                </td>
+                <td>
+                    <span style="line-height: 1.1rem;">Từ @item.StartDate</span>
+                    @if (!string.IsNullOrEmpty(item.EndDate))
+                    {
+                        <br />
+                        <span style="line-height: 1.1rem;">Đến @item.EndDate</span>
+                    }
+                </td>
+                <td>
+                    <button type="button" title="Chi tiết" onclick="location.href = '@Url.Action("DetailFreightChargesView", "TransportExtraService", new { TransportPostageID = item.TransportPostageID})'" class="badge badge-outline-primary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    @if (item.IsLock == "N")
+                    {
+                        <button type="button" title="Tạm dừng" onclick="ChangeIsLock(@item.TransportPostageID, 'Y')" class="badge badge-outline-danger">
+                            <i class="fa fa-stop"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" title="Sửa" onclick="location.href = '@Url.Action("EditFreightChargesView", "TransportExtraService", new { TransportPostageID = item.TransportPostageID})'" class="badge badge-outline-warning">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+
+                        <button type="button" title="Mở" onclick="ChangeIsLock(@item.TransportPostageID, 'N')" class="badge badge-outline-primary">
+                            <i class="fa fa-play"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function ChangeIsLock(TransportPostageID, IsLock) {
+        var message = "";
+        if (IsLock == "N") {
+            message = "Bạn chắc chắn muốn mở gói cước này?";
+        } else if (IsLock == "Y") {
+            message = "Bạn chắc chắn muốn tạm dừng gói cước này?";
+        } else {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: message,
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeIsLock", "TransportExtraService")',
+                    data: {
+                        TransportPostageID: TransportPostageID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

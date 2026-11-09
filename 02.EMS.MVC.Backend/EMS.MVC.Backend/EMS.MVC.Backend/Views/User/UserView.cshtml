@@ -1,0 +1,92 @@
+﻿@model EMS.MVC.Backend.Models.UserViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("UserView", "User")">Quản lý nhân viên</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-lg-4 col-xl-4 col-md-4 mb-2">
+                    <label>Nhóm người dùng</label>
+                    @Html.DropDownListFor(m => m.UserGroupCode, new SelectList(Model.ListUserGroup, "Code", "Name"), "--- Nhóm người dùng ---", new { @class = "select2", @id= "SearchUserGroupCode" })
+                </div>
+                <div class="col-lg-4 col-xl-4 col-md-4 mb-2">
+                    <label>Email</label>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "SearchEmail", @placeholder = "Địa chỉ Email", @autocomplete = "off" } })
+                    <span class="text-danger" id="errSearchEmail"></span>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-md-4 mb-2">
+                    <label>Số điện thoại</label>
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "SearchMobileNumber", @placeholder = "Số điện thoại", @maxlength = "11", @autocomplete = "off" } })
+                    <span class="text-danger" id="errSearchMobileNumber"></span>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-md-4 mb-2">
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control form-control-sm text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-md-4 mb-2">
+                    <button type="button" onclick="window.location.href='@Url.Action("AddUserView", "User")'" class="btn btn-sm btn-primary form-control form-control-sm">
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i> THÊM MỚI
+                        </button>
+                    @*<button id="btnAdd" class="btn btn-sm btn-primary form-control form-control-sm text-white">
+                        <i class="fa fa-search"></i> THÊM MỚI
+                    </button>*@
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data" class="table-responsive">
+                @{ Html.RenderAction("SearchListUserView", "User"); }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        CheckChangeValue("SearchEmail", "", "Email", "N");
+        CheckChangeValue("SearchMobileNumber", "", "MobileNumber", "N");
+
+        $('#btnSearch').on('click', function () {
+            var isError = false;
+            var data = {
+                UserGroupCode: $('#SearchUserGroupCode').val(),
+                Email: $('#SearchEmail').val().trim(),
+                MobileNumber: $('#SearchMobileNumber').val().trim()
+            };
+
+            isError = CheckRegexValue(data.Email, "Email", "SearchEmail", "Email không hợp lệ", isError);
+            isError = CheckRegexValue(data.MobileNumber, "MobileNumber", "SearchMobileNumber", "Số điện thoại không hợp lệ", isError);
+
+            if (isError == true) {
+                return;
+            }
+
+            $.post('@Url.Action("SearchListUserView", "User")', data, function (htmlString) {
+                $('#tbl-data').html(htmlString);
+            });
+        });
+
+        @*$('#btnAdd').on('click', function () {
+            $.get('@Url.Action("AddUserView", "User")', function (data) {
+                $('#modal-common-container').html(data);
+                $('#modal-common').modal('show');
+            });
+        });*@
+    </script>
+}

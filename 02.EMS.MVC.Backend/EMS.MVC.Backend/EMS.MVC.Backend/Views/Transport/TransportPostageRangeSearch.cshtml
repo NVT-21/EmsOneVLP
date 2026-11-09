@@ -1,0 +1,158 @@
+﻿@model List<EMS.MVC.Backend.Models.TransportPostageRangeSearchViewModel>
+@{
+    ViewBag.Title = "TransportPostageRangeSearch";
+    Layout = null;
+}
+@if (Model.Count > 0)
+{
+    var GroupID = Model[0].GroupID;
+    if (GroupID == 1)
+    {
+        <table class="table table-bordered">
+            <thead style="background-color: #d5e9ff;">
+                <tr class="text-center align-middle">
+                    <th class="align-middle" colspan="2">
+                        Từ
+                    </th>
+                    <th class="align-middle" colspan="2">đến</th>
+                    <th class="align-middle">Giá trị</th>
+                    <th>
+                        <a class="btn btn-sm btn-primary" href="@Url.Action("TransportPostageRangeAdd", "Transport", new { PostageID = ViewBag.Common.PostageID, GroupID = ViewBag.Common.GroupID, RegionGroupID = ViewBag.Common.RegionGroupID, PostageName = ViewBag.Common.PostageName })"><i class="fa fa-plus-circle m-0"> Thêm mới</i></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="BodyMainFeeWeight">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle text-center">
+                            @item.FromRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.FromRangeValueName
+                        </td>
+                        <td class="align-middle text-center">
+                            @item.ToRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.ToRangeValueName
+                        </td>
+                        <td class="align-middle text-right">
+                            @item.Value.ToString("N0")
+                        </td>
+
+                        <td class="text-center vertical-top">
+                            <button type="button" class="btn btn-sm btn-warning ml-2 text-white" onclick=""><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary ml-2" onclick=""><i class="fa fa-folder-open-o"></i></button>
+                            <button type="button" class="btn btn-sm btn-danger ml-2" onclick=""><i class="fa fa-trash-o"></i></button>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+    else if (GroupID == 3 || GroupID == 6)
+    {
+        <table class="table table-bordered">
+            <thead style="background-color: #d5e9ff;">
+                <tr class="text-center align-middle">
+                    <th class="align-middle" colspan="2">
+                        Từ
+                    </th>
+                    <th class="align-middle" colspan="2">đến</th>
+                    <th>
+                        <a class="btn btn-sm btn-primary" href="@Url.Action("TransportPostageRangeAdd", "Transport", new { PostageID = ViewBag.Common.PostageID, GroupID = ViewBag.Common.GroupID, RegionGroupID = ViewBag.Common.RegionGroupID, PostageName = ViewBag.Common.PostageName })"><i class="fa fa-plus-circle m-0"> Thêm mới</i></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="BodyMainFeeWeight">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle text-center">
+                            @item.FromRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.FromRangeValueName
+                        </td>
+                        <td class="align-middle text-center">
+                            @item.ToRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.ToRangeValueName
+                        </td>
+                        <td class="text-center vertical-top">
+                            <button type="button" class="btn btn-sm btn-warning ml-2 text-white" onclick=""><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary ml-2" onclick=""><i class="fa fa-folder-open-o"></i></button>
+                            <button type="button" class="btn btn-sm btn-danger ml-2" onclick=""><i class="fa fa-trash-o"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (GroupID == 4)
+    {
+        <table class="table table-bordered">
+            <thead style="background-color: #d5e9ff;">
+                <tr class="text-center align-middle">
+                    <th class="align-middle" colspan="2">
+                        Từ
+                    </th>
+                    <th class="align-middle" colspan="2">đến</th>
+                    <th class="align-middle">Giá trị</th>
+                    <th>
+                        <a class="btn btn-sm btn-primary" href="@Url.Action("TransportPostageRangeAdd", "Transport", new { PostageID = ViewBag.Common.PostageID, GroupID = ViewBag.Common.GroupID, RegionGroupID = ViewBag.Common.RegionGroupID, PostageName = ViewBag.Common.PostageName })"><i class="fa fa-plus-circle m-0"> Thêm mới</i></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="BodyMainFeeWeight">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle text-center">
+                            @item.FromRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.FromRangeValueName
+                        </td>
+                        <td class="align-middle text-center">
+                            @item.ToRangeName
+                        </td>
+                        <td class="align-middle">
+                            @item.ToRangeValueName
+                        </td>
+                        <td class="align-middle text-right">
+                            @if (item.Unit == 1)
+                            {
+                                <p>@item.Value.ToString("N0")</p>
+                            }
+                            else
+                            {
+                                <p>@item.Value.ToString("N0")%</p>
+                                <p>Giá trị nhỏ nhất: @item.MinValue.ToString("N0")</p>
+                                <p>Giá trị lớn nhất: @item.MaxValue.ToString("N0")</p>
+                            }
+                        </td>
+                        <td class="text-center vertical-top">
+                            <button type="button" class="btn btn-sm btn-warning ml-2 text-white" onclick=""><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary ml-2" onclick=""><i class="fa fa-folder-open-o"></i></button>
+                            <button type="button" class="btn btn-sm btn-danger ml-2" onclick=""><i class="fa fa-trash-o"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+else
+{
+    <a class="btn btn-sm btn-primary w-auto" href="@Url.Action("TransportPostageRangeAdd", "Transport", new { PostageID = ViewBag.Common.PostageID, GroupID = ViewBag.Common.GroupID, RegionGroupID = ViewBag.Common.RegionGroupID, PostageName = ViewBag.Common.PostageName })"><i class="fa fa-plus-circle m-0"> Thêm mới</i></a>
+}
+<script>
+    $(document).ready(function () {
+        $('select.selectpicker').selectpicker();
+    });
+</script>
+

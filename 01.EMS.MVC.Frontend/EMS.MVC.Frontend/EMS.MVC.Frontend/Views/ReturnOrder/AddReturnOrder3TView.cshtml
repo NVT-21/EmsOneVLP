@@ -1,0 +1,664 @@
+﻿@model EMS.MVC.Frontend.Models.AddReturnOrder3TViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="robots" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <title>EMSOne</title>
+    <link rel="shortcut icon" type="image/png" href="~/favicon.png" />
+    @Styles.Render("~/bundles/css")
+    @Styles.Render("~/bundles/fonts")
+    <script src="~/Assets/js/global.min.js"></script>
+    <script src="~/Assets/js/MyJS.js?n=@XHelper.JavaScriptVersion"></script>
+</head>
+<body>
+    <!-- AJAX LOADER -->
+    <div id="ajax_loader" style="background-color: rgba(0, 0, 0, 0.5); z-index: 99999999; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; display: none;" class="">
+        <div id="ajax_loader_contend" style="position: fixed; left: 50%; top: 50%; color:white"><img src="~/Assets/images/default/loading.gif" style="width:30px; height:30px" /></div>
+    </div>
+
+    <div class="content-body-small">
+        <div class="container-xl pb-100">
+            <div class="row align-items-center mb-4">
+                <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <img src="~/Assets/images/logo/logo-full.svg" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <img src="~/Assets/images/logo/logo3t.png" class="w-75"/>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card" id="TabCustomer">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-3">
+                            <h5 class="fs-16 font-w600">Thông tin khách hàng</h5>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        @Html.HiddenFor(model => model.Sender.ID, new { @Value = "0" })
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                            @Html.EditorFor(model => model.Sender.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên" } })
+                            <span class="text-danger" id="errSender_FullName"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                            @Html.EditorFor(model => model.Sender.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11", @autocomplete = "false" } })
+                            <span class="text-danger" id="errSender_MobileNumber"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.Sender.Province.ID, new SelectList(Model.Sender.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListDistrict('Sender_Province_ID', 'Sender_District_ID', 'Sender_Ward_ID', 'New_Address_Check')" })
+                            <span class="text-danger" id="errSender_Province_ID"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Quận/Huyện <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.Sender.District.ID, new SelectList(Model.Sender.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('Sender_District_ID', 'Sender_Ward_ID')" })
+                            <span class="text-danger" id="errSender_District_ID"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Phường/Xã <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.Sender.Ward.ID, new SelectList(Model.Sender.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                            <span class="text-danger" id="errSender_Ward_ID"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                            <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                            @Html.EditorFor(model => model.Sender.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                            <span class="text-danger" id="errSender_Street"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin vận chuyển</h5>
+                    <div class="row mb-2">
+                        <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Tên sản phẩm </label>
+                            @Html.DropDownListFor(model => model.ProductName, new SelectList(Model.ListProductName, "ProductCode", "ProductName"), new { @class = "selectpicker form-control", @data_live_search = "true", @data_dropup_auto = "true", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                            <span class="text-danger" id="errProductName"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                            <div class="custom-props">
+                                <label class="mb-1">Giá trị đơn hàng</label>
+                                @Html.EditorFor(model => model.OrderValue, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Giá trị đơn hàng", @maxlength = "11", @data_inputmask = "'alias': 'currency'" } })
+                                <span class="props">đ</span>
+                            </div>
+                            <span class="text-danger" id="errOrderValue"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Số lượng sản phẩm</label>
+                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số lượng sản phẩm", @maxlength = "3", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                            <span class="text-danger" id="errQuantity"></span>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                            <div class="custom-props">
+                                <label class="mb-1">Khối lượng <span class="text-danger">*</span></label>
+                                @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Khối lượng", @maxlength = "9", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                                <span class="props">gr</span>
+                            </div>
+                            <span class="text-danger" id="errWeight"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-xl-9 col-lg-9 col-md-9 mb-2">
+                            <label class="mb-1">Kích thước (Dài x Rộng x Cao)</label>
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                    <div class="custom-props">
+                                        @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Dài", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                        <span class="props">cm</span>
+                                    </div>
+                                    <span class="text-danger" id="errLength"></span>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                    <div class="custom-props">
+                                        @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Rộng", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                        <span class="props">cm</span>
+                                    </div>
+                                    <span class="text-danger" id="errWidth"></span>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                    <div class="custom-props">
+                                        @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Cao", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                        <span class="props">cm</span>
+                                    </div>
+                                    <span class="text-danger" id="errHeight"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-3">
+                            <label class="mb-1">Địa chỉ nhận <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.Receiver3T.MobileNumber, new SelectList(Model.ListReceiver3T, "MobileNumber", "ShortAddress"), "--- Địa chỉ nhận ---", new { @class = "select2" })
+                            <span class="text-danger" id="errReceiver3T_MobileNumber"></span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Hình thức thu gom <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.CollectionType.ID, 1, new { @class = "form-check-input", @checked = "checked" })
+                                    <label class="form-check-label" for="13">
+                                        Thu gom tận nơi
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.CollectionType.ID, 2, new { @class = "form-check-input" })
+                                    <label class="form-check-label " for="23">
+                                        Gửi hàng tại bưu cục
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="ShowCollectionPostOfficeRecent" class="mt-2"></div>
+                        </div>
+
+                    </div>
+
+                    
+                    <div class="row mb-2">
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label class="mb-1">Ghi chú đơn hàng</label>
+                            @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Nhập ghi chú đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <div class="mb-1">
+                                Cước tạm tính (Đã bao gồm VAT)
+                                <div class="tooltip">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7.99992 14.6667C4.32659 14.6667 1.33325 11.6734 1.33325 8.00008C1.33325 4.32675 4.32659 1.33341 7.99992 1.33341C11.6733 1.33341 14.6666 4.32675 14.6666 8.00008C14.6666 11.6734 11.6733 14.6667 7.99992 14.6667ZM7.49992 10.6667C7.49992 10.9401 7.72659 11.1667 7.99992 11.1667C8.27325 11.1667 8.49992 10.9401 8.49992 10.6667V7.33341C8.49992 7.06008 8.27325 6.83341 7.99992 6.83341C7.72659 6.83341 7.49992 7.06008 7.49992 7.33341V10.6667ZM8.61325 5.08008C8.57992 4.99341 8.53325 4.92675 8.47325 4.86008C8.40659 4.80008 8.33325 4.75341 8.25325 4.72008C8.17325 4.68675 8.08659 4.66675 7.99992 4.66675C7.91325 4.66675 7.82659 4.68675 7.74659 4.72008C7.66659 4.75341 7.59325 4.80008 7.52659 4.86008C7.46659 4.92675 7.41992 4.99341 7.38659 5.08008C7.35325 5.16008 7.33325 5.24675 7.33325 5.33341C7.33325 5.42008 7.35325 5.50675 7.38659 5.58675C7.41992 5.66675 7.46659 5.74008 7.52659 5.80675C7.59325 5.86675 7.66659 5.91341 7.74659 5.94675C7.90659 6.01341 8.09325 6.01341 8.25325 5.94675C8.33325 5.91341 8.40659 5.86675 8.47325 5.80675C8.53325 5.74008 8.57992 5.66675 8.61325 5.58675C8.64659 5.50675 8.66659 5.42008 8.66659 5.33341C8.66659 5.24675 8.64659 5.16008 8.61325 5.08008Z"
+                                              fill="#1D2129" />
+                                    </svg>
+                                    <span class="tooltiptext" style="text-align: justify;">
+                                        Cước vận chuyển được tạm tính dựa trên cước dịch vụ chính và cước dịch vụ cộng thêm, chưa
+                                        phải là cước thực tế cuối cùng.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row" id="TemporaryTransportServiceFee">
+                                @{
+                                    Html.RenderAction("TemporaryTransportServiceFeeView", "ReturnOrder", new { IsLoad = "N" });
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="float-end">
+                <button type="button" class="btn btn-primary" id="btnAddOrderType2" onclick="btnAddOrder(2)">Tạo yêu cầu</button>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/js")
+<script>
+        var TotalMoney = 0, TotalOrderValue = 0, TransportFee = 0, ExpectedDeliveryDate = ""
+        var TotalMoney = 0, TotalOrderValue = 0, TransportFee = 0, ExpectedDeliveryDate = "", SenderInfo = null;
+
+        CheckChangeValue("Quantity", "Vui lòng nhập số lượng sản phẩm", "Number", "Y");
+        CheckChangeValue("OrderValue", "", "Number", "N");
+
+        OnlyNumber("#Sender_MobileNumber, #Sender_Sender_MobileNumber");
+
+        CheckChangeValue("Sender_FullName", "Vui lòng nhập Họ và tên người gửi.", "", "Y");
+        CheckChangeValue("Sender_MobileNumber", "Vui lòng nhập Số điện thoại người gửi.", "MobileNumber", "Y");
+        CheckChangeValue("Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+        CheckChangeValue("Sender_District_ID", "Vui lòng chọn Quận/ Huyện.", "", "Y");
+        CheckChangeValue("Sender_Ward_ID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+        CheckChangeValue("Receiver3T_MobileNumber", "Vui lòng chọn nơi nhận.", "", "Y");
+
+        $(document).ready(function () {
+            //$("body").attr({
+            //    "data-bs-spy": "scroll",
+            //    "data-bs-target": "#ListTab",
+            //    "data-bs-offset": "0"
+            //});
+            $('select.select2').select2(AttributeSelect2);
+            $("#ProductName").selectpicker("refresh");
+            $('#Sender_FullName').focus();
+            $(".content-body").css("min-height", "");
+            $("input[name='CollectionType.ID']").change();
+            SearchCollectionPostOfficeRecent();
+        });
+
+        $("input[name='CollectionType.ID']").on("change", function () {
+            SearchCollectionPostOfficeRecent();
+        });
+
+        $("input").on("focus", function () {
+            $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", true);
+        });
+
+        $("input").on("focusout", function () {
+            $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", false);
+        });
+        $('#Length, #Width, #Height, #Quantity, #OrderValue, #Receiver3T_MobileNumber, #ProductName').on('change', function () {
+            var isError = false;
+            var productList = @Html.Raw(Json.Encode(Model.ListProductName));
+            var WeightTotal = 0;
+            var selectedProduct = $("#ProductName").val();
+            if (selectedProduct.length > 0) {
+                selectedProduct.forEach(function (value, index) {
+                    var item = productList.find(x => x.ProductCode === value);
+                    WeightTotal += NumberReplace(item.Weight);
+                });
+                $('#Weight').val(WeightTotal);
+            } else {
+                $('#Weight').val(100);
+            }
+
+            var data = {
+                Sender: {
+                    Province: {
+                        ID: $('#Sender_Province_ID').val()
+                    },
+                    District: {
+                        ID: $('#Sender_District_ID').val()
+                    },
+                    Ward: {
+                        ID: $('#Sender_Ward_ID').val()
+                    },
+                    MobileNumber: $('#Sender_MobileNumber').val()
+                },
+
+                Weight: NumberReplace($('#Weight').val()),
+                Length: $('#Length').val(),
+                Width: $('#Width').val(),
+                Height: $('#Height').val(),
+                Quantity: NumberReplace($('#Quantity').val()),
+                OrderValue: NumberReplace($('#OrderValue').val()),
+            };
+            if (!data.Sender.MobileNumber) {
+                $('#errSender_MobileNumber').text("Vui lòng nhập số điện thoại và tìm kiếm.");
+                isError = true;
+            }
+
+            if (isError == true) {
+                $("#errTemporaryTransportServiceFee").text("Chưa đủ thông tin để tính cước");
+            } else {
+                LoadTotalFee();
+            }
+        });
+        $('#Weight').on('change', function () {
+            LoadTotalFee();
+        });
+
+        $('#Sender_Province_ID, #Sender_District_ID, #Sender_Ward_ID').on('change', function () {
+            if (this.id == "Sender_Province_ID") {
+                SearchCollectionPostOfficeRecent();
+                $("#ShowExpectedDelivery").html("");
+                $("#Sender_Street").val("");
+            } else if (this.id == "Sender_District_ID") {
+                SearchCollectionPostOfficeRecent();
+                $("#Sender_Street").val("");
+            } else if (this.id == "Sender_Ward_ID") {
+                $("#Sender_Street").val("");
+            }
+        });
+
+        function SearchCollectionPostOfficeRecent() {
+            $("#ShowCollectionPostOfficeRecent").removeClass("d-none");
+            if ($("input[name='CollectionType.ID']:checked").val() != "2") {
+                $("#ShowCollectionPostOfficeRecent").addClass("d-none");
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SearchListRecentCollectionPostOffice", "Handle")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    ProvinceID: $("#Sender_Province_ID").val(),
+                    DistrictID: $("#Sender_District_ID").val(),
+                },
+                success: function (res) {
+                    $("#ShowCollectionPostOfficeRecent").html("");
+                    var responseData = res;
+                    if (responseData.length) {
+                        $("#ShowCollectionPostOfficeRecent").html('<select id="SearchListCollectionPostOfficeRecent" class="select2"></select>');
+                        var CollectionPostOffice = [{
+                            id: 0,
+                            text: "Gợi ý bưu cục gần nhất"
+                        }];
+                        responseData.forEach(function (value, index) {
+                            var obj = {
+                                id: value.ID,
+                                Code: value.Code,
+                                Name: value.Name,
+                                CodeAndName: value.CodeAndName,
+                                FullAddress: value.FullAddress,
+                                text: value.Name + " - " + value.FullAddress,
+                            }
+                            CollectionPostOffice.push(obj);
+                        });
+
+                        $("#SearchListCollectionPostOfficeRecent").select2({
+                            data: CollectionPostOffice,
+                            templateResult: function (state) {
+                                if (state.id == 0) {
+                                    return state.text;
+                                }
+                                var html = "";
+                                html += "<div title='" + state.text + "'>";
+                                html += "<div class='fw-bold'>" + state.Name + "</div>";
+                                html += "<div class=''><i class='fas fa-map-marker-alt me-2'></i>" + state.FullAddress + "</div>";
+                                html += "</div>";
+                                return $(html);
+                            },
+                            selectOnClose: true,
+                            width: '100%',
+                            language: {
+                                noResults: function () {
+                                    return 'Không tìm thấy dữ liệu.';
+                                },
+                            },
+                        });
+                    } else {
+                        $("#ShowCollectionPostOfficeRecent").html("<div class='text-italic' style='text-align: justify;'>Không có bưu cục EMS thu gom gần đây. Vui lòng chọn hình thức Thu gom tận nơi để bưu tá đến lấy hàng</div>");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+
+        function LoadTotalFee() {
+            var ReceiverProvinceID = null;
+            var ReceiverDistrictID = null;
+            var ReceiverWardID = null;
+            var ReveiverMobiNumber = $('#Receiver3T_MobileNumber').val();
+            if (ReveiverMobiNumber) {
+                var receiverList = @Html.Raw(Json.Encode(Model.ListReceiver3T));
+                var selectedReceiver = receiverList.find(x => x.MobileNumber === ReveiverMobiNumber);
+                ReceiverProvinceID = selectedReceiver.Province.ID;
+                ReceiverDistrictID = selectedReceiver.District.ID;
+                ReceiverWardID = selectedReceiver.Ward.ID;
+            }
+            var data = {
+                MainTransportServiceID: 141,
+                ExtraTransportServiceID: "",
+                Sender: {
+                    ID: 0,
+                    Province: {
+                        ID: parseInt($('#Sender_Province_ID').val())
+                    },
+                    District: {
+                        ID: parseInt($('#Sender_District_ID').val())
+                    },
+                    Ward: {
+                        ID: parseInt($('#Sender_Ward_ID').val())
+                    },
+                },
+                Receiver: {
+                    ID: 0,
+                    Province: {
+                        ID: parseInt(ReceiverProvinceID)
+                    },
+                    District: {
+                        ID: parseInt(ReceiverDistrictID)
+                    },
+                    Ward: {
+                        ID: parseInt(ReceiverWardID)
+                    },
+                },
+                Weight: NumberReplace($('#Weight').val()),
+                Length: $('#Length').val(),
+                Width: $('#Width').val(),
+                Height: $('#Height').val(),
+                Quantity: NumberReplace($('#Quantity').val()),
+                OrderValue: NumberReplace($('#OrderValue').val()),
+                IsTransport: "Y",
+                IsLoad: "Y",
+                CrmOrPayPostCode: "C017777814"
+            };
+
+            if ( !data.Sender.Province.ID || !data.Receiver.Province.ID || !data.Weight) {
+                $("#errTemporaryTransportServiceFee").text("Chưa đủ thông tin để tính cước");
+            } else {
+                $.post('@Url.Action("TemporaryTransportServiceFeeView", "ReturnOrder")', data, function (data) {
+                    $('#TemporaryTransportServiceFee').html(data);
+                });
+            }
+        }
+
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        function btnAddOrder(AddType) {
+                var isError = false;
+                var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+
+                if (isError == true) {
+                    return;
+                }
+
+                var ReceiverProvinceID = null;
+                var ReceiverDistrictID = null;
+                var ReceiverWardID = null;
+                var ReceiverFullName = null;
+                var ServiceID = null;
+                var ReveiverMobiNumber = $('#Receiver3T_MobileNumber').val();
+                if (ReveiverMobiNumber) {
+                    var receiverList = @Html.Raw(Json.Encode(Model.ListReceiver3T));
+                    var selectedReceiver = receiverList.find(x => x.MobileNumber === ReveiverMobiNumber);
+                    ReceiverProvinceID = selectedReceiver.Province.ID;
+                    ReceiverDistrictID = selectedReceiver.District.ID;
+                    ReceiverWardID = selectedReceiver.Ward.ID;
+                    ReceiverFullName = selectedReceiver.FullName
+                }
+
+                var data = {
+                    Sender: {
+                        PickUpAddressID: 1,
+                        FullName: $("#Sender_FullName").val().trim(),
+                        MobileNumber: $('#Sender_MobileNumber').val().trim(),
+                        Province: {
+                            ID: $("#Sender_Province_ID").val()
+                        },
+                        District: {
+                            ID: $("#Sender_District_ID").val()
+                        },
+                        Ward: {
+                            ID: $("#Sender_Ward_ID").val()
+                        },
+                        Street: $("#Sender_Street").val().trim(),
+                        FullAddress: ConvertAddress($('#Sender_Street').val().trim(), $('#Sender_Ward_ID').val() == "" ? "" : $("#Sender_Ward_ID option:selected").text(), $("#Sender_District_ID option:selected").text(), $("#Sender_Province_ID option:selected").text()),
+
+                    },
+                    Receiver: {
+                        ID: 0,
+                        FullName: ReceiverFullName,
+                        MobileNumber: $('#Receiver3T_MobileNumber').val().trim(),
+                        Province: {
+                            ID: ReceiverProvinceID
+                        },
+                        District: {
+                            ID: ReceiverDistrictID
+                        },
+                        Ward: {
+                            ID: ReceiverWardID
+                        },
+                        Street: $("#Receiver3T_MobileNumber option:selected").text(),
+                        FullAddress: $("#Receiver3T_MobileNumber option:selected").text(),
+                        IsNewAddress: 'N',
+                    },
+                    IsUpdateReceiver: 'N',
+                    WareHouseID: 8941,
+                    //ListInventoryOutput: ListInventoryOutput,
+                    IsTransport: "Y",
+                    OrderCode: "",
+                    OrderName: "",
+                    OrderValue: NumberReplace($('#OrderValue').val()),
+                    Quantity: NumberReplace($('#Quantity').val()),
+                    Length: $('#Length').val(),
+                    Width: $('#Width').val(),
+                    Height: $('#Height').val(),
+                    Weight: NumberReplace($('#Weight').val()),
+                    CollectionType: {
+                        ID: $("input[name='CollectionType.ID']:checked").val()
+                    },
+                    MainTransportServiceID: 141,
+                    ExtraTransportServiceID: "",
+                    TotalCOD: 0,
+                    TotalPHU: 0,
+                    TransportFee: TransportFee,
+                    Note: $('#Note').val().replaceAll("\n", "<br />") ,
+                    Message: $('#ProductName').val().toString(),
+                    Channel: "WEB",
+                    TotalMoney: TotalMoney,
+                    TotalDiscount: 0,
+                    TotalOrderValue: parseInt($("#OrderValue").val()),
+                    AddType: AddType,
+                    OrderStatus: AddType == 3 ? "D" : null,
+                    TransportPayer: 1,
+                    RequestOrderID: 0,
+                    IsRequestOrder: "N",
+                    ExpectedDeliveryDate: ExpectedDeliveryDate,
+                    CollectionPostOfficeRecentID: $("#SearchListCollectionPostOfficeRecent").val() == undefined ? 0 : $("#SearchListCollectionPostOfficeRecent").val()
+                };
+
+                if (data.AddType == 1 || data.AddType == 2) {
+
+                    isError = CheckRegexValue(data.OrderCode, "SpecialCharButNotVietnamese", "OrderCode", Message, isError);
+
+                    if (data.OrderValue > 100000000) {
+                        $('#errOrderValue').text('Giá trị đơn hàng không vượt quá 100 triệu đồng.');
+                        $('#OrderValue').focus();
+                        isError = true;
+                    }
+
+
+
+                    isError = CheckNullValue(data.Sender.FullName, "Sender_FullName", "Vui lòng nhập Họ và tên.", isError);
+                    isError = CheckNullAndRegexValue(data.Sender.MobileNumber, "MobileNumber", "Sender_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+                    isError = CheckNullValue(data.Sender.Province.ID, "Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+                    isError = CheckNullValue(data.Sender.District.ID, "Sender_District_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                    isError = CheckNullValue(data.Sender.Ward.ID, "Sender_Ward_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                    isError = CheckNullValue(data.Sender.Street, "Sender_Street", "Vui lòng nhập địa chỉ.", isError);
+
+                    isError = CheckNullAndRegexValue(parseInt(data.Weight), "Number", "Weight", "Vui lòng nhập trọng lượng", "Chỉ được nhập số", isError);
+
+
+                    if (!parseInt(data.Quantity)) {
+                        data.Quantity = 1;
+                    }
+
+                } else {
+                    isError = false;
+                }
+
+                if (isError == true) {
+                    return;
+                }
+
+                var MessageNotify = "";
+                var MessageSuccess = "";
+                switch (AddType) {
+                    case 1:
+                        MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                        MessageSuccess = "Tạo đơn hàng thành công";
+                        break;
+                    case 2:
+                        MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng và gửi vận chuyển?";
+                        MessageSuccess = "Tạo đơn hàng và gửi vận chuyển thành công";
+                        break;
+                    case 3:
+                        MessageNotify = "Bạn chắc chắn muốn lưu nháp đơn hàng?";
+                        MessageSuccess = "Lưu nháp thành công";
+                        break;
+                    default:
+                        MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                        MessageSuccess = "Tạo đơn hàng thành công";
+                        break;
+                };
+
+                swal({
+                    title: 'Thông báo',
+                    text: MessageNotify,
+                    buttons: {
+                        confirm: {
+                            text: "Xác nhận",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary",
+                            closeModal: true
+                        },
+                        cancel: {
+                            text: "Đóng",
+                            value: false,
+                            visible: true,
+                            className: "btn btn-danger",
+                            closeModal: true,
+                        }
+                    },
+                }).then((value) => {
+                    if (value) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("JAddOrder3T", "ReturnOrder")',
+                            dataType: 'json',
+                            loading: true,
+                            data: data,
+                            success: function (res) {
+                                if (res.Code == "00") {
+                                    var ShippingCode = JSON.parse(res.Data).ShippingCode;
+                                    CreateCustomSwal("success-no-close", MessageSuccess + '<br/>' + ShippingCode);
+                                } else {
+                                    CreateCustomSwal("error", res.Message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                var err = eval("(" + xhr.responseText + ")");
+                                swal({
+                                    title: 'Lỗi',
+                                    text: err.Message,
+                                    button: {
+                                        text: "ĐÓNG",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary"
+                                    }
+                                });
+                                return;
+                            }
+                        });
+                    }
+                });
+            }
+</script>
+</body>
+</html>

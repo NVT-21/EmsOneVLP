@@ -1,0 +1,186 @@
+﻿@model List<EMS.MVC.Frontend.Models.ShowListErrorMultipleSelectViewModel>
+@if (ViewBag.Controller == "Order")
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã lô</th>
+                                <th>Mã đơn hàng</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.BatchCode</td>
+                                    <td class="text-center">@Item.OrderCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark light" onclick="window.location.reload();">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "RequestSupport")
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã yêu cầu</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.RequestSupportCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark light" onclick="window.location.reload();">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "IsAgree")
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã bưu gửi</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.EmsBarCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark light" onclick="window.location.reload();">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "Product")
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Tên sản phẩm</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: 1rem;">@Item.ProductName</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark light" onclick="window.location.reload();">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "TIK_Product")
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Tên sản phẩm</th>
+                                <th>Mã SKU</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td style="max-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: 1rem;">@Item.ProductName</td>
+                                    <td style="max-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: 1rem;">@Item.ProductVariantSKU</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark light" onclick="window.location.reload();">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+

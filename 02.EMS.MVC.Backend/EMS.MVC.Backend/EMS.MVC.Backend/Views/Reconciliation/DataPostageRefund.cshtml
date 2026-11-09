@@ -1,0 +1,162 @@
+﻿@model EMS.MVC.Backend.Models.PostageRefundViewModel
+@{
+    var stt = 1;
+}
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr>
+            @if (Model != null)
+            {
+                <th class="align-middle" colspan="6">Tổng dữ liệu</th>
+                <th class="text-right"> @Model.SumMoneyforCollection.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumCODFee.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumCODFeeRefund.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumFeeE1TransferRefund.ToString("N0") ₫</th>
+                <th class="text-right"></th>
+                <th class="text-right"> @Model.SumRefundAmount.ToString("N0") ₫</th>
+                <th class="align-middle"></th>
+            }
+            else
+            {
+                <th class="align-middle" colspan="6">Tổng dữ liệu</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"></th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="align-middle"></th>
+            }
+        </tr>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Mã PP/CRM </th>
+            <th class="align-middle"> Tham chiếu </th>
+            <th class="align-middle"> Mã bưu gửi </th>
+            <th class="align-middle"> Ngày phát hành</th>
+            <th class="align-middle"> Ngày chuyển hoàn</th>
+            <th class="align-middle"> Tiền nhờ thu (VNĐ)</th>
+            <th class="align-middle"> Cước COD (VNĐ)</th>
+            <th class="align-middle"> Cước hoàn (VNĐ)</th>
+            <th class="align-middle"> Cước E1 CH (VNĐ)</th>
+            <th class="align-middle"> Tỷ lệ giảm cước (%)</th>
+            <th class="align-middle"> Số tiền hoàn cước (VNĐ)</th>
+            <th class="align-middle" style="max-width: 360px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;"> Ghi chú</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.DataDetails)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.CustomerCode</td>
+                    <td class="text-center">@item.Reference</td>
+                    <td class="text-center">
+                        @item.ItemCode
+                    </td>
+                    <td class="text-center">
+                        @item.ReleaseDate
+                    </td>
+                    <td class="text-center">
+                        @item.RefundDate
+                    </td>
+                    <td class="text-right">
+                        @item.MoneyforCollection.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.CODFee.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.CODFeeRefund.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.FeeE1TransferRefund.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.DiscountRate.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.RefundAmount.ToString("N0")
+                    </td>
+                    <td class="text-left" style="max-width: 360px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;">
+                        @item.Note
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th class="align-middle" colspan="6"></th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th class="align-middle"></th>
+        </tr>
+    </tfoot>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                var j = 6;
+                while (j < 12) {
+                    // Total over all pages
+                    total = api
+                        .column(j)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Total over this page
+                    pageTotal = api
+                        .column(j, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    if (j != 10) {
+                        $(api.column(j).footer()).html(
+                            CurrencyFormatVND(pageTotal)
+                        );
+                    }
+                    j++;
+                }
+            }
+        });
+    });
+</script>

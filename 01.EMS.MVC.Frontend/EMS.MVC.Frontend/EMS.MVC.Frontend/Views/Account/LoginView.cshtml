@@ -1,0 +1,1034 @@
+﻿@model EMS.MVC.Frontend.Models.LoginViewModel
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="EMS, EMSOne" />
+    <meta name="author" content="EMS" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <title>Đăng nhập EMSOne</title>
+
+    <link rel="shortcut icon" type="image/png" href="~/favicon.png" /> @Styles.Render("~/bundles/css") @Styles.Render("~/bundles/fonts")
+
+    <style>
+        :root {
+            --ems-blue: #0759b8;
+            --ems-blue-dark: #073b7a;
+            --ems-blue-light: #eaf3ff;
+            --ems-orange: #ff6b00;
+            --ems-orange-dark: #c94e00;
+            --ems-orange-hover: #e95f00;
+            --ems-orange-light: #fff1e6;
+            --ems-text: #17345c;
+            --ems-muted: #71819a;
+            --ems-border: #dce5f0;
+            --ems-bg: #f5f9ff;
+            --ems-white: #ffffff;
+            --ems-gradient: linear-gradient(90deg, var(--ems-blue) 0%, var(--ems-orange) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            overflow-x: hidden;
+            color: var(--ems-text);
+            background:
+                radial-gradient(circle at 12% 20%, rgba(205, 229, 255, .7), transparent 30%),
+                radial-gradient(circle at 82% 0%, rgba(255, 200, 150, .35), transparent 34%),
+                linear-gradient(135deg, #eef7ff 0%, #ffffff 56%, #f6f9fd 100%);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            color: var(--ems-blue);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--ems-blue-dark);
+            text-decoration: none;
+        }
+
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+
+        #preloader img {
+            width: 190px;
+            max-width: 55vw;
+        }
+
+        .ems-login-page {
+            position: relative;
+            min-height: 100vh;
+            padding: 28px 40px 18px;
+        }
+
+        .ems-login-page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(115deg, rgba(255, 255, 255, .2), transparent 45%),
+                repeating-linear-gradient(145deg, transparent 0, transparent 18px, rgba(255, 255, 255, .2) 19px, transparent 20px);
+            opacity: .45;
+        }
+
+        .ems-login-page::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 4px;
+            background: var(--ems-gradient);
+            opacity: .9;
+        }
+
+        .ems-login-shell {
+            position: relative;
+            z-index: 1;
+            width: min(1460px, 100%);
+            min-height: calc(100vh - 46px);
+            margin: 0 auto;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .ems-topbar {
+            min-height: 50px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 28px;
+            padding: 0 4px;
+            font-size: 17px;
+            color: var(--ems-blue);
+        }
+
+        .ems-topbar-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .ems-topbar-item + .ems-topbar-item {
+            padding-left: 26px;
+            border-left: 1px solid #dce4ee;
+        }
+
+        .ems-topbar svg {
+            flex: 0 0 auto;
+        }
+
+        .ems-main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.04fr) minmax(520px, .96fr);
+            align-items: center;
+            gap: clamp(42px, 5vw, 82px);
+            padding: 18px 0 8px;
+        }
+
+        .ems-brand-panel {
+            min-width: 0;
+            padding: 8px 0 0 16px;
+        }
+
+        .ems-brand-logo img {
+            display: block;
+            width: min(345px, 65%);
+            height: auto;
+        }
+
+        .ems-brand-copy {
+            margin-top: 38px;
+        }
+
+        .ems-brand-copy h1 {
+            margin: 0;
+            font-size: clamp(34px, 3.2vw, 48px);
+            line-height: 1.08;
+            letter-spacing: -.8px;
+            font-weight: 800;
+            color: var(--ems-blue);
+            text-transform: uppercase;
+			font-family: Inter !important;
+        }
+
+        .ems-brand-copy h1 span {
+            display: block;
+            margin-top: 8px;
+            color: var(--ems-orange);
+        }
+
+        .ems-brand-copy p {
+            max-width: 520px;
+            margin: 22px 0 0;
+            font-size: 19px;
+            line-height: 1.55;
+            color: #385171;
+        }
+
+        .ems-hero-art {
+            position: relative;
+            margin: 10px -18px 0 -18px;
+        }
+
+        .ems-hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            object-position: center bottom;
+            filter: drop-shadow(0 14px 28px rgba(31, 87, 155, .12));
+        }
+
+        .ems-feature-box {
+            position: relative;
+            z-index: 2;
+            margin: -8px 8px 0;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            overflow: hidden;
+            border: 1px solid rgba(220, 230, 241, .9);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 18px 42px rgba(27, 72, 126, .12);
+        }
+
+        .ems-feature {
+            position: relative;
+            padding: 25px 14px 22px;
+            text-align: center;
+        }
+
+        .ems-feature + .ems-feature::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 26px;
+            bottom: 26px;
+            width: 1px;
+            background: #e0e7ef;
+        }
+
+        .ems-feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 10px;
+            display: grid;
+            place-items: center;
+        }
+
+        .ems-feature strong {
+            display: block;
+            font-size: 16px;
+            color: var(--ems-blue);
+        }
+
+        .ems-feature span {
+            display: block;
+            margin-top: 5px;
+            font-size: 13px;
+            line-height: 1.35;
+            color: #435775;
+        }
+
+        .ems-login-card {
+            width: 100%;
+            max-width: 690px;
+            justify-self: end;
+            overflow: hidden;
+            border: 1px solid rgba(223, 231, 241, .92);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .97);
+            box-shadow: 0 22px 56px rgba(40, 70, 108, .14);
+            backdrop-filter: blur(9px);
+        }
+
+        .ems-login-card-body {
+            padding: 50px 66px 32px;
+        }
+
+        .ems-login-logo {
+            text-align: center;
+        }
+
+        .ems-login-logo img {
+            width: min(390px, 82%);
+            height: auto;
+        }
+
+        .ems-login-title {
+            margin: 26px 0 0;
+            text-align: center;
+            font-size: 30px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: #153a6d;
+			font-family: Inter !important;
+        }
+
+        .ems-login-subtitle {
+            margin: 8px 0 0;
+            text-align: center;
+            font-size: 16px;
+            color: var(--ems-muted);
+        }
+
+        .ems-title-line {
+            width: 70px;
+            height: 3px;
+            margin: 21px auto 28px;
+            border-radius: 999px;
+            background: var(--ems-gradient);
+        }
+
+        .ems-form-group {
+            margin-bottom: 20px;
+        }
+
+        .ems-form-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 9px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #17345c;
+        }
+
+        .ems-forgot-link {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .ems-field-control {
+            position: relative;
+        }
+
+        .ems-field-icon {
+            position: absolute;
+            z-index: 2;
+            top: 50%;
+            left: 18px;
+            width: 22px;
+            height: 22px;
+            transform: translateY(-50%);
+            color: #7c8da7;
+            pointer-events: none;
+        }
+
+        .ems-field-control .form-control {
+            width: 100%;
+            height: 62px;
+            padding: 0 56px 0 56px;
+            border: 1px solid var(--ems-border);
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: none;
+            color: #213a5c;
+            font-size: 16px;
+            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+        }
+
+        .ems-field-control .form-control::placeholder {
+            color: #94a1b5;
+        }
+
+        .ems-field-control .form-control:focus {
+            border-color: var(--ems-orange);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, .1);
+        }
+
+        .ems-field-control.has-icon-focus .ems-field-icon {
+            color: var(--ems-orange);
+        }
+
+        .ems-field-control .input-group-eye {
+            position: absolute;
+            z-index: 3;
+            top: 50%;
+            right: 18px;
+            width: 24px;
+            height: 24px;
+            transform: translateY(-50%);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: #7b8da7;
+        }
+
+        .ems-field-control .input-group-eye:hover {
+            color: var(--ems-orange);
+        }
+
+        .ems-field-control .input-group-eye i {
+            font-size: 19px;
+        }
+
+        .ems-field-control .input-group-eye .icon-eye {
+            display: none;
+        }
+
+        .ems-field-control .input-group-eye.active .icon-eye-slash {
+            display: none;
+        }
+
+        .ems-field-control .input-group-eye.active .icon-eye {
+            display: inline-block;
+        }
+
+        .ems-error {
+            display: block;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .ems-form-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin: -4px 0 24px;
+        }
+
+        .ems-remember {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .ems-remember input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        .ems-remember-box {
+            position: relative;
+            flex: 0 0 auto;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 1.6px solid #b9c6da;
+            background: #fff;
+            transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .ems-remember-box::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid #fff;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity .15s ease;
+        }
+
+        .ems-remember input:checked + .ems-remember-box {
+            border-color: var(--ems-orange);
+            background: var(--ems-orange);
+            box-shadow: 0 4px 10px rgba(255, 107, 0, .25);
+        }
+
+        .ems-remember input:checked + .ems-remember-box::after {
+            opacity: 1;
+        }
+
+        .ems-remember input:focus-visible + .ems-remember-box {
+            box-shadow: 0 0 0 4px rgba(7, 89, 184, .15);
+        }
+
+        .ems-remember span.ems-remember-label {
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #2c4667;
+        }
+
+        .ems-btn {
+            width: 100%;
+            min-height: 62px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 9px;
+            font-size: 17px;
+            font-weight: 700;
+            transition: all .2s ease;
+        }
+
+        .ems-btn-login {
+            border: 1px solid var(--ems-orange);
+            background: linear-gradient(135deg, var(--ems-orange) 0%, var(--ems-orange-dark) 100%);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(255, 107, 0, .22);
+        }
+
+        .ems-btn-login:hover,
+        .ems-btn-login:focus {
+            border-color: var(--ems-orange-hover);
+            background: linear-gradient(135deg, var(--ems-orange-hover) 0%, var(--ems-orange-dark) 100%);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(255, 107, 0, .28);
+        }
+
+        .ems-btn-login:disabled {
+            opacity: .72;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .ems-separator {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 18px;
+            margin: 20px 0;
+            color: #6f7e94;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .ems-separator::before,
+        .ems-separator::after {
+            content: "";
+            height: 1px;
+            background: #dfe6ee;
+        }
+
+        .ems-btn-guest {
+            border: 1.5px solid var(--ems-blue);
+            background: var(--ems-blue-light);
+            color: var(--ems-blue);
+        }
+
+        .ems-btn-guest:hover,
+        .ems-btn-guest:focus {
+            background: #e0edff;
+            color: var(--ems-blue-dark);
+            border-color: var(--ems-blue-dark);
+            transform: translateY(-1px);
+        }
+
+        .ems-register {
+            margin: 20px 0 0;
+            text-align: center;
+            font-size: 15px;
+            color: #2c4667;
+        }
+
+        .ems-register a {
+            font-weight: 700;
+            color: var(--ems-orange);
+        }
+
+        .ems-register a:hover {
+            color: var(--ems-orange-dark);
+        }
+
+        .ems-login-card-footer {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            align-items: center;
+            min-height: 72px;
+            border-top: 1px solid #e6ebf1;
+            background: rgba(251, 253, 255, .92);
+        }
+
+        .ems-login-card-footer .divider {
+            width: 1px;
+            height: 28px;
+            background: #dfe6ee;
+        }
+
+        .ems-policy-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 14px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ems-page-footer {
+            padding: 16px 0 0;
+            text-align: center;
+            color: #536783;
+            font-size: 13px;
+        }
+
+        @@media (max-width: 1260px) {
+            .ems-login-page {
+                padding: 22px 26px 16px;
+            }
+
+            .ems-main-grid {
+                grid-template-columns: minmax(0, 1fr) minmax(470px, .95fr);
+                gap: 36px;
+            }
+
+            .ems-login-card-body {
+                padding: 42px 48px 28px;
+            }
+
+            .ems-brand-copy h1 {
+                font-size: 38px;
+            }
+
+            .ems-brand-copy p {
+                font-size: 17px;
+            }
+        }
+
+        @@media (max-width: 991px) {
+            .ems-login-page {
+                padding: 18px;
+            }
+
+            .ems-login-shell {
+                min-height: calc(100vh - 36px);
+            }
+
+            .ems-topbar {
+                justify-content: center;
+                padding-bottom: 10px;
+                font-size: 14px;
+            }
+
+            .ems-main-grid {
+                display: block;
+                padding-top: 12px;
+            }
+
+            .ems-brand-panel {
+                display: none;
+            }
+
+            .ems-login-card {
+                max-width: 680px;
+                margin: 0 auto;
+            }
+        }
+
+        @@media (max-width: 600px) {
+            .ems-login-page {
+                padding: 10px;
+            }
+
+            .ems-topbar {
+                gap: 12px;
+                min-height: 44px;
+            }
+
+            .ems-topbar-item + .ems-topbar-item {
+                padding-left: 12px;
+            }
+
+            .ems-login-card {
+                border-radius: 20px;
+            }
+
+            .ems-login-card-body {
+                padding: 32px 20px 24px;
+            }
+
+            .ems-login-title {
+                font-size: 25px;
+            }
+
+            .ems-login-subtitle {
+                font-size: 14px;
+            }
+
+            .ems-field-control .form-control,
+            .ems-btn {
+                min-height: 56px;
+                height: 56px;
+            }
+
+            .ems-form-meta {
+                flex-wrap: wrap;
+            }
+
+            .ems-login-card-footer {
+                grid-template-columns: 1fr;
+                padding: 5px 0;
+            }
+
+            .ems-login-card-footer .divider {
+                display: none;
+            }
+
+            .ems-policy-link {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+
+    <script src="~/Assets/js/global.min.js"></script>
+    <script src="~/Assets/js/MyJS.js?n=@XHelper.JavaScriptVersion"></script>
+</head>
+
+<body>
+    <div id="preloader">
+        <img src="~/Assets/images/logo/logo-full.svg" alt="EMSOne" />
+    </div>
+
+    <div id="ViewModal" class="modal fade" role="dialog">
+        <div id="modal-ViewModal-html" style="position: fixed; width: 100%; height: 100%;"></div>
+    </div>
+
+    <main class="ems-login-page">
+        <div class="ems-login-shell">
+            <header class="ems-topbar">
+                <a class="ems-topbar-item" href="tel:1900545433" aria-label="Gọi tổng đài hỗ trợ 1900 54 54 33">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"
+                        fill="#0759b8" />
+                    </svg>
+                    <span>1900 54 54 33</span>
+                </a>
+                <div class="ems-topbar-item" aria-label="Ngôn ngữ hiện tại: Tiếng Việt">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" stroke="#0759b8" stroke-width="2" />
+                        <path d="M3.5 12h17M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" stroke="#0759b8" stroke-width="1.7" />
+                    </svg>
+                    <span>Tiếng Việt</span>
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                        <path d="M1 1.5 6 6.5l5-5" stroke="#0759b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </header>
+
+            <section class="ems-main-grid">
+                <section class="ems-brand-panel" aria-label="Giới thiệu EMSOne">
+                    <a class="ems-brand-logo" target="_blank" href="https://ems.com.vn/">
+                        <img src="~/Assets/images/logo/logo-full.svg" alt="EMSOne" />
+                    </a>
+
+                    <div class="ems-brand-copy">
+                        <h1>
+                            Kết nối dịch vụ
+                            <span>Nâng tầm trải nghiệm</span>
+                        </h1>
+                        <p>Hệ thống quản lý và khai thác dịch vụ EMS nhanh chóng – chính xác – hiệu quả</p>
+                    </div>
+
+                    <div class="ems-hero-art">
+                        <img src="~/Assets/images/login/ems-login-hero.png" alt="Máy bay và xe tải EMS" />
+                    </div>
+
+                    <div class="ems-feature-box">
+                        <div class="ems-feature">
+                            <div class="ems-feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <path d="M29 6c7 2 10 7 10 13l-8 8-5-5-6 6 3 3-8 8-5-5 8-8 3 3 6-6-5-5 7-8Z" stroke="#0759b8" stroke-width="2.4" stroke-linejoin="round" />
+                                    <path d="m12 30-5 5m11 1-5 5m-1-14-5 5" stroke="#ff6b00" stroke-width="2.5" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <strong>Nhanh chóng</strong>
+                            <span>Xử lý tức thì</span>
+                        </div>
+                        <div class="ems-feature">
+                            <div class="ems-feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <path d="M24 5 39 11v10c0 10-5.9 17.2-15 22-9.1-4.8-15-12-15-22V11L24 5Z" stroke="#0759b8" stroke-width="2.4" stroke-linejoin="round" />
+                                    <path d="m18 24 4 4 8-9" stroke="#ff6b00" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <strong>An toàn</strong>
+                            <span>Bảo mật tối đa</span>
+                        </div>
+                        <div class="ems-feature">
+                            <div class="ems-feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <rect x="7" y="29" width="7" height="12" rx="1.5" fill="#0759b8" />
+                                    <rect x="20" y="20" width="7" height="21" rx="1.5" fill="#0759b8" />
+                                    <rect x="33" y="9" width="7" height="32" rx="1.5" fill="#ff6b00" />
+                                </svg>
+                            </div>
+                            <strong>Hiệu quả</strong>
+                            <span>Tối ưu vận hành</span>
+                        </div>
+                        <div class="ems-feature">
+                            <div class="ems-feature-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <path d="M10 26v-5c0-8 6.3-14 14-14s14 6 14 14v5" stroke="#0759b8" stroke-width="2.5" stroke-linecap="round" />
+                                    <rect x="7" y="23" width="7" height="13" rx="3" stroke="#0759b8" stroke-width="2.5" />
+                                    <rect x="34" y="23" width="7" height="13" rx="3" stroke="#0759b8" stroke-width="2.5" />
+                                    <path d="M38 35c0 4-3 6-7 6h-3" stroke="#0759b8" stroke-width="2.5" stroke-linecap="round" />
+                                    <circle cx="26" cy="41" r="2.5" fill="#ff6b00" />
+                                </svg>
+                            </div>
+                            <strong>Hỗ trợ 24/7</strong>
+                            <span>Đồng hành cùng bạn</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ems-login-card" aria-label="Đăng nhập hệ thống EMSOne">
+                    <div class="ems-login-card-body">
+                        <div class="ems-login-logo">
+                            <a target="_blank" href="https://ems.com.vn/">
+                                <img src="~/Assets/images/logo/logo-full.svg" alt="EMSOne" />
+                            </a>
+                        </div>
+
+                        <h2 class="ems-login-title">Chào mừng bạn trở lại!</h2>
+                        <p class="ems-login-subtitle">Đăng nhập để tiếp tục sử dụng hệ thống</p>
+                        <div class="ems-title-line"></div>
+
+                        <div class="ems-form-group">
+                            <label class="ems-form-label" for="MobileNumber">Số điện thoại</label>
+                            <div class="ems-field-control">
+                                <svg class="ems-field-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"
+                                    fill="currentColor" />
+                                </svg>
+                                @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "0912809339", @maxlength = "11", @tabindex = "1", @autocomplete = "username", @inputmode = "numeric" } })
+                            </div>
+                            <span class="text-danger ems-error" id="errMobileNumber"></span>
+                        </div>
+
+                        <div class="ems-form-group">
+                            <label class="ems-form-label" for="Password">
+                                <span>Mật khẩu</span>
+                                <a href="@Url.Action("ForgetPasswordView", "Account")" class="ems-forgot-link">Quên mật khẩu?</a>
+                            </label>
+                            <div class="ems-field-control">
+                                <svg class="ems-field-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor" />
+                                    <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @type = "password", @class = "form-control", @placeholder = "Mật khẩu", @maxlength = "20", @tabindex = "2", @autocomplete = "current-password" } })
+                                <span class="input-group-eye show-pass" role="button" tabindex="0" aria-label="Hiển thị hoặc ẩn mật khẩu">
+                                    <i class="icon-eye-slash"></i>
+                                    <i class="icon-eye"></i>
+                                </span>
+                            </div>
+                            <span class="text-danger ems-error" id="errPassword"></span>
+                        </div>
+
+                        <div class="ems-form-meta">
+                            <label class="ems-remember" for="RememberMe">
+                                <input type="checkbox" id="RememberMe" name="RememberMe" tabindex="3" />
+                                <span class="ems-remember-box" aria-hidden="true"></span>
+                                <span class="ems-remember-label">Ghi nhớ đăng nhập</span>
+                            </label>
+                        </div>
+
+                        <button type="button" class="btn ems-btn ems-btn-login" id="btnLogin">Đăng nhập</button>
+
+                        <div class="ems-separator"><span>Hoặc</span></div>
+
+                        <a href="/don-hang/tao-don-hang-le" class="btn ems-btn ems-btn-guest">
+                            <svg width="29" height="29" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <circle cx="13" cy="10" r="5" stroke="currentColor" stroke-width="2.2" />
+                                <path d="M4 27c.7-6 4-9 9-9 3.6 0 6.4 1.5 8 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                                <path d="M25 17v10m-5-5h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                            </svg>
+                            <span>Tạo đơn không cần tài khoản</span>
+                        </a>
+
+                        <p class="ems-register">
+                            Bạn chưa có tài khoản?
+                            <a href="#" id="ShowRegisterView">Đăng ký ngay</a>
+                        </p>
+                    </div>
+
+                    <div class="ems-login-card-footer">
+                        <a class="ems-policy-link" href="~/Assets/file/DieuKhoanDichVuEMSOne.pdf" target="_blank">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M6 2h8l4 4v16H6V2Z" stroke="#0759b8" stroke-width="1.8" stroke-linejoin="round" />
+                                <path d="M14 2v5h5M9 12h6M9 16h6" stroke="#0759b8" stroke-width="1.8" stroke-linecap="round" />
+                            </svg>
+                            <span>Điều khoản sử dụng</span>
+                        </a>
+                        <span class="divider" aria-hidden="true"></span>
+                        <a class="ems-policy-link" href="~/Assets/file/QuyenRiengTuEMSOne.pdf" target="_blank">
+                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 2 20 5v6c0 5-3 9-8 11-5-2-8-6-8-11V5l8-3Z" stroke="#0759b8" stroke-width="1.8" stroke-linejoin="round" />
+                                <path d="m8.5 12 2.2 2.2 4.8-5" stroke="#0759b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span>Chính sách bảo mật</span>
+                        </a>
+                    </div>
+                </section>
+            </section>
+
+            <footer class="ems-page-footer">© @DateTime.Now.Year EMS. All rights reserved.</footer>
+        </div>
+    </main>
+
+    @Scripts.Render("~/bundles/js")
+
+    <script>
+        var EMS_REMEMBER_KEY = "ems_remember_mobile";
+
+        $(document).ready(function () {
+            var rememberedNumber = null;
+            try {
+                rememberedNumber = localStorage.getItem(EMS_REMEMBER_KEY);
+            } catch (e) {
+                rememberedNumber = null;
+            }
+
+            if (rememberedNumber) {
+                $("#MobileNumber").val(rememberedNumber);
+                $("#RememberMe").prop("checked", true);
+                $("#Password").focus();
+            } else {
+                $("#MobileNumber").focus();
+            }
+        });
+
+        $(".show-pass").on("click keydown", function (event) {
+            if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            event.preventDefault();
+            $(this).toggleClass("active");
+
+            var passwordInput = document.getElementById("Password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        });
+
+        $(document).on("keypress", function (event) {
+            var keycode = event.keyCode ? event.keyCode : event.which;
+            if (keycode === 13) {
+                $("#btnLogin").trigger("click");
+            }
+        });
+
+        $("#ShowRegisterView").on("click", function (event) {
+            event.preventDefault();
+            $.get('@Url.Action("RegisterView", "Account")', function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        });
+
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#modal-ViewModal-html").html("");
+        });
+
+        CheckChangeValue("MobileNumber", "Số điện thoại không được để trống.", "MobileNumber", "Y");
+        CheckChangeValue("Password", "Mật khẩu không được để trống.", "", "Y");
+
+        $("#btnLogin").on("click", function () {
+            var isError = false;
+            var data = {
+                MobileNumber: $("#MobileNumber").val().trim(),
+                Password: $("#Password").val().trim()
+            };
+
+            isError = CheckNullAndRegexValue(
+                data.MobileNumber,
+                "MobileNumber",
+                "MobileNumber",
+                "Số điện thoại không được để trống.",
+                "Số điện thoại không hợp lệ.",
+                isError
+            );
+
+            isError = CheckNullValue(
+                data.Password,
+                "Password",
+                "Mật khẩu không được để trống.",
+                isError
+            );
+
+            if (isError) {
+                return;
+            }
+
+            try {
+                if ($("#RememberMe").is(":checked")) {
+                    localStorage.setItem(EMS_REMEMBER_KEY, data.MobileNumber);
+                } else {
+                    localStorage.removeItem(EMS_REMEMBER_KEY);
+                }
+            } catch (e) {
+                // localStorage không khả dụng (ví dụ chế độ ẩn danh) - bỏ qua, không chặn đăng nhập
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JLogin", "Account")',
+                dataType: 'json',
+                loading: true,
+                data: data,
+                beforeSend: function () {
+                    $("#btnLogin")
+                        .prop("disabled", true)
+                        .append("<i class='fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+                },
+                success: function (res) {
+                    if (res.Code === "00") {
+                        window.location.href = '@Url.Action("Index", "Home", new { area = "" })';
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                },
+                complete: function () {
+                    $("#btnLogin").prop("disabled", false).find("i#iLoading").remove();
+                },
+                error: function (xhr) {
+                    var message = "Có lỗi xảy ra. Vui lòng thử lại.";
+
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        message = response.Message || message;
+                    } catch (e) {
+                    }
+
+                    swal({
+                        text: message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

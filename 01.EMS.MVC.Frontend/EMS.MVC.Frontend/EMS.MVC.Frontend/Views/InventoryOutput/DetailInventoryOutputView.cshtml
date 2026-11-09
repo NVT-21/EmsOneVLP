@@ -1,0 +1,343 @@
+﻿@model List<EMS.MVC.Frontend.Models.DetailInventoryOutputViewModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <h4 class="card-title">Chi tiết phiếu xuất kho - @item.Inventory.InventoryCode</h4>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-sm btn-secondary" title="Xuất Word" onclick="btnExportWord(@item.Inventory.ID, @item.Inventory.Shop.ID)">
+                                <i class="fa fa-file-word"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-success" title="Xuất Excel" onclick="btnExportExcel(@item.Inventory.ID, @item.Inventory.Shop.ID)">
+                                <i class="fa fa-file-excel"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-primary" title="In phiếu xuất kho" onclick="btnPrintInventoryOutput(@item.Inventory.ID, @item.Inventory.Shop.ID)">
+                                <i class="fa fa-print"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-item d-none" data-OrderID="@item.Inventory.Order.OrderID" data-OrderCode="@item.Inventory.Order.OrderCode" data-BatchCode="@item.Inventory.Order.BatchCode" data-OrderStatus="@item.Inventory.Order.OrderStatus.Code">
+
+                </div>
+                <div class="row">
+                    <div class="text-center">
+                        <h4 class="font-w600">PHIẾU XUẤT KHO</h4>
+                    </div>
+                    <div class="text-center">
+                        Ngày.....tháng.....năm .........
+                    </div>
+                    <div class="text-center">
+                        Số: ............................
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <span>- Họ và tên người nhận hàng: @item.Inventory.ReceiverName</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <span>Địa chỉ (bộ phận):...............................................................................</span>
+                        </div>
+                    </div>
+                    <div class="text-start">
+                        - Lý do xuất kho:.......................................................................................
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <span>- Xuất tại kho: @item.Inventory.WareHouse.WareHouseName</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <span>Địa điểm: @item.Inventory.WareHouse.FullAddress</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 table-primary table-responsive">
+                        <table id="SearchListDataTable" class="table table-bordered" style="width: 100%">
+                            <thead class="text-center align-middle">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sp, hàng hoá</th>
+                                    <th>Mã số</th>
+                                    <th>ĐVT</th>
+                                    <th colspan="2">Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Theo chứng từ</th>
+                                    <th>Thực xuất</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var stt = 1;
+                                    foreach (var ItemInventoryOutputDetail in item.ListInventoryOutputDetail)
+                                    {
+                                        <tr>
+                                            <td>@(stt++)</td>
+                                            <td>
+                                                <span style="line-height: 1.2rem;">@ItemInventoryOutputDetail.Product.ProductVariant.SKU - @ItemInventoryOutputDetail.Product.ProductName</span>
+                                                <br />
+                                                <span style="line-height: 1.2rem;">Mã Pallet: @ItemInventoryOutputDetail.Product.ProductVariant.Pallet.PalletCode</span>
+                                                <br />
+                                                <span style="line-height: 1.2rem;">(@ItemInventoryOutputDetail.Product.ProductVariant.Options)</span>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="text-end">@ItemInventoryOutputDetail.Quantity.ToString("N0")</td>
+                                            <td class="text-end">@ItemInventoryOutputDetail.Quantity.ToString("N0")</td>
+                                            <td class="text-end">@ItemInventoryOutputDetail.Price.ToString("N0")</td>
+                                            <td class="text-end">@ItemInventoryOutputDetail.TotalAmount.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center">Cộng</th>
+                                    <th class="text-center">x</th>
+                                    <th class="text-center">x</th>
+                                    <th class="text-center">x</th>
+                                    <th class="text-center">x</th>
+                                    <th class="text-center">x</th>
+                                    <th class="text-end">@item.Inventory.TotalAmount.ToString("N0")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="text-start">
+                        - Tổng số tiền (viết bằng chữ): <span class="text-capitalize">@item.Inventory.TotalAmountByText</span>
+                    </div>
+                    <div class="text-start">
+                        - Số chứng từ gốc kèm theo:..................................................................
+                    </div>
+                    <div class="mt-2 text-center d-flex justify-content-between">
+                        <div>
+                            <span class="font-w600">Người lập phiếu</span> <br /> <em>(Ký, họ tên)</em>
+                        </div>
+                        <div>
+                            <span class="font-w600">Người nhận hàng</span> <br /> <em>(Ký, họ tên)</em>
+                        </div>
+                        <div>
+                            <span class="font-w600">Thủ kho</span> <br /> <em>(Ký, họ tên)</em>
+                        </div>
+                        <div>
+                            <span class="font-w600">Kế toán trưởng</span> <br /> <em>(Ký, họ tên)</em>
+                        </div>
+                        <div>
+                            <span class="font-w600">Giám đốc</span> <br /> <em>(Ký, họ tên)</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="card">
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4">
+                    <button type="button" class="btn btn-outline-dark light" onclick="window.location.href = '@Url.Action("InventoryOutputView", "InventoryOutput")'">Quay lại</button>
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8">
+                    <div class="d-flex justify-content-end">
+                        @if (Model.Count > 0 && ViewBag.CheckStatus == true)
+                        {
+                            if (Model[0].Inventory.Status.Code == "N" || Model[0].Inventory.Status.Code == "P")
+                            {
+                                <button type="button" class="btn btn-outline-primary" title="Từ chối" onclick="btnReject(@Model[0].Inventory.ID)">
+                                    Từ chối
+                                </button>
+
+                                if (Model[0].Inventory.Status.Code == "N")
+                                {
+                                    <button type="button" class="btn btn-outline-secondary" title="Xử lý" onclick="btnProcess(@Model[0].Inventory.ID)">
+                                        Xử lý
+                                    </button>
+                                }
+
+                                <button type="button" class="btn btn-primary" title="Xác nhận" onclick="btnCompleted(@Model[0].Inventory.ID)">
+                                    Xác nhận
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        //$(document).ready(function () {
+        //    MyCreateDataTable("SearchListDataTable");
+        //});
+
+        function btnExportWord(InventoryOutputID, ShopID) {
+            var param = String.format("ID={0}&ShopID={1}", InventoryOutputID, ShopID);
+            window.location.href = "@Url.Action("ExportWord", "InventoryOutput")?" + param;
+        }
+
+        function btnExportExcel(InventoryOutputID, ShopID) {
+            var param = String.format("ID={0}&ShopID={1}", InventoryOutputID, ShopID);
+            window.location.href = "@Url.Action("ExportExcel", "InventoryOutput")?" + param;
+        }
+
+        function btnPrintInventoryOutput(InventoryOutputID, ShopID) {
+            var arr = [{
+                ID: InventoryOutputID,
+                ShopID: ShopID
+            }];
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn phiếu xuất kho cần in.");
+                return;
+            }
+
+            localStorage.setItem('ListDataInventoryOutputPrint', JSON.stringify(arr));
+            var link = document.createElement('a');
+            link.target = "_blank";
+            link.href = '@Url.Action("PrintInventoryOutputView", "InventoryOutput")';
+            link.click();
+        }
+
+        function btnProcess(InventoryOutputID) {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn xử lý phiếu xuất kho?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JProcessInventoryOutput", "InventoryOutput")',
+                        data: {
+                            ID: InventoryOutputID
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("InventoryOutputView", "InventoryOutput")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            };
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnCompleted(InventoryOutputID) {
+            var arr = [];
+            var InventoryID = 0;
+            $(".row-item").each(function () {
+                var obj = {};
+                obj.OrderID = parseInt($(this).attr("data-OrderID"));
+                obj.OrderCode = $(this).attr("data-OrderCode");
+                obj.BatchCode = $(this).attr("data-BatchCode");
+                obj.OrderStatus = $(this).attr("data-OrderStatus");
+
+                if (obj.OrderID == 0) {
+                    InventoryID = InventoryOutputID;
+                }
+
+                arr.push(obj);
+            });
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn xác nhận phiếu xuất kho?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAcceptInventoryOutput", "InventoryOutput")',
+                        data: {
+                            ID: InventoryID,
+                            SearchKey: JSON.stringify(arr)
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("InventoryOutputView", "InventoryOutput")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            };
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "Đóng",
+                                    value: true,
+                                    visiitemle: Transporttrue,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnReject(InventoryOutputID) {
+            $.get('@Url.Action("RejectInventoryOutputView", "InventoryOutput")', {
+                ID: InventoryOutputID
+            }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        }
+    </script>
+}

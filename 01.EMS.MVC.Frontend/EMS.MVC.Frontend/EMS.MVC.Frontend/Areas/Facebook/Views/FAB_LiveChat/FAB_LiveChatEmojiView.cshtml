@@ -1,0 +1,21 @@
+﻿<div class="col-12 mb-1 position-relative user-select-none" style="height: 170px;overflow: auto;" id="htmlEmoji">
+</div>
+<script>
+    // ========= Start Emoji
+    var htmlEmoji = "";
+    var emojiText = "";
+    $.getJSON("../Areas/Facebook/DataJson/FAB_Emoji.json", function (data) {
+        $.each(data, function (key, val) {
+            htmlEmoji += `<span class="c-pointer me-1 fs-25" onclick="ChooseEmoji('` + val.emoji + `')">` + val.emoji + `</span>`;
+        });
+        $("#htmlEmoji").append(htmlEmoji);
+    });
+    function ChooseEmoji(text) {
+        if ($("#MessageContent").val() == "") {
+            emojiText = "";
+        }
+        emojiText = emojiText + text;
+        $("#MessageContent").val(emojiText);
+    }
+    // ========= End Emoji
+</script>

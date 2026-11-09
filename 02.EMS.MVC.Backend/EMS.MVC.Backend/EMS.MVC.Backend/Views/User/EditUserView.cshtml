@@ -1,0 +1,300 @@
+﻿@model EMS.MVC.Backend.Models.EditUserViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.HiddenFor(m => m.ID)
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("UserView", "User")">Quản lý nhân viên</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("UserView", "User")">Danh sách nhân viên</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Sửa tài khoản - @Model.UserName</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-10 col-lg-10 col-md-12 mb-2">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-8 col-md-8 mb-2">
+                            <h4 class="card-title">Thông tin tài khoản</h4>
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">Tài khoản <span style="color: red">(*)</span></label>
+                                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tài khoản", @disabled = "true" } })
+                                    <span class="text-danger" id="errUserName"></span>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">Họ và tên <span style="color: red">(*)</span></label>
+                                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên" } })
+                                    <span class="text-danger" id="errFullName"></span>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">Số điện thoại <span style="color: red">(*)</span></label>
+                                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                                    <span class="text-danger" id="errMobileNumber"></span>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">Email <span style="color: red">(*)</span></label>
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Email" } })
+                                    <span class="text-danger" id="errEmail"></span>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">Vai trò<span style="color: red"> (*)</span></label>
+                                    @Html.DropDownListFor(model => model.UserGroupCode, new SelectList(Model.ListUserGroup, "Code", "Name"), "--- Chọn ---", new { @class = "select2" })
+                                    <span class="text-danger" id="errUserGroupCode"></span>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                                    <label for="">User CMS</label>
+                                    @Html.EditorFor(model => model.UserCMS, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "User CMS", @maxlength = "50" } })
+                                    <span class="text-danger" id="errUserCMS"></span>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                    <label for="">Mã khách hàng phục vụ</label>
+                                    @Html.EditorFor(model => model.ServesCustomer, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã khách hàng phục vụ" } })
+                                    <span class="text-danger" id="errServesCustomer"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <h4 class="card-title">Địa bàn hoạt động</h4>
+                            <div class="row d-flex justify-content-end">
+                                <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                    <input type="text" class="form-control" id="SearchNodeTree" placeholder="Tìm kiếm nhanh" />
+                                </div>
+                            </div>
+                            <div class="row ml-1 mt-1 CustomScrollBar" id="TreeView" style="overflow-x: auto; height: 450px; width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: white;">
+            <div class="row">
+                <div class="col-xl-10 col-lg-10 col-md-12">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-8 col-md-8">
+                            <button type="button" class="btn btn-sm btn-warning text-white" onclick="window.location.href = '@Url.Action("UserView", "User")'">Quay lại</button>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-end">
+                            <button type="button" class="btn btn-sm btn-primary" id="btnSubmit">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("input[id=ServesCustomer_tag]").keyup(function () {
+                var value = $(this).val();
+                $(this).val(value.toUpperCase());
+            });
+
+            $("input[id=ServesCustomer_tag]").bind("paste", function (e) {
+                var source = "";
+
+                if (window.clipboardData !== undefined) {
+                    source = window.clipboardData;
+                } else {
+                    source = e.originalEvent.clipboardData;
+                }
+
+                var data = source.getData("Text");
+
+                var replaceSpace = data.split(/\s+/);
+
+                $.each(replaceSpace, function (idx, value) {
+                    if (value.trim()) {
+                        $('#ServesCustomer').tagsinput('add', value.toUpperCase());
+                    }
+                });
+
+                e.preventDefault();
+            });
+        });
+
+        CheckChangeValue("FullName", "Vui lòng nhập Họ và tên", "Vietnamese", "Y");
+        CheckChangeValue("MobileNumber", "Vui lòng nhập Số điện thoại", "MobileNumber", "Y");
+        CheckChangeValue("Email", "Vui lòng nhập Địa chỉ Email", "Email", "Y");
+        CheckChangeValue("UserGroupCode", "Vui lòng chọn Vai trò", "", "Y");
+
+        var to = false;
+        $('#SearchNodeTree').keyup(function () {
+            if (to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#SearchNodeTree').val();
+                $('#TreeView').jstree(true).search(v, false, true, false, false, true);
+            }, 250);
+        });
+
+        var LoadTreeData = LoadListCollectionPostOfficeOfUser();
+        $("#TreeView").jstree({
+            "core": {
+                "themes": {
+                    "icons": false
+                },
+                "data": LoadTreeData,
+                @*"data": {
+                    "url": function (node) {
+                        return "@Url.Action("JSearchListCollectionPostOfficeOfUser", "User")?ParentID=" + node.id;
+                    },
+                    "data": function (node) {
+                        return { 'id': node.id };
+                    },
+                    "dataType": "json",
+                    "success": function (node) {
+                        console.log(node);
+                    }
+                },*@
+            },
+            "checkbox": {
+                "keep_selected_style": false,
+                //"tie_selection": false,
+                "undetermined": true,
+            },
+            "plugins": ["checkbox", "search"]
+        }).on("loaded.jstree", function (event, data) {
+        }).on("select_node.jstree", function (e, data) {
+        });
+
+        function LoadListCollectionPostOfficeOfUser() {
+            var ListCollectionPostOfficeOfUser = [];
+            $.ajax({
+                type: 'POST',
+                url: '/User/JEditCollectionPostOfficeOfUser?UserID=' + $("#ID").val(),
+                loading: true,
+                async: false,
+                global: false,
+                dataType: 'json',
+                success: function (data) {
+                    ListCollectionPostOfficeOfUser = data;
+                }
+            });
+            return ListCollectionPostOfficeOfUser;
+        }
+
+        $('#btnSubmit').on('click', function () {
+            var checked_ids = [];
+            //get_selected: lay tat ca nut duoc check
+            //get_top_checked: lay nut cha va nut con
+            //get_bottom_checked: lay nut con
+            //get_undetermined: lay nut chua duoc check
+            var selectedNodes = $('#TreeView').jstree("get_bottom_checked", true);
+            $.each(selectedNodes, function () {
+                checked_ids.push(this.id);
+            });
+
+            var isError = false;
+            var data = {
+                ID: $('#ID').val(),
+                FullName: $('#FullName').val().trim(),
+                MobileNumber: $('#MobileNumber').val().trim(),
+                Email: $('#Email').val().trim(),
+                UserGroupCode: $('#UserGroupCode').val(),
+                UserCMS: $('#UserCMS').val().trim(),
+                ServesCustomer: $('#ServesCustomer').val(),
+                ListCollectionPostOfficeID: checked_ids
+            };
+
+            isError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "FullName", "Vui lòng nhập Họ và tên", "Giá trị hợp lệ không bao gồm ký tự đặc biệt.", isError);
+            isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "MobileNumber", "Vui lòng nhập Số điện thoại", "Số điện thoại không hợp lệ.", isError);
+            isError = CheckNullAndRegexValue(data.Email, "Email", "Email", "Vui lòng nhập Địa chỉ Email", "Email không hợp lệ.", isError);
+            isError = CheckNullValue(data.UserGroupCode, "UserGroupCode", "Vui lòng chọn Vai trò", isError);
+            isError = CheckRegexValue(data.ServesCustomer, "ChildCustomerCode", "ServesCustomer", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-z), số (0-9) và dấu -", isError);
+
+            if (data.ListCollectionPostOfficeID.length == 0) {
+                isError = true;
+                CreateCustomSwal("error", "Vui lòng chọn địa bàn hoạt động");
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn sửa nhân viên này?",
+                icon: 'warning',
+                buttons: {
+                    confirm: {
+                        text: "Có",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Không",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JEditUser", "User")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                //CreateCustomSwal("success", res.Message, '@Url.Action("UserView", "User")');
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                icon: 'error',
+                                button: {
+                                    text: "Đóng",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#ServesCustomer').tagsinput({
+            maxChars: 20,
+            trimValue: true,
+            confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+        });
+
+        $('#ServesCustomer').on('beforeItemAdd', function (event) {
+            var CrmOrPaypostcode = event.item;
+            var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "ServesCustomer", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+            if (isError == true) {
+                event.cancel = true;
+            }
+        });
+
+        $(".bootstrap-tagsinput input").attr("id", "ServesCustomer_tag");
+    </script>
+}

@@ -1,0 +1,111 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_ListFeedForCommentViewModel>
+@{
+    var UpdatedDateSearch = "";
+}
+@if (Model.Count > 0)
+{
+    UpdatedDateSearch = Model[0].UpdatedDate;
+    foreach (var item in Model)
+    {
+        <a onclick="LoadCommentOfFeed(@item.ID)" class="list-group-item list-group-item-action border-0 FeedBox c-pointer" id="feed-@item.ID" style="padding: 0.75rem 0.5rem;">
+            <div class="row m-0">
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-2 col-md-2">
+                            <img src="@item.Avatar" class="rounded me-1" alt="@item.CreatedBy" width="40" height="40">
+                        </div>
+                        <div class="col-xl-10 col-lg-10 col-md-10">
+                            @if (item.FromWhom == 0)
+                            {
+                                <div class="row">
+                                    <div class="col-xl-7 col-lg-7 col-md-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <span>@item.Content</span>
+                                    </div>
+                                    <div class="col-xl-5 col-lg-5 col-md-5" style="text-align: end;">
+                                        <div class="small text-muted">
+                                            <span>@item.Day Tháng @item.Month </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="small text-muted" style="margin-top: 3px;">
+                                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @if (item.PeopleComment == "")
+                                        {
+                                            <span>Chưa có người dùng nào bình luận về bài viết này</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@item.PeopleComment</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-xl-8 col-lg-8 col-md-8">
+                                        <span>@item.CreatedBy</span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4" style="text-align: end;">
+                                        <div class="small text-muted">
+                                            <span>@item.Day Tháng @item.Month </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="small text-muted" style="margin-top: 3px;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <span>@item.Content</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-2" style="border: none;">
+                    <span class="badge badge-pill badge-danger float-right" id="NumberOfComment-@item.ID" style="@{if (item.NumberOfComment == 0) { Write("display: none;"); } else { Write("display: block;"); }}">@item.NumberOfComment</span>
+                </div>
+            </div>
+        </a>
+    }
+}
+<script>
+    var CurrentFeedBox = "";
+
+    function FeedBoxActive(FeedID) {
+        if (CurrentFeedBox == "") {
+            $("#feed-" + FeedID).addClass("rounded bg-conversion-box");
+        } else {
+            $("#feed-" + CurrentFeedBox).removeClass("rounded bg-conversion-box");
+            $("#feed-" + FeedID).addClass("rounded bg-conversion-box");
+        }
+        CurrentFeedBox = FeedID;
+    }
+
+    function LoadCommentOfFeed(FeedID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_CommentOfFeed", "FAB_Comment", new { area = "Facebook" })',
+            dataType: 'html',
+            loading: true,
+            global: false,
+            data: {
+                FeedID: FeedID
+            },
+            success: function (data) {
+                FeedBoxActive(FeedID);
+                $("#CommentOfFeed").removeClass("d-none");
+                $("#CommentOfFeed").html(data);
+                $("#NumberOfComment-" + FeedID).css("display","none");
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>

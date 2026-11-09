@@ -1,0 +1,409 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListMenuViewModel>
+
+@if (XHelper.Session.EmployeeProfile.StoreOwner == "Y")
+{
+    <li>
+        <a class="" href="@Url.Action("Index","Home")" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon01"></i>
+            <span class="nav-text">Tổng quan </span>
+        </a>
+    </li>
+    <li>
+        <a class="" href="@Url.Action("CODMoneyReportView","Report")" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon02"></i>
+            <span class="nav-text">Giám sát đơn hàng COD</span>
+        </a>
+    </li>
+    @*<li>
+            <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                <i class="icon-icon02"></i>
+                <span class="nav-text">Yêu cầu đặt hàng </span>
+            </a>
+            <ul aria-expanded="false">
+                <li><a href='@Url.Action("AddRequestOrderView","RequestOrder")' data-redirect="true">Tạo yêu cầu</a></li>
+                <li><a href='@Url.Action("RequestOrderView","RequestOrder")' data-redirect="true">Xử lý</a></li>
+                <li><a href='@Url.Action("DivisionView","RequestOrder")' data-redirect="true">Chia yêu cầu</a></li>
+                <li><a href='@Url.Action("DivisionAgainView","RequestOrder")' data-redirect="true">Chia lại yêu cầu</a></li>
+            </ul>
+        </li>*@
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon03"></i>
+            <span class="nav-text">Đơn hàng</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href='@Url.Action("OrderPaginationExpandView","Order")' data-redirect="true">Danh sách đơn hàng</a></li>
+            <li><a href='@Url.Action("OrderPaginationView","Order")' data-redirect="true">Danh sách đơn hàng</a></li>
+            <li><a href="@Url.Action("FastOrderView","Order")" data-redirect="true">Tạo đơn hàng nhanh</a></li>
+            <li><a href="@Url.Action("AddOrderView","Order")" data-redirect="true">Tạo đơn hàng</a></li>
+            <li><a href="@Url.Action("AddOrderBatchView","OrderBatch")" data-redirect="true">Tạo đơn hàng lô</a></li>
+            <li><a href="@Url.Action("TransportFeeView","TransportFee")" data-redirect="true">Uớc tính cước phí</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon03"></i>
+            <span class="nav-text">Đơn hàng siêu tốc</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href='@Url.Action("GrabOrderView","GrabOrder")' data-redirect="true">Danh sách đơn hàng</a></li>
+            <li><a href="@Url.Action("AddGrabOrderView","GrabOrder")" data-redirect="true">Tạo đơn hàng</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon06"></i>
+            <span class="nav-text">Quản lý kho</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href="@Url.Action("InventoryView","Inventory")" data-redirect="true">Tồn kho</a></li>
+            <li><a href="@Url.Action("InventoryImportView","InventoryImport")" data-redirect="true">Nhập kho</a></li>
+            <li><a href="@Url.Action("InventoryOutputView","InventoryOutput")" data-redirect="true">Xuất kho</a></li>
+            <li><a href="@Url.Action("StockTakeView","StockTake")" data-redirect="true">Kiểm kho</a></li>
+            @*<li><a href="@Url.Action("InventoryAdjustView","InventoryAdjust")" data-redirect="true">Điều chỉnh kho</a></li>*@
+            <li><a href="@Url.Action("ProviderView","Provider")" data-redirect="true">Nhà cung cấp</a></li>
+            <li><a href="@Url.Action("WareHouseView","WareHouse")" data-redirect="true">Danh sách kho</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon04"></i>
+            <span class="nav-text">Sản phẩm</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href="@Url.Action("ProductView","Product")" data-redirect="true">Danh sách sản phẩm</a></li>
+            @*<li><a href="./san-pham-tao-moi.html" data-redirect="true">Thêm sản phẩm</a></li>*@
+            <li><a href="@Url.Action("ProductGroupView","ProductGroup")" data-redirect="true">Nhóm sản phẩm</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon12"></i>
+            <span class="nav-text">Khách hàng</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href="@Url.Action("CustomerView","Customer")" data-redirect="true">Danh sách khách hàng</a></li>
+            <li><a href="@Url.Action("CustomerGroupView","CustomerGroup")" data-redirect="true">Nhóm khách hàng</a></li>
+            <li><a href="@Url.Action("CustomerStickerView","CustomerSticker")" data-redirect="true">Nhãn khách hàng</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="@Url.Action("RequestSupportView","RequestSupport")" class="" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon07"></i>
+            <span class="nav-text">Hỗ trợ</span>
+        </a>
+    </li>
+    @*<li><a class="has-arrow " href="javascript:void()" aria-expanded="false">
+                <i class="icon-icon08"></i>
+                <span class="nav-text">báo cáo</span>
+            </a>
+            <ul aria-expanded="false">
+                <li><a href="./blank.html">tồn kho</a></li>
+
+            </ul>
+        </li>*@
+
+    @*<li>
+            <a class=" " href="javascript:void()" aria-expanded="false">
+                <i class="icon-icon07"></i>
+                <span class="nav-text">Thanh toán</span>
+            </a>
+            <ul aria-expanded="false">
+                <li><a href="./blank.html"></a></li>
+            </ul>
+        </li>*@
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon09"></i>
+            <span class="nav-text">Đối soát</span>
+        </a>
+        <ul aria-expanded="false">
+            <li><a href="@Url.Action("FreightDailyView","Reconciliation")" data-redirect="true">Cước vận chuyển hàng ngày</a></li>
+            <li><a href="@Url.Action("FeeAdjustingJournalEntriesView","Reconciliation")" data-redirect="true">Bút toán điều chỉnh</a></li>
+            @*<li><a href="@Url.Action("FreightView","Reconciliation")" data-redirect="true">Đối soát cước vận chuyển</a></li>*@
+            @*<li><a href="@Url.Action("FreightTradeDiscountsView","Reconciliation")" data-redirect="true">CKTM cước vận chuyển</a></li>*@
+            <li><a href="@Url.Action("CODMoneyDailyView","Reconciliation")" data-redirect="true">Tiền COD</a></li>
+            @*<li><a href="@Url.Action("CODMoneyView","Reconciliation")" data-redirect="true">Đối soát tiền COD</a></li>*@
+            <li><a href="@Url.Action("PostageRefundView","Reconciliation")" data-redirect="true">Bưu gửi hoàn cước</a></li>
+            <li><a href="@Url.Action("DebtNoticesView","Reconciliation")" data-redirect="true">Giấy báo nợ</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+            <i class="icon-icon08"></i>
+            <span class="nav-text">Cấu hình</span>
+        </a>
+        <ul aria-expanded="false">
+            @*<li><a href="@Url.Action("StatusProcessView","Configuration")" data-redirect="true">Tình trạng xử lý</a></li>*@
+            <li><a href="@Url.Action("PermissionView","Permission")" data-redirect="true">Phân quyền</a></li>
+            @*<li><a href="@Url.Action("PromotionView","Promotion")" data-redirect="true">Khuyến mãi</a></li>*@
+            @*<li><a href="@Url.Action("AutoRequestOrderView","Configuration")" data-redirect="true">Chia yêu cầu đặt hàng</a></li>*@
+            <li><a href="@Url.Action("TransportServiceView","TransportService")" data-redirect="true">Dịch vụ</a></li>
+            <li><a href="@Url.Action("TemplatePrintView", "TemplatePrint")" data-redirect="true">Mẫu in</a></li>
+        </ul>
+    </li>
+    <li>
+        <a class="" href="~/Assets/file/[EMSONE]TailieuHDSD_V2.2.pdf" target="_blank" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon09"></i>
+            <span class="nav-text">Hướng dẫn sử dụng</span>
+        </a>
+    </li>
+}
+else
+{
+    <li>
+        <a class="" href="@Url.Action("Index","Home")" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon01"></i>
+            <span class="nav-text">Tổng quan </span>
+        </a>
+    </li>
+    if (Model.Count > 0)
+    {
+        foreach (var ItemLevel0 in Model)
+        {
+            @*if (ItemLevel0.FunctionalCode == "RequestOrderController")
+                {
+                    <li>
+                        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                            <i class="icon-icon02"></i>
+                            <span class="nav-text">Yêu cầu đặt hàng </span>
+                        </a>
+                        <ul aria-expanded="false">
+                            @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                            {
+                                if (ItemLevel1.FunctionalCode == "RequestOrder_Dashboard")
+                                {
+                                    <li><a href="#" data-redirect="true">Tổng quan</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "RequestOrder_AddRequestOrderView")
+                                {
+                                    <li><a href="#" data-redirect="true">Tạo yêu cầu</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "RequestOrder_Index")
+                                {
+                                    <li><a href="#" data-redirect="true">Xử lý</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "RequestOrder_RequestOrderDivision")
+                                {
+                                    <li><a href="#" data-redirect="true">Chia yêu cầu</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "RequestOrder_RequestOrderDivisionAgain")
+                                {
+                                    <li><a href="#" data-redirect="true">Chia lại yêu cầu</a></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }*@
+
+            if (ItemLevel0.FunctionalCode == "OrderController")
+            {
+                <li>
+                    <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                        <i class="icon-icon03"></i>
+                        <span class="nav-text">Đơn hàng</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        @foreach(var ItemLevel1 in ItemLevel0.ListFunctional)
+                        {
+                            if(ItemLevel1.FunctionalCode == "Order_Index")
+                            {
+                                <li><a href='@Url.Action("OrderPaginationExpandView","Order")' data-redirect="true">Danh sách đơn hàng</a></li>
+                                <li><a href='@Url.Action("OrderPaginationView","Order")' data-redirect="true">Danh sách đơn hàng</a></li>
+                            }
+                            else if(ItemLevel1.FunctionalCode == "Order_AddOrderView")
+                            {
+                                <li><a href="@Url.Action("AddOrderView","Order")" data-redirect="true">Tạo đơn hàng</a></li>
+                            }
+                            else if(ItemLevel1.FunctionalCode == "OrderBatch_AddOrderBatchView")
+                            {
+                                <li><a href="@Url.Action("AddOrderBatchView","OrderBatch")" data-redirect="true">Tạo đơn hàng lô</a></li>
+                            }
+                            else if(ItemLevel1.FunctionalCode == "Transport_ChargedIndex")
+                            {
+                                <li><a href="@Url.Action("TransportFeeView","TransportFee")" data-redirect="true">Uớc tính cước phí</a></li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+
+            if (ItemLevel0.FunctionalCode == "WareHouseController")
+            {
+                <li>
+                    <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                        <i class="icon-icon06"></i>
+                        <span class="nav-text">Quản lý kho</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                        {
+                            if (ItemLevel1.FunctionalCode == "WareHouse_GetProductsByID")
+                            {
+                                <li><a href="@Url.Action("InventoryView","Inventory")" data-redirect="true">Tồn kho</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "InventoryImport_Index")
+                            {
+                                <li><a href="@Url.Action("InventoryImportView","InventoryImport")" data-redirect="true">Nhập kho</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "InventoryOutput_Index")
+                            {
+                                <li><a href="@Url.Action("InventoryOutputView","InventoryOutput")" data-redirect="true">Xuất kho</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "StockTake_Index")
+                            {
+                                <li><a href="@Url.Action("StockTakeView","StockTake")" data-redirect="true">Kiểm kho</a></li>
+                            }
+                            @*else if (ItemLevel1.FunctionalCode == "InventoryAdjust_Index")
+                                {
+                                    <li><a href="#" data-redirect="true">Điều chỉnh kho</a></li>
+                                }*@
+                            else if (ItemLevel1.FunctionalCode == "Provider_Index")
+                            {
+                                <li><a href="@Url.Action("ProviderView","Provider")" data-redirect="true">Nhà cung cấp</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "WareHouse_Index")
+                            {
+                                <li><a href="@Url.Action("WareHouseView","WareHouse")" data-redirect="true">Danh sách kho</a></li>
+                            }
+                        }
+
+                    </ul>
+                </li>
+            }
+
+            if (ItemLevel0.FunctionalCode == "ProductController")
+            {
+                <li>
+                    <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                        <i class="icon-icon04"></i>
+                        <span class="nav-text">Sản phẩm</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                        {
+                            if (ItemLevel1.FunctionalCode == "Product_Index")
+                            {
+                                <li><a href="@Url.Action("ProductView","Product")" data-redirect="true">Danh sách sản phẩm</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "Product_ProductGroup")
+                            {
+                                <li><a href="@Url.Action("ProductGroupView","ProductGroup")" data-redirect="true">Nhóm sản phẩm</a></li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+
+            if (ItemLevel0.FunctionalCode == "CustomerController")
+            {
+                <li>
+                    <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                        <i class="icon-icon12"></i>
+                        <span class="nav-text">Khách hàng</span>
+                    </a>
+                    <ul aria-expanded="false">
+                        @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                        {
+                            if (ItemLevel1.FunctionalCode == "Customer_Index")
+                            {
+                                <li><a href="@Url.Action("CustomerView","Customer")" data-redirect="true">Danh sách khách hàng</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "Customer_CustomerGroup")
+                            {
+                                <li><a href="@Url.Action("CustomerGroupView","CustomerGroup")" data-redirect="true">Nhóm khách hàng</a></li>
+                            }
+                            else if (ItemLevel1.FunctionalCode == "Customer_CustomerSticker")
+                            {
+                                <li><a href="@Url.Action("CustomerStickerView","CustomerSticker")" data-redirect="true">Nhãn khách hàng</a></li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+
+            if (ItemLevel0.FunctionalCode == "RequestSupport_Index")
+            {
+                <li>
+                    <a href="@Url.Action("RequestSupportView","RequestSupport")" class="" aria-expanded="false" data-redirect="true">
+                        <i class="icon-icon07"></i>
+                        <span class="nav-text">Hỗ trợ</span>
+                    </a>
+                </li>
+            }
+
+            @*if (ItemLevel0.FunctionalCode == "ConfigurationController")
+                {
+                    <li>
+                        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                            <i class="icon-icon08"></i>
+                            <span class="nav-text">Cấu hình</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                            {
+                                if (ItemLevel1.FunctionalCode == "Configuration_StatusProcessView")
+                                {
+                                    <li><a href="#" data-redirect="true">Tình trạng xử lý</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Promotions_Index")
+                                {
+                                    <li><a href="#" data-redirect="true">Khuyến mãi</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Configuration_AutoRequestOrderView")
+                                {
+                                    <li><a href="#" data-redirect="true">Chia yêu cầu đặt hàng</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Configuration_TransportServiceView")
+                                {
+                                    <li><a href="#" data-redirect="true">Dịch vụ</a></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }*@
+
+            @*if (ItemLevel0.FunctionalCode == "ReconciliationController")
+                {
+                    <li>
+                        <a class="has-arrow " href="javascript:void()" aria-expanded="false" data-redirect="false">
+                            <i class="icon-icon09"></i>
+                            <span class="nav-text">Đối soát</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            @foreach (var ItemLevel1 in ItemLevel0.ListFunctional)
+                            {
+                                if (ItemLevel1.FunctionalCode == "Reconciliation_FreightDaily")
+                                {
+                                    <li><a href="@Url.Action("FreightDailyView","Reconciliation")" data-redirect="true">Cước vận chuyển</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Reconciliation_Freight")
+                                {
+                                    <li><a href="@Url.Action("FreightView","Reconciliation")" data-redirect="true">Đối soát cước vận chuyển</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Reconciliation_FreightTradeDiscounts")
+                                {
+                                    <li><a href="@Url.Action("FreightTradeDiscountsView","Reconciliation")" data-redirect="true">CKTM cước vận chuyển</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Reconciliation_CODMoneyDaily")
+                                {
+                                    <li><a href="@Url.Action("CODMoneyDailyView","Reconciliation")" data-redirect="true">Tiền COD</a></li>
+                                }
+                                else if (ItemLevel1.FunctionalCode == "Reconciliation_CODMoney")
+                                {
+                                    <li><a href="@Url.Action("CODMoneyView","Reconciliation")" data-redirect="true">Đối soát tiền COD</a></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }*@
+        }
+    }
+    <li>
+        <a class="" href="~/Assets/file/[EMSONE]TailieuHDSD_V2.2.pdf" target="_blank" aria-expanded="false" data-redirect="true">
+            <i class="icon-icon09"></i>
+            <span class="nav-text">Hướng dẫn sử dụng</span>
+        </a>
+    </li>
+}
+

@@ -1,0 +1,177 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListCustomerViewModel>
+
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Mã khách hàng</th>
+            <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">Thông tin khách hàng</th>
+            <th>Số đơn hàng thành công</th>
+            <th>Số tiền mua hàng thành công</th>
+            <th>Nhóm khách hàng</th>
+            <th>Nhãn khách hàng</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.MobileNumber || @item.FullName || @item.FullAddress</td>
+                <td>
+                    @Html.DisplayFor(m => item.Code)
+                    @*<a href="@Url.Action("DetailCustomerView","Customer", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString()) })">@Html.DisplayFor(m => item.Code)</a>*@
+                </td>
+                <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                    <ul>
+                        <li>@Html.DisplayFor(m => item.FullName)</li>
+                        <li class="fs-12 text-2">
+                            @Html.DisplayFor(m => item.MobileNumber)
+                        </li>
+                        <li class="fs-12 text-2">
+                            @Html.DisplayFor(m => item.FullAddress)
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.SuccessOrder)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.TotalAmount)
+                </td>
+                <td class="py-2 ">
+                    @if (!string.IsNullOrEmpty(item.CustomerGroup.Name))
+                    {
+                        var SplitCustomerGroupName = item.CustomerGroup.Name.Split(',');
+                        for (var i = 0; i < SplitCustomerGroupName.Length; i++)
+                        {
+                            Write(SplitCustomerGroupName[i]);
+                            if (i + 1 < SplitCustomerGroupName.Length)
+                            {
+                                <br />
+                            }
+                        }
+                    }
+                </td>
+                <td class="py-2 ">
+                    @if (!string.IsNullOrEmpty(item.CustomerSticker.Name))
+                    {
+                        var SplitCustomerStickerName = item.CustomerSticker.Name.Split(',');
+                        for (var i = 0; i < SplitCustomerStickerName.Length; i++)
+                        {
+                            Write(SplitCustomerStickerName[i]);
+                            if (i + 1 < SplitCustomerStickerName.Length)
+                            {
+                                <br />
+                            }
+                        }
+                    }
+                </td>
+                <td class="py-2 text-center">
+                    <div class="dropdown">
+                        <button class="btn " type="button" id="order-dropdown-1"
+                                data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                aria-expanded="false">
+                            <span>
+                                Chọn
+                            </span>
+                            <i class="icon-arrow-b"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                            @if (item.BlackList == "Y")
+                            {
+                                <a class="dropdown-item" onclick="btnBlackList(@item.ID, '@item.FullName', 'checked')" style="cursor: pointer;">Bỏ khỏi DS đen</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" onclick="btnBlackList(@item.ID, '@item.FullName', 'unchecked')" style="cursor: pointer;">Thêm vào DS đen</a>
+                            }
+                            @*<a class="dropdown-item" onclick="btnDetailView(@item.ID)" style="cursor: pointer;">Xem thông tin</a>
+                                <a class="dropdown-item" onclick="btnEditView(@item.ID)" style="cursor: pointer;">Sửa thông tin</a>*@
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function btnDetailView(CustomerID) {
+        var param = String.format("SearchKey={0}", btoa(CustomerID));
+        window.location.href = '@Url.Action("DetailCustomerView", "Customer")?' + param;
+    }
+
+    function btnEditView(CustomerID) {
+        var param = String.format("SearchKey={0}", btoa(CustomerID));
+        window.location.href = '@Url.Action("EditCustomerView", "Customer")?' + param;
+    }
+
+    function btnBlackList(ID, FullName, IsChecked) {
+        var text = "";
+        var checked = "";
+        if (IsChecked == "checked") {
+            text = "Bạn chắc chắn muốn xoá khách hàng " + FullName + " khỏi danh sách đen?";
+            checked = "N";
+        } else {
+            text = "Bạn chắc chắn muốn thêm khách hàng " + FullName + " vào danh sách đen?";
+            checked = "Y";
+        }
+        swal({
+            title: 'Thông báo',
+            text: text,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JBlackList", "Customer")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: ID,
+                        BlackList: checked
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

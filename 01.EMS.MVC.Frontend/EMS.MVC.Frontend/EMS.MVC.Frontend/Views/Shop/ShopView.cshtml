@@ -1,0 +1,176 @@
+﻿@model EMS.MVC.Frontend.Models.ShopViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.Message)
+@if (XHelper.Session.EmployeeProfile.StoreOwner == "Y")
+{
+    <div class="profile">
+        <!-- Nav tabs -->
+        <div class=" custom-tab-1 ">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="Shop_ShopProfileView" data-bs-toggle="tab" href="#ShopProfileView" onclick="Redirect('Shop_ShopProfileView')">Thông tin cơ bản</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="Branch_BranchView" data-bs-toggle="tab" href="#BranchView" onclick="Redirect('Branch_BranchView')">Quản lý cơ sở</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="Employee_EmployeeView" data-bs-toggle="tab" href="#EmployeeView" onclick="Redirect('Employee_EmployeeView')">Quản lý nhân viên</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="EmployeeGroup_EmployeeGroupView" data-bs-toggle="tab" href="#EmployeeGroupView" onclick="Redirect('EmployeeGroup_EmployeeGroupView')">Quản lý nhóm nhân viên</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="Channel_ChannelView" data-bs-toggle="tab" href="#ChannelView" onclick="Redirect('Channel_ChannelView')">Kênh bán hàng</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="PartnerWebhook_PartnerWebhookView" data-bs-toggle="tab" href="#PartnerWebhookView" onclick="Redirect('PartnerWebhook_PartnerWebhookView')">Đối tác Webhook</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane fade fade show active" id="ShopProfileView" role="tabpanel">
+                @{
+                    Html.RenderAction("ShopProfileView", "Shop");
+                }
+            </div>
+
+            <div class="tab-pane fade " id="BranchView">
+            </div>
+
+            <div class="tab-pane fade" id="EmployeeView">
+            </div>
+
+            <div class="tab-pane fade" id="EmployeeGroupView">
+            </div>
+
+            <div class="tab-pane fade" id="ChannelView">
+            </div>
+
+            <div class="tab-pane fade" id="PartnerWebhookView">
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    if (Model.ListTab.Count > 0)
+    {
+        <div class="profile">
+            <!-- Nav tabs -->
+            <div class=" custom-tab-1 ">
+                <ul class="nav nav-tabs" role="tablist">
+                    @foreach (var Item in Model.ListTab)
+                    {
+                        if (Item.FunctionalCode == "Shop_ShopProfile")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" id="Shop_ShopProfileView" data-bs-toggle="tab" href="#ShopProfileView" onclick="Redirect('Shop_ShopProfileView')">Thông tin cơ bản</a>
+                            </li>
+                        }
+                        else if (Item.FunctionalCode == "Shop_ShopLevel")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="Branch_BranchView" data-bs-toggle="tab" href="#BranchView" onclick="Redirect('Branch_BranchView')">Quản lý cơ sở</a>
+                            </li>
+                        }
+                        else if (Item.FunctionalCode == "Employee_Index")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="Employee_EmployeeView" data-bs-toggle="tab" href="#EmployeeView" onclick="Redirect('Employee_EmployeeView')">Quản lý nhân viên</a>
+                            </li>
+                        }
+                        else if (Item.FunctionalCode == "Employee_EmployeeGroup")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="EmployeeGroup_EmployeeGroupView" data-bs-toggle="tab" href="#EmployeeGroupView" onclick="Redirect('EmployeeGroup_EmployeeGroupView')">Quản lý nhóm nhân viên</a>
+                            </li>
+                        }
+                        else if (Item.FunctionalCode == "Shop_SalesChannel")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="Channel_ChannelView" data-bs-toggle="tab" href="#ChannelView" onclick="Redirect('Channel_ChannelView')">Kênh bán hàng</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="tab-content">
+                @foreach (var Item in Model.ListTab)
+                {
+                    if (Item.FunctionalCode == "Shop_ShopProfile")
+                    {
+                        <div class="tab-pane fade fade show active" id="ShopProfileView" role="tabpanel">
+                            @{
+                                Html.RenderAction("ShopProfileView", "Shop");
+                            }
+                        </div>
+                    }
+                    else if (Item.FunctionalCode == "Shop_ShopLevel")
+                    {
+                        <div class="tab-pane fade " id="BranchView">
+                        </div>
+                    }
+                    else if (Item.FunctionalCode == "Employee_Index")
+                    {
+                        <div class="tab-pane fade" id="EmployeeView">
+                        </div>
+                    }
+                    else if (Item.FunctionalCode == "Employee_EmployeeGroup")
+                    {
+                        <div class="tab-pane fade" id="EmployeeGroupView">
+                        </div>
+                    }
+                    else if (Item.FunctionalCode == "Shop_SalesChannel")
+                    {
+                        <div class="tab-pane fade" id="ChannelView">
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var Message = $("#Message").val();
+            if (Message) {
+                CreateCustomSwal("error", Message);
+            }
+
+            //var lastTab = sessionStorage.getItem('lastTabShop');
+            //if (lastTab) {
+            //    $("#" + lastTab).click();
+            //}
+        });
+
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        var urlTemp = 'ShopProfileView';
+        function Redirect(url) {
+            if (urlTemp) {
+                $("#" + urlTemp).html("");
+            }
+            var split = url.split('_');
+            urlTemp = split[1];
+            $.ajax({
+                type: 'POST',
+                url: '/' + split[0] + '/' + split[1],
+                dataType: 'html',
+                success: function (data) {
+                    $("#" + split[1]).html(data);
+                    sessionStorage.setItem('lastTabShop', url);
+                },
+            });
+        }
+    </script>
+}

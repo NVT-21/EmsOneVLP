@@ -1,0 +1,1286 @@
+﻿@model List<EMS.MVC.Frontend.Models.PrintOrderTypeViewModel>
+<center>
+    @if(Model.Count > 0)
+    {
+        var i = 0;
+        <input id="IDs" type="hidden" value="@ViewBag.OrderIDs" />
+        if(ViewBag.PrintType == "A4")
+        {
+            <style>
+                @@page {
+                    size: A4 landscape;
+                    margin: 0.3cm 0.3cm 0.3cm 1cm;
+                }
+            </style>
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page mt-4" style="width:30cm;">
+                    <div class="row">
+                        <div class="col-md-6 col-print-6 text-start mb-2">
+                            <img class="img-fluid" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 60%;" />
+                        </div>
+                        <div class="col-md-6 col-print-6 text-end mb-2">
+                            <h4 class="font-w600" style="border-bottom: solid #f0ad4e;">Vận đơn điện tử</h4>
+                        </div>
+                        <div class="col-md-4 col-print-4" style="min-height: 110px;">
+                            @if(itemList.QRCode != null)
+                            {
+                                <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.QRCode))" style="width: 40%; height: auto; border-radius: 0;" />
+                            }
+                        </div>
+                        <div class="col-md-4 col-print-4 m-auto">
+                            <div style="line-height: 1.4rem;"><b>BƯU GỬI</b></div>
+                            <div style="line-height: 1.4rem;">BILL OF CONSIGNMENT</div>
+                        </div>
+                        <div class="col-md-4 col-print-4 m-auto" style="min-height: 110px;">
+                            <div class="m-4">
+                                @if(itemList.ShippingBarCode != null)
+                                {
+                                    <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: auto; height: auto; border-radius: 0;" />
+                                    <br />
+                                    <span style="font-weight: bold; font-size: 16px;">@itemList.ShippingCode</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-print-12 text-start">
+                            <div class="row" style="line-height: 1rem;">
+                                <div class="col-md-4 col-print-4">
+                                    <label class="m-0">Dịch vụ: </label><label class="font-w600" style="font-size: 20px;">@itemList.TransportMainServiceName</label>
+                                </div>
+                                <div class="col-md-8 col-print-8 mt-1">
+                                    <div class="row">
+                                        <div class="col-md-4 col-print-4">
+                                            <label class="m-0">Loại vận đơn:</label>
+                                        </div>
+                                        <div class="col-md-4 col-print-4">
+                                            <label class="m-0">Nơi gửi: @itemList.SenderProvinceName</label>
+                                        </div>
+                                        <div class="col-md-4 col-print-4">
+                                            <label class="m-0">Nơi nhận: @itemList.RecieverProvinceName</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="offset-4 col-md-8 col-print-8">
+                                    <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        @itemList.TransportExtraServiceName
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12 col-print-12 text-start d-flex justify-content-between">
+                                <div>
+                                    <label class="text-2">Dịch vụ:</label> <label class="font-w600" style="font-size: 20px;">@itemList.TransportMainServiceName</label>
+                                </div>
+                                <div>
+                                    <label class="m-0">Loại vận đơn:</label>
+                                    <div >
+                                        @{
+                                            var ExtraServiceCode = itemList.TransportExtraServiceCode.Split(',');
+                                            var ExtraServiceName = itemList.TransportExtraServiceName.Split(',');
+                                            for (var j = 0; j < ExtraServiceCode.Length; j++)
+                                            {
+                                                <div>
+                                                    @ExtraServiceName[j]
+                                                    @if (ExtraServiceCode[j] == "COD")
+                                                    {
+                                                        Write(itemList.TotalCOD.ToString("N0") + " (vnđ)");
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-2">Nơi gửi:</label> <label class="">@itemList.SenderProvinceName</label>
+                                </div>
+                                <div>
+                                    <label class="text-2">Nơi nhận:</label> <label class="">@itemList.RecieverProvinceName</label>
+                                </div>
+                            </div>*@
+                        <div class="col-md-12 col-print-12">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%;" colspan="2">
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Họ và tên người gửi/Sender:</b>
+                                                @itemList.SenderFullName
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Địa chỉ/Address:</b>
+                                                @itemList.SenderFullAddress
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Quận huyện/District:</b>
+                                                @itemList.SenderDistrictName
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Tỉnh/TP/Province:</b>
+                                                @itemList.SenderProvinceName
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Điện thoại/Phone:</b>
+                                                @itemList.SenderMobileNumber
+                                            </span>
+                                        </td>
+                                        <td style="width: 50%;" colspan="2">
+                                            <span style="line-height: 1.4rem;"><b>Họ và tên người nhận/Receiver:</b> @itemList.RecieverFullName</span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Địa chỉ/Address:</b> @itemList.RecieverFullAddress</span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Quận huyện/District:</b>
+                                                @itemList.RecieverDistrictName
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Tỉnh/TP/Province:</b>
+                                                @itemList.RecieverProvinceName
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Điện thoại/Phone:</b>
+                                                @itemList.RecieverMobileNumber
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 25%; white-space: inherit; text-align: left; vertical-align: baseline;">
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Mã đơn hàng:</b>
+                                                @itemList.OrderCode
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <b>Nội dung/Content:</b>
+                                                @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </span>
+                                            <span style="line-height: 1.4rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <b>Ghi chú/Note:</b>
+                                                @Html.Raw(itemList.Note.Trim())
+                                            </span>
+                                        </td>
+                                        <td style="width: 25%; vertical-align: baseline; white-space: inherit;">
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Tr.lượng/Weight:</b>
+                                                <span class="">@itemList.TransportWeight (g)</span>
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>S.lượng/Quantity:</b>
+                                                <span class="">@itemList.TransportQuantity</span>
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                @if(itemList.TransportPayer == 1)
+                                                {
+                                                    <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                                }
+                                                else
+                                                {
+                                                    <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                    <br />
+                                                    <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                    <br />
+                                                    <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                                }
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Cước thu người nhận:</b>
+                                                <span class="">@itemList.PaymentFreightVat.ToString("N0") đồng</span>
+                                            </span>
+                                        </td>
+                                        <td style="width: 25%; text-align: center; vertical-align: baseline;">
+                                            <span style="line-height: 1.4rem;"><b>Ngày giờ gửi/Date</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;">@itemList.SenderSentDate</span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Họ tên, chữ ký người gửi</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Signature of sender</b></span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Ngày giờ phát/Date, time</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Họ tên nhân viên phát</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Name, of P.O Deliverer</b></span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                        </td>
+                                        <td style="width: 25%; text-align: center; vertical-align: baseline;">
+                                            <span style="line-height: 1.4rem;"><b>Dấu ngày BC chấp nhận</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Date, stamp of accepting P.O</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Tên nhân viên chấp nhận</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"></span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Họ tên chữ ký người nhận</b></span>
+                                            <br />
+                                            <span style="line-height: 1.4rem;"><b>Signature of receiver</b></span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center" colspan="4">
+                                            <span style="line-height: 1.4rem;"><b>Lưu ý:</b> Quý khách hàng cần đọc kỹ thông tin tiền thu hộ trước khi thực hiện thanh toán & ký nhận sản phẩm.</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+        else if(ViewBag.PrintType == "A61")
+        {
+            <style>
+                @@page {
+                    size: 4.1in 5.8in;
+                    margin: 0.2cm !important;
+                }
+
+                .table td {
+                    line-height: 1;
+                }
+
+                @@media print {
+                    html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+                        font-size: 17px;
+                    }
+                }
+            </style>
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page" style="max-width: 26cm; max-height: 29cm; float: left; margin-top: 5px;">
+                    <table class="table" style="width: 15cm; min-height: 12.6cm; border: 1px solid black;">
+                        <thead>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row">
+                                        <div class="col-md-6 p-1 col-print-6">
+                                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; height: 36px; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                                        </div>
+                                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                                            <div class="row">
+                                                <div class="col-md-12 col-print-12 mb-1">
+                                                    <b style="line-height: 1.1rem;">Bưu cục:</b>
+                                                    <b style="line-height: 1.1rem;">@itemList.PostOffice</b>
+                                                </div>
+                                                <div class="col-md-12 col-print-12">
+                                                    <b style="line-height: 1.1rem;">Ngày gửi: @itemList.SenderSentDate</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(itemList.ShippingBarCode != null)
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center">
+                                        <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: 70%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                        <br />
+                                        <b style="font-size: 20px;">@itemList.ShippingCode</b>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                                    <b style="line-height: 1.1rem;">Người gửi:</b>
+                                    <br />
+                                    <b style="line-height: 1.1rem;">
+                                        @{
+                                            var ListSenderInfo = new List<string>() { itemList.SenderFullName, itemList.SenderMobileNumber, itemList.SenderFullAddress }.Where(m => m != "").ToList();
+                                            if(ListSenderInfo.Count > 0)
+                                            {
+                                                Write(string.Join(" - ", ListSenderInfo));
+                                            }
+                                        }
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="100" style="vertical-align: baseline;">
+                                    <div class="row" style="margin: 0; height: 90%;">
+                                        <div class="col-md-8 col-print-8 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem;">Người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">
+                                                @{
+                                                    var ListReceiverInfo = new List<string>() { itemList.RecieverFullName, itemList.RecieverFullAddress }.Where(m => m != "").ToList();
+                                                    if(ListReceiverInfo.Count > 0)
+                                                    {
+                                                        Write(string.Join(" - ", ListReceiverInfo));
+                                                    }
+                                                }
+                                            </b>
+                                        </div>
+                                        <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            @if(itemList.TransportPayer == 1)
+                                            {
+                                                <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                <br />
+                                                <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                            }
+                                            else
+                                            {
+                                                <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-8 col-print-8 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem;">ĐT người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.RecieverMobileNumber</b>
+                                        </div>
+                                        <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <b style="line-height: 1.1rem;">Cước thu người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.PaymentFreightVat.ToString("N0") đồng</b>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="140" style="vertical-align: baseline;">
+                                    <div class="row" style="margin: 0;height: inherit;">
+                                        <div class="col-md-8 col-print-8 p-1" style="border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; font-size: 11px;">
+                                                Nội dung hàng: @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </b>
+                                        </div>
+                                        <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <b style="line-height: 1.1rem;">Khối lượng:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.TransportWeight (g)</b>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(!string.IsNullOrEmpty(itemList.TransportMainServiceCode) || !string.IsNullOrEmpty(itemList.TransportMainServiceName) || !string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center p-1">
+                                        <div class="d-flex justify-content-center">
+                                            <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                @{
+                                                    var ListTransportServiceInfo = new List<string>() { itemList.TransportMainServiceName, itemList.TransportMainServiceCode }.Where(m => m != "").ToList();
+                                                    if(ListTransportServiceInfo.Count > 0)
+                                                    {
+                                                        Write(string.Join(" - ", ListTransportServiceInfo));
+                                                    }
+
+
+                                                }
+                                            </b>
+                                        </div>
+                                        @if(!string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                                        {
+                                            <div>
+                                                <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">@itemList.TransportExtraServiceCode</b>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="p-1" colspan="2" height="80" style="vertical-align: baseline;">
+                                    <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        Ghi chú: @Html.Raw(itemList.Note.Trim())
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center p-1">
+                                    <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.OrderBarCode))" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                    <br />
+                                    <b style="line-height: 1.1rem;">@itemList.OrderCode</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center p-1">
+                                    <b style="line-height: 1.1rem;">In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+
+        }
+        else if(ViewBag.PrintType == "A64")
+        {
+            <style>
+                @@page {
+                    size: A4;
+                    /*size: 4.1in 5.8in;*/
+                    margin: 0.2cm 0cm 0.2cm 0cm !important;
+                }
+
+                .table td {
+                    line-height: 1;
+                }
+
+                @@media print {
+                    html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+                        font-size: 17px;
+                    }
+                }
+            </style>
+
+            foreach(var itemPage in Model)
+            {
+                i = 1;
+                <div class="page" style="max-width:26cm; min-height: 29cm;">
+                    @foreach(var itemList in itemPage.ListOrderPrint)
+                    {
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6" style="min-height: 18cm; max-height: 18cm;">
+                            <table class="table table-sm" style="width: 12cm; height: 12.5cm; border: 1px solid black;">
+                                <thead>
+                                    <tr>
+                                        <td class="p-0" colspan="2">
+                                            <div class="row">
+                                                <div class="col-md-6 p-1 col-print-6">
+                                                    <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; height: 36px; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                                                </div>
+                                                <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-print-12 mb-1">
+                                                            <b style="line-height: 1.1rem;">Bưu cục:</b>
+                                                            <b style="line-height: 1.1rem;">@itemList.PostOffice</b>
+                                                        </div>
+                                                        <div class="col-md-12 col-print-12">
+                                                            <b style="line-height: 1.1rem;">Ngày gửi: @itemList.SenderSentDate</b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @if(itemList.ShippingBarCode != null)
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center">
+                                                <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: 70%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                                <br />
+                                                <b style="font-size: 20px;">@itemList.ShippingCode</b>
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                                            <b style="line-height: 1.1rem;">Người gửi:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">
+                                                @{
+                                                    var ListSenderInfo = new List<string>() { itemList.SenderFullName, itemList.SenderMobileNumber, itemList.SenderFullAddress }.Where(m => m != "").ToList();
+                                                    if(ListSenderInfo.Count > 0)
+                                                    {
+                                                        Write(string.Join(" - ", ListSenderInfo));
+                                                    }
+                                                }
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-0" colspan="2" height="110" style="vertical-align: baseline;">
+                                            <div class="row" style="margin: 0; height: 100%;">
+                                                <div class="col-md-8 col-print-8 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                                    <b style="line-height: 1.1rem;">Người nhận:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">
+                                                        @{
+                                                            var ListReceiverInfo = new List<string>() { itemList.RecieverFullName, itemList.RecieverFullAddress }.Where(m => m != "").ToList();
+                                                            if(ListReceiverInfo.Count > 0)
+                                                            {
+                                                                Write(string.Join(" - ", ListReceiverInfo));
+                                                            }
+                                                        }
+                                                    </b>
+                                                </div>
+                                                <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                    @if(itemList.TransportPayer == 1)
+                                                    {
+                                                        <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                        <br />
+                                                        <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                        <br />
+                                                        <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                        <br />
+                                                        <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-0" colspan="2">
+                                            <div class="row" style="margin: 0;">
+                                                <div class="col-md-8 col-print-8 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                                    <b style="line-height: 1.1rem;">ĐT người nhận:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">@itemList.RecieverMobileNumber</b>
+                                                </div>
+                                                <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                    <b style="line-height: 1.1rem; font-size: 13px;">Cước thu người nhận:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">@itemList.PaymentFreightVat.ToString("N0") đồng</b>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-0" colspan="2" height="60" style="vertical-align: baseline;">
+                                            <div class="row" style="margin: 0;height: inherit;">
+                                                <div class="col-md-8 col-print-8 p-1" style="border-right: 1px black solid;">
+                                                    <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; font-size: 11px;">
+                                                        <span style="font-size: 14px;">Nội dung hàng: </span> @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                                    </b>
+                                                </div>
+                                                <div class="col-md-4 col-print-4 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                    <b style="line-height: 1.1rem;">Khối lượng:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">@itemList.TransportWeight (g)</b>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @if(!string.IsNullOrEmpty(itemList.TransportMainServiceCode) || !string.IsNullOrEmpty(itemList.TransportMainServiceName) || !string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center p-1">
+                                                <div class="d-flex justify-content-center">
+                                                    <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                        @{
+                                                            var ListTransportServiceInfo = new List<string>() { itemList.TransportMainServiceName, itemList.TransportMainServiceCode }.Where(m => m != "").ToList();
+                                                            if(ListTransportServiceInfo.Count > 0)
+                                                            {
+                                                                Write(string.Join(" - ", ListTransportServiceInfo));
+                                                            }
+
+
+                                                        }
+                                                    </b>
+                                                </div>
+                                                @if(!string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                                                {
+                                                    <div>
+                                                        <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">@itemList.TransportExtraServiceCode</b>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td class="p-1" colspan="2" height="60" style="vertical-align: baseline;">
+                                            <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                Ghi chú: @Html.Raw(itemList.Note.Trim())
+                                            </b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-center p-1">
+                                            <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.OrderBarCode))" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.OrderCode</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-center p-1">
+                                            <b style="line-height: 1.1rem;">In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    }
+                </div>
+                if(i + 1 < itemPage.Page)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+        else if(ViewBag.PrintType == "B1")
+        {
+            <style>
+                @@page {
+                    size: A4;
+                    /*margin-left: 0.3cm;
+                margin-right: 0.3cm;
+                margin-top: 0cm;
+                margin-bottom: 1cm;*/
+                    margin: 0.3cm;
+                }
+            </style>
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page mt-4" style="max-width: 26cm; min-height: 15cm;">
+                    <table class="table" style="min-width: 7cm; max-width: 10cm;">
+                        <thead>
+                            <tr>
+                                <td colspan="2" class="text-center p-1" style="border: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1.4rem;">
+                                        <b>
+                                            @if(!string.IsNullOrEmpty(itemList.SenderFullName))
+                                            {
+                                                Write(itemList.SenderFullName + " - ");
+                                            }
+                                            @itemList.TransportMainServiceCode
+                                        </b>
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+                            @if(itemList.ShippingBarCode != null)
+                            {
+                                <tr>
+                                    <td class="p-1" style="vertical-align: baseline;border-left: 1px #c9ccd7 solid;@{ if (itemList.ShippingBarCode != null) { Write("border-right: 1px #c9ccd7 solid;"); } else { Write(""); } }">
+                                        <span style="line-height: 1.4rem;"><b>Ngày gửi:</b> @itemList.SenderSentDate</span>
+                                        <br />
+                                        <span style="line-height: 1.4rem; white-space: initial; text-align: center; vertical-align: middle; word-break: break-word;">
+                                            <b>Bưu cục:</b>
+                                            <span>@itemList.PostOffice</span>
+                                        </span>
+                                        <br />
+                                        <span style="line-height: 1.4rem; white-space: initial; text-align: center; vertical-align: middle; word-break: break-word;">
+                                            <b>Mã đơn hàng:</b>
+                                            <br />
+                                            @itemList.OrderCode
+                                        </span>
+                                    </td>
+                                    <td class="text-center" width="50%" style="border-right: 1px #c9ccd7 solid;">
+                                        <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: 100%; height: auto; border-radius: 0;" />
+                                        <br />
+                                        <b style="font-size: 20px;">@itemList.ShippingCode</b>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" class="p-1" style="vertical-align: baseline; border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid;">
+                                        <span style="line-height: 1.4rem;"><b>Ngày gửi:</b> @itemList.SenderSentDate</span>
+                                        <br />
+                                        <span style="line-height: 1.4rem;">
+                                            <b>Bưu cục:</b>
+                                            <span>@itemList.PostOffice</span>
+                                        </span>
+                                        <br />
+                                        <span style="line-height: 1.4rem;">
+                                            <b>Mã đơn hàng:</b>
+                                            @itemList.OrderCode
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td class="p-1" colspan="2" style="white-space: inherit; text-align: justify; vertical-align: baseline;border-left: 1px #c9ccd7 solid;border-right: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1.4rem;"><b>Người nhận:</b> @itemList.RecieverFullName</span>
+                                    <br />
+                                    <span style="line-height: 1.4rem;">
+                                        <b>ĐT người nhận:</b>
+                                        @itemList.RecieverMobileNumber
+                                    </span>
+                                    <br />
+                                    <span style="line-height: 1.4rem;"><b>Địa chỉ:</b> @itemList.RecieverFullAddress</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-6 col-print-6 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;border-left: 1px #c9ccd7 solid;word-break: break-word;">
+                                            <span style="line-height: 1.4rem;">
+                                                <b>Cước thu người nhận:</b>
+                                                <span>@itemList.PaymentFreightVat.ToString("N0") đồng</span>
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <b>Nội dung hàng:</b>
+                                                @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </span>
+                                        </div>
+                                        <div class="col-md-6 col-print-6 p-1" style="white-space: initial; vertical-align: middle; word-break: break-word;border-right: 1px #c9ccd7 solid;">
+                                            @if(itemList.TransportPayer == 1)
+                                            {
+                                                <div style="text-align: center;">
+                                                    <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                    <br />
+                                                    <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1" colspan="2" style="white-space: inherit; text-align: justify; vertical-align: baseline;border-left: 1px #c9ccd7 solid;border-right: 1px #c9ccd7 solid;border-bottom: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        <b>Ghi chú: </b>
+                                        @Html.Raw(itemList.Note.Trim())
+                                    </span>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+        else if(ViewBag.PrintType == "B2")
+        {
+            <style>
+                @@page {
+                    size: 3in 6in;
+                    margin-top: 0 !important;
+                    margin-left: 0.15cm !important;
+                    margin-right: 0 !important;
+                    margin-bottom: 0 !important;
+                }
+            </style>
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page" style="max-width:26cm; max-height: 29cm;float: left; margin-top: 10px;">
+                    <table class="table" style="width: 11cm; min-height: 12.5cm; border: 1px solid black;">
+                        <thead>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row">
+                                        <div class="col-md-6 p-1 col-print-6">
+                                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                                        </div>
+                                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                                            <span style="line-height: 1.1rem;">
+                                                <b>Bưu cục:</b>
+                                                <span>@itemList.PostOffice</span>
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1.1rem;"><b>Ngày gửi:</b> @itemList.SenderSentDate</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(itemList.ShippingBarCode != null)
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center p-1" height="60">
+                                        <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                        <br />
+                                        <span>@itemList.ShippingCode</span>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                                    <span style="line-height: 1.1rem;"><b>Người gửi:</b></span>
+                                    <br />
+                                    <span style="line-height: 1.1rem;">@itemList.SenderFullName</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="50">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-7 col-print-7 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <span style="line-height: 1.1rem;"><b>Người nhận:</b></span>
+                                            <br />
+                                            <span style="line-height: 1.1rem;">@itemList.RecieverFullName - @itemList.RecieverFullAddress</span>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            @if(itemList.TransportPayer == 1)
+                                            {
+                                                <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                <br />
+                                                <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                            }
+                                            else
+                                            {
+                                                <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-7 col-print-7 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <span style="line-height: 1.1rem;"><b>ĐT người nhận:</b></span>
+                                            <br />
+                                            <span style="line-height: 1.1rem;">@itemList.RecieverMobileNumber</span>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <span style="line-height: 1.1rem;"><b>Cước thu người nhận:</b></span>
+                                            <br />
+                                            <span style="line-height: 1.1rem;">@itemList.PaymentFreightVat.ToString("N0") đồng</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="150" style="vertical-align: baseline;">
+                                    <div class="row" style="margin: 0;height: inherit;">
+                                        <div class="col-md-7 col-print-7 p-1" style="white-space: initial; text-align: left; border-right: 1px black solid;">
+                                            <span style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <b>Nội dung hàng:</b> @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </span>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <span style="line-height: 1.1rem;"><b>Khối lượng:</b></span>
+                                            <br />
+                                            <span style="line-height: 1.1rem;"><b>@itemList.TransportWeight (g)</b></span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center p-1">
+                                    <b style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">@itemList.TransportMainServiceName</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1" colspan="2" height="60" style="white-space: inherit; text-align: justify; vertical-align: baseline;">
+                                    <span style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        <b>Ghi chú: </b> @Html.Raw(itemList.Note.Trim())
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center p-1">
+                                    <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.OrderBarCode))" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                    <br />
+                                    <span>@itemList.OrderCode</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="p-1 text-center">
+                                    <span style="line-height: 1.1rem;"><b>In: </b>@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+        else if(ViewBag.PrintType == "Label")
+        {
+            <style>
+                @@page {
+                    size: 3in 5in;
+                    margin-top: 0.3cm !important;
+                    margin-right: 0.3cm !important;
+                    margin-bottom: 0 !important;
+                    margin-left: 0.3cm !important;
+                }
+
+                .table td {
+                    line-height: 1;
+                }
+            </style>
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page" style="max-width: 26cm; max-height: 29cm; float: left; margin-top: 5px;">
+                    <table class="table" style="width: 10.5cm; min-height: 12.6cm; border: 1px solid black;">
+                        <thead>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row">
+                                        <div class="col-md-6 p-1 col-print-6">
+                                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; height: 36px; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                                        </div>
+                                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                                            <div class="row">
+                                                <div class="col-md-12 col-print-12 mb-1">
+                                                    <b style="line-height: 1.1rem;">Bưu cục:</b>
+                                                    <b style="line-height: 1.1rem;">@itemList.PostOffice</b>
+                                                </div>
+                                                <div class="col-md-12 col-print-12">
+                                                    <b style="line-height: 1.1rem;">Ngày gửi: @itemList.SenderSentDate</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(itemList.ShippingBarCode != null)
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center p-1" height="60">
+                                        <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))" style="width: 65%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                                        <br />
+                                        <b style="font-size: 20px;">@itemList.ShippingCode</b>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                                    <b style="line-height: 1.1rem;">Người gửi:</b>
+                                    <br />
+                                    <b style="line-height: 1.1rem;">
+                                        @{
+                                            var ListSenderInfo = new List<string>() { itemList.SenderFullName, itemList.SenderMobileNumber, itemList.SenderFullAddress }.Where(m => m != "").ToList();
+                                            if(ListSenderInfo.Count > 0)
+                                            {
+                                                Write(string.Join(" - ", ListSenderInfo));
+                                            }
+                                        }
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="140" style="vertical-align: baseline;">
+                                    <div class="row" style="margin: 0; height: 100%;">
+                                        <div class="col-md-7 col-print-7 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem;">Người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                @{
+                                                    var ListReceiverInfo = new List<string>() { itemList.RecieverFullName, itemList.RecieverFullAddress }.Where(m => m != "").ToList();
+                                                    if(ListReceiverInfo.Count > 0)
+                                                    {
+                                                        Write(string.Join(" - ", ListReceiverInfo));
+                                                    }
+                                                }
+                                            </b>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            @if(itemList.TransportPayer == 1)
+                                            {
+                                                <b style="line-height: 1.1rem;">Tiền thu hộ:</b>
+                                                <br />
+                                                <b style="line-height: 1.1rem;">@itemList.TotalCOD.ToString("N0") đồng</b>
+                                            }
+                                            else
+                                            {
+                                                <b style="line-height: 1rem;">Tiền thu hộ: @( (itemList.TransportFee + itemList.TotalCOD).ToString("N0") ) đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền hàng: @itemList.TotalCOD.ToString("N0") đồng</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">+ Tiền ship: @itemList.TransportFee.ToString("N0") đồng</b>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-7 col-print-7 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem;">ĐT người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.RecieverMobileNumber</b>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <b style="line-height: 1.1rem; font-size: 13px;">Cước thu người nhận:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.PaymentFreightVat.ToString("N0") đồng</b>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-0" colspan="2" height="80" style="vertical-align: baseline;">
+                                    <div class="row" style="margin: 0;height: inherit;">
+                                        <div class="col-md-7 col-print-7 p-1" style="border-right: 1px black solid;">
+                                            <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <span style="font-size:14px;">Nội dung hàng: </span> @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </b>
+                                        </div>
+                                        <div class="col-md-5 col-print-5 p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                            <b style="line-height: 1.1rem;">Khối lượng:</b>
+                                            <br />
+                                            <b style="line-height: 1.1rem;">@itemList.TransportWeight (g)</b>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(!string.IsNullOrEmpty(itemList.TransportMainServiceCode) || !string.IsNullOrEmpty(itemList.TransportMainServiceName) || !string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center p-1">
+                                        <div class="d-flex justify-content-center">
+                                            <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                                                @{
+                                                    var ListTransportServiceInfo = new List<string>() { itemList.TransportMainServiceName, itemList.TransportMainServiceCode }.Where(m => m != "").ToList();
+                                                    if(ListTransportServiceInfo.Count > 0)
+                                                    {
+                                                        Write(string.Join(" - ", ListTransportServiceInfo));
+                                                    }
+
+
+                                                }
+                                            </b>
+                                        </div>
+                                        @if(!string.IsNullOrEmpty(itemList.TransportExtraServiceCode))
+                                        {
+                                            <div>
+                                                <b style="font-size: 20px; white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">@itemList.TransportExtraServiceCode</b>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="p-1" colspan="2" height="60" style="vertical-align: baseline;">
+                                    <b style="line-height: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        Ghi chú: @Html.Raw(itemList.Note.Trim())
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center p-1">
+                                    <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.OrderBarCode))" style="width: 40%; height: 30px; border-radius: 0;margin-bottom: 5px;" />
+                                    <br />
+                                    <b style="line-height: 1.1rem;">@itemList.OrderCode</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="p-1 text-center">
+                                    <b style="font-size: 13px;">In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+        else if(ViewBag.PrintType == "E5")
+        {
+            <style>
+                @@page {
+                    size: 3in 3in;
+                    margin: 0.12cm !important;
+                }
+
+                .table {
+                    margin-bottom: 0 !important;
+                }
+
+                    .table td {
+                        line-height: 1 !important;
+                    }
+
+                @@media print {
+                    html, body, div, span, b, table, tbody, thead, tr, td {
+                        font-size: 10px !important;
+                    }
+                }
+            </style>
+
+            foreach(var itemList in Model[0].ListOrderPrint)
+            {
+                <div class="page" style="width: 3in; height: 3in;">
+                    <table class="table table-sm" style="width: 7.25cm; height: 7.25cm; border-collapse: collapse; margin: 0;">
+                        <thead>
+                            <tr>
+                                <td colspan="2" class="text-center p-1" style="border: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1rem;">
+                                        <b style="font-size: 11px;">
+                                            @if(!string.IsNullOrEmpty(itemList.SenderFullName))
+                                            {
+                                                Write(itemList.SenderFullName + " - ");
+                                            }
+                                            @itemList.TransportMainServiceCode
+                                        </b>
+                                    </span>
+                                </td>
+                            </tr>
+
+                            @if(itemList.ShippingBarCode != null)
+                            {
+                                <tr>
+                                    <td class="p-1"
+                                        style="width: 45%; vertical-align: baseline; border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid;">
+                                        <span style="line-height: 1rem;"><b>Ngày:</b> @itemList.SenderSentDate</span>
+                                        <br />
+                                        <span style="line-height: 1rem; white-space: initial; word-break: break-word;">
+                                            <b>BC:</b> @itemList.PostOffice
+                                        </span>
+                                        <br />
+                                        <span style="line-height: 1rem; white-space: initial; word-break: break-word;">
+                                            <b>Mã ĐH:</b>
+                                            <br />
+                                            @itemList.OrderCode
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center p-1" width="55%" style="border-right: 1px #c9ccd7 solid;">
+                                        <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(itemList.ShippingBarCode))"
+                                             style="width: 100%; height: 28px; border-radius: 0;" />
+                                        <br />
+                                        <b style="font-size: 13px;">@itemList.ShippingCode</b>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" class="p-1"
+                                        style="vertical-align: baseline; border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid;">
+                                        <span style="line-height: 1rem;"><b>Ngày:</b> @itemList.SenderSentDate</span>
+                                        <br />
+                                        <span style="line-height: 1rem;"><b>BC:</b> @itemList.PostOffice</span>
+                                        <br />
+                                        <span style="line-height: 1rem;"><b>Mã ĐH:</b> @itemList.OrderCode</span>
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td class="p-1" colspan="2"
+                                    style="white-space: inherit; text-align: justify; vertical-align: baseline; border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1rem;">
+                                        <b>Người nhận:</b> @itemList.RecieverFullName
+                                    </span>
+                                    <br />
+                                    <span style="line-height: 1rem;">
+                                        <b>ĐT:</b> @itemList.RecieverMobileNumber
+                                    </span>
+                                    <br />
+                                    <span style="line-height: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        <b>Địa chỉ:</b> @itemList.RecieverFullAddress
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="p-0" colspan="2">
+                                    <div class="row" style="margin: 0;">
+                                        <div class="col-md-6 col-print-6 p-1"
+                                             style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid; border-left: 1px #c9ccd7 solid; word-break: break-word;">
+                                            <span style="line-height: 1rem;">
+                                                <b>Cước thu:</b>
+                                                <span>@itemList.PaymentFreightVat.ToString("N0")đ</span>
+                                            </span>
+                                            <br />
+                                            <span style="line-height: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                                <b>Nội dung:</b>
+                                                @itemList.BatchCode @Html.Raw(itemList.Message.Trim())
+                                            </span>
+                                        </div>
+
+                                        <div class="col-md-6 col-print-6 p-1"
+                                             style="white-space: initial; vertical-align: middle; word-break: break-word; border-right: 1px #c9ccd7 solid;">
+                                            @if(itemList.TransportPayer == 1)
+                                            {
+                                                <div style="text-align: center;">
+                                                    <b style="line-height: 1rem;">Tiền thu hộ:</b>
+                                                    <br />
+                                                    <b style="line-height: 1rem; font-size: 12px;">@itemList.TotalCOD.ToString("N0")đ</b>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <b style="line-height: 1rem;">Tiền thu hộ:</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">@((itemList.TransportFee + itemList.TotalCOD).ToString("N0"))đ</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">Hàng: @itemList.TotalCOD.ToString("N0")đ</b>
+                                                <br />
+                                                <b style="line-height: 1rem;">Ship: @itemList.TransportFee.ToString("N0")đ</b>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="p-1" colspan="2"
+                                    style="white-space: inherit; text-align: justify; vertical-align: baseline; border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid; border-bottom: 1px #c9ccd7 solid;">
+                                    <span style="line-height: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                                        <b>Ghi chú:</b>
+                                        @Html.Raw(itemList.Note.Trim())
+                                    </span>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                if(i + 1 < Model[0].ListOrderPrint.Count)
+                {
+                    <div class="clearfix"></div>
+                    <div class="pagebreak"></div>
+                    i++;
+                }
+            }
+        }
+    }
+</center>

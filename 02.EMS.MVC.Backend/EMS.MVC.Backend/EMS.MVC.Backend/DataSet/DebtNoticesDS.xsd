@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DebtNoticesDS" targetNamespace="http://tempuri.org/DebtNoticesDS.xsd" xmlns:mstns="http://tempuri.org/DebtNoticesDS.xsd" xmlns="http://tempuri.org/DebtNoticesDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DebtNoticesDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DebtNoticesDS" msprop:Generator_UserDSName="DebtNoticesDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="SummaryOfDebtNotices" msprop:Generator_TableClassName="SummaryOfDebtNoticesDataTable" msprop:Generator_TableVarName="tableSummaryOfDebtNotices" msprop:Generator_TablePropName="SummaryOfDebtNotices" msprop:Generator_RowDeletingName="SummaryOfDebtNoticesRowDeleting" msprop:Generator_RowChangingName="SummaryOfDebtNoticesRowChanging" msprop:Generator_RowEvHandlerName="SummaryOfDebtNoticesRowChangeEventHandler" msprop:Generator_RowDeletedName="SummaryOfDebtNoticesRowDeleted" msprop:Generator_UserTableName="SummaryOfDebtNotices" msprop:Generator_RowChangedName="SummaryOfDebtNoticesRowChanged" msprop:Generator_RowEvArgName="SummaryOfDebtNoticesRowChangeEvent" msprop:Generator_RowClassName="SummaryOfDebtNoticesRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="NumRow" msprop:Generator_ColumnVarNameInTable="columnNumRow" msprop:Generator_ColumnPropNameInRow="NumRow" msprop:Generator_ColumnPropNameInTable="NumRowColumn" msprop:Generator_UserColumnName="NumRow" type="xs:string" minOccurs="0" />
+              <xs:element name="Explain" msprop:Generator_ColumnVarNameInTable="columnExplain" msprop:Generator_ColumnPropNameInRow="Explain" msprop:Generator_ColumnPropNameInTable="ExplainColumn" msprop:Generator_UserColumnName="Explain" type="xs:string" minOccurs="0" />
+              <xs:element name="NumberOfParcels" msprop:Generator_ColumnVarNameInTable="columnNumberOfParcels" msprop:Generator_ColumnPropNameInRow="NumberOfParcels" msprop:Generator_ColumnPropNameInTable="NumberOfParcelsColumn" msprop:Generator_UserColumnName="NumberOfParcels" type="xs:long" minOccurs="0" />
+              <xs:element name="FeeBeforeVAT" msprop:Generator_ColumnVarNameInTable="columnFeeBeforeVAT" msprop:Generator_ColumnPropNameInRow="FeeBeforeVAT" msprop:Generator_ColumnPropNameInTable="FeeBeforeVATColumn" msprop:Generator_UserColumnName="FeeBeforeVAT" type="xs:long" minOccurs="0" />
+              <xs:element name="FeeVAT" msprop:Generator_ColumnVarNameInTable="columnFeeVAT" msprop:Generator_ColumnPropNameInRow="FeeVAT" msprop:Generator_ColumnPropNameInTable="FeeVATColumn" msprop:Generator_UserColumnName="FeeVAT" type="xs:long" minOccurs="0" />
+              <xs:element name="FeeAfterVAT" msprop:Generator_ColumnVarNameInTable="columnFeeAfterVAT" msprop:Generator_ColumnPropNameInRow="FeeAfterVAT" msprop:Generator_ColumnPropNameInTable="FeeAfterVATColumn" msprop:Generator_UserColumnName="FeeAfterVAT" type="xs:long" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DebtNoticesDataInfoDetails" msprop:Generator_TableClassName="DebtNoticesDataInfoDetailsDataTable" msprop:Generator_TableVarName="tableDebtNoticesDataInfoDetails" msprop:Generator_TablePropName="DebtNoticesDataInfoDetails" msprop:Generator_RowDeletingName="DebtNoticesDataInfoDetailsRowDeleting" msprop:Generator_RowChangingName="DebtNoticesDataInfoDetailsRowChanging" msprop:Generator_RowEvHandlerName="DebtNoticesDataInfoDetailsRowChangeEventHandler" msprop:Generator_RowDeletedName="DebtNoticesDataInfoDetailsRowDeleted" msprop:Generator_UserTableName="DebtNoticesDataInfoDetails" msprop:Generator_RowChangedName="DebtNoticesDataInfoDetailsRowChanged" msprop:Generator_RowEvArgName="DebtNoticesDataInfoDetailsRowChangeEvent" msprop:Generator_RowClassName="DebtNoticesDataInfoDetailsRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ItemCode" msprop:Generator_ColumnVarNameInTable="columnItemCode" msprop:Generator_ColumnPropNameInRow="ItemCode" msprop:Generator_ColumnPropNameInTable="ItemCodeColumn" msprop:Generator_UserColumnName="ItemCode" type="xs:string" minOccurs="0" />
+              <xs:element name="ReferenceNumber" msprop:Generator_ColumnVarNameInTable="columnReferenceNumber" msprop:Generator_ColumnPropNameInRow="ReferenceNumber" msprop:Generator_ColumnPropNameInTable="ReferenceNumberColumn" msprop:Generator_UserColumnName="ReferenceNumber" type="xs:string" minOccurs="0" />
+              <xs:element name="ReleaseDate" msprop:Generator_ColumnVarNameInTable="columnReleaseDate" msprop:Generator_ColumnPropNameInRow="ReleaseDate" msprop:Generator_ColumnPropNameInTable="ReleaseDateColumn" msprop:Generator_UserColumnName="ReleaseDate" type="xs:string" minOccurs="0" />
+              <xs:element name="PostOfficeExploit" msprop:Generator_ColumnVarNameInTable="columnPostOfficeExploit" msprop:Generator_ColumnPropNameInRow="PostOfficeExploit" msprop:Generator_ColumnPropNameInTable="PostOfficeExploitColumn" msprop:Generator_UserColumnName="PostOfficeExploit" type="xs:string" minOccurs="0" />
+              <xs:element name="PostOfficeReturn" msprop:Generator_ColumnVarNameInTable="columnPostOfficeReturn" msprop:Generator_ColumnPropNameInRow="PostOfficeReturn" msprop:Generator_ColumnPropNameInTable="PostOfficeReturnColumn" msprop:Generator_UserColumnName="PostOfficeReturn" type="xs:string" minOccurs="0" />
+              <xs:element name="Weight" msprop:Generator_ColumnVarNameInTable="columnWeight" msprop:Generator_ColumnPropNameInRow="Weight" msprop:Generator_ColumnPropNameInTable="WeightColumn" msprop:Generator_UserColumnName="Weight" type="xs:long" minOccurs="0" />
+              <xs:element name="MainFee" msprop:Generator_ColumnVarNameInTable="columnMainFee" msprop:Generator_ColumnPropNameInRow="MainFee" msprop:Generator_ColumnPropNameInTable="MainFeeColumn" msprop:Generator_UserColumnName="MainFee" type="xs:long" minOccurs="0" />
+              <xs:element name="CODFee" msprop:Generator_ColumnVarNameInTable="columnCODFee" msprop:Generator_ColumnPropNameInRow="CODFee" msprop:Generator_ColumnPropNameInTable="CODFeeColumn" msprop:Generator_UserColumnName="CODFee" type="xs:long" minOccurs="0" />
+              <xs:element name="ServiceFee" msprop:Generator_ColumnVarNameInTable="columnServiceFee" msprop:Generator_ColumnPropNameInRow="ServiceFee" msprop:Generator_ColumnPropNameInTable="ServiceFeeColumn" msprop:Generator_UserColumnName="ServiceFee" type="xs:long" minOccurs="0" />
+              <xs:element name="AdjustmentFee" msprop:Generator_ColumnVarNameInTable="columnAdjustmentFee" msprop:Generator_ColumnPropNameInRow="AdjustmentFee" msprop:Generator_ColumnPropNameInTable="AdjustmentFeeColumn" msprop:Generator_UserColumnName="AdjustmentFee" type="xs:long" minOccurs="0" />
+              <xs:element name="TotalCharge" msprop:Generator_ColumnVarNameInTable="columnTotalCharge" msprop:Generator_ColumnPropNameInRow="TotalCharge" msprop:Generator_ColumnPropNameInTable="TotalChargeColumn" msprop:Generator_UserColumnName="TotalCharge" type="xs:long" minOccurs="0" />
+              <xs:element name="Content" msprop:Generator_ColumnVarNameInTable="columnContent" msprop:Generator_ColumnPropNameInRow="Content" msprop:Generator_ColumnPropNameInTable="ContentColumn" msprop:Generator_UserColumnName="Content" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

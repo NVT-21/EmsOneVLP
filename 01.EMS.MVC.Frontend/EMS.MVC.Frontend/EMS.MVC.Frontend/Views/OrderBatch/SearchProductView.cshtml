@@ -1,0 +1,154 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchProductViewModel>
+<div class="modal-dialog modal-search modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Tìm kiếm sản phẩm - @ViewBag.NumberOfDetail</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="mb-3">
+                <div class="form-search">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                              fill="#86909C" />
+                    </svg>
+                    <input type="text" class="form-control " placeholder="Tìm theo tên sản phẩm" required>
+                </div>
+            </div>
+            <span class="text-danger" id="errChooseProduct"></span>
+            <div class="table-responsive table-search" style="height: 600px;">
+                <div class="thead">
+                    <div style="width:50px;" class="th">
+                        <div class="form-check custom-checkbox  check-lg me-3">
+                            <input type="checkbox" class="form-check-input" id="VariantCheckboxAll" required="">
+                            <label class="form-check-label" for="checkAll"></label>
+                        </div>
+                    </div>
+                    <div class="th">Tên sản phẩm</div>
+                    <div class="th">Tồn kho</div>
+                    <div class="th">Đơn giá</div>
+                    <div class="th">Số lượng</div>
+                </div>
+                @foreach (var ItemProduct in Model)
+                {
+                    <div class="accordion-item">
+                        <div class="accordion-header rounded-lg" id="accord-@ItemProduct.ProductID" data-bs-toggle="collapse"
+                             data-bs-target="#collapse-@ItemProduct.ProductID" aria-controls="collapse-@ItemProduct.ProductID" aria-expanded="true" role="button">
+                            <span class="accordion-header-indicator"></span>
+                            <span class="accordion-header-icon"></span>
+                            <span class="accordion-header-text">@ItemProduct.ProductName</span>
+                        </div>
+                        <div id="collapse-@ItemProduct.ProductID" class="accordion__body collapse show" aria-labelledby="accord-@ItemProduct.ProductID">
+                            @foreach (var ItemVariant in ItemProduct.Variants)
+                            {
+                                <div class="tbody">
+                                    <div class="th" style="width:50px;">
+                                        <div style="width:50px;"></div>
+                                    </div>
+                                    <div class="th">
+                                        <div class="name">
+                                            <div class="form-check custom-checkbox check-lg me-3">
+                                                <input type="checkbox" class="form-check-input" name="VariantCheckbox" value="@ItemVariant.VariantID" data-VariantName="@ItemVariant.VariantName" data-ProductID="@ItemProduct.ProductID" data-ProductName="@ItemProduct.ProductName" data-WareHouseQuantity="@ItemVariant.Quantity" data-Price="@ItemVariant.Price" data-Weight="@ItemVariant.Weight" @{ if (ItemVariant.Selected == true) { Write("checked"); } }>
+                                                <label class="form-check-label" for="customCheckBox2"></label>
+                                            </div>
+                                            @*<img src="@XHelper.URLImage/Assets/Images/@ItemVariant.Image" alt="" class="me-1">*@
+                                            <img src="~/Assets/images/logo/logo_ems_app.jpg" alt="" class="me-1">
+                                            @ItemVariant.VariantName
+                                        </div>
+                                    </div>
+                                    <div class="th">@ItemVariant.Quantity.ToString("N0")</div>
+                                    <div class="th">@ItemVariant.Price.ToString("N0")</div>
+                                    <div class="th">
+                                        <div class="quantity-block">
+                                            <button class="btn quantity-arrow-minus" onclick="btnMinus(@ItemVariant.VariantID, 1)"> - </button>
+                                            <input class="quantity-num" id="NumberOfProduct_@ItemVariant.VariantID" type="number" value="@ItemVariant.NumberOfProduct" onchange="CheckNumberOfProductInWareHouseQuantity(@ItemVariant.VariantID, @ItemVariant.Quantity, 1)" />
+                                            <button class="btn quantity-arrow-plus" onclick="btnPlus(@ItemVariant.VariantID, 1)"> + </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tbody">
+                                    <div class="th" style="width:50px;">
+                                        <div style="width:50px;">
+                                        </div>
+                                    </div>
+                                    <div class="th">
+                                        <div class="name">
+                                            <span class="text-danger" id="errVariant_@ItemVariant.VariantID"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnChooseProduct">Chọn</button>
+        </div>
+    </div>
+</div>
+<script>
+    $("#VariantCheckboxAll").click(function () {
+        $("input[name='VariantCheckbox']").not(this).prop('checked', this.checked);
+    });
+
+    $("#btnChooseProduct").on("click", function () {
+        var arr = [];
+        var isError = false;
+
+        $("input[name='VariantCheckbox']:checked").each(function () {
+            var ProductID = $(this).attr("data-ProductID");
+            var ProductName = $(this).attr("data-ProductName");
+            var VariantID = $(this).val();
+            var VariantName = $(this).attr("data-VariantName");
+            var WareHouseQuantity = parseInt($(this).attr("data-WareHouseQuantity"));
+            var NumberOfProduct = parseInt($("#NumberOfProduct_" + VariantID).val());
+            var Price = parseInt($(this).attr("data-Price"));
+            var Weight = parseInt($(this).attr("data-Weight"));
+
+            if (NumberOfProduct > WareHouseQuantity) {
+                $("#errVariant_" + VariantID).text("Số lượng mua vượt quá số lượng trong kho");
+                isError = true;
+                return false;
+            } else {
+                $("#errVariant_" + VariantID).text("");
+            }
+
+            var obj = {};
+            obj.ProductID = ProductID;
+            obj.ProductName = ProductName;
+            obj.VariantID = VariantID;
+            obj.VariantName = VariantName;
+            //obj.WareHouseQuantity = WareHouseQuantity;
+            obj.NumberOfProduct = NumberOfProduct;
+            obj.Price = Price;
+            //obj.TotalPrice = NumberOfProduct * PriceProduct;
+            obj.Weight = Weight;
+            arr.push(obj);
+        });
+
+        //if (arr.length == 0) {
+        //    $("#errChooseProduct").text("Vui lòng chọn sản phẩm");
+        //    isError = true;
+        //} else {
+        //    $("#errChooseProduct").text("");
+        //}
+
+        if (isError == true) {
+            return;
+        }
+
+        var NumberOfDetail = @ViewBag.NumberOfDetail;
+        $.post('@Url.Action("ProductInfoView", "OrderBatch")', {
+            NumberOfDetail: NumberOfDetail,
+            ListProductInfo: arr
+        }, function (htmlString) {
+            $(".btn-close").click();
+            $("#OrderProduct_" + NumberOfDetail).html(htmlString);
+            FillProductInfo(NumberOfDetail);
+        });
+    });
+</script>

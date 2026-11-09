@@ -1,0 +1,17 @@
+﻿@model EMS.MVC.Backend.Models.ChargedViewModel
+@{
+    ViewBag.Title = "Charged";
+    Layout = null;
+}
+@if (Model.ResponseCode == "00")
+{
+    <p>Cước dịch vụ chính: @Model.MainFee.ToString("N0")</p>
+    <p>Cước dịch vụ cộng thêm: @Model.ExtraFee.ToString("N0")</p>
+    <p>Phụ phí: @Model.Surcharge.ToString("N0")</p>
+    <p>Tổng: @Model.TotalAmount.ToString("N0")</p>
+}
+else
+{
+    <p>@*@Model.ResponseMessage*@</p>
+}
+

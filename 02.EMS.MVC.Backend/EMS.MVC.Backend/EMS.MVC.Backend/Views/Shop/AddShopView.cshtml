@@ -1,0 +1,432 @@
+﻿@model EMS.MVC.Backend.Models.AddShopViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("ShopView","Shop")">Tài khoản khách hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Thêm mới tài khoản</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                    <label for="ContractNumber">Số hợp đồng </label>
+                    <input class="form-control" id="ContractNumber" placeholder="Số hợp đồng">
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                    <label for="CustomerCode">Mã CRM/Paypost  <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control text-uppercase" id="CustomerCode" placeholder="Mã CRM/Paypost" maxlength="20">
+                    <span class="text-danger" id="errCustomerCode"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+                    <label for="StoreName">Tên cửa hàng/công ty <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="StoreName" placeholder="Tên cửa hàng/công ty" maxlength="150">
+                    <span class="error-message" id="errStoreName"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Họ và tên người liên hệ <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="FullName" placeholder="Họ và tên người liên hệ" maxlength="40">
+                    <span class="error-message" id="errFullName"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="MobileNumber">Số điện thoại <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="MobileNumber" placeholder="Số điện thoại" maxlength="11" autocomplete="off">
+                    <span class="text-danger" id="errMobileNumber"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="Email">Email <span class="text-danger">(*)</span></label>
+                    <input type="email" class="form-control" id="Email" placeholder="Email" autocomplete="off">
+                    <span class="text-danger" id="errEmail"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="ProductBusiness">Sản phẩm kinh doanh <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="ProductBusiness" placeholder="Sản phẩm kinh doanh" maxlength="100">
+                    <span class="error-message" id="errProductBusiness"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Loại hình kinh doanh</label><br />
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="TypeBusiness" value="Cá nhân" checked>
+                                    Cá nhân
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="TypeBusiness" value="Doanh nghiệp">
+                                    Doanh nghiệp
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Loại khách hàng</label><br />
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="TypeShop" value="1" checked>
+                                    KH thường
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input" name="TypeShop" value="2">
+                                    Đại lý
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="">Loại tài khoản <span style="color: red">(*)</span></label>
+                    @Html.DropDownListFor(model => model.AccountType, new SelectList(Model.ListAccountType, "Value", "Text"), new { @class = "select2" })
+                    <span class="error-message" id="errAccountType"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="">Số lượng nhân viên <span style="color: red">(*)</span></label>
+                    @Html.DropDownListFor(model => model.NumberOfEmployee, new SelectList(Model.ListNumberOfEmployee, "Value", "Text"), new { @class = "select2" })
+                    <span class="error-message" id="errNumberOfEmployee"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="">Hình thức thu gom <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.CollectionType, new SelectList(Model.ListCollectionType, "Value", "Text"), new { @class = "select2" })
+                    <span class="text-danger" id="errCollectionType"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="Street">Địa chỉ <span class="text-danger">(*)</span></label>
+                    @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                    <span class="text-danger" id="errStreet"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="ProvinceID">Tỉnh/ Thành phố <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('ProvinceID', 'WardID')" })
+                    <span class="text-danger mb-3" id="errProvinceID"></span>
+                </div>
+                @*<div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="DistrictID">Quận/ Huyện <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('DistrictID', 'WardID')" })
+                    <span class="text-danger" id="errDistrictID"></span>
+                </div>*@
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="WardID">Phường/ Xã <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errWardID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Dịch vụ chính <span class="text-danger"> (*)</span></label>
+                    @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                    <span class="text-danger" id="errMainTransportServiceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Dịch vụ cộng thêm </label>
+                    @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                    <span class="text-danger" id="errExtraTransportServiceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="CollectionPostOfficeID">Mã bưu cục thu gom <span class="text-danger">(*)</span></label>
+                    @Html.DropDownListFor(model => model.CollectionPostOfficeID, new SelectList(Model.ListCollectionPostOffice, "ID", "CodeAndName"), "-- Bưu cục thu gom --", new { @class = "select2" })
+                    <span class="text-danger" id="errCollectionPostOfficeID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="ChildCustomerCode">Mã khách hàng con</label>
+                    <input type="text" class="form-control" id="ChildCustomerCode" placeholder="Mã khách hàng con">
+                    <span class="text-danger" id="errChildCustomerCode"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Loại đối soát COD</label>
+                    @Html.DropDownListFor(model => model.CODPeriodType, new SelectList(Model.PeriodType, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Loại đối soát cước vận chuyển</label>
+                    @Html.DropDownListFor(model => model.FeePeriodType, new SelectList(Model.PeriodType, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="EmailBCG">Email bưu cục gửi</label>
+                    @Html.EditorFor(model => model.EmailBCG, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Email bưu cục gửi" } })
+                    <span class="text-danger" id="errEmailBCG"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="EmailCSKH">Email chăm sóc khách hàng</label>
+                    @Html.EditorFor(model => model.EmailCSKH, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Email chăm sóc khách hàng" } })
+                    <span class="text-danger" id="errEmailCSKH"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="TaxCode">Mã số thuế</label>
+                    @Html.EditorFor(model => model.TaxCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã số thuế", @maxlength = "15" } })
+                    <span class="text-danger" id="errTaxCode"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="Token">Token</label>
+                    @Html.EditorFor(model => model.CustomerToken, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Token", @maxlength = "500" } })
+                    <span class="text-danger" id="errCustomerToken"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label for="Partner">Đối tác</label>
+                    @Html.DropDownListFor(model => model.PartnerID, new SelectList(Model.ListPartner, "ID", "PartnerName"), "--- Chọn ---", new { @class = "select2" })
+                    <span class="text-danger" id="errPartnerID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label>Phương thức thanh toán<span class="text-danger"> (*)</span></label>
+                    @Html.DropDownListFor(model => model.PaymentMethod, new SelectList(Model.ListPaymentMethod, "Value", "Text"), new { @class = "select2" })
+                    <span class="text-danger" id="errPaymentMethod"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2 d_none PaymentMethod_1">
+                    <label for="FullNameOfPayment">Họ tên chủ tài khoản </label>
+                    <input class="form-control" id="FullNameOfPayment" placeholder="Họ tên chủ tài khoản" maxlength="100">
+                    <span class="text-danger" id="errFullNameOfPayment"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2 d_none PaymentMethod_1">
+                    <label for="NumberOfPayment">Số tài khoản </label>
+                    <input type="text" class="form-control" id="NumberOfPayment" placeholder="Số tài khoản" maxlength="20">
+                    <span class="text-danger" id="errNumberOfPayment"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2 d_none PaymentMethod_1">
+                    <label for="NameOfPayment">Tên ngân hàng </label>
+                    <input class="form-control" id="NameOfPayment" placeholder="Tên ngân hàng" maxlength="100">
+                    <span class="text-danger" id="errNameOfPayment"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2 d_none PaymentMethod_1">
+                    <label for="BranchOfPayment">Chi nhánh</label>
+                    <input class="form-control" id="BranchOfPayment" placeholder="Chi nhánh" maxlength="100">
+                    <span class="text-danger" id="errBranchOfPayment"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between">
+                    <button class="btn btn-sm btn-danger" onclick="window.location.href='@Url.Action("ShopView","Shop")'">QUAY LẠI</button>
+                    <button class="btn btn-sm btn-primary" id="btnSubmit">TẠO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#MainTransportServiceID').selectpicker('selectAll');
+            $('#ExtraTransportServiceID').selectpicker('selectAll');
+            $("#PaymentMethod").change();
+
+            $("input[id=ChildCustomerCode_tag]").keyup(function () {
+                var value = $(this).val();
+                $(this).val(value.toUpperCase());
+            });
+
+            $("input[id=ChildCustomerCode_tag]").bind("paste", function (e) {
+                var source = "";
+
+                if (window.clipboardData !== undefined) {
+                    source = window.clipboardData;
+                } else {
+                    source = e.originalEvent.clipboardData;
+                }
+
+                var data = source.getData("Text");
+
+                var replaceSpace = data.split(/\s+/);
+
+                $.each(replaceSpace, function (idx, value) {
+                    if (value.trim()) {
+                        $('#ChildCustomerCode').tagsinput('add', value.toUpperCase());
+                    }
+                });
+
+                e.preventDefault();
+            });
+        });
+
+        $('#ChildCustomerCode').tagsinput({
+            maxChars: 20,
+            trimValue: true,
+            confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+        });
+
+        $('#ChildCustomerCode').on('beforeItemAdd', function (event) {
+            var CrmOrPaypostcode = event.item;
+            var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "ChildCustomerCode", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+            if (isError == true) {
+                event.cancel = true;
+            }
+        });
+
+        $(".bootstrap-tagsinput input").attr("id", "ChildCustomerCode_tag");
+
+        OnlyNumber("#MobileNumber, #NumberOfPayment");
+        CheckChangeValue("CustomerCode", "Vui lòng nhập mã khách hàng", "Code", "Y");
+        CheckChangeValue("StoreName", "Vui lòng nhập Tên cửa hàng", "", "Y");
+        CheckChangeValue("FullName", "Vui lòng nhập Họ và tên người liên hệ", "Vietnamese", "Y");
+        CheckChangeValue("Email", "Vui lòng nhập Địa chỉ Email", "Email", "Y");
+        CheckChangeValue("ProductBusiness", "Vui lòng nhập Sản phẩm kinh doanh", "Address", "Y");
+        CheckChangeValue("Street", "Vui lòng nhập Địa chỉ", "", "Y");
+        CheckChangeValue("ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", "", "Y");
+        //CheckChangeValue("DistrictID", "Vui lòng chọn Quận/ Huyện", "", "Y");
+        CheckChangeValue("WardID", "Vui lòng chọn Phường/ Xã", "", "Y");
+        CheckChangeValue("MainTransportServiceID", "Vui lòng chọn Dịch vụ chính", "", "Y");
+        CheckChangeValue("CollectionPostOfficeID", "Vui lòng chọn bưu cục thu gom", "", "Y");
+        //CheckChangeValue("ChildCustomerCode", "", "ChildCustomerCode", "N");
+        CheckChangeValue("EmailBCG", "", "Email", "N");
+        CheckChangeValue("EmailCSKH", "", "Email", "N");
+        CheckChangeValue("TaxCode", "", "Code", "N");
+        CheckChangeValue("CustomerToken", "", "UserName", "N");
+        CheckChangeValue("PaymentMethod", "Vui lòng chọn Phương thức thanh toán", "", "Y");
+        CheckChangeValue("FullNameOfPayment", "", "Vietnamese", "N");
+        CheckChangeValue("NameOfPayment", "", "Vietnamese", "N");
+        CheckChangeValue("BranchOfPayment", "", "Vietnamese", "N");
+        //VNPMapsAutocomplete('Street', 'ProvinceID', 'DistrictID', 'WardID');
+
+        $('#PaymentMethod').on('change', function (e) {
+            if ($('#PaymentMethod').val() == "1") {
+                $('.PaymentMethod_1').show();
+            } else {
+                $('.PaymentMethod_1').hide();
+            }
+        });
+
+        $('#btnSubmit').on('click', function () {
+            var isError = false, messageError = "Giá trị hợp lệ không bao gồm ký tự đặc biệt";
+            var data = {
+                ContractNumber: $('#ContractNumber').val().trim(),
+                CustomerCode: $('#CustomerCode').val().toUpperCase().trim(),
+                StoreName: $('#StoreName').val().trim(),
+                FullName: $('#FullName').val().trim(),
+                MobileNumber: $('#MobileNumber').val().trim(),
+                Email: $('#Email').val().trim(),
+                ProductBusiness: $('#ProductBusiness').val().trim(),
+                TypeBusiness: $('input[name=TypeBusiness]:checked').val(),
+                TypeShop: $('input[name=TypeShop]:checked').val(),
+                AccountType: $('#AccountType').val(),
+                NumberOfEmployees: $('#NumberOfEmployee').val(),
+                CollectionType: $('#CollectionType').val(),
+                Street: $('#Street').val().trim(),
+                ProvinceID: $('#ProvinceID').val(),
+                //DistrictID: $('#DistrictID').val(),
+                WardID: $('#WardID').val(),
+                MainTransportServiceID: $('#MainTransportServiceID').val().toString(),
+                ExtraTransportServiceID: $('#ExtraTransportServiceID').val().toString(),
+                CollectionPostOfficeID: $('#CollectionPostOfficeID').val(),
+                ChildCustomerCode: $('#ChildCustomerCode').val().toUpperCase(),
+                CODPeriodType: $('#CODPeriodType').val(),
+                FeePeriodType: $('#FeePeriodType').val(),
+                PaymentMethod: $('#PaymentMethod').val(),
+                EmailBCG: $("#EmailBCG").val().trim(),
+                EmailCSKH: $("#EmailCSKH").val().trim(),
+                TaxCode: $("#TaxCode").val().trim(),
+                CustomerToken: $("#CustomerToken").val().trim(),
+                PartnerID: $("#PartnerID").val()
+            }
+
+            isError = CheckNullAndRegexValue(data.CustomerCode, "Code", "CustomerCode", "Vui lòng nhập Mã khách hàng", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", isError);
+            isError = CheckNullValue(data.StoreName, "StoreName", "Vui lòng nhập Tên cửa hàng", isError);
+            isError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "FullName", "Vui lòng nhập Họ và tên người liên hệ", messageError, isError);
+            isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "MobileNumber", "Vui lòng nhập Số điện thoại", "Số điện thoại không hợp lệ", isError);
+            isError = CheckNullAndRegexValue(data.Email, "Email", "Email", "Vui lòng nhập Địa chỉ Email", "Email không hợp lệ", isError);
+            isError = CheckNullAndRegexValue(data.ProductBusiness, "Address", "ProductBusiness", "Vui lòng nhập Sản phẩm kinh doanh", messageError, isError);
+            isError = CheckNullValue(data.Street, "Street", "Vui lòng nhập Địa chỉ", isError);
+            isError = CheckNullValue(data.ProvinceID, "ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", isError);
+            //isError = CheckNullValue(data.DistrictID, "DistrictID", "Vui lòng chọn Quận/ Huyện", isError);
+            isError = CheckNullValue(data.WardID, "WardID", "Vui lòng chọn Phường/ Xã", isError);
+            isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn Dịch vụ chính", isError);
+            isError = CheckNullValue(data.CollectionPostOfficeID, "CollectionPostOfficeID", "Vui lòng chọn Bưu cục thu gom", isError);
+            isError = CheckRegexValue(data.ChildCustomerCode, "ChildCustomerCode", "ChildCustomerCode", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", isError);
+            isError = CheckNullValue(data.PaymentMethod, "PaymentMethod", "Vui lòng chọn Phương thức thanh toán", isError);
+            isError = CheckRegexValue(data.EmailBCG, "Email", "EmailBCG", "Email không hợp lệ", isError);
+            isError = CheckRegexValue(data.EmailCSKH, "Email", "EmailCSKH", "Email không hợp lệ", isError);
+            isError = CheckRegexValue(data.TaxCode, "Code", "TaxCode", "Mã số thuế không hợp lệ", isError);
+            isError = CheckRegexValue(data.CustomerToken, "UserName", "CustomerToken", "Token không hợp lệ", isError);
+
+            if (data.PaymentMethod == 1) {
+                data.FullNameOfPayment = $('#FullNameOfPayment').val().trim();
+                data.NameOfPayment = $('#NameOfPayment').val().trim();
+                data.BranchOfPayment = $('#BranchOfPayment').val().trim();
+                data.NumberOfPayment = $('#NumberOfPayment').val().trim();
+
+                isError = CheckRegexValue(data.FullNameOfPayment, "Vietnamese", "FullNameOfPayment", messageError, isError);
+                isError = CheckRegexValue(data.NameOfPayment, "Vietnamese", "NameOfPayment", messageError, isError);
+                isError = CheckRegexValue(data.BranchOfPayment, "Vietnamese", "BranchOfPayment", messageError, isError);
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn thêm tài khoản này?",
+                icon: 'warning',
+                buttons: {
+                    confirm: {
+                        text: "Có",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Không",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddShop", "Shop")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("ShopView", "Shop")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                icon: 'error',
+                                button: {
+                                    text: "Đóng",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+

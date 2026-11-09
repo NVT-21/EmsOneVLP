@@ -1,0 +1,630 @@
+﻿@model EMS.MVC.Frontend.Models.AddProductViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid pb-100">
+    <div class="container-medium mb-5">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Thông tin</h4>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Mã sản phẩm <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Code" maxlength="19" oninput="this.value = this.value.toUpperCase()" autocomplete="off" placeholder="Mã sản phẩm">
+                        <span class="text-danger" id="errCode"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Name" maxlength="150" autocomplete="off" placeholder="Tên sản phẩm">
+                        <span class="text-danger" id="errName"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Nhóm sản phẩm</label>
+                        @Html.DropDownListFor(model => model.ProductGroupID, new SelectList(Model.ListProductGroup, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Giá bán <span class="text-danger">*</span></label>
+                            <input type="text" id="Price" data-inputmask="'alias': 'currency'" class="form-control" placeholder="Giá bán" maxlength="14">
+                            <span class="props">đ</span>
+                        </div>
+                        <span class="text-danger" id="errPrice"></span>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="form-label">Đơn vị tính</label>
+                        @Html.DropDownListFor(model => model.Unit, new SelectList(Model.ListProductUnit, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+                        <div class="input-group mt-2 d-none" id="ShowUnitDifferent">
+                            <input type="text" class="form-control d-inline-block text-truncate" id="UnitDifferent" style="text-transform: capitalize;" placeholder="Vui lòng nhập đơn vị khác" autocomplete="off">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="btnAddUnitDifferent">Thêm</button>
+                            </div>
+                        </div>
+                        <span class="text-danger" id="errUnitDifferent"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="form-label">Kích thước (Dài x Rộng x Cao)</label>
+                        <div class="row">
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Length" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều dài" autocomplete="off" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Width" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều rộng" autocomplete="off" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                <div class="custom-props">
+                                    <input type="text" class="form-control" id="Height" data-inputmask="'alias': 'PositiveDecimal'" placeholder="Nhập chiều cao" autocomplete="off" maxlength="4">
+                                    <span class="props">cm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Khối lượng</label>
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="Weight" placeholder="Nhập khối lượng" autocomplete="off" maxlength="6">
+                            <span class="props">gr</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="custom-props">
+                            <label class="form-label">Số lô</label>
+                            <input type="text" class="form-control" id="BatchNumber" maxlength="100" placeholder="Vui lòng nhập số lô" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" rows="4" id="Description" placeholder="Mô tả" maxlength="250"></textarea>
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescription">0</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check custom-checkbox ms-1">
+                        <input type="checkbox" class="form-check-input" id="IsVariant">
+                        <label class="form-check-label" for="basic_checkbox_1">Sản phẩm có nhiều biến thể (Ví dụ khác nhau về kích thước, màu sắc)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" id="VariantManagement" style="display:none;">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Biến thể
+                </h4>
+                <div class="table-responsive table-secondary border">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th style="width:45%">Thuộc tính</th>
+                                <th>Chi tiết thuộc tính (Ví dụ Xanh, Đỏ,...)</th>
+                                <th style="width:80px">
+                                    Thao tác
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="AttributeBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mt-2 mb-2">
+                        <button class="btn tp-btn btn-secondary font-w600" style="display:block;" id="AddAttribute">
+                            <i class="ti-plus"></i>
+                            Thêm thuộc tính
+                        </button>
+                    </div>
+                </div>
+                <h5 class="fs-16 font-w600">Danh sách biến thể</h5>
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <div class="table-secondary border">
+                            <table class="table ">
+                                <thead>
+                                    <tr>
+                                        <th>Biến thể</th>
+                                        <th>Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="Variant">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Hình ảnh
+                </h4>
+                <div class="list-form-img">
+                    <div id="btnImage">
+
+                    </div>
+                    <label class="form-img" for="customFile">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M25.6665 12.3327H15.6665V2.33268C15.6665 1.89065 15.4909 1.46673 15.1783 1.15417C14.8658 0.841611 14.4419 0.666016 13.9998 0.666016C13.5578 0.666016 13.1339 0.841611 12.8213 1.15417C12.5088 1.46673 12.3332 1.89065 12.3332 2.33268V12.3327H2.33317C1.89114 12.3327 1.46722 12.5083 1.15466 12.8208C0.842099 13.1334 0.666504 13.5573 0.666504 13.9993C0.666504 14.4414 0.842099 14.8653 1.15466 15.1779C1.46722 15.4904 1.89114 15.666 2.33317 15.666H12.3332V25.666C12.3332 26.108 12.5088 26.532 12.8213 26.8445C13.1339 27.1571 13.5578 27.3327 13.9998 27.3327C14.4419 27.3327 14.8658 27.1571 15.1783 26.8445C15.4909 26.532 15.6665 26.108 15.6665 25.666V15.666H25.6665C26.1085 15.666 26.5325 15.4904 26.845 15.1779C27.1576 14.8653 27.3332 14.4414 27.3332 13.9993C27.3332 13.5573 27.1576 13.1334 26.845 12.8208C26.5325 12.5083 26.1085 12.3327 25.6665 12.3327Z" fill="#0054A6"></path>
+                        </svg>
+                        Thêm hình ảnh
+                        <input id="customFile" name="customFile" type="file" class="form-file-input form-control" accept="image/*" multiple="multiple" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bottom-group">
+    <div class="float-end">
+        <button type="button" class="btn btn-outline-dark" onclick="location.href = '@Url.Action("ProductView","Product")'">Hủy bỏ</button>
+        <button type="button" class="btn btn-primary" id="btnAddProduct">Thêm mới</button>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        ShowInputLength("Description", "ShowLengthDescription", 250);
+
+        var stt = 0;
+        var Variant = [];
+        var Options = [];
+        var model = [];
+        var TotalVariat = [];
+        var dataWarehouse = [];
+        $(document).ready(function () {
+            $("#AttributeValue").select2({ tags: true, width: "100%" });
+            $("#footer").addClass("d-none");
+            $('select.select2').select2(AttributeSelect2);
+
+            $("<option/>", {
+                value: "Different",
+                text: "--- Khác ---"
+            }).appendTo("#Unit");
+        });
+
+        $('#Code').on('change', function () {
+            var isError = false;
+            isError = CheckNullAndRegexValue($("#Code").val().trim(), 'ProductCode', 'Code', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            if (isError == true) {
+                return;
+            }
+        });
+        $('#Name').on('change', function () {
+            var isError = false;
+            isError = CheckNullAndRegexValue($("#Name").val().trim(), 'Vietnamese', 'Name', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            if (isError == true) {
+                return;
+            }
+        });
+        $("#Unit").on("change", function () {
+            if ($("#Unit").val() == "Different") {
+                $("#ShowUnitDifferent").removeClass("d-none");
+            } else {
+                $("#ShowUnitDifferent").addClass("d-none");
+            }
+        });
+        $("#Price").on("change", function () {
+            if ($(this).val() == "" || $(this).val() == "0") {
+                $("#errPrice").text("Vui lòng nhập giá bán");
+            } else {
+                $("#errPrice").text("");
+            }
+            ReloadVariant();
+        });
+        $("#btnAddUnitDifferent").on("click", function () {
+            var isError = false;
+            var data = {
+                UnitName: $("#UnitDifferent").val().trim()
+            }
+
+            isError = CheckNullAndRegexValue(data.UnitName, 'Vietnamese', 'UnitDifferent', 'Trường này không được để trống.', 'Giá trị hợp lệ không bao gồm ký tự đặc biệt.', isError);
+            if (isError) {
+                return;
+            };
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn thêm đơn vị tính không?",
+                buttons: {
+                    confirm: {
+                        text: "CÓ",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "KHÔNG",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddProductUnit", "Product")',
+                        dataType: 'json',
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    timer: 1500,
+                                    button: false
+                                }).then(function () {
+                                    $("#Unit option[value='Different']").remove();
+
+                                    $("<option/>", {
+                                        value: res.Data,
+                                        text: data.UnitName
+                                    }).attr("selected", "selected").appendTo("#Unit");
+
+                                    $("<option/>", {
+                                        value: "Different",
+                                        text: "--- Khác ---"
+                                    }).appendTo("#Unit");
+
+                                    $("#ShowUnitDifferent").addClass("d-none");
+                                    $("#UnitDifferent").val("");
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+        $('#IsVariant').on('change', function (e) {
+            var checked = document.getElementById("IsVariant").checked;
+            if (checked) {
+                $('#InventoryManagement').css('display', 'none');
+                $('#VariantManagement').css('display', 'block');
+                $('#DataWarehouse').html("");
+                $('#btnAddVariant').click();
+                $('#AddAttribute').click();
+            }
+            else {
+                $('#InventoryManagement').css('display', 'block');
+                $('#VariantManagement').css('display', 'none');
+                $('#VariantData').html("");
+                $('#Variant').html("");
+                $('#AttributeBody').html("");
+            }
+        });
+        function ReloadVariant() {
+            $('[name=errAttributeName]').text('');
+            $('[name=errAttributeValue]').text('');
+            var isError = false;
+            var arrVariant = [];
+            var arrOption = [];
+            var lstAttribute = document.getElementsByName('AttributeName');
+            var lstAttributeValue = document.getElementsByName('AttributeValue');
+
+            for (var i = 0; i < lstAttribute.length; i++) {
+                //check Name
+                if ($(lstAttribute[i]).val() == "") {
+                    $(lstAttribute[i]).parent().find('[name=errAttributeName]').text('Trường này không được để trống.');
+                    isError = true;
+                    $('#Variant').html("");
+                }
+
+                //check Value
+                if ($(lstAttributeValue[i]).val() == "") {
+                    $(lstAttributeValue[i]).parent().find('[name=errAttributeValue]').text('Trường này không được để trống.');
+                    isError = true;
+                    $('#Variant').html("");
+                }
+
+                var obj = {};
+                obj.Name = $(lstAttribute[i]).val();
+                obj.Values = $(lstAttributeValue[i]).val();
+                arrOption.push(obj);
+            }
+
+            if (isError || lstAttribute.length == 0) {
+                return;
+            }
+
+            //Lọc thuộc tính không có giá trị
+            var AttributeName1 = lstAttribute[0].value;
+            var AttributeName2 = null;
+            var AttributeName3 = null;
+
+            var lstAttributeValues1 = $(lstAttributeValue[0]).val();
+            var lstAttributeValues2 = null;
+            var lstAttributeValues3 = null;
+            var count = lstAttribute.length;
+
+            if (count == 1) {
+                for (var j = 0; j < lstAttributeValues1.length; j++) {
+                    var objVariant = {};
+                    objVariant.Options = lstAttributeValues1[j]
+                    objVariant.OptionName1 = AttributeName1;
+                    objVariant.OptionValue1 = lstAttributeValues1[j];
+                    arrVariant.push(objVariant);
+                }
+            }
+            else if (count == 2) {
+                AttributeName2 = lstAttribute[1].value;
+                lstAttributeValues2 = $(lstAttributeValue[1]).val().toString().split(',');
+                for (var i = 0; i < lstAttributeValues1.length; i++) {
+                    for (var j = 0; j < lstAttributeValues2.length; j++) {
+                        var objVariant = {};
+                        objVariant.Options = lstAttributeValues1[i] + " / " + lstAttributeValues2[j];
+                        objVariant.OptionName1 = AttributeName1;
+                        objVariant.OptionValue1 = lstAttributeValues1[i];
+                        objVariant.OptionName2 = AttributeName2;
+                        objVariant.OptionValue2 = lstAttributeValues2[j];
+                        arrVariant.push(objVariant);
+                    }
+                }
+            }
+            else if (count == 3) {
+                AttributeName2 = lstAttribute[1].value;
+                lstAttributeValues3 = $(lstAttributeValue[2]).val().toString().split(',');
+                AttributeName3 = lstAttribute[2].value;
+                lstAttributeValues2 = $(lstAttributeValue[1]).val().toString().split(',');
+                for (var i = 0; i < lstAttributeValues1.length; i++) {
+                    for (var j = 0; j < lstAttributeValues2.length; j++) {
+                        for (var k = 0; k < lstAttributeValues3.length; k++) {
+                            var objVariant = {};
+                            objVariant.Options = lstAttributeValues1[i] + " / " + lstAttributeValues2[j] + " / " + lstAttributeValues3[k];
+                            objVariant.OptionName1 = AttributeName1;
+                            objVariant.OptionValue1 = lstAttributeValues1[i];
+                            objVariant.OptionName2 = AttributeName2;
+                            objVariant.OptionValue2 = lstAttributeValues2[j];
+                            objVariant.OptionName3 = AttributeName3;
+                            objVariant.OptionValue3 = lstAttributeValues3[k];
+                            arrVariant.push(objVariant);
+                        }
+                    }
+                }
+            }
+            Variant = arrVariant;
+            Options = arrOption;
+
+            if (arrVariant.length > 400) {
+                CreateCustomSwal("error", 'Tối đa 400 biến thể.');
+                return;
+            };
+
+            var Price = 0;
+            if ($('#Price').val() != '') {
+                Price = $('#Price').val();
+            }
+
+            var html = "";
+            for (var i = 0; i < arrVariant.length; i++) {
+                html += '<tr>' +
+                    '<td>' +
+                    '<span class="text-secondary">' + arrVariant[i].Options + '</span>' +
+                    '</td>' +
+                    '<td>' + Price + 'đ</td>' +
+                    '</tr>';
+            }
+            $('#Variant').html(html);
+        }
+        function RemoveErrorMessage(This) {
+            $(This).parent().find('.error-message').text("");
+        }
+        $('#AddAttribute').on('click', function (e) {
+            stt = stt + 1;
+            var count = $('#AttributeBody').find('tr').length;
+            if (count >= 3) {
+                CreateCustomSwal("error", "Tối đa 3 thuộc tính.");
+                return;
+            }
+            var html = '<tr>' +
+                '<td>' +
+                '<input type="text" class="form-control" name="AttributeName" onkeypress="RemoveErrorMessage(this)" onchange="ReloadVariant()" placeholder="Nhập thuộc tính" maxlength="50">' +
+                '<span class="error-message pt-1 text-danger" name="errAttributeName"></span>' +
+                '</td>' +
+                '<td class="vertical-top">' +
+                '<select id="AttributeValue' + stt + '" name="AttributeValue" multiple="multiple" class="tags select2" onchange="ReloadVariant()"></select>' +
+                '<span class="error-message pt-1 text-danger" name="errAttributeValue"></span>' +
+                '</td>' +
+                '<td>' +
+                '<button type="button" class="btn btn-trash light mb-0 mt-0" onclick="RemoveAttribute(this)"><i class="icon-trash"></i></button>' +
+                '</td>' +
+                '</tr>';
+            $('#AttributeBody').append(html);
+
+            $("#AttributeValue" + stt).select2({
+                tags: true, width: "100%"
+            });
+
+            if ((count + 1) >= 3) {
+                $('#AddAttribute').css('display', 'none');
+            }
+        });
+
+        //Xoá thuộc tính
+        function RemoveAttribute(This) {
+            $(This).parent().parent().remove();
+            $('#AddAttribute').css('display', 'block');
+            ReloadVariant();
+        }
+
+        function removeImage(ctl) {
+            $(ctl).parent().remove();
+        }
+        $('#customFile').on('change', function (e) {
+            var files = e.target.files;
+            var listImage = document.getElementsByName("ImageProduct");
+            var count = files.length + listImage.length;
+            if (count > 10) {
+                CreateCustomSwal("error", 'Chỉ được upload tối đa 10 ảnh.');
+                return;
+            }
+
+            if (files.length > 0) {
+                var data = new FormData();
+                for (var x = 0; x < files.length; x++) {
+                    data.append("file" + x, files[x]);
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("UploadImage", "DataFile")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function (res) {
+                        //console.log(res);
+                        if (res.Code == '00') {
+                            var list = JSON.parse(res.Data);
+                            for (var i = 0; i < list.length; i++) {
+                                var ImgHtml = '<div class="img-item">'
+                                    + '<img name="ImageProduct" width="100" height="100" data-value="' + list[i].FileName + '" src="@XHelper.pathImages' + list[i].FileName + '" />'
+                                    + '<i class="close" onclick="removeImage(this)">'
+                                    + '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width = "30" height = "30" rx = "15" fill = "black" fill-opacity="0.48" ></rect ><path d="M16.4099 15.0002L20.7099 10.7102C20.8982 10.5219 21.004 10.2665 21.004 10.0002C21.004 9.73388 20.8982 9.47849 20.7099 9.29019C20.5216 9.10188 20.2662 8.99609 19.9999 8.99609C19.7336 8.99609 19.4782 9.10188 19.2899 9.29019L14.9999 13.5902L10.7099 9.29019C10.5216 9.10188 10.2662 8.99609 9.99994 8.99609C9.73364 8.99609 9.47824 9.10188 9.28994 9.29019C9.10164 9.47849 8.99585 9.73388 8.99585 10.0002C8.99585 10.2665 9.10164 10.5219 9.28994 10.7102L13.5899 15.0002L9.28994 19.2902C9.19621 19.3831 9.12182 19.4937 9.07105 19.6156C9.02028 19.7375 8.99414 19.8682 8.99414 20.0002C8.99414 20.1322 9.02028 20.2629 9.07105 20.3848C9.12182 20.5066 9.19621 20.6172 9.28994 20.7102C9.3829 20.8039 9.4935 20.8783 9.61536 20.9291C9.73722 20.9798 9.86793 21.006 9.99994 21.006C10.132 21.006 10.2627 20.9798 10.3845 20.9291C10.5064 20.8783 10.617 20.8039 10.7099 20.7102L14.9999 16.4102L19.2899 20.7102C19.3829 20.8039 19.4935 20.8783 19.6154 20.9291C19.7372 20.9798 19.8679 21.006 19.9999 21.006C20.132 21.006 20.2627 20.9798 20.3845 20.9291C20.5064 20.8783 20.617 20.8039 20.7099 20.7102C20.8037 20.6172 20.8781 20.5066 20.9288 20.3848C20.9796 20.2629 21.0057 20.1322 21.0057 20.0002C21.0057 19.8682 20.9796 19.7375 20.9288 19.6156C20.8781 19.4937 20.8037 19.3831 20.7099 19.2902L16.4099 15.0002Z" fill="white"></path></svg ></i ></div>';
+                                $('#btnImage').before(ImgHtml);
+                            }
+                            $('#customFile').val("");
+                        }
+                        else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (error) {
+                        CreateCustomSwal("error", 'Vui lòng kiểm tra lại kết nối mạng');
+                    }
+                });
+            }
+        });
+
+        $('#btnAddProduct').on('click', function () {
+            var isError = false, isValid = true;
+            var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+            var Images = "";
+            var Avatar = "";
+            var listImage = document.getElementsByName("ImageProduct");
+            if (listImage.length > 0) {
+                Avatar = listImage[0].getAttribute('data-value');
+            }
+            for (var i = 0; i < listImage.length; i++) {
+                Images += listImage[i].getAttribute('data-value') + ';';
+            }
+
+            var Size = "";
+            var Length = $('#Length').val().replaceAll(',', '');
+            var Width = $('#Width').val().replaceAll(',', '');
+            var Height = $('#Height').val().replaceAll(',', '');
+
+            if (Length != "") {
+                Size += Length + "D";
+            }
+            if (Width != "") {
+                Size += Width + "R";
+            }
+            if (Height != "") {
+                Size += Height + "C";
+            }
+
+            var data = {
+                ProductGroupID: $('#ProductGroupID').val(),
+                Code: $('#Code').val().trim(),
+                Name: $('#Name').val().trim(),
+                Price: NumberReplace($('#Price').val()),
+                Size: Size,
+                Weight: NumberReplace($('#Weight').val()),
+                Description: $('#Description').val(),
+                Avatar: Avatar,
+                Images: Images,
+                Unit: $('#Unit').val(),
+                BatchNumber: $("#BatchNumber").val().trim()
+            };
+
+            var checkedVariant = document.getElementById("IsVariant").checked;
+            if (checkedVariant) {
+                ReloadVariant();
+                $('[name=errAttributeName]').text('');
+                $('[name=errAttributeValue]').text('');
+                var isError = false;
+                var lstAttribute = document.getElementsByName('AttributeName');
+                var lstAttributeValue = document.getElementsByName('AttributeValue');
+
+                for (var i = 0; i < lstAttribute.length; i++) {
+                    //check Name
+                    if ($(lstAttribute[i]).val().toString() == "") {
+                        $(lstAttribute[i]).parent().find('[name=errAttributeName]').text('Trường này không được để trống.');
+                        isError = true;
+                        $('#Variant').html("");
+                    }
+                    //check Value
+                    if ($(lstAttributeValue[i]).val().toString() == "") {
+                        $(lstAttributeValue[i]).parent().find('[name=errAttributeValue]').text('Trường này không được để trống.');
+                        isError = true;
+                        $('#Variant').html("");
+                    }
+                    //else if ($(lstAttributeValue[i]).val().toString().includes(";") == true) {
+                    //    $(lstAttributeValue[i]).parent().find('[name=errAttributeValue]').text('Không được nhập ký tự ;');
+                    //    isError = true;
+                    //    $('#Variant').html("");
+                    //}
+                }
+
+                if (isError) {
+                    return;
+                }
+
+                data.ListVariant = Variant;
+                data.Options = Options;
+            }
+
+            isError = CheckNullAndRegexValue(data.Code, 'ProductCode', 'Code', 'Trường này không được để trống.','Trường dữ liệu không hợp lệ.', isError);
+            isError = CheckNullAndRegexValue(data.Name, 'Vietnamese', 'Name', 'Trường này không được để trống.', 'Trường dữ liệu không hợp lệ.', isError);
+            //isError = CheckNullValue(Number(data.Price), "Price", "Vui lòng nhập giá bán.", isError);
+
+            if (isError == true) {
+                return;
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JAddProduct", "Product")',
+                dataType: 'json',
+                loading: true,
+                data: data,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        //let resData = JSON.parse(res.Data);
+                        CreateCustomSwal("success", res.Message,'@Url.Action("ProductView", "Product")');
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    CreateCustomSwal("error", err.Message);
+                    return;
+                }
+            });
+        });
+    </script>
+}

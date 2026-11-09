@@ -1,0 +1,613 @@
+﻿.form-remove {
+    position: relative;
+    margin-left: 20px;
+}
+/*button.btn-remove {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+}*/
+#btnImage {
+    border-style: dashed;
+}
+
+/*.swal-modal {
+    width: 300px !important;
+}
+
+.swal-title {
+    margin: 0px;
+    font-size: 16px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.21);
+    margin-bottom: 28px;
+    margin-top: 0;
+}
+.swal-title:not(:first-child) {
+     padding-bottom: 13px; 
+}
+
+.swal-title:first-child {
+    margin-top: 0px;
+}*/
+
+/*.btn {
+    padding: 8px;
+}
+
+.swal-icon {
+    display: none;
+}*/
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.AspectRatio_1-1 {
+    position:relative;
+    width: 100%;
+    padding-top: 100%;
+}
+
+.Aspect {
+    margin: auto;
+    display: flex;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+    position: absolute;
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+}
+
+.form-group.required .control-label:after {
+    color: red;
+    content: "*";
+    position: absolute;
+    margin-left: 3px;
+    top: 0px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+button.btn-primary:focus {
+    background-color: #248afd;
+    color: white;
+}
+
+input:placeholder-shown {
+    text-overflow: ellipsis;
+}
+
+hr {
+    border: 0;
+    clear: both;
+    display: block;
+    width: 96%;
+    background-color: gainsboro;
+    height: 1px;
+}
+
+.error-message {
+    color: #ff4747 !important;
+}
+
+.frames-function-custom {
+    border-radius: 5px;
+    border: 2px solid #b88b77;
+}
+
+/*border selectpicker*/
+.btn.dropdown-toggle.btn-light {
+    border: 1px solid #c9ccd7;
+}
+
+select {
+    border: 1px solid #c9ccd7;
+    color: black !important;
+    /*height: 44px !important;
+    margin-top: 1px;*/
+}
+
+/*custom datapicker date*/
+td.disabled {
+    color: #d9dde3 !important;
+    border-radius: 0px;
+}
+
+.title-border-bottom {
+    border-bottom: 1px solid gainsboro;
+    padding-bottom: 6px;
+}
+
+.car-title-border-bottom {
+    width: 100%;
+    font-weight: 600;
+    border-bottom: 1px solid gainsboro;
+    padding-bottom: 6px;
+}
+
+.pt-10px{
+    padding-top: 10px!important;
+}
+
+.text-black-important {
+    color: #000 !important;
+}
+
+.d_none {
+    display: none;
+}
+
+.vertical-top {
+    vertical-align: top !important;
+}
+
+/*.btn {
+    text-transform: uppercase;
+}*/
+
+.CustomScrollBar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+.CustomScrollBar::-webkit-scrollbar {
+    background-color: #F5F5F5;
+    height: 7px;
+    width: 6px;
+}
+
+.CustomScrollBar::-webkit-scrollbar-thumb {
+    background-color: #555;
+}
+
+/*.bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+    overflow: hidden;
+    padding-top: 3px; 
+}*/
+
+.btn-toggle {
+    margin: 0 4rem;
+    padding: 0;
+    position: relative;
+    border: none;
+    height: 1.5rem;
+    width: 3rem;
+    border-radius: 1.5rem;
+    color: #6b7381;
+    background: #bdc1c8;
+}
+
+.btn-toggle:focus,
+.btn-toggle.focus,
+.btn-toggle:focus.active,
+.btn-toggle.focus.active {
+    outline: none;
+}
+
+.btn-toggle:before,
+.btn-toggle:after {
+    line-height: 1.5rem;
+    width: 4rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+
+.btn-toggle:before {
+    content: 'Tắt';
+    left: -4rem;
+}
+
+.btn-toggle:after {
+    content: 'Bật';
+    right: -4rem;
+    opacity: 0.5;
+}
+
+.btn-toggle > .handle {
+    position: absolute;
+    top: 0.1875rem;
+    left: 0.1875rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 1.125rem;
+    background: #fff;
+    transition: left 0.25s;
+}
+
+.btn-toggle.active {
+    transition: background-color 0.25s;
+}
+
+.btn-toggle.active > .handle {
+    left: 1.6875rem;
+    transition: left 0.25s;
+}
+
+.btn-toggle.active:before {
+    opacity: 0.5;
+}
+
+.btn-toggle.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-sm:before,
+.btn-toggle.btn-sm:after {
+    line-height: -0.5rem;
+    color: #fff;
+    letter-spacing: 0.75px;
+    left: 0.4125rem;
+    width: 2.325rem;
+}
+
+.btn-toggle.btn-sm:before {
+    text-align: right;
+}
+
+.btn-toggle.btn-sm:after {
+    text-align: left;
+    opacity: 0;
+}
+
+.btn-toggle.btn-sm.active:before {
+    opacity: 0;
+}
+
+.btn-toggle.btn-sm.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-xs:before,
+.btn-toggle.btn-xs:after {
+    display: none;
+}
+
+.btn-toggle:before,
+.btn-toggle:after {
+    color: #6b7381;
+}
+
+.btn-toggle.active {
+    background-color: #29b5a8;
+}
+
+.btn-toggle.btn-lg {
+    margin: 0 5rem;
+    padding: 0;
+    position: relative;
+    border: none;
+    height: 2.5rem;
+    width: 5rem;
+    border-radius: 2.5rem;
+}
+
+.btn-toggle.btn-lg:focus,
+.btn-toggle.btn-lg.focus,
+.btn-toggle.btn-lg:focus.active,
+.btn-toggle.btn-lg.focus.active {
+    outline: none;
+}
+
+.btn-toggle.btn-lg:before,
+.btn-toggle.btn-lg:after {
+    line-height: 2.5rem;
+    width: 5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+
+.btn-toggle.btn-lg:before {
+    content: 'Tắt';
+    left: -5rem;
+}
+
+.btn-toggle.btn-lg:after {
+    content: 'Bật';
+    right: -5rem;
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-lg > .handle {
+    position: absolute;
+    top: 0.3125rem;
+    left: 0.3125rem;
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 1.875rem;
+    background: #fff;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-lg.active {
+    transition: background-color 0.25s;
+}
+
+.btn-toggle.btn-lg.active > .handle {
+    left: 2.8125rem;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-lg.active:before {
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-lg.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-lg.btn-sm:before,
+.btn-toggle.btn-lg.btn-sm:after {
+    line-height: 0.5rem;
+    color: #fff;
+    letter-spacing: 0.75px;
+    left: 0.6875rem;
+    width: 3.875rem;
+}
+
+.btn-toggle.btn-lg.btn-sm:before {
+    text-align: right;
+}
+
+.btn-toggle.btn-lg.btn-sm:after {
+    text-align: left;
+    opacity: 0;
+}
+
+.btn-toggle.btn-lg.btn-sm.active:before {
+    opacity: 0;
+}
+
+.btn-toggle.btn-lg.btn-sm.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-lg.btn-xs:before,
+.btn-toggle.btn-lg.btn-xs:after {
+    display: none;
+}
+
+.btn-toggle.btn-sm {
+    margin: 0 0.5rem;
+    padding: 0;
+    position: relative;
+    border: none;
+    height: 1.5rem;
+    width: 3rem;
+    border-radius: 1.5rem;
+}
+
+.btn-toggle.btn-sm:focus,
+.btn-toggle.btn-sm.focus,
+.btn-toggle.btn-sm:focus.active,
+.btn-toggle.btn-sm.focus.active {
+    outline: none;
+}
+
+.btn-toggle.btn-sm:before,
+.btn-toggle.btn-sm:after {
+    line-height: 1.5rem;
+    width: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+
+.btn-toggle.btn-sm:before {
+    content: 'Tắt';
+    left: -0.5rem;
+}
+
+.btn-toggle.btn-sm:after {
+    content: 'Bật';
+    right: -0.5rem;
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-sm > .handle {
+    position: absolute;
+    top: 0.1875rem;
+    left: 0.1875rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 1.125rem;
+    background: #fff;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-sm.active {
+    transition: background-color 0.25s;
+}
+
+.btn-toggle.btn-sm.active > .handle {
+    left: 1.6875rem;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-sm.active:before {
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-sm.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-sm.btn-sm:before,
+.btn-toggle.btn-sm.btn-sm:after {
+    line-height: -0.5rem;
+    color: #fff;
+    letter-spacing: 0.75px;
+    left: 0.4125rem;
+    width: 2.325rem;
+}
+
+.btn-toggle.btn-sm.btn-sm:before {
+    text-align: right;
+}
+
+.btn-toggle.btn-sm.btn-sm:after {
+    text-align: left;
+    opacity: 0;
+}
+
+.btn-toggle.btn-sm.btn-sm.active:before {
+    opacity: 0;
+}
+
+.btn-toggle.btn-sm.btn-sm.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-sm.btn-xs:before,
+.btn-toggle.btn-sm.btn-xs:after {
+    display: none;
+}
+
+.btn-toggle.btn-xs {
+    margin: 0 0;
+    padding: 0;
+    position: relative;
+    border: none;
+    height: 1rem;
+    width: 2rem;
+    border-radius: 1rem;
+}
+
+.btn-toggle.btn-xs:focus,
+.btn-toggle.btn-xs.focus,
+.btn-toggle.btn-xs:focus.active,
+.btn-toggle.btn-xs.focus.active {
+    outline: none;
+}
+
+.btn-toggle.btn-xs:before,
+.btn-toggle.btn-xs:after {
+    line-height: 1rem;
+    width: 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+
+.btn-toggle.btn-xs:before {
+    content: 'Tắt';
+    left: 0;
+}
+
+.btn-toggle.btn-xs:after {
+    content: 'Bật';
+    right: 0;
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-xs > .handle {
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.75rem;
+    background: #fff;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-xs.active {
+    transition: background-color 0.25s;
+}
+
+.btn-toggle.btn-xs.active > .handle {
+    left: 1.125rem;
+    transition: left 0.25s;
+}
+
+.btn-toggle.btn-xs.active:before {
+    opacity: 0.5;
+}
+
+.btn-toggle.btn-xs.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-xs.btn-sm:before,
+.btn-toggle.btn-xs.btn-sm:after {
+    line-height: -1rem;
+    color: #fff;
+    letter-spacing: 0.75px;
+    left: 0.275rem;
+    width: 1.55rem;
+}
+
+.btn-toggle.btn-xs.btn-sm:before {
+    text-align: right;
+}
+
+.btn-toggle.btn-xs.btn-sm:after {
+    text-align: left;
+    opacity: 0;
+}
+
+.btn-toggle.btn-xs.btn-sm.active:before {
+    opacity: 0;
+}
+
+.btn-toggle.btn-xs.btn-sm.active:after {
+    opacity: 1;
+}
+
+.btn-toggle.btn-xs.btn-xs:before,
+.btn-toggle.btn-xs.btn-xs:after {
+    display: none;
+}
+
+/*.btn-toggle.btn-secondary {
+    color: #6b7381;
+    background: #bdc1c8;
+}
+
+.btn-toggle.btn-secondary:before,
+.btn-toggle.btn-secondary:after {
+    color: #6b7381;
+}*/
+
+.btn-toggle.btn-secondary.active {
+    background-color: #ff8300;
+}

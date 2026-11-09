@@ -1,0 +1,991 @@
+﻿@using EMS.Library;
+@model List<EMS.MVC.Frontend.Models.SearchListOrderViewModel>
+@{
+    // Meta từ Controller
+    int pageIndex = ViewBag.PageIndex ?? 1;
+    int pageSize = ViewBag.PageSize ?? 20;
+    int totalRows = ViewBag.TotalRows ?? 0;
+    int totalPages = (totalRows == 0 || pageSize == -1) ? 1 : (int)Math.Ceiling((double)totalRows / pageSize);
+
+    int start = (totalRows == 0) ? 0 : (pageSize == -1 ? 1 : ((pageIndex - 1) * pageSize + 1));
+    int end = (pageSize == -1) ? totalRows : Math.Min(totalRows, pageIndex * (pageSize <= 0 ? 20 : pageSize));
+
+    long sumTransportFee = (long)(ViewBag.SumTransportFee ?? 0L);
+    long sumPaymentFreightVat = (long)(ViewBag.SumPaymentFreightVat ?? 0L);
+    long sumTotalCOD = (long)(ViewBag.SumTotalCOD ?? 0L);
+    string ShopId = Security.EncodeBase64(ViewBag.ShopID.ToString());
+    string searchOrderStatus = ViewBag.SearchOrderStatus ?? "";
+    int checkCustomerCode = ViewBag.CheckCustomerCode ?? 1;
+
+    Func<long, string> vnd = x => String.Format("{0:N0} đ", x);
+}
+
+<style>
+    :root {
+        --ems-blue: #0054a6;
+        --ems-blue-dark: #003a75;
+        --ems-blue-light: #eaf3ff;
+        --ems-orange: #ff6b00;
+        --ems-orange-light: #fff4eb;
+        --ems-border: #dfe8f3;
+        --ems-text: #1f2937;
+        --ems-muted: #66758b;
+    }
+
+    .ems-order-master-panel,
+    .ems-order-detail-panel {
+        min-width: 0;
+    }
+
+    .ems-order-master-shell {
+        display: flex;
+        flex-direction: column;
+        height: 740px;
+        overflow: hidden;
+        background: #f6f9fd;
+        border: 1px solid var(--ems-border);
+        border-radius: 14px;
+    }
+
+    .ems-order-list-head {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 13px;
+        background: #fff;
+        border-bottom: 1px solid var(--ems-border);
+    }
+
+    .ems-order-list-title {
+        color: var(--ems-blue);
+        font-size: .78rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: .2px;
+    }
+
+    .ems-order-result-count {
+        color: var(--ems-muted);
+        font-size: .7rem;
+        white-space: nowrap;
+    }
+
+    .ems-order-list-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 11px;
+        scrollbar-width: thin;
+        scrollbar-color: #aebccc transparent;
+    }
+
+    .ems-order-list-scroll::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    .ems-order-list-scroll::-webkit-scrollbar-thumb {
+        background: #aebccc;
+        border-radius: 999px;
+    }
+
+    .ems-order-card {
+        position: relative;
+        margin-bottom: 11px;
+        padding: 13px 13px 10px;
+        background: #fff;
+        border: 1px solid var(--ems-border);
+        border-left: 4px solid transparent;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 40, 90, .055);
+        transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+    }
+
+    .ems-order-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .ems-order-card:hover {
+        border-color: #bad4ef;
+        border-left-color: var(--ems-blue);
+        box-shadow: 0 8px 22px rgba(0, 40, 90, .10);
+        transform: translateY(-1px);
+    }
+
+    .ems-order-card.is-selected {
+        border-color: #8dbbe8;
+        border-left-color: var(--ems-orange);
+        background: #fbfdff;
+        box-shadow: 0 8px 22px rgba(0, 84, 166, .13);
+    }
+
+    .ems-order-card.is-checked {
+        background: #fffaf6;
+        border-left-color: var(--ems-orange);
+    }
+
+    .ems-order-card-head {
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 8px;
+    }
+
+    .ems-order-check-wrap {
+        padding-top: 2px;
+    }
+
+    .ems-order-check-wrap .form-check {
+        min-height: auto;
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .ems-order-check-wrap .form-check-input {
+        width: 16px;
+        height: 16px;
+        margin-top: 1px;
+        border-color: #aebed0;
+        cursor: pointer;
+    }
+
+    .ems-order-check-wrap .form-check-input:checked {
+        background-color: var(--ems-orange);
+        border-color: var(--ems-orange);
+    }
+
+    .ems-order-identity {
+        min-width: 0;
+    }
+
+    .ems-shipping-code-btn {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--ems-blue-dark);
+        font-size: .91rem;
+        font-weight: 800;
+        line-height: 1.3;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .ems-shipping-code-btn:hover {
+        color: var(--ems-orange);
+    }
+
+    .ems-order-subcodes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 9px;
+        margin-top: 3px;
+    }
+
+    .ems-order-code-link,
+    .ems-batch-code-link {
+        color: var(--ems-blue);
+        font-size: .75rem;
+        font-weight: 650;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+    }
+
+    .ems-batch-code-link {
+        color: #667b98;
+    }
+
+    .ems-order-code-link:hover,
+    .ems-batch-code-link:hover {
+        color: var(--ems-orange);
+        text-decoration: underline;
+    }
+
+    .ems-order-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ems-status-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 25px;
+        padding: 3px 9px;
+        border: 1px solid #c9d8e9;
+        border-radius: 999px;
+        background: #f5f8fc;
+        color: #52657d;
+        font-size: .64rem;
+        font-weight: 750;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .ems-status-badge.status-success {
+        color: #15803d;
+        background: #ecfdf3;
+        border-color: #bbf7d0;
+    }
+
+    .ems-status-badge.status-failed {
+        color: #b91c1c;
+        background: #fff1f2;
+        border-color: #fecdd3;
+    }
+
+    .ems-status-badge.status-progress {
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-color: #bfdbfe;
+    }
+
+    .ems-status-badge.status-pending {
+        color: #b45309;
+        background: #fff7ed;
+        border-color: #fed7aa;
+    }
+
+    .ems-more-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 1px solid #d9e4f0;
+        border-radius: 8px;
+        background: #fff;
+        color: #60728a;
+    }
+
+    .ems-more-btn:hover,
+    .ems-more-btn:focus {
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-color: #b7d1ec;
+        box-shadow: none;
+    }
+
+    .ems-order-card .dropdown-menu {
+        min-width: 205px;
+        padding: 6px;
+        border: 1px solid var(--ems-border) !important;
+        border-radius: 10px;
+        box-shadow: 0 12px 30px rgba(0, 40, 90, .14);
+    }
+
+    .ems-order-card .dropdown-item {
+        padding: 7px 9px;
+        border-radius: 7px;
+        color: #34445b;
+        font-size: .75rem;
+    }
+
+    .ems-order-card .dropdown-item:hover {
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+    }
+
+    .ems-order-customer {
+        margin-top: 10px;
+        padding-top: 9px;
+        border-top: 1px dashed #e2eaf3;
+    }
+
+    .ems-customer-name {
+        color: var(--ems-text);
+        font-size: .79rem;
+        font-weight: 750;
+        line-height: 1.38;
+        overflow-wrap: anywhere;
+    }
+
+    .ems-customer-meta,
+    .ems-customer-address,
+    .ems-cancel-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        margin-top: 5px;
+        color: #53657d;
+        font-size: .73rem;
+        line-height: 1.4;
+    }
+
+    .ems-customer-meta i,
+    .ems-customer-address i,
+    .ems-cancel-info i,
+    .ems-created-time i {
+        flex: 0 0 15px;
+        width: 15px;
+        margin-top: 2px;
+        color: var(--ems-blue);
+        text-align: center;
+    }
+
+    .ems-customer-address span {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow-wrap: anywhere;
+    }
+
+    .ems-cancel-block {
+        margin-top: 8px;
+        padding: 7px 8px;
+        border: 1px solid #fecdd3;
+        border-radius: 8px;
+        background: #fff7f8;
+    }
+
+    .ems-cancel-info {
+        margin-top: 0;
+        color: #9f3340;
+    }
+
+    .ems-cancel-info + .ems-cancel-info {
+        margin-top: 3px;
+    }
+
+    .ems-cancel-info i {
+        color: #dc2626;
+    }
+
+    .ems-order-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #edf2f7;
+    }
+
+    .ems-created-time {
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+        color: #718096;
+        font-size: .69rem;
+        white-space: nowrap;
+    }
+
+    .ems-view-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border: 1px solid #c7dbef;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ems-blue);
+        font-size: .69rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .ems-view-detail-btn:hover,
+    .ems-view-detail-btn:focus {
+        color: #fff;
+        background: var(--ems-blue);
+        border-color: var(--ems-blue);
+        box-shadow: none;
+    }
+
+    .ems-order-empty {
+        padding: 46px 20px;
+        text-align: center;
+        color: var(--ems-muted);
+    }
+
+    .ems-order-empty i {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ems-blue);
+        font-size: 30px;
+    }
+
+    .ems-order-pagination {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 10px;
+        background: #fff;
+        border-top: 1px solid var(--ems-border);
+    }
+
+    .ems-order-pagination .pagination {
+        margin: 0;
+        flex-wrap: nowrap;
+    }
+
+    .ems-order-pagination .page-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 29px;
+        height: 29px;
+        padding: 0 7px;
+        border-color: #dbe6f1;
+        color: var(--ems-blue);
+        font-size: .69rem;
+    }
+
+    .ems-order-pagination .page-item.active .page-link {
+        background: var(--ems-blue);
+        border-color: var(--ems-blue);
+        color: #fff;
+    }
+
+    .ems-order-page-info {
+        color: var(--ems-muted);
+        font-size: .68rem;
+        white-space: nowrap;
+    }
+
+    .ems-order-detail-shell {
+        height: 740px;
+        overflow: auto;
+        padding-left: 2px;
+        scrollbar-width: thin;
+        scrollbar-color: #aebccc transparent;
+    }
+
+    .ems-order-detail-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        padding: 30px;
+        border: 1px dashed #c7d8ea;
+        border-radius: 14px;
+        background: #fbfdff;
+        color: #718096;
+        text-align: center;
+    }
+
+    .ems-order-detail-placeholder i {
+        margin-bottom: 10px;
+        color: var(--ems-blue);
+        font-size: 34px;
+    }
+
+    @@media (min-width: 1200px) {
+        .ems-order-master-panel {
+            flex: 0 0 440px;
+            width: 440px;
+            max-width: 440px;
+        }
+
+        .ems-order-detail-panel {
+            flex: 1 1 0;
+            width: auto;
+            max-width: calc(100% - 440px);
+        }
+    }
+
+    @@media (max-width: 1199.98px) {
+        .ems-order-master-shell,
+        .ems-order-detail-shell {
+            height: auto;
+            max-height: none;
+        }
+
+        .ems-order-list-scroll {
+            max-height: 620px;
+        }
+
+        .ems-order-detail-panel {
+            margin-top: 12px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .ems-order-card-head {
+            grid-template-columns: 22px minmax(0, 1fr);
+        }
+
+        .ems-order-head-actions {
+            grid-column: 2;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .ems-order-card-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="col-xl-4 col-lg-12 col-md-12 ems-order-master-panel">
+    <div class="ems-order-master-shell">
+        <div class="ems-order-list-head">
+            <span class="ems-order-list-title">
+                <i class="fas fa-list-ul me-1"></i> Danh sách kết quả
+            </span>
+            <span class="ems-order-result-count">@start - @end / @totalRows đơn</span>
+        </div>
+
+        <div class="ems-order-list-scroll">
+            @if(Model == null || Model.Count == 0)
+            {
+                <div class="ems-order-empty">
+                    <i class="fas fa-box-open"></i>
+                    Không tìm thấy đơn hàng phù hợp.
+                </div>
+            }
+            else
+            {
+                foreach(var item in Model)
+                {
+                    var statusText = item.OrderStatusName ?? "";
+                    var statusLower = statusText.ToLower();
+                    var statusClass = "status-progress";
+
+                    if(statusLower.Contains("hủy") || statusLower.Contains("huỷ") || statusLower.Contains("không thành công") || statusLower.Contains("thất bại"))
+                    {
+                        statusClass = "status-failed";
+                    }
+                    else if(statusLower.Contains("phát thành công") || statusLower.Contains("thành công"))
+                    {
+                        statusClass = "status-success";
+                    }
+                    else if(statusLower.Contains("chờ") || statusLower.Contains("nháp") || statusLower.Contains("đã tạo"))
+                    {
+                        statusClass = "status-pending";
+                    }
+
+                    var actionMenuId = "order-actions-" + item.OrderID;
+
+                    <article class="ems-order-card" data-order-id="@item.OrderID">
+                        <div class="ems-order-card-head">
+                            <div class="ems-order-check-wrap">
+                                @if(item.ShopID == ViewBag.ShopID)
+                                {
+                                    <div class="form-check custom-checkbox">
+                                        <input type="checkbox"
+                                               class="form-check-input ems-order-select"
+                                               onclick="chbSelectData(this)"
+                                               data-EMSOneCode="@item.EMSOneCode"
+                                               data-ShopID="@item.ShopID"
+                                               data-OrderStatus="@item.OrderStatus"
+                                               data-OrderCode="@item.OrderCode"
+                                               data-BatchCode="@item.BatchCode"
+                                               value="@item.OrderID"
+                                               aria-label="Chọn đơn hàng @item.OrderCode" />
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="ems-order-identity">
+                                <button class="ems-shipping-code-btn"
+                                        type="button"
+                                        onclick="markOrderCardSelected(this); btnSearchCode('@item.ShippingCode','@ShopId')"
+                                        title="Xem thông tin bưu gửi @item.ShippingCode">
+                                    @item.ShippingCode
+                                </button>
+
+                                <div class="ems-order-subcodes">
+                                    @if(!string.IsNullOrEmpty(item.OrderCode))
+                                    {
+                                        <a class="ems-order-code-link"
+                                           href="#"
+                                           onclick="btnDetailOrder(@item.OrderID,@item.ShopID); return false;"
+                                           title="Xem chi tiết đơn hàng">
+                                            @item.OrderCode
+                                        </a>
+                                    }
+
+                                    @if(!string.IsNullOrEmpty(item.BatchCode))
+                                    {
+                                        <a class="ems-batch-code-link"
+                                           href="#"
+                                           onclick="btnDetailOrderBatch('@item.BatchCode',@item.ShopID); return false;"
+                                           title="Xem chi tiết lô">
+                                            Lô: @item.BatchCode
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="ems-order-head-actions">
+                                <span class="ems-status-badge @statusClass" title="@item.OrderStatusName">
+                                    @item.OrderStatusName
+                                </span>
+
+                                <div class="dropdown">
+                                    <button class="ems-more-btn"
+                                            type="button"
+                                            id="@actionMenuId"
+                                            data-bs-toggle="dropdown"
+                                            data-boundary="viewport"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            title="Thao tác với đơn hàng">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+
+                                    <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="@actionMenuId">
+                                        <div class="py-1">
+                                            @if(item.ShopID == ViewBag.ShopID)
+                                            {
+                                                if(item.OrderStatus == "D" || item.OrderStatus == "N" || item.OrderStatus == "L")
+                                                {
+                                                    <a class="dropdown-item" href="#" onclick="btnEditOrder(@item.OrderID, '@item.BatchCode'); return false;">Sửa đơn hàng</a>
+                                                    if(item.OrderStatus == "D" || item.OrderStatus == "N")
+                                                    {
+                                                        <a class="dropdown-item" href="#" onclick="btnCancelOrder(@item.OrderID, '@item.OrderCode', '@item.BatchCode', '@item.OrderStatus'); return false;">Hủy đơn hàng</a>
+                                                        if(item.OrderStatus == "D")
+                                                        {
+                                                            <a class="dropdown-item" href="#" onclick="btnAcceptOrder(@item.OrderID, '@item.OrderCode', '@item.BatchCode', '@item.OrderStatus'); return false;">Duyệt đơn hàng</a>
+                                                        }
+                                                        else if(item.OrderStatus == "N")
+                                                        {
+                                                            <a class="dropdown-item" href="#" onclick="btnSendTransport(@item.OrderID, '@item.OrderCode', '@item.BatchCode', '@item.OrderStatus'); return false;">Gửi đơn vị vận chuyển</a>
+                                                        }
+                                                    }
+                                                }
+
+                                                if(item.OrderStatus == "W")
+                                                {
+                                                    <a class="dropdown-item" href="#" onclick="btnCancelOrder(@item.OrderID, '@item.OrderCode', '@item.BatchCode', '@item.OrderStatus'); return false;">Hủy đơn hàng</a>
+                                                    <a class="dropdown-item" href="#" onclick="btnCancelTransport(@item.OrderID, '@item.OrderCode', '@item.BatchCode', '@item.OrderStatus'); return false;">Hủy yêu cầu vận chuyển</a>
+                                                }
+
+                                                <a class="dropdown-item" href="#" onclick="btnCoppyOrder(@item.OrderID, '@item.BatchCode'); return false;">Sao chép đơn hàng</a>
+                                                <a class="dropdown-item" href="#" onclick="btnPrintOrder('@item.EMSOneCode', @item.ShopID); return false;">In đơn hàng</a>
+
+                                                if(item.OrderStatus != "D" && item.OrderStatus != "L" && item.OrderStatus != "C")
+                                                {
+                                                    <a class="dropdown-item" href="#" onclick="btnRequestSupport('@item.ShippingCode'); return false;">Gửi hỗ trợ</a>
+                                                }
+
+                                                if(item.OrderStatus == "F" || item.OrderStatus == "G" || item.OrderStatus == "H" ||
+                                                   item.OrderStatus == "I" || item.OrderStatus == "U" || item.OrderStatus == "V" ||
+                                                   item.OrderStatus == "Z")
+                                                {
+                                                    <a class="dropdown-item" href="#" onclick="btnSignaruteAndImageInfo('@item.ShippingCode', 'NORMAL'); return false;">Xem hình ảnh báo phát</a>
+                                                    if(item.OrderStatus == "G" || item.OrderStatus == "H" ||
+                                                       item.OrderStatus == "I" || item.OrderStatus == "Z")
+                                                    {
+                                                        <a class="dropdown-item" href="#" onclick="btnSignaruteAndImageInfo('@item.ShippingCode', 'AUTHOR'); return false;">Xem ảnh xác thực</a>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <a class="dropdown-item" href="#" onclick="btnPrintOrder('@item.EMSOneCode', @item.ShopID); return false;">In đơn hàng</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ems-order-customer">
+                            <div class="ems-customer-name">@item.SenderName</div>
+
+                            @if(!string.IsNullOrEmpty(item.SenderPhone))
+                            {
+                                <div class="ems-customer-meta">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <span>@item.SenderPhone</span>
+                                </div>
+                            }
+
+                            @if(!string.IsNullOrEmpty(item.SenderFullAddress))
+                            {
+                                <div class="ems-customer-address" title="@item.SenderFullAddress">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>@item.SenderFullAddress</span>
+                                </div>
+                            }
+                        </div>
+
+                        @if(item.OrderStatus == "C")
+                        {
+                            <div class="ems-cancel-block">
+                                <div class="ems-cancel-info">
+                                    <i class="fas fa-user-times"></i>
+                                    <span>Người hủy: @item.UpdatedName</span>
+                                </div>
+                                <div class="ems-cancel-info">
+                                    <i class="far fa-clock"></i>
+                                    <span>Thời gian hủy: @item.UpdatedDate</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="ems-order-card-footer">
+                            <span class="ems-created-time">
+                                <i class="far fa-clock"></i>
+                                @item.CreatedDate
+                            </span>
+
+                            <button class="ems-view-detail-btn"
+                                    type="button"
+                                    onclick="markOrderCardSelected(this); btnSearchCode('@item.ShippingCode','@ShopId')">
+                                Xem chi tiết <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </article>
+                }
+            }
+        </div>
+
+        <div class="ems-order-pagination">
+            <span class="ems-order-page-info">Trang @pageIndex/@totalPages</span>
+
+            <div class="dataTables_paginate paging_simple_numbers" id="SearchListDataTable_paginate">
+                <ul class="pagination pagination-circle align-items-center">
+                    <li class="page-item previous @(pageIndex==1 ? "disabled":"")">
+                        <a href="#" class="page-link js-goto-page" data-page="@(pageIndex-1)" aria-label="Trang trước">&lt;</a>
+                    </li>
+
+                    @{
+                        if(totalPages <= 7)
+                        {
+                            for(int p = 1; p <= totalPages; p++)
+                            {
+                                <li class="page-item @(p==pageIndex?"active":"")">
+                                    <a href="#" class="page-link js-goto-page" data-page="@p">@p</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="page-item @(pageIndex==1?"active":"")">
+                                <a href="#" class="page-link js-goto-page" data-page="1">1</a>
+                            </li>
+
+                            var ws = Math.Max(2, pageIndex - 1);
+                            var we = Math.Min(totalPages - 1, pageIndex + 1);
+                            if(pageIndex <= 4) { ws = 2; we = 5; }
+                            if(pageIndex >= totalPages - 3) { ws = totalPages - 4; we = totalPages - 1; }
+
+                            if(ws > 2)
+                            {
+                                <li class="page-item disabled"><a href="#" class="page-link">…</a></li>
+                            }
+
+                            for(int p = ws; p <= we; p++)
+                            {
+                                <li class="page-item @(p==pageIndex?"active":"")">
+                                    <a href="#" class="page-link js-goto-page" data-page="@p">@p</a>
+                                </li>
+                            }
+
+                            if(we < totalPages - 1)
+                            {
+                                <li class="page-item disabled"><a href="#" class="page-link">…</a></li>
+                            }
+
+                            <li class="page-item @(pageIndex==totalPages?"active":"")">
+                                <a href="#" class="page-link js-goto-page" data-page="@totalPages">@totalPages</a>
+                            </li>
+                        }
+                    }
+
+                    <li class="page-item next @(pageIndex>=totalPages ? "disabled":"")">
+                        <a href="#" class="page-link js-goto-page" data-page="@(pageIndex+1)" aria-label="Trang sau">&gt;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xl-8 col-lg-12 col-md-12 ems-order-detail-panel">
+    <div id="ShowDetailShippingView" class="ems-order-detail-shell">
+        <div class="ems-order-detail-placeholder">
+            <i class="fas fa-box-open"></i>
+            <strong>Chọn một bưu gửi để xem chi tiết</strong>
+            <span>Thông tin tra cứu sẽ hiển thị tại khu vực này.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var SearchOrderStatus = '@ViewBag.SearchOrderStatus';
+        var CheckCustomerCode = '@ViewBag.CheckCustomerCode';
+        if ('@ViewBag.ReloadStatusNumber' == "Y") {
+            LoadCountStatus();
+        }
+    });
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+
+    function chbSelectData(this1) {
+        var isChecked = $(this1).is(":checked");
+        var BatchCode = $(this1).attr("data-BatchCode");
+
+        $(this1).closest('.ems-order-card').toggleClass('is-checked', isChecked);
+
+        if (BatchCode) {
+            $('.ems-order-select').filter(function () {
+                return $(this).attr('data-BatchCode') == BatchCode;
+            }).each(function () {
+                $(this).prop('checked', isChecked);
+                $(this).closest('.ems-order-card').toggleClass('is-checked', isChecked);
+            });
+        }
+    }
+
+    function markOrderCardSelected(element) {
+        $('.ems-order-card').removeClass('is-selected');
+        $(element).closest('.ems-order-card').addClass('is-selected');
+    }
+
+    function LoadCountStatus() {
+        var data = @Html.Raw(Json.Encode(ViewBag.OrderStatusNumber));
+        var TotalOrder = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Count >= 1000) {
+                $("#OrderStatus" + data[i].Status).text("(999+)");
+            } else {
+                $("#OrderStatus" + data[i].Status).text("(" + data[i].Count + ")");
+            }
+            if (data[i].Status != "C" && data[i].Status != "D" && data[i].Status != "L") {
+                //Trạng thái đơn hàng khác đã huỷ, đơn nháp và tại cửa hàng thì tính tổng
+                TotalOrder += data[i].Count;
+            }
+        }
+        if (TotalOrder >= 1000) {
+            $("#StatusAll").text("(999+)");
+        } else {
+            $("#StatusAll").text("(" + TotalOrder + ")");
+        }
+    }
+
+    function btnSearchCode(OrderCodeOrShippingCode, ShopID) {
+            if (OrderCodeOrShippingCode) {
+                $.post('@Url.Action("InfoShippingView","Handle")', {
+                    ShippingCode: OrderCodeOrShippingCode, ShopID: ShopID
+                }, function (data) {
+                    $("#ShowDetailShippingView").html(data);
+                });
+            }
+    };
+
+    function btnDetailOrder(OrderID, ShopID) {
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: OrderID, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnDetailOrderBatch(BatchCode, ShopID) {
+        $.post('@Url.Action("DetailOrderBatchView", "OrderBatch")', {
+            BatchCode: BatchCode, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnEditOrder(OrderID, BatchCode) {
+        var param = "";
+        if (BatchCode) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CheckEditOrderBatch", "OrderBatch")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    SearchKey: btoa(BatchCode)
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        localStorage.setItem('EditOrderBatchView', res.Data);
+                        window.location.href = '@Url.Action("HandleEditOrderBatchView", "OrderBatch")';
+                        //window.location.href = '@Url.Action("EditOrderBatchView", "OrderBatch")?SearchKey=' + btoa(BatchCode);
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                }
+            });
+        } else {
+            param = String.format("SearchKey={0}", btoa(OrderID));
+            window.location.href = '@Url.Action("EditOrderView", "Order")?' + param;
+        }
+    }
+
+    function btnCoppyOrder(OrderID, BatchCode) {
+        var param = "";
+        if (BatchCode) {
+            param = String.format("SearchKey={0}", btoa(BatchCode));
+            window.location.href = '@Url.Action("CoppyOrderBatchView", "OrderBatch")?' + param;
+        } else {
+            param = String.format("SearchKey={0}", btoa(OrderID));
+            window.location.href = '@Url.Action("CoppyOrderView", "Order")?' + param;
+        }
+    }
+
+    function btnRequestSupport(ShippingCode) {
+        $.post('@Url.Action("AddRequestSupportView", "RequestSupport")', {
+            EShippingCode: ShippingCode
+        }, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnSignaruteAndImageInfo(ShippingCode, SearchKey) {
+        $.post('@Url.Action("InformationSignaruteAndImageOrderView", "Order")', {
+            ShippingCode: ShippingCode,
+            SearchKey: SearchKey
+        }, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnEditReceiverAddress(OrderID, OrderCode, BatchCode, ProvinceID, DistrictID, WardID, Street) {
+        var data = {
+            OrderID: OrderID,
+            OrderCode, OrderCode,
+            BatchCode, BatchCode,
+            ReceiverProvinceID: ProvinceID,
+            ReceiverDistrictID: DistrictID,
+            ReceiverWardID: WardID,
+            ReceiverStreet: Street
+        };
+
+        $.post('@Url.Action("EditOrderReceiverAddressView", "Order")', data, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+    // Length change -> gọi lại hàm btnSearch ở View cha, truyền PageIndex/PageSize
+    $(document).off("change", "#dtLength").on("change", "#dtLength", function () {
+        var ps = parseInt(this.value, 10) || 20;
+        var status = $('.nav-link.active').data('status');
+        if (window.btnSearch) window.btnSearch(status, 1, ps);
+    });
+
+    // Pager click -> gọi lại btnSearch(PageIndex,...)
+    $(document).off("click", ".js-goto-page").on("click", ".js-goto-page", function (e) {
+        e.preventDefault();
+        var p = parseInt($(this).data("page"), 10);
+        if (!p || p < 1) return;
+        var ps = parseInt($("#dtLength").val(), 10) || 20;
+        var status = $('.nav-link.active').data('status');
+        if (window.btnSearch) window.btnSearch(status, p, ps);
+    });
+</script>

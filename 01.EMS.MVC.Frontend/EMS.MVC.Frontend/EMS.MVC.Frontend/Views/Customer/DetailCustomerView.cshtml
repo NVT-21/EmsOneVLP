@@ -1,0 +1,121 @@
+﻿@model EMS.MVC.Frontend.Models.DetailCustomerViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-medium">
+    <div class="d-flex justify-content-end align-items-end mb-3">
+        <div class="d-flex">
+            <button type="button" onclick="window.location.href = '@Url.Action("AddOrderView", "Order")'" class="btn btn-primary ms-3">
+                <i class="fa fa-plus me-1"></i>
+                Tạo đơn hàng
+            </button>
+            <button type="button" onclick="window.location.href = '@Url.Action("EditCustomerView", "Customer", new { SearchKey = EMS.Library.Security.EncodeBase64(Model.ID.ToString()) })'" class="btn btn-secondary ms-3">
+                <i class="icon-edit fs-18"></i>
+                Chỉnh sửa
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <p class="fs-16 font-w600">Thông tin liên hệ</p>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Họ và tên</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.FullName)</p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Số điện thoại</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.MobileNumber)</p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Email</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.Email)</p>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label class="text-2">Địa chỉ</label>
+                            <p class="font-w600">
+                                @if (!string.IsNullOrEmpty(Model.FullAddress))
+                                {
+                                    Write(Model.FullAddress);
+                                }
+                                else
+                                {
+                                    Write(Model.Street);
+                                }
+                            </p>
+                        </div>
+                        @*<div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="text-2">Tỉnh/Thành phố</label>
+                                    <p class="font-w600">@Html.DisplayFor(m => m.Province.Name)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="text-2">Quận/Huyện</label>
+                                    <p class="font-w600">@Html.DisplayFor(m => m.District.Name)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label class="text-2">Phường/Xã</label>
+                                    <p class="font-w600">@Html.DisplayFor(m => m.Ward.Name)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-2">
+                                    <label class="text-2">Địa chỉ</label>
+                                    <p class="font-w600">@Html.DisplayFor(m => m.Street)</p>
+                                </div>
+                            </div>*@
+                    </div>
+                    <p class="fs-16 font-w600">Thông tin khác</p>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Ngày sinh</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.BirthDay)</p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Mã số thuế</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.TaxCode)</p>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Kênh</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.Channel)</p>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label class="text-2">Nhãn khách hàng</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.CustomerSticker)</p>
+                        </div>
+                    </div>
+                    <p class="fs-16 font-w600">Thông tin bổ sung</p>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label class="text-2">Nhóm khách hàng</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.GroupName)</p>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label class="text-2">Ghi chú</label>
+                            <p class="font-w600">@Html.DisplayFor(m => m.Note)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <p class="fs-16 font-w600">Lịch sử mua hàng</p>
+                    <div id="tbl-data" class="table-primary">
+                        @{
+                            Html.RenderAction("OrderHistoryCustomerView", "Customer", new { MobileNumber = Model.MobileNumber });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

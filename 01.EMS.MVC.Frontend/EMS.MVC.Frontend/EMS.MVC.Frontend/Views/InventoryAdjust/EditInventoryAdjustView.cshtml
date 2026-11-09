@@ -1,0 +1,227 @@
+﻿@model EMS.MVC.Frontend.Models.EditInventoryAdjustViewModel
+@{
+    ViewBag.Title = "EditInventoryAdjustView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-header">Mã phiếu điều chỉnh @Model.Code</div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="mb-3">
+                        <label class="form-label">Kho điều chỉnh</label>
+                        <select class="select2 form-control" id="WarehouseID">
+                            @foreach (var item in Model.WarehouseList)
+                            {
+                                if (item.IsDefault == "Y")
+                                {
+                                    <option value="@item.ID" selected>
+                                        @item.WareHouseName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item.ID">
+                                        @item.WareHouseName
+                                    </option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger" id="errWarehouseID"></span>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="mb-3 ">
+                        <label class="form-label">Ngày điều chỉnh</label>
+                        <input name="datepicker" class=" form-control" id="ImplementationDate" value="@DateTime.Now.ToString("dd/MM/yyyy HH:mm")">
+                        <span class="error-message" id="errImplementationDate"></span>
+                    </div>
+                </div>
+                <div class=" col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" rows="1" id="Note" maxlength="2000"></textarea>
+                    </div>
+                </div>
+                @*<div class="col-6">
+                    <div class="mb-3">
+                        <div class="form-check custom-checkbox ms-1">
+                            <input type="checkbox" class="form-check-input" id="cbStockTake">
+                            <label class="form-check-label" for="cbStockTake">Điều chỉnh theo phiếu kiểm kho</label>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive table-primary">
+                <table class="table table-responsive-md" id="ListDataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Chọn</th>
+                            <th class="text-center">Mã phiếu điều chỉnh</th>
+                            <th class="text-center">Thời gian kiểm kho</th>
+                            <th class="text-center">Thời gian xác nhận</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="checkedRadio(this)">
+                            <td class="text-center">
+                                <div class="form-group">
+                                    <div class="form-check form-check-primary text-center">
+                                        <label class="form-check-label text-center">
+                                            <input class="form-check-input" type="radio" name="StockTakeID" value="@Model.StockTake.ID" checked />
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">@Model.StockTake.Code</td>
+                            <td class="text-center">
+                                @{
+                                    var splitCreatedDate = Model.StockTake.CreatedDate.Split(' ');
+                                    <span>@Model.StockTake.CreaterName</span>
+                                    <br />
+                                    <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                                    <br />
+                                    <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @{
+                                    if (Model.StockTake.UpdatedDate != "")
+                                    {
+                                        var splitUpdatedDate = Model.StockTake.UpdatedDate.Split(' ');
+                                        <span>@Model.StockTake.UpdaterName</span>
+                                        <br />
+                                        <span style="line-height: 1.4rem;">@splitUpdatedDate[0]</span>
+                                        <br />
+                                        <span style="line-height: 1.4rem;">@splitUpdatedDate[1]</span>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>            
+            <div class="col-12 text-center">
+                <span class="error-message" id="errStockTakeID"></span>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="col-lg-12">
+                <div class="d-sm-flex justify-content-end align-items-center">
+                    <button type="button" onclick="btnCancel()" class="btn btn-outline-dark">Hủy bỏ</button>
+                    <button type="button" onclick="btnCreate()" class="btn btn-primary">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        CreateDatePickerAndTime('ImplementationDate');
+        MyCreateDataTable("ListDataTable");
+    });
+
+    function checkedRadio(This) {
+        $(This).find('input:radio').prop('checked', true);
+    }
+
+    function btnCancel() {
+        window.location.href = '@Url.Action("InventoryAdjustView", "InventoryAdjust")';
+    }
+
+    function btnCreate() {
+        let isError = false;
+        var data = {
+            ID: @Model.StockTake.ID,
+            WarehouseID: $("#WarehouseID").val(),
+            ImplementationDate: $("#ImplementationDate").val().trim(),
+            Note: $("#Note").val().trim(),
+            StockTakeID: $("input[name=StockTakeID]:checked").val()
+        };
+        if (data.StockTakeID == "" || data.StockTakeID == undefined) {
+            $('#errStockTakeID').text('Vui lòng chọn phiếu kiểm kho.');
+            isError = true;
+        }
+        if (isError) {
+            return;
+        }
+        isError = CheckNullValue(data.WarehouseID, '#errWarehouseID', "", isError);
+        isError = CheckNullValue(data.ImplementationDate, '#errImplementationDate', "", isError);
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn sửa phiếu điều chỉnh kho?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditInventoryAdjust", "InventoryAdjust")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            var resData = JSON.parse(res.Data);
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = '@Url.Action("InventoryAdjustView", "InventoryAdjust")';
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

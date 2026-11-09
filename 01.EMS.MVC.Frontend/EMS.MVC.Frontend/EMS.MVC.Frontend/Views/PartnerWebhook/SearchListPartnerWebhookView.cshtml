@@ -1,0 +1,134 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListPartnerWebhookViewModel>
+@{
+    var stt = 1;
+}
+<table id="SearchListDataTable" class="table table-responsive-md">
+    <thead>
+        <tr class="text-center">
+            <th> STT </th>
+            <th> Mã PP/CRM </th>
+            <th> Tên đối tác </th>
+            <th> Link Webhook </th>
+            <th> API Key </th>
+            <th> Thời gian tạo </th>
+            <th> Trạng thái </th>
+            <th style="max-width: 110px;"> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-center">@(stt++)</td>
+                <td class="text-start">
+                    @{
+                        var splitPartnerCode = item.PartnerCode.Split(',');
+                        for (var i = 0; i < splitPartnerCode.Length; i++)
+                        {
+                            <span style="line-height: 1.4rem;">@splitPartnerCode[i]</span>
+                            <br />
+                        }
+                    }
+                </td>
+                <td class="text-start">@item.PartnerName</td>
+                <td class="text-center"><a target="_blank" href="@item.PartnerURL"> < Xem link Webhook ></a></td>
+                <td class="text-center">@item.PartnerKey</td>
+                <td class="text-center">@item.CreatedDate</td>
+                <td class="text-center">
+                    @if (item.Status == "Y")
+                    {
+                        <b class="text-success">Đang hoạt động</b>
+                    }
+                    else if (item.Status == "N")
+                    {
+                        <b class="text-danger">Ngưng hoạt động</b>
+                    }
+                </td>
+                <td class="text-center">
+                    @if (splitPartnerCode.Length == 1)
+                    {
+                        <button type="button" class="btn btn-info light" onclick="fnEdit('@item.ID')" title="Sửa thông tin">
+                            <i class="icon-edit fs-18"></i>
+                        </button>
+                        <button type="button" class="btn btn-info light" onclick="fnDelete('@item.ID');" title="Xoá đăng ký">
+                            <i class="icon-trash fs-18"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    function fnEdit(ID) {
+        $.post('@Url.Action("EditPartnerWebhookView", "PartnerWebhook")', {
+            ID: ID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+    function fnDelete(ID) {
+        swal({
+            text: "Bạn chắc chắn muốn xoá?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JDelete", "PartnerWebhook")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: ID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            //CreateCustomSwal("success", res.Message);
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function () {
+                                $.get('@Url.Action("SearchListPartnerWebhookView", "PartnerWebhook")', function (data) {
+                                    $('#tbl-data').html(data);
+                                });
+                            });
+                        }
+                        else {
+                            //CreateCustomSwal("error", res.Message);
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,100 @@
+﻿@{
+    Layout = "~/Areas/Facebook/Views/Shared/_Layout.cshtml";
+    var IsLikeComment = ViewBag.IsLikeComment;
+}
+<div class="profile">
+    <!-- Nav tabs -->
+    <div class="custom-tab-1">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" onclick="fnPageConfigurationClick('autolike')">
+                <a class="nav-link active" data-bs-toggle="tab" href="#autolike" id="p_Tab_autolike">Thích bình luận</a>
+            </li>
+            <li class="nav-item" onclick="fnPageConfigurationClick('autohidden')">
+                <a class="nav-link" data-bs-toggle="tab" href="#autohidden" id="p_Tab_autohidden"> Ẩn bình luận</a>
+            </li>
+            <li class="nav-item" onclick="fnPageConfigurationClick('conversationstickers')">
+                <a class="nav-link" data-bs-toggle="tab" href="#conversationstickers" id="p_Tab_conversationstickers"> Thẻ hội thoại</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane fade fade show active" id="autolike" role="tabpanel">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            Html.RenderAction("FAB_AutoLike", "FAB_PageConfiguration", new { area = "Facebook" });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade " id="autohidden">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            Html.RenderAction("FAB_AutoHidden", "FAB_PageConfiguration", new { area = "Facebook" });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="conversationstickers">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            Html.RenderAction("FAB_ConversationStickers", "FAB_PageConfiguration", new { area = "Facebook" });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="profile4">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane " id="profile5">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var arrLastTab = ["autolike", "autohidden", "conversationstickers"];
+            var lastTab = "";
+            if (sessionStorage.getItem('lastTabPageConfiguration') != null) {
+                lastTab = sessionStorage.getItem('lastTabPageConfiguration');
+            } else {
+                lastTab = "autolike";
+            }
+            var arrLastTabFilter = arrLastTab.filter((item) => item !== lastTab);
+            for (var i = 0; i < arrLastTabFilter.length; i++) {
+                $("#" + arrLastTabFilter[i]).removeClass("show");
+                $("#" + arrLastTabFilter[i]).removeClass("active");
+                $("#p_Tab_" + arrLastTabFilter[i]).removeClass("active");
+            }
+            $("#" + lastTab).addClass("show");
+            $("#" + lastTab).addClass("active");
+            $("#p_Tab_" + lastTab).addClass("active");
+            fnPageConfigurationClick(lastTab);
+        });
+        function fnPageConfigurationClick(id) {
+            sessionStorage.setItem('lastTabPageConfiguration', id);
+        }
+    </script>
+}

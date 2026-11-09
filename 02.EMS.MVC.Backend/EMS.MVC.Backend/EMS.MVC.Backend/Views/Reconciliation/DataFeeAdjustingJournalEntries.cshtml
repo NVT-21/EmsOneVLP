@@ -1,0 +1,96 @@
+﻿@model EMS.MVC.Backend.Models.AdjustingJournalEntriesViewModel
+@{
+    Layout = null;
+    var stt = 1;
+}
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle" colspan="6">Tổng dữ liệu</th>
+            @if (Model != null)
+            {
+                <th class="text-right"> @Model.SumProvisionalVolume.ToString("N0")</th>
+                <th class="text-right"> @Model.SumChargeableVolume.ToString("N0")</th>
+                <th class="text-right"> @Model.SumMainFee.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumServiceFee.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumTransportFeePublic.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumFeePublic.ToString("N0") ₫</th>
+            }
+            else
+            {
+                <th class="text-right"> 0</th>
+                <th class="text-right"> 0</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+            }
+            <th class="align-middle" style="max-width: 260px;"></th>
+        </tr>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> ID Điều chỉnh </th>
+            <th class="align-middle"> Ngày điều chỉnh </th>
+            <th class="align-middle"> Bưu cục điều chỉnh </th>
+            <th class="align-middle"> Mã bưu gửi </th>
+            <th class="align-middle"> Ngày phát hành</th>
+            <th class="align-middle"> KL</th>
+            <th class="align-middle"> KL Quy đổi</th>
+            <th class="align-middle"> Cước chính</th>
+            <th class="align-middle"> Cước DV</th>
+            <th class="align-middle"> Cước COD</th>
+            <th class="align-middle"> Tiền thu hộ</th>
+            <th class="align-middle" style="max-width: 260px;"> Lý do</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.ListItem)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.AdjustingID</td>
+                    <td class="text-center">@item.AdjustingDate</td>
+                    <td class="text-center">@item.AdjustingPostOffice</td>
+                    <td class="text-center">@item.ItemCode</td>
+                    <td class="text-left">@item.TimeRelease</td>
+                    <td class="text-right">@item.ProvisionalVolume</td>
+                    <td class="text-right">@item.ChargeableVolume</td>
+                    <td class="text-right">@item.MainFee.ToString("N0")</td>
+                    <td class="text-right">@item.ServiceFee.ToString("N0")</td>
+                    <td class="text-right">@item.TransportFeePublic.ToString("N0")</td>
+                    <td class="text-right">@item.FeePublic.ToString("N0")</td>
+                    <td class="text-left" style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;">@item.Reason</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false
+        });
+    });
+</script>

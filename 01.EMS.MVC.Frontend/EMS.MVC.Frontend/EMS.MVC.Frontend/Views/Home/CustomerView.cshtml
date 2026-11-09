@@ -1,0 +1,194 @@
+﻿@model EMS.MVC.Frontend.Models.StatisticalCustomerViewModel
+
+<div class="card-header border-0 flex-wrap">
+    <h4 class="fs-16 font-w600 mb-0">TOP 5 KHU VỰC</h4>
+    <div class="d-flex">
+        <div class="card-action dash-tabs mt-3 mt-sm-0">
+            <ul class="nav nav-tabs" role="tablist" id="TabCustomer">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#SellingCustomer" role="tab" onclick="lastTabCustomer('1')">Bán chạy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " data-bs-toggle="tab" href="#RefundCustomer" role="tab" onclick="lastTabCustomer('2')">Hoàn cao</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="card-body py-0">
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="SellingCustomer">
+            <div class="chart-point">
+                <div class=" " id="divSellingChart" data-show="false">
+                    <canvas id="pie_chart" height="200"></canvas>
+                </div>
+                <ul class="chart-point-list">
+                    @foreach (var itemSelling in Model.CustomerSelling)
+                    {
+                        <li><i class="fa fa-circle  me-1" style="color: @{ Write(itemSelling.BackgroundColor); }"></i> @itemSelling.ProvinceName</li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="tab-pane fade " id="RefundCustomer">
+            <div class="chart-point">
+                <div class=" " id="divRefundChart" data-show="false">
+                    <canvas id="pie_chart_refund" height="200"></canvas>
+                </div>
+                <ul class="chart-point-list">
+                    @foreach (var itemRefund in Model.CustomerRefund)
+                    {
+                        <li><i class="fa fa-circle  me-1" style="color: @{ Write(itemRefund.BackgroundColor); }"></i> @itemRefund.ProvinceName</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var dataSelling = @Html.Raw(Json.Encode(Model.CustomerSelling));
+    var arrLable_C_S = [];
+    var arrData_C_S = [];
+    var arrBackgroundColor_C_S = [];
+    var arrData_TotalCOD_C_S = [];
+    var arrData_TotalOrder_C_S = [];
+    for (var i = 0; i < dataSelling.length; i++) {
+        arrLable_C_S.push(dataSelling[i].ProvinceName);
+        arrData_C_S.push(dataSelling[i].Percentage);
+        arrBackgroundColor_C_S.push(dataSelling[i].BackgroundColor);
+        arrData_TotalCOD_C_S.push(dataSelling[i].TotalCOD);
+        arrData_TotalOrder_C_S.push(dataSelling[i].TotalOrderProvince);
+    }
+    var dataRefund = @Html.Raw(Json.Encode(Model.CustomerRefund));
+    var arrLable_C_R = [];
+    var arrData_C_R = [];
+    var arrBackgroundColor_C_R = [];
+    var arrData_TotalCOD_C_R = [];
+    var arrData_TotalOrder_C_R = [];
+    for (var i = 0; i < dataRefund.length; i++) {
+        arrLable_C_R.push(dataRefund[i].ProvinceName);
+        arrData_C_R.push(dataRefund[i].Percentage);
+        arrBackgroundColor_C_R.push(dataRefund[i].BackgroundColor);
+        arrData_TotalCOD_C_R.push(dataRefund[i].TotalCOD);
+        arrData_TotalOrder_C_R.push(dataRefund[i].TotalOrderProvince);
+    }
+    $(document).ready(function () {
+        document.getElementById("SellingCustomer").style.display = "none";
+        document.getElementById("RefundCustomer").style.display = "none";
+        var lastTabCustomer = sessionStorage.getItem('lastTabCustomer');
+        if (lastTabCustomer == null) {
+            lastTabCustomer = '1';
+        }
+        if (lastTabCustomer == '1') {
+            $('#TabCustomer a:first').tab('show');
+            document.getElementById("SellingCustomer").style.display = "block";
+            document.getElementById("RefundCustomer").style.display = "none";
+        } else if (lastTabCustomer == '2') {
+            $('#TabCustomer a:last').tab('show');
+            document.getElementById("SellingCustomer").style.display = "none";
+            document.getElementById("RefundCustomer").style.display = "block"
+
+        }
+        $("#divSellingChart").data("show", true);
+        if ($("#divSellingChart").data("show") != false) {
+            $("#divSellingChart").html("");
+            $("#divSellingChart").append('<canvas id="pie_chart" height="200"></canvas>');
+        };
+        DrawPieChart("pie_chart", arrLable_C_S, arrData_C_S, arrBackgroundColor_C_S, arrData_TotalCOD_C_S, arrData_TotalOrder_C_S);
+        $("#divRefundChart").data("show", true);
+        if ($("#divRefundChart").data("show") != false) {
+            $("#divRefundChart").html("");
+            $("#divRefundChart").append('<canvas id="pie_chart_refund" height="200"></canvas>');
+        };
+        DrawPieChartRefund("pie_chart_refund", arrLable_C_R, arrData_C_R, arrBackgroundColor_C_R, arrData_TotalCOD_C_R, arrData_TotalOrder_C_R);
+    });
+    function lastTabCustomer(tab) {
+        sessionStorage.setItem('lastTabCustomer', tab);
+    }
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("href");
+        if (target == "#SellingCustomer") {
+            document.getElementById("SellingCustomer").style.display = "block";
+            document.getElementById("RefundCustomer").style.display = "none";
+            $("#divSellingChart").data("show", true);
+            if ($("#divSellingChart").data("show") != false) {
+                $("#divSellingChart").html("");
+                $("#divSellingChart").append('<canvas id="pie_chart" height="200"></canvas>');
+            };
+            DrawPieChart("pie_chart", arrLable_C_S, arrData_C_S, arrBackgroundColor_C_S, arrData_TotalCOD_C_S, arrData_TotalOrder_C_S);
+        } else if (target == "#RefundCustomer") {
+            document.getElementById("SellingCustomer").style.display = "none";
+            document.getElementById("RefundCustomer").style.display = "block";
+            $("#divRefundChart").data("show", true);
+            if ($("#divRefundChart").data("show") != false) {
+                $("#divRefundChart").html("");
+                $("#divRefundChart").append('<canvas id="pie_chart_refund" height="200"></canvas>');
+            };
+            DrawPieChartRefund("pie_chart_refund", arrLable_C_R, arrData_C_R, arrBackgroundColor_C_R, arrData_TotalCOD_C_R, arrData_TotalOrder_C_R);
+        }
+    });
+    function DrawPieChart(divID, arrLable, arrData, arrBackgroundColor, arrDataTotalCOD, arrDataTotalOrder) {
+        var pie_chart = document.getElementById(divID).getContext("2d");
+        new Chart(pie_chart, {
+            type: "pie",
+            data: {
+                defaultFontFamily: "Poppins",
+                datasets: [
+                    {
+                        data: arrData,
+                        borderWidth: 0,
+                        backgroundColor: arrBackgroundColor,
+                    },
+                ],
+                labels: arrLable,
+                TotalCOD: arrDataTotalCOD,
+                TotalOrder: arrDataTotalOrder
+            },
+            options: {
+                responsive: true,
+                legend: false,
+                maintainAspectRatio: false,
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            return ' ' + data.labels[tooltipItem.index] + ': ' + data.TotalOrder[tooltipItem.index] + ' đơn - ' + (NumberFormat(data.TotalCOD[tooltipItem.index])).toString().replaceAll(',', '.') + ' đ';
+                        }
+                    }
+                }
+            },
+        });
+        $("#divSellingChart").data("show", false);
+    }
+    function DrawPieChartRefund(divID, arrLable, arrData, arrBackgroundColor, arrDataTotalCOD, arrDataTotalOrder) {
+        var pie_chart = document.getElementById(divID).getContext("2d");
+        new Chart(pie_chart, {
+            type: "pie",
+            data: {
+                defaultFontFamily: "Poppins",
+                datasets: [
+                    {
+                        data: arrData,
+                        borderWidth: 0,
+                        backgroundColor: arrBackgroundColor,
+                    },
+                ],
+                labels: arrLable,
+                TotalCOD: arrDataTotalCOD,
+                TotalOrder: arrDataTotalOrder
+            },
+            options: {
+                responsive: true,
+                legend: false,
+                maintainAspectRatio: false,
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            return ' ' + data.labels[tooltipItem.index] + ': ' + data.TotalOrder[tooltipItem.index] + ' đơn - ' + (NumberFormat(data.TotalCOD[tooltipItem.index])).toString().replaceAll(',', '.') + ' đ';
+                        }
+                    }
+                }
+            },
+        });
+        $("#divRefundChart").data("show", false);
+    }
+</script>

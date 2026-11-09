@@ -1,0 +1,478 @@
+﻿@model EMS.MVC.Frontend.Models.AddRequestSupportViewModel
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Thêm yêu cầu hỗ trợ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                @Html.HiddenFor(m => m.ShopID)
+                @Html.HiddenFor(m => m.TotalCOD)
+                @Html.HiddenFor(m => m.Sender.Province.ID)
+                @Html.HiddenFor(m => m.Sender.District.ID)
+                @Html.HiddenFor(m => m.Sender.Ward.ID)
+                @Html.HiddenFor(m => m.Sender.Street)
+                @Html.HiddenFor(m => m.Receiver.MobileNumber)
+                @Html.HiddenFor(m => m.Receiver.Province.ID)
+                @Html.HiddenFor(m => m.Receiver.District.ID)
+                @Html.HiddenFor(m => m.Receiver.Ward.ID)
+                @Html.HiddenFor(m => m.Receiver.Street)
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Mã bưu gửi <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.EShippingCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã bưu gửi" } })
+                        <span class="text-danger" id="errEShippingCode"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Nhóm yêu cầu <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.RequestSupportGroup, new SelectList(Model.ListRequestSupportGroup, "ID", "Name"), "-- Chọn --", new { @class = "select2", @disabled="true" })
+                        <span class="text-danger" id="errRequestSupportGroup"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Loại yêu cầu <span class="text-danger" id="RequiredRequestType">*</span></label>
+                        @Html.DropDownListFor(model => model.RequestSupportType, new SelectList(Model.ListRequestSupportType, "ID", "Name"), "-- Chọn --", new { @class = "select2", @disabled = "true" })
+                        <span class="text-danger" id="errRequestSupportType"></span>
+                        <div id="ShowRequestTypeDifferent" style="display: none;">
+                            @Html.EditorFor(model => model.RequestSupportTypeDifferent, new { htmlAttributes = new { @type = "text", @class = "form-control" } })
+                        </div>
+                        <span class="text-danger" id="errRequestSupportTypeDifferent"></span>
+                    </div>
+                </div>
+                <div id="ShowInfoRequestTypeView" style="display: none;">
+
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Nội dung</label>
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Nội dung", @rows = "4", @maxlength = "250", @disabled = "true" })
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescription">0</span>/250</span>
+                        </div>
+                        <span class="text-danger" id="errDescription"></span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Ghi chú</label>
+                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Ghi chú", @rows = "4", @maxlength = "250", @disabled = "true" })
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">0</span>/250</span>
+                        </div>
+                        <span class="text-danger" id="errNote"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="mb-1">Tài liệu đính kèm</label>
+                        <form id="DocumentUpload" enctype="multipart/form-data">
+                            @Html.EditorFor(model => model.Document, new { htmlAttributes = new { @type = "file", @class = "", @disabled = "true" } })
+                        </form>
+                        <span id="errDocument"></span>
+                        @Html.HiddenFor(m => m.FileName)
+                    </div>
+                </div>
+                @*<div class="col-6">
+                        <div class="mb-3">
+                            <label class="mb-1">Tài liệu đính kèm</label>
+                            <div class="form-file">
+                                <label for="Document">
+                                    <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clip0_1076_39279)">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                  d="M10.0834 4.08301C7.13858 4.08301 4.73394 6.39768 4.59019 9.3064C4.57395 9.63514 4.34525 9.91488 4.0263 9.99615C2.90891 10.2809 2.08337 11.2948 2.08337 12.4997C2.08337 13.9264 3.23997 15.083 4.66671 15.083H6.33337C6.74759 15.083 7.08337 15.4188 7.08337 15.833C7.08337 16.2472 6.74759 16.583 6.33337 16.583H4.66671C2.41154 16.583 0.583374 14.7548 0.583374 12.4997C0.583374 10.7847 1.64002 9.31811 3.13699 8.71278C3.5657 5.25717 6.51204 2.58301 10.0834 2.58301C12.6471 2.58301 14.8878 3.96141 16.1066 6.01453C18.5629 6.49213 20.4167 8.65391 20.4167 11.2497C20.4167 14.1952 18.0289 16.583 15.0834 16.583H14.6667C14.2525 16.583 13.9167 16.2472 13.9167 15.833C13.9167 15.4188 14.2525 15.083 14.6667 15.083H15.0834C17.2005 15.083 18.9167 13.3668 18.9167 11.2497C18.9167 9.28765 17.442 7.66897 15.541 7.4433C15.2948 7.41407 15.0789 7.26504 14.9643 7.04515C14.0461 5.2833 12.2043 4.08301 10.0834 4.08301ZM10.5 8.41634C10.699 8.41634 10.8897 8.49536 11.0304 8.63601L13.5304 11.136C13.8233 11.4289 13.8233 11.9038 13.5304 12.1967C13.2375 12.4896 12.7626 12.4896 12.4697 12.1967L11.25 10.977V15.833C11.25 16.2472 10.9143 16.583 10.5 16.583C10.0858 16.583 9.75004 16.2472 9.75004 15.833V10.977L8.53037 12.1967C8.23748 12.4896 7.7626 12.4896 7.46971 12.1967C7.17682 11.9038 7.17682 11.4289 7.46971 11.136L9.96971 8.63601C10.1104 8.49536 10.3011 8.41634 10.5 8.41634Z"
+                                                  fill="#4E5969" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_1076_39279">
+                                                <rect width="20" height="20" fill="white" transform="translate(0.5)" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+
+                                    Chọn file tải lên
+                                </label>
+                                <form id="DocumentUpload" enctype="multipart/form-data">
+                                    @Html.EditorFor(model => model.Document, new { htmlAttributes = new { @type = "file", @class = "form-file-input form-control" } })
+                                </form>
+                            </div>
+                            <span class="text-danger" id="errDocument"></span>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnAddRequestSupport">Thêm mới</button>
+        </div>
+    </div>
+</div>
+<script>
+    CheckChangeValue("EShippingCode", "Vui lòng mã bưu gửi", "UserName", "Y");
+    CheckChangeValue("RequestSupportGroup", "Vui lòng chọn nhóm yêu cầu", "", "Y");
+    CheckChangeValue("RequestSupportType", "Vui lòng loại yêu cầu", "", "Y");
+    CheckChangeValue("RequestSupportTypeDifferent", "", "Vietnamese", "N");
+    ShowInputLength("Description", "ShowLengthDescription", 250);
+    ShowInputLength("Note", "ShowLengthNote", 250);
+    $(document).ready(function () {
+        if ($("#EShippingCode").val().trim()) {
+            $("#EShippingCode").change();
+        }
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    $("#EShippingCode").on("change", function () {
+        var ShippingCode = $("#EShippingCode").val().trim();
+        if (ShippingCode) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DetailOrderByShippingCode", "Handle")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    ShippingCode: ShippingCode,
+                    ShopID: $("#ShopID").val()
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var item = JSON.parse(res.Data);
+                        $("#TotalCOD").val(item.TotalCOD);
+                        $("#Sender_Province_ID").val(item.SenderProvinceID);
+                        $("#Sender_District_ID").val(item.SenderDistrictID);
+                        $("#Sender_Ward_ID").val(item.SenderWardID);
+                        $("#Sender_Street").val(item.SenderAddress);
+
+                        $("#Receiver_MobileNumber").val(item.ReceiverPhone);
+                        $("#Receiver_Province_ID").val(item.ReceiverProvinceID);
+                        $("#Receiver_District_ID").val(item.ReceiverDistrictID);
+                        $("#Receiver_Ward_ID").val(item.ReceiverWardID);
+                        $("#Receiver_Street").val(item.ReceiverAddress);
+
+                        $("#RequestSupportGroup").attr("disabled", false);
+                        $("#RequestSupportType").attr("disabled", false);
+                        $("#Description").attr("disabled", false);
+                        $("#Note").attr("disabled", false);
+                        $("#Document").attr("disabled", false);
+
+                        var RequestSupportTypeValue = $("#RequestSupportType").val();
+                        if (RequestSupportTypeValue == "6" || RequestSupportTypeValue == "7" || RequestSupportTypeValue == "8" || RequestSupportTypeValue == "9") {
+                            $("#RequestSupportType").change();
+                        }
+                    } else {
+                        $("#errEShippingCode").text(res.Message);
+
+                        $("#RequestSupportGroup").attr("disabled", true);
+                        $("#RequestSupportType").attr("disabled", true);
+                        $("#Description").attr("disabled", true);
+                        $("#Note").attr("disabled", true);
+                        $("#Document").attr("disabled", true);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+    });
+
+    $("#RequestSupportGroup").on("change", function () {
+        var RequestSupportGroupValue = $("#RequestSupportGroup").val();
+        $('#RequestSupportType').empty();
+        $("#ShowInfoRequestTypeView").css("display", "none");
+        if (RequestSupportGroupValue) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SearchListRequestSupportGroup", "Handle")',
+                data: {
+                    ParentID: RequestSupportGroupValue
+                },
+                loading: true,
+                dataType: 'json',
+                success: function (data) {
+                    if (RequestSupportGroupValue == "5") {
+                        $("#RequiredRequestType").css("visibility", "hidden");
+                        $("#ShowRequestTypeDifferent").css("display", "block");
+                        $('#RequestSupportType').next(".select2-container").hide();
+                    } else {
+                        $("#RequiredRequestType").css("visibility", "visible");
+                        $("#ShowRequestTypeDifferent").css("display", "none");
+                        $('#RequestSupportType').next(".select2-container").show();
+                        $("<option/>", {
+                            value: "",
+                            text: "--- Chọn ---"
+                        }).appendTo("#RequestSupportType");
+                        $.each(data, function (index, value) {
+                            $("<option/>", {
+                                value: value.ID,
+                                text: value.Name
+                            }).appendTo("#RequestSupportType");
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                    return;
+                }
+            });
+        } else {
+            $("<option/>", {
+                value: "",
+                text: "--- Chọn ---"
+            }).appendTo("#RequestSupportType");
+        }
+    });
+
+    $("#RequestSupportType").on('change', function () {
+        var RequestSupportTypeValue = $("#RequestSupportType").val();
+        if (RequestSupportTypeValue == "6" || RequestSupportTypeValue == "7" || RequestSupportTypeValue == "8" || RequestSupportTypeValue == "9") {
+            var req = {
+                RequestSupportType: RequestSupportTypeValue,
+                TotalCOD: $("#TotalCOD").val(),
+                Sender: {
+                    Province: {
+                        ID: $('#Sender_Province_ID').val()
+                    },
+                    District: {
+                        ID: $('#Sender_District_ID').val()
+                    },
+                    Ward: {
+                        ID: $('#Sender_Ward_ID').val()
+                    },
+                    Street: $('#Sender_Street').val()
+                },
+                Receiver: {
+                    MobileNumber: $('#Receiver_MobileNumber').val(),
+                    Province: {
+                        ID: $('#Receiver_Province_ID').val()
+                    },
+                    District: {
+                        ID: $('#Receiver_District_ID').val()
+                    },
+                    Ward: {
+                        ID: $('#Receiver_Ward_ID').val()
+                    },
+                    Street: $('#Receiver_Street').val()
+                },
+            }
+            $.post('@Url.Action("SearchInfoByRequestSupportTypeView", "RequestSupport")', req, function (data) {
+                $("#ShowInfoRequestTypeView").css("display", "block");
+                $("#ShowInfoRequestTypeView").html(data);
+            });
+        }
+    });
+
+    $("#Document").on("click", function () {
+        $("#errDocument").text("");
+        $('#DocumentUpload')[0].reset();
+    });
+
+    $("#Document").on("change", function () {
+        var TypeFile = ["JPG", "JPEG", "PNG", "DOC", "DOCX", "XLS", "XLSX", "XLSM" ,"PDF"];
+        var formdata = new FormData(); //FormData object
+        var fileInput = document.getElementById('Document');
+        var filename = fileInput.files[0].name;
+        var filesize = fileInput.files[0].size;
+        var extension = filename.split('.').pop().toUpperCase();
+        var check = TypeFile.includes(extension);
+        if (check == false) {
+            FileName = "";
+            $('#DocumentUpload')[0].reset();
+            $("#errDocument").text("Hệ thống chỉ hỗ trợ tải tập tin dạng ảnh, Word, Excel, PDF.");
+            $("#errDocument").css("color", "red");
+        } else if (filesize >= 5242880) {
+            //5MB
+            FileName = "";
+            $('#DocumentUpload')[0].reset();
+            $("#errDocument").text("Hệ thống hỗ trợ tải tệp tin kích thước tối đa 5 MB.");
+            $("#errDocument").css("color", "red");
+        } else {
+            for (i = 0; i < fileInput.files.length; i++) {
+                formdata.append(fileInput.files[i].name, fileInput.files[i]);
+            }
+            $.ajax({
+                url: '@Url.Action("UploadFile", "DataFile")',
+                type: 'POST',
+                data: formdata,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        var resData = JSON.parse(res.Data);
+                        $("#FileName").val(resData[0].FileName);
+                        $("#errDocument").text(res.Message);
+                        $("#errDocument").css("color", "green");
+                    } else {
+                        $("#FileName").val("");
+                        $("#errDocument").text(res.Message);
+                        $("#errDocument").css("color", "red");
+                        $('#DocumentUpload')[0].reset();
+                    };
+                },
+                error: function (xhr, status, error) {
+                    //var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: error,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                },
+                //complete: function (data) {
+                //    $('#PDFUpload')[0].reset(); // this will reset the form fields
+                //}
+            });
+        }
+    });
+
+    $("#btnAddRequestSupport").on("click", function () {
+        var isError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            RequestSupportGroup: $("#RequestSupportGroup").val() == "" ? "" : $("#RequestSupportGroup option:selected").text(),
+            RequestSupportType: $("#RequestSupportType").val(),
+            RequestSupportTypeDifferent: $("#RequestSupportTypeDifferent").val().trim(),
+            EShippingCode: $("#EShippingCode").val().trim(),
+            Description: $("#Description").val().trim(),
+            Note: $("#Note").val().trim(),
+            Document: $("#FileName").val().trim(),
+            UpdateInformation: ""
+        };
+
+        if (data.RequestSupportType) {
+            data.RequestSupportType = $("#RequestSupportType option:selected").text();
+        } else {
+            if (data.RequestSupportGroup == "Yêu cầu khác") {
+                data.RequestSupportType = data.RequestSupportTypeDifferent;
+            } else {
+                data.RequestSupportType = "";
+            }
+        }
+
+        isError = CheckNullValue(data.RequestSupportGroup, "RequestSupportGroup", "Vui lòng chọn nhóm yêu cầu", isError);
+        if (isError == false) {
+            if (data.RequestSupportGroup == "Yêu cầu khác") {
+                if (RequestSupportTypeDifferent) {
+                    isError = CheckRegexValue(data.RequestSupportTypeDifferent, "Vietnamese", "RequestSupportTypeDifferent", Message, isError);
+                } else {
+                    $("#errRequestSupportTypeDifferent").text("");
+                }
+            }
+        }
+
+        if (data.RequestSupportType == "") {
+            if (data.RequestSupportGroup != "Yêu cầu khác") {
+                $("#errRequestSupportType").text("Vui lòng chọn loại yêu cầu.");
+                $("#RequestSupportType").focus();
+                isError = true;
+            }
+        } else {
+            if (data.RequestSupportType == "Sửa tiền đơn hàng (tiền COD)") {
+                data.UpdateInformation = parseInt(NumberReplace($("#MainTotalCOD").val().trim()));
+                if (data.UpdateInformation) {
+                    if (data.UpdateInformation > 50000000) {
+                        $("#errMainTotalCOD").text("Số tiền COD tối đa 50 triệu đồng/BG.");
+                        $("#MainTotalCOD").focus();
+                        isError = true;
+                    }
+                } else {
+                    $("#errMainTotalCOD").text("Vui lòng nhập số tiền COD.");
+                    $("#MainTotalCOD").focus();
+                    isError = true;
+                }
+                //isError = CheckNullValue(data.UpdateInformation, "MainTotalCOD", "Vui lòng nhập số tiền COD", isError);
+            } else if (data.RequestSupportType == "Sửa số điện thoại giao hàng") {
+                data.UpdateInformation = $("#ReceiverMobileNumber").val().trim();
+                isError = CheckNullAndRegexValue(data.UpdateInformation, "MobileNumber", "ReceiverMobileNumber", "Vui lòng nhập số điện thoại", "Số điện thoại không hợp lệ", isError);
+            } else if (data.RequestSupportType == "Sửa địa chỉ giao hàng (có thể thu phí hoặc không)") {
+                var ProvinceID = $("#ReceiverProvinceID").val();
+                var DistrictID = $("#ReceiverDistrictID").val();
+                var WardID = $("#ReceiverWardID").val();
+                var Address = $("#ReceiverStreet").val().trim();
+
+                isError = CheckNullValue(ProvinceID, "ReceiverProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", isError);
+                isError = CheckNullValue(DistrictID, "ReceiverDistrictID", "Vui lòng chọn Quận/ Huyện", isError);
+                isError = CheckNullValue(WardID, "ReceiverWardID", "Vui lòng chọn Phường/ Xã", isError);
+                isError = CheckNullValue(Address, "ReceiverStreet", "Vui lòng nhập Địa chỉ", isError);
+
+                data.UpdateInformation = ProvinceID + '|' + DistrictID + '|' + WardID + '|' + Address;
+            } else if (data.RequestSupportType == "Sửa thông tin lấy hàng") {
+                var ProvinceID = $("#SenderProvinceID").val();
+                var DistrictID = $("#SenderDistrictID").val();
+                var WardID = $("#SenderWardID").val();
+                var Address = $("#SenderStreet").val().trim();
+
+                isError = CheckNullValue(ProvinceID, "SenderProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", isError);
+                isError = CheckNullValue(DistrictID, "SenderDistrictID", "Vui lòng chọn Quận/ Huyện", isError);
+                isError = CheckNullValue(WardID, "SenderWardID", "Vui lòng chọn Phường/ Xã", isError);
+                isError = CheckNullValue(Address, "SenderStreet", "Vui lòng nhập Địa chỉ", isError);
+
+                data.UpdateInformation = ProvinceID + '|' + DistrictID + '|' + WardID + '|' + Address;
+            }
+        }
+
+        isError = CheckNullAndRegexValue(data.EShippingCode, "UserName", "EShippingCode", "Vui lòng nhập mã bưu gửi", Message, isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddRequestSupport", "RequestSupport")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            beforeSend: function () {
+                $("#btnAddRequestSupport").attr("disabled", true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            complete: function () {
+                $("#btnAddRequestSupport").attr("disabled", false).find("i#iLoading").remove();
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

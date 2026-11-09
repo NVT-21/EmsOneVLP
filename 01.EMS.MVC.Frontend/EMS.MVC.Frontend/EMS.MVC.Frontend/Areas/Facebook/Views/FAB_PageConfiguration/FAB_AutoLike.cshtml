@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "FAB_AutoLike";
+    var IsLikeComment = ViewBag.IsLikeComment;
+}
+<div class="card card-basis">
+    <div class="card-left boder-left">
+        <ul>
+            <li>
+                <div class="d-flex justify-content-center py-1 mb-2">
+                    <div class="position-relative">
+                        <img src="@XHelper.Session.FacebookProfile.PageAvatar" class="rounded-circle mr-1 me-3" width="52" height="52">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center py-1">
+                    <div class="flex-grow-1 pl-2">
+                        <b>Trang:</b>&nbsp;@XHelper.Session.FacebookProfile.PageName
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="card-right">
+        <div class="card-body">
+            <p class="fs-16 font-w600">Thích Bình Luận</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" id="idLike" value="@ViewBag.idLike" />
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ml-3">
+                            <small class="text-muted mb-0"><i class="ti-notepad me-1"></i>Nếu bật hệ thống sẽ tự động thích các bình luận của trang bạn.</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggle" onclick="btnToggleClick()">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Like
+        if("@IsLikeComment" == "Y")
+        {
+            $("#btnToggle").addClass("active");
+            $("#btnToggle").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggle").addClass("focus");
+            $("#btnToggle").attr("aria-pressed", false);
+        }
+    });
+    function btnToggleClick() {
+        var IDAutoLike = $("#idLike").val();
+        var Status = $("#btnToggle").attr('aria-pressed') == "true" ? "N" : "Y";
+        swal({
+            text: "Bạn chắc chắn muốn thay đổi trạng thái?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("FAB_JChangeAutoLike", "FAB_PageConfiguration", new { area = "Facebook" })',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: IDAutoLike,
+                        Status: Status
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function (res) {
+                                window.location.reload();
+                            }, 1200);
+                        }
+                        else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                $("#btnToggle").removeClass("active");
+                $("#btnToggle").removeAttr("aria-pressed");
+                if (Status == "Y") {
+                    $("#btnToggle").addClass("focus");
+                    $("#btnToggle").attr("aria-pressed", false);
+                }
+                else {
+                    $("#btnToggle").addClass("active");
+                    $("#btnToggle").attr("aria-pressed", true);
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,113 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListInventoryViewModel>
+
+@if (ViewBag.WareHouseID > 0)
+{
+    <table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+        <thead>
+            <tr>
+                @*<th hidden></th>*@
+                <th>Sản phẩm/Biến thể</th>
+                <th>Tồn đầu kỳ</th>
+                <th>Nhập trong kỳ</th>
+                <th>Xuất trong kỳ</th>
+                <th>Điều chỉnh trong kỳ</th>
+                <th>Tồn cuối kỳ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td hidden>@item.ProductCode || @item.SKU || @item.Barcode || @ViewBag.WareHouseName || @item.PalletCode</td>*@
+                    <td>
+                        <ul>
+                            <li>
+                                <a class="text-primary" href="@Url.Action("EditProductView", "Product", new { ProductID = item.ProductID})"><label>@item.ProductName</label></a>
+                                <label>(@item.VariantName)</label>
+                            </li>
+                            <li><span class="text-2">Mã sản phẩm: </span> <span>@item.ProductCode</span></li>
+                            <li><span class="text-2">SKU: </span> <span>@item.SKU</span></li>
+                            <li><span class="text-2">Barcode: </span> <span>@item.Barcode</span></li>
+                            <li><span class="text-2">Mã Pallet: </span> <span>@item.PalletCode</span></li>
+                        </ul>
+                    </td>
+                    <td>@item.FirstQuantity.ToString("N0")</td>
+                    <td>@item.QuantityIn.ToString("N0")</td>
+                    <td>@item.QuantityOut.ToString("N0")</td>
+                    <td>@item.QuantityAdjust.ToString("N0")</td>
+                    <td>@item.FinalQuantity.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+        <thead>
+            <tr>
+                @*<th hidden></th>*@
+                <th>Sản phẩm/Biến thể</th>
+                <th>Tên kho</th>
+                <th>Tồn đầu kỳ</th>
+                <th>Nhập trong kỳ</th>
+                <th>Xuất trong kỳ</th>
+                <th>
+                    Điều chỉnh
+                    trong kỳ
+                </th>
+                <th>Tồn cuối kỳ</th>
+                <th>Tổng tồn cuối kỳ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td hidden>@item.ProductCode || @item.SKU || @item.Barcode || @item.ListWareHouse[0].WarehouseName || @item.PalletCode</td>*@
+                    <td>
+                        <ul>
+                            <li>
+                                <a class="text-primary" href="@Url.Action("EditProductView", "Product", new { ProductID = item.ProductID})"><label style="cursor: pointer;">@item.ProductName</label></a>
+                                <label>(@item.VariantName)</label>
+                            </li>
+                            <li><span class="text-2">Mã sản phẩm: </span> <span>@item.ProductCode</span></li>
+                            <li><span class="text-2">SKU: </span> <span>@item.SKU</span></li>
+                            <li><span class="text-2">Barcode: </span> <span>@item.Barcode</span></li>
+                            <li><span class="text-2">Mã Pallet: </span> <span>@item.PalletCode</span></li>
+                        </ul>
+                    </td>
+                    <td>
+                        @item.ListWareHouse[0].WarehouseName
+                    </td>
+                    <td>@item.ListWareHouse[0].FirstQuantity.ToString("N0")</td>
+                    <td>@item.ListWareHouse[0].QuantityIn.ToString("N0")</td>
+                    <td>@item.ListWareHouse[0].QuantityOut.ToString("N0")</td>
+                    <td>@item.ListWareHouse[0].QuantityAdjust.ToString("N0")</td>
+                    <td>@item.ListWareHouse[0].FinalQuantity.ToString("N0")</td>
+                    <td>@item.TotalInventory.ToString("N0")</td>
+                </tr>
+                for (var i = 1; i < item.ListWareHouse.Count; i++)
+                {
+                    <tr>
+                        @*<td hidden>@item.ProductCode || @item.SKU || @item.Barcode || @item.ListWareHouse[i].WarehouseName || @item.PalletCode</td>*@
+                        <td style="border-top-style: hidden"></td>
+                        <td style="">@item.ListWareHouse[i].WarehouseName</td>
+                        <td class="text-right">@item.ListWareHouse[i].FirstQuantity.ToString("N0")</td>
+                        <td class="text-right">@item.ListWareHouse[i].QuantityIn.ToString("N0")</td>
+                        <td class="text-right">@item.ListWareHouse[i].QuantityOut.ToString("N0")</td>
+                        <td class="text-right">@item.ListWareHouse[i].QuantityAdjust.ToString("N0")</td>
+                        <td class="text-right">@item.ListWareHouse[i].FinalQuantity.ToString("N0")</td>
+                        <td style="border-top-style: hidden"></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

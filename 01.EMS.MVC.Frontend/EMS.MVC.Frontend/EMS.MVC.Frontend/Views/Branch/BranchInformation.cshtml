@@ -1,0 +1,205 @@
+﻿@model EMS.MVC.Frontend.Models.BranchInformationViewModel
+
+<input type="hidden" id="ParentID" value="@Model.ID" />
+<input type="hidden" id="ShopLevel" value="@Model.ShopLevel" />
+<input type="hidden" id="IsLock" value="@Model.IsLock" />
+<div class="card-body">
+    <p class="fs-16 font-w600">@Model.StoreName</p>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="mb-1">
+                    @switch (Model.ShopLevel)
+                    {
+                        case 1:
+                            Write("Mã trung tâm");
+                            break;
+                        case 2:
+                            Write("Mã chi nhánh");
+                            break;
+                        case 3:
+                            Write("Mã cửa hàng");
+                            break;
+                    }
+                    <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="Code" class="form-control" disabled value="@Model.Code">
+                <span class="text-danger" id="errCode"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="mb-1">
+                    @switch (Model.ShopLevel)
+                    {
+                        case 1:
+                            Write("Tên trung tâm");
+                            break;
+                        case 2:
+                            Write("Tên chi nhánh");
+                            break;
+                        case 3:
+                            Write("Tên cửa hàng");
+                            break;
+                    }
+                    <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="Name" value="@Model.StoreName" autocomplete="off">
+                <span class="text-danger" id="errName"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="mb-1">Số điện thoại </label>
+                <input type="text" class="form-control" id="MobileNumber" minlength="10" maxlength="11" value="@Model.MobileNumber" @{ if (Model.ShopLevel == 1) { Write("disabled"); } } autocomplete="off">
+                <span class="text-danger" id="errMobileNumber"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="mb-1">Địa chỉ lấy hàng <span class="text-danger">*</span></label>
+                <select class="default-select form-control select2" id="SltPickUpAddress" data-live-search="true" data-selected-text-format="count" data-actions-box="true" data-size="5">
+                    @foreach (var item in Model.ListPickUpAddress)
+                    {
+                        <option value="@item.PickUpAddressID" data-subtext="@item.PickUpName" @{if (item.PickUpAddressID == Model.PickUpID) { Write("selected"); } }>
+                            @item.FullAddress
+                        </option>
+                    }
+                </select>
+                <span class="text-danger" id="errSltPickUpAddress"></span>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label class="mb-1">Mô tả</label>
+                <textarea class="form-control" rows="4" id="Description" placeholder="Mô tả" maxlength="250">@Model.Description</textarea>
+                <div class="text-end">
+                    <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">@Model.Description.Length</span>/250</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-footer d-sm-flex justify-content-end align-items-center">
+    @*<button type="button" class="btn btn-outline-dark" onclick="LoadInformation(@Model.ID)">Hủy bỏ</button>*@
+    <button type="button" class="btn btn-primary" onclick="UpdateBranch()">Cập nhật</button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        ShowInputLength("Description", "ShowLengthNote", 250);
+    })
+
+    function UpdateBranch() {
+        var isError = false, isValid = true;
+        var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            ID: $("#ParentID").val(),
+            ShopLevel: $("#ShopLevel").val(),
+            Name: $("#Name").val().trim(),
+            MobileNumber: $("#MobileNumber").val().trim(),
+            ProvinceID: $("#PickUpProvinceID").val(),
+            DistrictID: $("#PickUpDistrictID").val(),
+            WardID: $("#PickUpWardID").val(),
+            Address: $("#PickUpAddress").val(),
+            Description: $("#Description").val().trim(),
+            IsLock: $("#IsLock").val(),
+            NameAddress: $("#NameAddress").val(),
+            PickUpAddress: $("#SltPickUpAddress").val() == "Different" ? "Different" : $("#SltPickUpAddress").val()
+        };
+
+        if (data.Name == '') {
+            $("#errName").text("Vui lòng nhập Tên cơ sở.");
+            $("#Name").focus();
+            isError = true;
+        }
+
+        if (data.MobileNumber == '') {
+            $("#errMobileNumber").text("Vui lòng nhập Số điện thoại.");
+            $("#MobileNumber").focus();
+            isError = true;
+        }
+
+        if (data.PickUpAddress == "Different") {
+            if (data.NameAddress == '') {
+                $("#errNameAddress").text("Vui lòng nhập Tên địa chỉ.");
+                $("#NameAddress").focus();
+                isError = true;
+            }
+        } else {
+            if (data.PickUpAddress == "") {
+                $('#errSltPickUpAddress').text("Vui lòng chọn địa chỉ.");
+                $('#SltPickUpAddress').focus();
+                isError = true;
+            }
+        }
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn lưu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditBranch", "Branch")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                $("#Name_" + data.ID).text(data.Name);
+                                LoadInformation(data.ID);
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+</script>

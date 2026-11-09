@@ -1,0 +1,27 @@
+﻿@model List<EMS.MVC.Frontend.Models.StatisticalCashflowViewModel>
+<div class="table-primary table-dashboard">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Trạng thái COD</th>
+                <th>Tiền COD</th>
+                <th>Phí trả đơn vị vận chuyển</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.StatusName</td>
+                    <td>@item.TotalCOD.ToString("N0").Replace(",",".")đ</td>
+                    <td>@item.TotalTransportFee.ToString("N0").Replace(",", ".")đ</td>
+                </tr>
+            }
+            <tr>
+                <td class="font-w700">Tổng</td>
+                <td class="font-w700">@ViewBag.SumTotalCOD.ToString("N0").Replace(",", ".")đ</td>
+                <td class="font-w700">@ViewBag.SumTotalTransportFee.ToString("N0").Replace(",", ".")đ</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

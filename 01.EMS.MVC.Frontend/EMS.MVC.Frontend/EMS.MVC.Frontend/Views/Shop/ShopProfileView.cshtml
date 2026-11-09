@@ -1,0 +1,519 @@
+﻿@model EMS.MVC.Frontend.Models.ShopProfileViewModel
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin cửa hàng</p>
+                    @Html.HiddenFor(m => m.PaymentMethod)
+                    @Html.HiddenFor(m => m.PaymentType)
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                            <label class="text-2">Mã cửa hàng</label>
+                            <p class="font-w600">@Model.Code</p>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                            <label class="text-2">Mã PP/CRM</label>
+                            <p class="font-w600">@Model.CrmOrPaypostCode</p>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label class="text-2">Tên cửa hàng</label>
+                            <p class="font-w600">@Model.StoreName</p>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                            <div class="mb-2">
+                                <label class="text-2">Số điện thoại</label>
+                                <p class="font-w600">@Model.MobileNumber</p>
+                            </div>
+                        </div>
+                        <div class="col-xl-9 col-lg-9 col-md-9 mb-2">
+                            <label class="text-2">Email</label>
+                            <p class="font-w600">@Model.Email</p>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                            <label class="text-2">Số lượng nhân viên</label>
+                            @if (XHelper.Session.EmployeeProfile.ShopInformation.Level == 1)
+                            {
+                                <p class="font-w600">@Model.NumberOfEmployeesCreated/@Model.NumberOfEmployees</p>
+                            }
+                            else
+                            {
+                                <p class="font-w600">@Model.NumberOfEmployeesCreated</p>
+                            }
+                        </div>
+                        <div class="col-xl-9 col-lg-9 col-md-9 mb-2">
+                            <label class="text-2">Thời gian sử dụng (@Model.AccountType)</label>
+                            @if (Model.AccountType != "Vĩnh viễn")
+                            {
+                                <p class="font-w600">@Model.StartDate - @Model.EndDate</p>
+                            }
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label class="text-2 d-flex justify-content-between">
+                                Mã khách hàng con @{ if (!string.IsNullOrEmpty(Model.ChildCustomerCode)) { Write(" (" + Model.ChildCustomerCodeQuantity + " mã)"); } }
+                            </label>
+                            <p class="font-w600">@Model.ChildCustomerCode</p>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label class="text-2 d-flex justify-content-between">
+                                Địa chỉ lấy hàng
+                                <a href="#" id="ShowChangePickUpAddressView" class="text-secondary">Chỉnh sửa</a>
+                            </label>
+                            <p class="font-w600">@Model.PickUpFullAddress</p>
+                        </div>
+                        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+                            @*<button type="button" class="btn btn-outline-dark" id="btnCancel">Hủy bỏ</button>*@
+                            <button type="button" class="btn btn-danger" id="btnRemove">Xóa tài khoản</button>
+                            <button type="button" class="btn btn-secondary" id="btnLock">Khóa tài khoản</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin tài khoản</p>
+                    <div class="mb-3">
+                        <label class="text-2">Tài khoản thanh toán cước: 0đ</label>
+                        <div class="row">
+                            <div class="col-3s">
+                                <div class="payment-item">
+                                    <img src="~/Assets/images/icon/zalo.png" alt="">
+                                    <div class="ms-3">
+                                        <p class="mb-0">Zalo</p>
+                                        <a href="" class="text-secondary font-w600">Nạp tiền nhanh</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="payment-item">
+                                    <img src="~/Assets/images/icon/momo.png" alt="">
+                                    <div class="ms-3">
+                                        <p class="mb-0">Momo</p>
+                                        <a href="" class="text-secondary font-w600">Nạp tiền nhanh</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="payment-item">
+                                    <img src="~/Assets/images/icon/vnpay.png" alt="">
+                                    <div class="ms-3">
+                                        <p class="mb-0">VNPay</p>
+                                        <a href="" class="text-secondary font-w600">Nạp tiền nhanh</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="payment-item">
+                                    <img src="~/Assets/images/icon/bidv.png" alt="">
+                                    <div class="ms-3">
+                                        <p class="mb-0">BIDV</p>
+                                        <a href="" class="text-secondary font-w600">Nạp tiền nhanh</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3s">
+                                <div class="payment-item">
+                                    <img src="~/Assets/images/icon/bank.png" alt="">
+                                    <div class="ms-3">
+                                        <p class="mb-0">Tài khoản ngân hàng</p>
+                                        <a href="" class="text-secondary font-w600">Nạp tiền nhanh</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="fs-16 font-w600">Thông tin thanh toán</p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="">Phương thức thanh toán:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="rdoPaymentMethodValue1" name="rdoPaymentMethod" value="1" />
+                                    <label class="form-check-label" for="1">
+                                        Tài khoản ngân hàng
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="rdoPaymentMethodValue2" name="rdoPaymentMethod" value="2" />
+                                    <label class="form-check-label " for="2">
+                                        Rút tiền tại bưu cục
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="rdoPaymentMethodValue3" name="rdoPaymentMethod" value="3">
+                                    <label class="form-check-label " for="2">
+                                        Ví điện tử
+                                    </label>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <span class="text-danger" id="errRdoPaymentMethod"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12" id="Value1" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-1">Họ tên<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="FullNameOfBank" value="@{ if (Model.PaymentMethod == 1) { Write(Model.FullNameOfPayment); } else { Write(""); } }" autocomplete="off" />
+                                            <span class="text-danger" id="errFullNameOfBank"></span>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-1">Tên tài khoản ngân hàng<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="NameOfBank" value="@{if (Model.PaymentMethod == 1) { Write(Model.NameOfPayment); } else { Write(""); } }" autocomplete="off">
+                                            <span class="text-danger" id="errNameOfBank"></span>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-1">Chi nhánh<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="BranchOfBank" value="@Model.BranchOfPayment" autocomplete="off">
+                                            <span class="text-danger" id="errBranchOfBank"></span>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-1">Số tài khoản<span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="NumberOfBank" value="@Model.NumberOfPayment" autocomplete="off">
+                                            <span class="text-danger" id="errNumberOfBank"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12" id="Value3" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 mb-2">
+                                            <label>Họ tên <span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="FullNameOfWallet" value="@{ if (Model.PaymentMethod == 3) { Write(Model.FullNameOfPayment); } else { Write(""); } }" autocomplete="off" />
+                                            <span class="text-danger" id="errFullNameOfWallet"></span>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 mb-2">
+                                            <label>Số điện thoại <span class="text-danger">(*)</span></label>
+                                            <input type="text" class="form-control" id="MobileNumberOfWallet" value="@Model.MobileNumberOfPayment" autocomplete="off" maxlength="11" />
+                                            <span class="text-danger" id="errMobileNumberOfWallet"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="mb-1 me-4">Ví điện tử:</label>
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="rdoWallet" value="Momo" @{ if (Model.NameOfPayment == "Momo") { Write("checked"); } else { Write(""); } }>
+                                                <label class="form-check-label" for="wallet1">Momo</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="rdoWallet" value="ZaloPay" @{ if (Model.NameOfPayment == "ZaloPay") { Write("checked"); } else { Write(""); } }>
+                                                <label class="form-check-label " for="wallet2">ZaloPay</label>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <span class="text-danger" id="errRdoWallet"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="">Hình thức thanh toán:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline col-3">
+                                    <input class="form-check-input" type="radio" id="rdoPaymentTypeValue1" name="rdoPaymentType" value="1">
+                                    <label class="form-check-label" for="1">
+                                        Cước trả trước
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline col-3">
+                                    <input class="form-check-input" type="radio" id="rdoPaymentTypeValue2" name="rdoPaymentType" value="2">
+                                    <label class="form-check-label " for="1">
+                                        Cước trả sau
+                                    </label>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <span class="text-danger" id="errRdoPaymentType"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="">Hình thức thu gom:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-3 ">
+                                <div class="form-check form-check-inline col-3">
+                                    <input class="form-check-input" type="radio" name="rdoCollectionType" value="1" @{ if (Model.CollectionType == 1) { Write("checked"); } }>
+                                    <label class="form-check-label" for="give1">
+                                        Thu gom tận nơi
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline col-3">
+                                    <input class="form-check-input" type="radio" name="rdoCollectionType" value="2" @{ if (Model.CollectionType == 2) { Write("checked"); } }>
+                                    <label class="form-check-label " for="give2">
+                                        Gửi hàng tại bưu cục
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-sm-flex justify-content-end align-items-center">
+                    @*<button type="button" class="btn btn-outline-dark" id="btnCancel">Hủy bỏ</button>*@
+                    <button type="button" class="btn btn-primary" id="btnUpdate">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var PaymentMethod = $("#PaymentMethod").val();
+        var PaymentType = $("#PaymentType").val();
+        if (PaymentMethod > 0) {
+            $("#rdoPaymentMethodValue" + PaymentMethod).click();
+        }
+
+        if (PaymentType > 0) {
+            $("#rdoPaymentTypeValue" + PaymentType).click();
+        }
+
+        CheckChangeValue("FullNameOfBank", "Vui lòng nhập Họ và tên", "Vietnamese", "Y");
+        CheckChangeValue("NameOfBank", "Vui lòng nhập Tên tài khoản ngân hàng", "Vietnamese", "Y");
+        CheckChangeValue("BranchOfBank", "Vui lòng nhập Chi nhánh", "Vietnamese", "Y");
+        OnlyNumber("#NumberOfBank");
+        CheckChangeValue("NumberOfBank", "Vui lòng nhập Số tài khoản", "Number", "Y");
+        CheckChangeValue("FullNameOfWallet", "Vui lòng nhập Họ và tên", "Vietnamese", "Y");
+        OnlyNumber("#MobileNumberOfWallet");
+        CheckChangeValue("MobileNumberOfWallet", "Vui lòng nhập Số điện thoại", "MobileNumber", "Y");
+    });
+
+    $("#ShowChangePickUpAddressView").on("click", function (event) {
+        event.preventDefault();
+        $.get('@Url.Action("ChangePickUpAddressView", "Shop")', function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+
+    $("#btnUpdate").on("click", function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var PaymentMethod = $("input[name='rdoPaymentMethod']:checked").val();
+        var ElectronicWallet = $("input[name = 'rdoWallet']:checked").val() == undefined ? "" : $("input[name='rdoWallet']:checked").val();
+        var data = {
+            PaymentMethod: PaymentMethod,
+            PaymentType: $("input[name = 'rdoPaymentType']:checked").val(),
+            CollectionType: $("input[name = 'rdoCollectionType']:checked").val(),
+            FullNameOfPayment: PaymentMethod == 1 ? $("#FullNameOfBank").val() : $("#FullNameOfWallet").val(),
+            MobileNumberOfPayment: PaymentMethod == 3 ? $("#MobileNumberOfWallet").val() : "",
+            NameOfPayment: PaymentMethod == 1 ? $("#NameOfBank").val() : ElectronicWallet,
+            BranchOfPayment: PaymentMethod == 1 ? $("#BranchOfBank").val() : "",
+            NumberOfPayment: PaymentMethod == 1 ? $("#NumberOfBank").val() : "",
+        }
+
+        if (PaymentMethod) {
+            if (PaymentMethod == 1) {
+                IsError = CheckNullAndRegexValue(data.FullNameOfPayment, "Vietnamese", "FullNameOfBank", "Vui lòng nhập họ và tên.", Message, IsError);
+                IsError = CheckNullAndRegexValue(data.NameOfPayment, "Vietnamese", "NameOfBank", "Vui lòng nhập tên ngân hàng.", Message, IsError);
+                IsError = CheckNullAndRegexValue(data.BranchOfPayment, "Vietnamese", "BranchOfBank", "Vui lòng nhập tên chi nhánh.", Message, IsError);
+                IsError = CheckNullAndRegexValue(data.NumberOfPayment, "Vietnamese", "NumberOfBank", "Vui lòng nhập số tài khoản.", Message, IsError);
+            } else if (PaymentMethod == 3) {
+                IsError = CheckNullAndRegexValue(data.FullNameOfPayment, "Vietnamese", "FullNameOfWallet", "Vui lòng nhập họ và tên.", Message, IsError);
+                IsError = CheckNullAndRegexValue(data.MobileNumberOfPayment, "MobileNumber", "MobileNumberOfWallet", "Vui lòng nhập số điện thoại.", Message, IsError);
+                IsError = CheckNullValue(data.NameOfPayment, "RdoWallet", "Vui lòng chọn Ví điện tử.", IsError);
+            }
+        } else {
+            $("#errRdoPaymentMethod").text("Vui lòng chọn phương thức thanh toán.");
+            IsError = true;
+        }
+
+        if (!data.PaymentType) {
+            $("errRdoPaymentType").text("Vui lòng chọn hình thức thanh toán!");
+            IsError = true;
+        }
+
+        if (IsError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn cập nhật thông tin thanh toán?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUpdatePaymentInformation", "Shop")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+
+    $("#btnLock").on("click", function (event) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn khóa tài khoản này không?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-outline-light",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JLockAccount", "Account")',
+                    dataType: 'json',
+                    loading: true,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message, '@Url.Action("LogOut", "Account")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+
+    $("#btnRemove").on("click", function (event) {
+        swal({
+            title: 'Thông báo',
+            text: "Sau khi xóa, mọi dữ liệu của tài khoản sẽ xóa khỏi hệ thống và không thể khôi phục. Bạn có chắc chắn muốn xóa?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-outline-light",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveAccount", "Account")',
+                    dataType: 'json',
+                    loading: true,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message, '@Url.Action("LogOut", "Account")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+    $('input[name="rdoPaymentMethod"]').on('change', function (e) {
+        var value = this.value;
+        if (value == 1) {
+            $("#Value1").css("display", "block");
+            $("#Value3").css("display", "none");
+        } else if (value == 2) {
+            $("#Value1").css("display", "none");
+            $("#Value3").css("display", "none");
+        } else {
+            $("#Value1").css("display", "none");
+            $("#Value3").css("display", "block");
+        }
+        $("#errRdoPaymentMethod").text("");
+    });
+
+    $('input[name="rdoPaymentType"]').on('change', function (e) {
+        $("#errRdoPaymentType").text("");
+    });
+
+    $('input[name="rdoWallet"]').on('change', function (e) {
+        $("#errRdoWallet").text("");
+    });
+
+</script>

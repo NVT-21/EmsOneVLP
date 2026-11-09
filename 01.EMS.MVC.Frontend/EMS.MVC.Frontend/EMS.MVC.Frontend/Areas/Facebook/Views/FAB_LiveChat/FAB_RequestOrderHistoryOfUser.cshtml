@@ -1,0 +1,88 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_RequestOrderHistoryOfUserViewModel>
+@if (Model.Count > 0)
+{
+    <table id="SearchListDataTable" class="table table-responsive">
+        <thead>
+            <tr class="table-info text-center">
+                <th width="10px"> Tên sản phẩm </th>
+                <th width="10px"> Trạng thái </th>
+            </tr>
+        </thead>
+        <tbody id="context-menu-test">
+            @{
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td width="10px" style="vertical-align: middle;">
+                            @{
+                                var ProductName = item.Product.Split('|');
+                                if (ProductName.Length > 0)
+                                {
+                                    for (var i = 0; i < ProductName.Length - 1; i++)
+                                    {
+                                        <span style="line-height: 1.4rem;">@ProductName[i]</span>
+                                        if (i + 1 <= ProductName.Length - 2)
+                                        {
+                                            <br />
+                                        }
+                                    }
+                                }
+                            }
+                        </td>
+                        <td width="10px" style="vertical-align: middle; text-align: center;">
+                            @if (item.Status == "Đã tạo đơn hàng")
+                            {
+                                <span style="line-height: 1.4rem;">@item.Status</span>
+                                <br />
+                                <a style="cursor: pointer; color: #007bff;" onclick="btnOrderDetail(@item.OrderID)">@item.OrderCode</a>
+                            }
+                            else
+                            {
+                                <span>@item.Status</span>
+                            }
+                            <br />
+                            @if (item.Status == "Tạo mới")
+                            {
+                                <span style="line-height: 1.4rem;">@item.CreatedDate.Split(' ')[0]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;">@item.UpdatedDate.Split(' ')[0]</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <span>Không có lịch sử yêu cầu đặt hàng.</span>
+}
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    @*function btnOrderDetail(OrderID) {
+        var res = CheckPermission("Order", "OrderDetailView");
+        if (res.Code == "00") {
+            $.get('@Url.Action("OrderDetailView", "Order")', { OrderID: OrderID} ,function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        } else {
+            swal({
+                title: "Thông báo",
+                text: res.Message,
+                button: {
+                    text: "ĐÓNG"
+                }
+            }).then(function () {
+                if (res.Code == "408") {
+                    window.location.href = '/Account/Logout';
+                }
+            });
+        }
+    }*@
+</script>

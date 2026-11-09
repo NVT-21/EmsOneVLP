@@ -1,0 +1,124 @@
+﻿@model IEnumerable<EMS.MVC.Backend.Models.ShopGroupPermissionListViewModel>
+@{
+    Layout = null;
+    var stt = 1;
+}
+
+<table id="data-table" class="table table-bordered table-hover">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã nhóm quyền </th>
+            <th> Tên nhóm quyền </th>
+            <th> Cấp sử dụng </th>
+            <th style="max-width: 300px;"> Mô tả </th>
+            <th> Trạng thái </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td>
+                        <a href="@Url.Action("EditShopGroupPermissionView","ShopGroupPermission", new { ID = item.ID, NumberOfEmployeesInGroup = item.NumberOfEmployeesInGroup })">
+                            @item.GroupPermissionCode
+                        </a>
+                    </td>
+                    <td>@item.GroupPermissionName</td>
+                    <td class="text-center">
+                        @switch (item.ShopLevel)
+                        {
+                            case 1:
+                                Write("Trung tâm");
+                                break;
+                            case 2:
+                                Write("Chi nhánh");
+                                break;
+                            case 3:
+                                Write("Cửa hàng");
+                                break;
+                        }
+                    </td>
+                    <td style="max-width:300px; white-space: pre-line; line-height: inherit; text-align: justify;">@item.Description</td>
+                    <td class="text-center">
+                        @if (item.IsLock == "N")
+                        {
+                            <button onclick="btnIsLock(@item.ID, 'Y', @item.NumberOfEmployeesInGroup)" title="Khoá" class="badge badge-outline-primary">
+                                <i class="fa fa-unlock"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button onclick="btnIsLock(@item.ID, 'N', @item.NumberOfEmployeesInGroup)" title="Mở khoá" class="badge badge-outline-danger">
+                                <i class="fa fa-lock"></i>
+                            </button>
+
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    function btnIsLock(ID, IsLock, NumberOfEmployeesInGroup) {
+        if (NumberOfEmployeesInGroup > 0) {
+            swal({
+                icon: "error",
+                title: "Thông báo",
+                text: "Không thực hiện xóa Nhóm đã có nhân viên",
+                button: {
+                    text: "Đóng"
+                }
+            });
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ChangeIsLockShopGroupPermission", "ShopGroupPermission")',
+                data: {
+                    ID: ID,
+                    IsLock: IsLock
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.Code == "00") {
+                        swal({
+                            icon: "success",
+                            title: "Thông báo",
+                            text: res.Message,
+                            html: true,
+                            button: false
+                        });
+                        setTimeout(function () { location.reload(); }, 1200);
+                    } else {
+                        swal({
+                            icon: "error",
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        icon: 'error',
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+    }
+</script>

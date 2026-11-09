@@ -1,0 +1,166 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListOrderViewModel>
+<table id="SearchListDataTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="align-middle">ID</th>
+            <th class="align-middle">EMSOneCode</th>
+            <th class="align-middle">OrderCode</th>
+            <th class="align-middle">OrderStatus</th>
+            <th class="align-middle">CreatedDate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.OrderID</td>
+                <td>@item.EMSOneCode</td>
+                <td>@item.OrderCode</td>
+                <td>@item.OrderStatus</td>
+                <td>@item.CreatedDate</td>
+            </tr>
+        }
+    </tbody>
+    
+</table>
+<script>
+    $(document).ready(function () {
+        $('#SearchListDataTable').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            "language": {
+                "sSearch": "",
+                "searchPlaceholder": "Tìm kiếm nhanh",
+                "emptyTable": "Không có dữ liệu",
+                "zeroRecords": "Không có dữ liệu",
+                "sInfo": "_START_ - _END_ trên _TOTAL_",
+                "infoEmpty": "0 - 0 trên 0",
+                "infoFiltered": "(Tìm kiếm từ _MAX_ bản ghi)",
+                "oPaginate": {
+                    "sFirst": "Trang đầu",
+                    "sPrevious": "<",
+                    "sNext": ">",
+                    "sLast": "Trang cuối"
+                },
+                "lengthMenu": "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "searching": true,
+            "stateSave": false,
+            "dom": "tr<'row'<'col-4'l><'col-8 d-flex justify-content-end m-auto'<'mt-1 me-3'i>p>>",
+        });
+
+        $("#SearchListDataTable").removeClass('dataTable');
+    });
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+
+    function chbSelectData(this1) {
+        var isChecked = $(this1).is(":checked");
+        var BatchCode = $(this1).attr("data-BatchCode");
+        if (BatchCode) {
+            var table = $('#SearchListDataTable').DataTable();
+            var ListBatchCode = table.$('input[type="checkbox"]').filter(function () { return $(this).attr("data-BatchCode") == BatchCode });
+            ListBatchCode.each(function () {
+                $(this).prop("checked", isChecked);
+            });
+        }
+    }
+
+    function btnDetailOrder(OrderID, ShopID) {
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: OrderID, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnDetailOrderBatch(BatchCode, ShopID) {
+        $.post('@Url.Action("DetailOrderBatchView", "OrderBatch")', {
+            BatchCode: BatchCode, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnEditOrder(OrderID, BatchCode) {
+        var param = "";
+        if (BatchCode) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CheckEditOrderBatch", "OrderBatch")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    SearchKey: btoa(BatchCode)
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        localStorage.setItem('EditOrderBatchView', res.Data);
+                        window.location.href = '@Url.Action("HandleEditOrderBatchView", "OrderBatch")';
+                        //window.location.href = '@Url.Action("EditOrderBatchView", "OrderBatch")?SearchKey=' + btoa(BatchCode);
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                }
+            });
+        } else {
+            param = String.format("SearchKey={0}", btoa(OrderID));
+            window.location.href = '@Url.Action("EditOrderView", "Order")?' + param;
+        }
+    }
+
+    function btnCoppyOrder(OrderID, BatchCode) {
+        var param = "";
+        if (BatchCode) {
+            param = String.format("SearchKey={0}", btoa(BatchCode));
+            window.location.href = '@Url.Action("CoppyOrderBatchView", "OrderBatch")?' + param;
+        } else {
+            param = String.format("SearchKey={0}", btoa(OrderID));
+            window.location.href = '@Url.Action("CoppyOrderView", "Order")?' + param;
+        }
+    }
+
+    function btnRequestSupport(ShippingCode) {
+        $.post('@Url.Action("AddRequestSupportView", "RequestSupport")', {
+            EShippingCode: ShippingCode
+        }, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnSignaruteAndImageInfo(ShippingCode, SearchKey) {
+        $.post('@Url.Action("InformationSignaruteAndImageOrderView", "Order")', {
+            ShippingCode: ShippingCode,
+            SearchKey: SearchKey
+        }, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnEditReceiverAddress(OrderID, OrderCode, BatchCode, ProvinceID, DistrictID, WardID, Street) {
+        var data = {
+            OrderID: OrderID,
+            OrderCode, OrderCode,
+            BatchCode, BatchCode,
+            ReceiverProvinceID: ProvinceID,
+            ReceiverDistrictID: DistrictID,
+            ReceiverWardID: WardID,
+            ReceiverStreet: Street
+        };
+
+        $.post('@Url.Action("EditOrderReceiverAddressView", "Order")', data, function (html) {
+            $('#modal-ViewModal-html').html(html);
+            $('#ViewModal').modal('show');
+        });
+    }
+</script>

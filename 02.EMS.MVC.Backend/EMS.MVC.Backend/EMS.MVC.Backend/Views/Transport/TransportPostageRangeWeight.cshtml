@@ -1,0 +1,86 @@
+﻿@{
+    Layout = null;
+}
+<div class="card mt-3">
+    <div class="card-body pt-10px">
+        <label class="car-title-border-bottom">Khai báo cước theo phạm vi <span class="text-danger">(*)</span> <button class="btn btn-sm btn-danger pull-right" onclick="RemoveRange(this);" style="margin-top:-4px;">Xoá</button></label>
+        <div class="col-lg-12 pt-2">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="text-center">
+                        <th class="align-middle w-auto" style="background-color: #d5e9ff;"> Từ</th>
+                        <th class="col-5">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <select class="form-control" name="FromRange" onchange="CheckFromRangeType(this)">
+                                        <option value="1" selected>Vùng</option>
+                                        <option value="2">Tỉnh/Thành Phố</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 FromRegion">
+                                    <select class="form-control selectpicker w-100" name="FromRegion" data-live-search="true" data-dropup-auto="false" data-size="8">
+                                        <option value="" selected>Chọn vùng</option>
+                                        @foreach (var item in ViewBag.RegionList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12 FromProvince" style="display:none;">
+                                    <select class="form-control selectpicker w-100" name="FromProvince" data-live-search="true" data-dropup-auto="false" data-size="8">
+                                        <option value="" selected>Chọn Tỉnh/Thành phố</option>
+                                        @foreach (var item in ViewBag.ProvincesList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="align-middle w-auto" style="background-color: #d5e9ff;"> Đến</th>
+                        <th class="col-5">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <select class="form-control" name="ToRange" onchange="CheckToRangeType(this)">
+                                        <option value="1" selected>Vùng</option>
+                                        <option value="2">Tỉnh/Thành Phố</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 ToRegion">
+                                    <select class="form-control selectpicker w-100" name="ToRegion" data-live-search="true" data-dropup-auto="false" data-size="8">
+                                        <option value="" selected>Chọn vùng</option>
+                                        @foreach (var item in ViewBag.RegionList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12 ToProvince" style="display:none;">
+                                    <select class="form-control selectpicker w-100" name="ToProvince" data-live-search="true" data-dropup-auto="false" data-size="8">
+                                        <option value="" selected>Chọn Tỉnh/Thành phố</option>
+                                        @foreach (var item in ViewBag.ProvincesList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="pt-3">
+                    <tr>
+                        <td colspan="4">
+                            @{ Html.RenderAction("TransportPostageWeight", "Transport");}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.selectpicker').selectpicker();
+    });
+</script>

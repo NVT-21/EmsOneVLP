@@ -1,0 +1,240 @@
+﻿@model EMS.MVC.Frontend.Models.RegisterViewModel
+
+<div class="modal-dialog modal-register modal-dialog-centered modal-fullscreen-md-down" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="d-flex flex-column">
+                <img src="~/Assets/images/logo/logo-full.svg" alt="">
+                <h5 class="modal-title fs-24 font-w600 mt-2 mb-2">Đăng ký tài khoản</h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body pt-0" id="ClearModal">
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Tên cửa hàng/công ty</label>
+                    @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "150" } })
+                    <span class="text-danger" id="errStoreName"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Mã CRM/Paypost</label>
+                    @Html.EditorFor(model => model.CRMOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control text-uppercase", @placeholder = "", @maxlength = "20" } })
+                    <span class="text-danger" id="errCRMOrPaypostCode"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Mã bưu cục thu gom</label>
+                    @Html.DropDownListFor(model => model.CollectionPostOfficeID, new SelectList(Model.ListCollectionPostOffice, "ID", "CodeAndName"), "-- Bưu cục thu gom --", new { @class = "select2" })
+                    <span class="text-danger" id="errCollectionPostOfficeID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Họ tên người liên hệ</label>
+                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "50" } })
+                    <span class="text-danger" id="errFullName"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Email</label>
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "50" } })
+                    <span class="text-danger" id="errEmail"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Số điện thoại</label>
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "11" } })
+                    <span class="text-danger" id="errMobileNumber"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Địa chỉ</label>
+                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "400" } })
+                    <span class="text-danger" id="errAddress"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Tỉnh/Thành phố</label>
+                    @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('ProvinceID', 'WardID')" })
+                    <span class="text-danger" id="errProvinceID"></span>
+                </div>
+                @*<div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Quận/Huyện</label>
+                    @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('DistrictID', 'WardID')" })
+                    <span class="text-danger" id="errDistrictID"></span>
+                </div>*@
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Phường/Xã</label>
+                    @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errWardID"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Sản phẩm kinh doanh</label>
+                    @Html.EditorFor(model => model.ProductBusiness, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "", @maxlength = "100" } })
+                    <span class="text-danger" id="errProductBusiness"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <label class="form-label me-4">Loại hình kinh doanh:</label>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.TypeBusiness, "Cá nhân", new { @class = "form-check-input", @checked = "checked" })
+                        <label class="form-check-label">Cá nhân</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.TypeBusiness, "Doanh nghiệp", new { @class = "form-check-input" })
+                        <label class="form-check-label">Doanh nghiệp</label>
+                    </div>
+                    <br />
+                    <label class="form-check-label" for="basic_checkbox_2">
+                        <span class="text-danger" id="errTypeBusiness"></span>
+                    </label>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <label class="form-label me-4 mb-0">Loại khách hàng:</label>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.TypeShop, 1, new { @class = "form-check-input", @checked = "checked" })
+                        <label class="form-check-label">KH thường</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.TypeShop, 2, new { @class = "form-check-input" })
+                        <label class="form-check-label">Đại lý</label>
+                    </div>
+                    <br />
+                    <label class="form-check-label" for="basic_checkbox_2">
+                        <span class="text-danger" id="errTypeShop"></span>
+                    </label>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <div class="form-check custom-checkbox ms-1">
+                        @Html.EditorFor(model => model.Condition, new { htmlAttributes = new { @type = "checkbox", @class = "form-check-input" } })
+                        <label class="form-check-label" for="basic_checkbox_2">
+                            Tôi đồng ý với <a target="_blank" href="~/Assets/file/DieuKhoanDichVuEMSOne.pdf"
+                                              class="text-blue font-w600">Điều khoản và Chính sách sử dụng</a>
+                        </label>
+                        <br />
+                        <label class="form-check-label" for="basic_checkbox_2">
+                            <span class="text-danger" id="errCondition"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-md-6">
+                <button type="button" class="btn btn-primary btn-block" id="btnRegister">
+                    Đăng ký
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    VNPMapsAutocomplete("Address", "ProvinceID", "DistrictID", "WardID");
+    OnlyNumber("#MobileNumber, #CollectionPostcode");
+    CheckChangeValue("StoreName", "Tên cửa hàng không được để trống.", "", "Y");
+    CheckChangeValue("CRMOrPaypostCode", "Mã CRM/Paypost không được để trống", "Code", "Y");
+    CheckChangeValue("CollectionPostOfficeID", "Bưu cục thu gom không được để trống", "", "Y");
+    CheckChangeValue("FullName", "Họ và tên không được trống.", "Vietnamese", "Y");
+    CheckChangeValue("Email", "Email không được để trống.", "Email", "Y");
+    CheckChangeValue("MobileNumber", "Số điện thoại không hợp lệ", "MobileNumber", "Y");
+    CheckChangeValue("ProvinceID", "Tỉnh/ Thành phố không được để trống", "", "Y");
+    //CheckChangeValue("DistrictID", "Quận/ Huyện không được để trống.", "", "Y");
+    CheckChangeValue("WardID", "Phường/ Xã không được để trống.", "", "Y");
+    CheckChangeValue("Address", "Địa chỉ không được để trống.", "", "Y");
+    CheckChangeValue("ProductBusiness", "Sản phẩm kinh doanh không được trống.", "Note", "Y");
+
+    $("#Condition").click(function () {
+        if ($('#Condition').is(':checked')) {
+            $('#errCondition').text("");
+        } else {
+            $('#errCondition').text("Vui lòng đọc và đồng ý với điều khoản và chính sách sử dụng.");
+            $('#Condition').focus();
+            return;
+        }
+    });
+
+    $("#btnRegister").on("click", function () {
+        var isError = false;
+        var messageError = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            StoreName: $("#StoreName").val().trim(),
+            CRMOrPaypostCode: $("#CRMOrPaypostCode").val().trim().toUpperCase(),
+            CollectionPostOfficeID: $("#CollectionPostOfficeID").val(),
+            FullName: $("#FullName").val().trim(),
+            Email: $("#Email").val().trim(),
+            MobileNumber: $("#MobileNumber").val().trim(),
+            ProvinceID: $("#ProvinceID").val(),
+            //DistrictID: $("#DistrictID").val(),
+            WardID: $("#WardID").val(),
+            Address: $("#Address").val().trim(),
+            ProductBusiness: $("#ProductBusiness").val().trim(),
+            TypeBusiness: $('input[name=TypeBusiness]:checked').val(),
+            TypeShop: $('input[name=TypeShop]:checked').val(),
+            Condition: $('#Condition').is(':checked') == true ? 1 : "",
+        }
+
+        isError = CheckNullValue(data.StoreName, "StoreName", "Tên cửa hàng không được để trống.", isError);
+
+        isError = CheckNullAndRegexValue(data.CRMOrPaypostCode, "Code", "CRMOrPaypostCode", "Mã CRM/Paypost không được để trống.", messageError, isError);
+
+        isError = CheckNullValue(data.CollectionPostOfficeID, "CollectionPostOfficeID", "Bưu cục thu gom không được để trống.", isError);
+
+        isError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "FullName", "Họ và tên không được để trống.", messageError, isError);
+
+        isError = CheckNullAndRegexValue(data.Email, "Email", "Email", "Email không được để trống.", "Email không hợp lệ.", isError);
+
+        isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "MobileNumber", "Số điện thoại không được để trống.", "Số điện thoại không hợp lệ.", isError);
+
+        isError = CheckNullValue(data.ProvinceID, "ProvinceID", "Tỉnh/ Thành phố không được để trống.", isError);
+
+        //isError = CheckNullValue(data.DistrictID, "DistrictID", "Quận/ Huyện không được để trống.", isError);
+
+        isError = CheckNullValue(data.WardID, "WardID", "Phường/ Xã không được để trống.", isError);
+
+        isError = CheckNullValue(data.Address, "Address", "Địa chỉ không được để trống.", isError);
+
+        isError = CheckNullAndRegexValue(data.ProductBusiness, "Note", "ProductBusiness", "Sản phẩm kinh doanh không được để trống.", messageError, isError);
+
+        isError = CheckNullValue(data.TypeBusiness, "TypeBusiness", "Loại hình kinh doanh không được để trống.", isError);
+
+        isError = CheckNullValue(data.TypeShop, "TypeShop", "Loại khách hàng không được để trống.", isError);
+
+        isError = CheckNullValue(data.Condition, "Condition", "Vui lòng đọc và đồng ý với điều khoản và chính sách sử dụng.", isError);
+
+        if (isError == true) {
+            return;
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRegister", "Account")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            beforeSend: function () {
+                $("#btnRegister").attr("disabled", true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    $.get('@Url.Action("RegisterSuccessView", "Account")', function (data) {
+                        $('#modal-ViewModal-html').html(data);
+                        $('#ViewModal').modal('show');
+                     });
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            complete: function () {
+                $("#btnRegister").attr("disabled", false).find("i#iLoading").remove();
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

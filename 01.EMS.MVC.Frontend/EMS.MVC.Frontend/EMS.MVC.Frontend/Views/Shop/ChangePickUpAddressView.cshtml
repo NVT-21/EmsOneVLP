@@ -1,0 +1,244 @@
+﻿@model EMS.MVC.Frontend.Models.ChangePickUpAddressViewModel
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Địa chỉ lấy hàng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.TypeShop, new { @id = "M_TypeShop" })
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Địa chỉ lấy hàng <span class="text-danger">*</span></label>
+                    <select class="select2" id="M_PickUpAddressID">
+                        <option value="">-- Chọn --</option>
+                        @foreach (var item in Model.ListPickUpAddress)
+                        {
+                            <option value="@item.PickUpAddressID" data-FullName="@item.FullName" data-MobileNumber="@item.MobileNumber" data-PickUpName="@item.PickUpName" data-ProvinceID="@item.Province.ID"  data-WardID="@item.Ward.ID" data-Street="@item.Street" data-FullAddress="@item.FullAddress" data-isDefault="@item.IsDefault" data-CollectionPostOfficeID="@item.CollectionPostOfficeID" @{ if (item.IsDefault == "Y") { Write("selected"); } }>@item.PickUpName</option>
+                        }
+                    </select>
+                    <span class="text-danger" id="errM_PickUpAddressID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Tên địa chỉ <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.PickUpName, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "M_PickUpName", @placeholder = "Tên địa chỉ" } })
+                    <span class="text-danger" id="errM_PickUpName"></span>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "M_FullName", @placeholder = "Họ và tên" } })
+                    <span class="text-danger" id="errM_FullName"></span>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "M_MobileNumber", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                    <span class="text-danger" id="errM_MobileNumber"></span>
+                </div>
+
+                @if (Model.TypeShop == 2)
+                {
+                    <div class="col-xl-4 col-lg-6 col-md-6 mb-2">
+                        <label class="mb-1">Mã bưu cục thu gom <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.CollectionPostOfficeID, new SelectList(Model.ListCollectionPostOffice, "ID", "CodeAndName"), "-- Bưu cục thu gom --", new { @class = "select2", @id = "M_CollectionPostOfficeID" })
+                        <span class="text-danger" id="errM_CollectionPostOfficeID"></span>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "M_Street", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                        <span class="text-danger" id="errM_Street"></span>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="mb-1">Tỉnh/ Thành phố <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @id = "M_ProvinceID", @onchange = "LoadListWardV2('M_ProvinceID', 'M_WardID')" })
+                        <span class="text-danger" id="errM_ProvinceID"></span>
+                    </div>
+
+                    @*<div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <div class="mb-3">
+                            <label class="mb-1">Quận/ Huyện <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @id = "M_DistrictID", @onchange = "LoadListWard('M_DistrictID', 'M_WardID')" })
+                            <span class="text-danger" id="errM_DistrictID"></span>
+                        </div>
+                    </div>*@
+
+                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                        <label class="mb-1">Phường Xã <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2", @id = "M_WardID" })
+                        <span class="text-danger" id="errM_WardID"></span>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        @Html.EditorFor(model => model.isDefault, new { htmlAttributes = new { @type = "checkbox", @class = "form-check-input", @id = "M_isDefault" } })
+                        <label class="form-check-label" for="basic_checkbox_2">
+                            Đặt làm địa chỉ lấy hàng mặc định
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                        @Html.TextAreaFor(model => model.FullAddress, new { @class = "form-control", @id = "M_FullAddress", @placeholder = "Địa chỉ", @maxlength = "400", @rows = "4" })
+                        <span class="text-danger" id="errM_FullAddress"></span>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnM_Submit">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        if ($("#M_TypeShop").val() == 2) {
+
+        } else {
+            $("#M_FullName").attr("disabled", true);
+            $("#M_MobileNumber").attr("disabled", true);
+            $("#M_PickUpName").attr("disabled", true);
+            $("#M_FullAddress").attr("disabled", true);
+        }
+    });
+
+    OnlyNumber("#M_MobileNumber");
+    VNPMapsAutocomplete("M_Street", "M_ProvinceID", "M_DistrictID", "M_WardID");
+
+    CheckChangeValue("M_PickUpName", "Vui lòng nhập Tên địa chỉ.", "", "Y");
+    CheckChangeValue("M_CollectionPostOfficeID", "Vui lòng chọn bưu cục thu gom.", "", "Y");
+    CheckChangeValue("M_FullName", "Vui lòng nhập Họ và tên.", "", "Y");
+    CheckChangeValue("M_MobileNumber", "Số điện thoại không hợp lệ", "MobileNumber", "Y");
+    CheckChangeValue("M_Street", "Vui lòng nhập Địa chỉ.", "", "Y");
+    CheckChangeValue("M_ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+    //CheckChangeValue("M_DistrictID", "Vui lòng chọn Quận/ Huyện.", "", "Y");
+    CheckChangeValue("M_WardID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+
+    $("#M_PickUpAddressID").on("change", function () {
+        var PickUpAddressID = $(this).val();
+        if (PickUpAddressID) {
+            var TypeShop = $("#M_TypeShop").val();
+            var FullName = $("option:selected", this).attr("data-FullName");
+            var MobileNumber = $("option:selected", this).attr("data-MobileNumber");
+            var PickUpName = $("option:selected", this).attr("data-PickUpName");
+            var ProvinceID = $("option:selected", this).attr("data-ProvinceID");
+            //var DistrictID = $("option:selected", this).attr("data-DistrictID");
+            var WardID = $("option:selected", this).attr("data-WardID");
+            var Street = $("option:selected", this).attr("data-Street");
+            var FullAddress = $("option:selected", this).attr("data-FullAddress");
+            var isDefault = $("option:selected", this).attr("data-isDefault");
+            var CollectionPostOfficeID = $("option:selected", this).attr("data-CollectionPostOfficeID");
+
+            $("#M_PickUpName").val(PickUpName);
+            $("#M_FullName").val(FullName);
+            $("#M_MobileNumber").val(MobileNumber);
+
+            if (TypeShop == 2) {
+                if (CollectionPostOfficeID == "0") {
+                    CollectionPostOfficeID = "";
+                }
+                $("#M_CollectionPostOfficeID").val(CollectionPostOfficeID).change();
+                $("#M_Street").val(Street);
+                $("#M_ProvinceID").val(ProvinceID).change();
+                $("#M_DistrictID").val(DistrictID).change();
+                $("#M_WardID").val(WardID).change();
+                if (isDefault == "Y") {
+                    $("#M_isDefault").prop('checked', true);
+                } else {
+                    $("#M_isDefault").prop('checked', false);
+                }
+            } else {
+                if (FullAddress) {
+                    $("#M_FullAddress").text(FullAddress);
+                } else {
+                    $("#M_FullAddress").text("");
+                }
+            }
+
+            $("#errM_PickUpAddressID").text("");
+            $("#errM_PickUpName").text("");
+            $("#errM_CollectionPostOfficeID").text("");
+            $("#errM_FullName").text("");
+            $("#errM_MobileNumber").text("");
+            $("#errM_Street").text("");
+        } else {
+            $("#errM_PickUpAddressID").text("Vui lòng chọn Địa chỉ lấy hàng.");
+            $("#M_PickUpName").val("");
+            $("#M_CollectionPostOfficeID").val("").change();
+            $("#errM_CollectionPostOfficeID").text("");
+            $("#M_FullName").val("");
+            $("#M_MobileNumber").val("");
+            $("#M_Street").val("");
+            $("#M_ProvinceID").val("").change();
+            $("#errM_ProvinceID").text("");
+            $("#M_FullAddress").text("");
+            $("#M_isDefault").prop('checked', false);
+        }
+    });
+
+    $("#btnM_Submit").on("click", function () {
+        var isError = false;
+        var isMessage = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            PickUpAddressID: $("#M_PickUpAddressID").val(),
+            TypeShop: $("#M_TypeShop").val(),
+        }
+
+        isError = CheckNullValue(data.PickUpAddressID, "M_PickUpAddressID", "Vui lòng chọn địa chỉ lấy hàng", isError);
+
+        if (data.TypeShop == 2) {
+            data.PickUpName = $("#M_PickUpName").val().trim();
+            data.CollectionPostOfficeID = $("#M_CollectionPostOfficeID").val();
+            data.FullName = $("#M_FullName").val().trim();
+            data.MobileNumber = $("#M_MobileNumber").val().trim();
+            data.Street = $("#M_Street").val().trim();
+            data.ProvinceID = $("#M_ProvinceID").val();
+            data.DistrictID = $("#M_DistrictID").val();
+            data.WardID = $("#M_WardID").val();
+            data.isDefault = $('#M_isDefault').is(':checked');
+
+            isError = CheckNullValue(data.PickUpName, "M_PickUpName", "Vui lòng nhập Tên địa chỉ.", isError);
+            isError = CheckNullValue(data.CollectionPostOfficeID, "M_CollectionPostOfficeID", "Vui lòng chọn bưu cục thu gom.", isError);
+            isError = CheckNullValue(data.FullName, "M_FullName", "Vui lòng nhập Họ và tên.", isError);
+            isError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "M_MobileNumber", "Vui lòng nhập Số điện thoại.", isMessage, isError);
+            isError = CheckNullValue(data.Street, "M_Street", "Vui lòng nhập Địa chỉ.", isError);
+            isError = CheckNullValue(data.ProvinceID, "M_ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+            //isError = CheckNullValue(data.DistrictID, "M_DistrictID", "Vui lòng chọn Quận/ Huyện.", isError);
+            isError = CheckNullValue(data.WardID, "M_WardID", "Vui lòng chọn Phường/ Xã.", isError);
+        };
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JChangePickUpAddress", "Shop")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

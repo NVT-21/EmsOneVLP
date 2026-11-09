@@ -1,0 +1,134 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Tiktok.Models.TIK_SearchListProductProcessViewModel>
+<table id="SearchListDataTableProcess" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="text-start">Sản phẩm TikTok Shop cần xử lý</th>
+            <th class="text-start">ID SKU</th>
+            <th class="text-start">SKU</th>
+            <th class="text-start" style="max-width: 260px; white-space: inherit; vertical-align: baseline;line-height: 1.4rem;">Lý do</th>
+            <th class="text-start">Chọn SP EMSOne để liên kết</th>
+            <th hidden></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr class="row-item">
+            <td class="text-start" style="min-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                <div class="media">
+                    <img class="mt-2" style="width:60px;height:60px;" src="@item.TiktokProductAvatar" alt="image">
+                    <div class="media-body p-3">
+                        <h6 class="mt-0">
+                            @item.TiktokProductID - @item.TiktokProductName<br />
+                            <small class="text-muted text-3">Biến thể: @item.TiktokOptions</small>
+                        </h6>
+                    </div>
+                </div>
+            </td>
+            <td class="text-start text-muted pt-4 TiktokSKUID">
+                @item.TiktokSKUID
+            </td>
+            <td class="text-start text-muted pt-4">
+                @item.TiktokSellerSKU
+            </td>
+            <td class="text-start text-muted pt-4" style="max-width: 260px; white-space: inherit; text-align: left;">
+                @item.StatusName
+            </td>
+            <td class="text-start" style="min-width: 260px;">
+                @if (ViewBag.ListProduct != null)
+                {
+                    <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@item.TiktokSKUID">
+                        <option value="">-- Sản phẩm --</option>
+                        @foreach (var iListProduct in ViewBag.ListProduct)
+                        {
+                            <option value="@iListProduct.ProductVariant.ID"
+                                    data-foo="@iListProduct.ProductVariant.ID">
+                                @iListProduct.ProductName (@iListProduct.ProductVariant.Options)
+                            </option>
+                        }
+                    </select>
+                }
+            </td>
+            <td hidden class="TiktokProductID">@item.TiktokProductID</td>
+        </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        MyCreateDataTable("SearchListDataTableProcess");
+    });
+    function btnProductLinkConnection() {
+        var arr = [];
+        $('.row-item').each(function () {
+            var ProductVariantID = $(this).find("td:eq(3) select[name='ProductVariant']").val();
+            var TiktokSKUID = $(this).closest('tr').find('.TiktokSKUID').html().trim();
+            var TiktokProductID = $(this).closest('tr').find('.TiktokProductID').html().trim();
+
+            if (ProductVariantID) {
+                var obj = {
+                    TiktokProductID: TiktokProductID,
+                    TiktokSKUID: TiktokSKUID,
+                    ProductVariantID: parseInt(ProductVariantID)
+                };
+                arr.push(obj);
+            }
+        });
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Bạn chưa chọn sản phẩm tương ứng để liên kết.");
+            return;
+        };
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("TIK_JProductUpdateConnection", "TIK_Product", new { area = "Tiktok" })',
+            data: {
+                TypeUpdate: "LINK",
+                ShopID: '@XHelper.Session.EmployeeProfile.ShopInformation.ID',
+                UpdatedBy: '@XHelper.Session.EmployeeProfile.ID',
+                ListItem: arr
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else if (res.Code == "99") {
+                    CreateCustomSwal("error", res.Message);
+                } else {
+                    swal({
+                        title: 'Thông báo',
+                        text: res.Message,
+                        buttons: {
+                            confirm: {
+                                text: "Xem chi tiết",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary",
+                                closeModal: true
+                            },
+                            cancel: {
+                                text: "Đóng",
+                                value: false,
+                                visible: true,
+                                className: "btn btn-danger",
+                                closeModal: true,
+                            }
+                        },
+                    }).then((value) => {
+                        if (value) {
+                            $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle", new { area = "" })', {
+                                Error: res.Data,
+                                Controller: "TIK_Product"
+                            }, function (data) {
+                                $('#modal-ViewModal-html').html(data);
+                                $('#ViewModal').modal('show');
+                            });
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>

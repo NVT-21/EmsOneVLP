@@ -1,0 +1,412 @@
+﻿@model List<EMS.MVC.Frontend.Models.ReconciliationListCODMoneyPeriodViewModel>
+<table id="SearchListDataTable" class="table table-responsive-xl">
+    <thead>
+        <tr>
+            <th class="align-middle">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th>Mã bưu gửi</th>
+            <th>Mã đơn hàng</th>
+            <th>Ngày tạo đơn</th>
+            <th>Ngày phát hành</th>
+            <th>Ngày đối soát</th>
+            <th>Tiền COD</th>
+            <th>Trạng thái đối soát</th>
+            <th>Lý do từ chối</th>
+            <th>Trạng thái thanh toán</th>
+            <th>Mã bảng kê</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="py-2">
+                    <div class="form-check custom-checkbox ">
+                        @if (item.IsAgree != "Y" && item.IsAgree != "D")
+                        {
+                            <input type="checkbox" class="form-check-input" id="SelectData" data-EMSBarCode="@item.EmsBarCode" value="@item.ID">
+                            <label class="form-check-label" for="checkbox1"></label>
+                        }
+                    </div>
+                </td>
+                <td><span class="text-secondary"><a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(item.EmsBarCode), ShopID = EMS.Library.Security.EncodeBase64(XHelper.Session.EmployeeProfile.ShopInformation.ID.ToString()) })" target="_blank">@item.EmsBarCode</a></span></td>
+                <td><a href="#" class="ShowDetailOrderView" data-OrderID="@item.OrderID" data-ShopID="@XHelper.Session.EmployeeProfile.ShopInformation.ID">@item.OrderCode</a></td>
+                <td>
+                    @item.CreatedDateOrder
+                </td>
+                <td>
+                    @item.TimeRelease
+                </td>
+                <td>
+                    @item.ApprovalDate
+                </td>
+                <td>@item.CODMoney.ToString("N0")</td>
+                <td>
+                    @if (item.IsAgree == "Y")
+                    {
+                        <b class="text-success">@item.NameStatusReconciliation</b>
+                    }
+                    else if (item.IsAgree == "N")
+                    {
+                        <b class="text-danger">@item.NameStatusReconciliation</b>
+                    }
+                    else if (item.IsAgree == "W")
+                    {
+                        <b class="text-warning">@item.NameStatusReconciliation</b>
+
+                    }
+                    else if (item.IsAgree == "C")
+                    {
+                        <b class="text-info">@item.NameStatusReconciliation</b>
+                    }
+                    else if (item.IsAgree == "D")
+                    {
+                        <b class="text-black-50">@item.NameStatusReconciliation</b>
+                    }
+                    else if (item.IsAgree == "R")
+                    {
+                        <b class="text-indigo">@item.NameStatusReconciliation</b>
+                    }
+                </td>
+                <td>
+                    @item.ReasonReject
+                </td>
+                <td>
+                    <span class="text-secondary">
+                        @if (item.IsPayment == "Y")
+                        {
+                            <b class="text-success">Đã thanh toán</b>
+                        }
+                        else if (item.IsPayment == "N")
+                        {
+                            <b class="text-danger">Chờ thanh toán</b>
+                        }
+                    </span>
+                </td>
+                <td><span class="text-secondary">@item.ListCode</span></td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn " type="button" id="order-dropdown-1"
+                                data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                            <span>
+                                Chọn
+                            </span>
+                            <i class="icon-arrow-b"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                            <div class="py-2">
+                                <a class="dropdown-item" onclick="fnIsAction('@item.ID','@item.EmsBarCode','Y')">Đồng ý</a>
+                                <a class="dropdown-item" onclick="fnIsAction('@item.ID','@item.EmsBarCode','N')">Từ chối</a>
+                                <a class="dropdown-item" onclick="fnIsAction('@item.ID','@item.EmsBarCode','R')">Chuyển kỳ tiếp theo</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+    $("#IsAgreeAll").on("click", function () {
+        let table = $('#SearchListDataTable').DataTable();
+        let arr = [];
+        let checkedvalues = table.$('input:checked').each(function () {
+            var obj = {};
+            obj.ID = $(this).val();
+            obj.EmsBarCode = $(this).attr("data-EMSBarCode");
+            obj.Agree = "Y";
+            arr.push(obj);
+        });
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần đối soát.");
+            return;
+        } else {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn đồng ý với đối soát này?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-outline-dark",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAgreeCODMoney", "Reconciliation")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            arr: arr,
+                            ReasonReject: ""
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    button: false,
+                                    timer: 1500
+                                }).then(function () {
+                                    setTimeout(function () { $('#SearchCode').change(); }, 1200);
+                                });
+                            } else  {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    });
+    $("#IsRejectAll").on("click", function () {
+        let table = $('#SearchListDataTable').DataTable();
+        let arr = [];
+        let checkedvalues = table.$('input:checked').each(function () {
+            var obj = {};
+            obj.ID = $(this).val();
+            obj.EmsBarCode = $(this).attr("data-EMSBarCode");
+            obj.Agree = "N",
+            arr.push(obj);
+        });
+        var req = {
+            arr: arr
+        };
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần đối soát.");
+            return;
+        } else {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn từ chối với đối soát này?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.post('@Url.Action("ReasonRejectCOD", "Reconciliation")', req, function (data) {
+                        $('#modal-ViewModal-html').html(data);
+                        $('#ViewModal').modal('show');
+                    });
+                }
+            });
+        }
+    });
+    $("#IsPhaseChangeAll").on("click", function () {
+        let table = $('#SearchListDataTable').DataTable();
+        let arr = [];
+        let checkedvalues = table.$('input:checked').each(function () {
+            var obj = {};
+            obj.ID = $(this).val();
+            obj.EmsBarCode = $(this).attr("data-EMSBarCode");
+            obj.Agree = "R";
+            arr.push(obj);
+        });
+
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần đối soát.");
+            return;
+        } else {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn đồng ý với hành động này?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAgreeCODMoney", "Reconciliation")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            arr: arr,
+                            ReasonReject: ""
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    button: false,
+                                    timer: 1500
+                                }).then(function () {
+                                    setTimeout(function () { $('#SearchCode').change(); }, 1200);
+                                });
+                            } else  {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    });
+    function fnIsAction(id, code, type) {
+        if (type == "N") {
+            let arr = [];
+            var obj = {};
+            obj.ID = id;
+            obj.EmsBarCode = code;
+            obj.Agree = type,
+                arr.push(obj);
+            var req = {
+                arr: arr
+            };
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn từ chối với đối soát này?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.post('@Url.Action("ReasonRejectCOD", "Reconciliation")', req, function (data) {
+                        $('#modal-ViewModal-html').html(data);
+                        $('#ViewModal').modal('show');
+                    });
+                }
+            });
+        } else {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn đồng ý với đối soát này?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-outline-dark",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAgreeCODMoneyOne", "Reconciliation")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            ID: id,
+                            Agree: type,
+                            ReasonReject: ""
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    button: false,
+                                    timer: 1500
+                                }).then(function () {
+                                    setTimeout(function () { $('#SearchCode').change(); }, 1200);
+                                });
+                            } else  {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            CreateCustomSwal("error", err.Message);
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    }
+    $(".ShowDetailOrderView").on("click", function (event) {
+        event.preventDefault();
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: $(this).attr("data-OrderID"), ShopID: $(this).attr("data-ShopID")
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+</script>

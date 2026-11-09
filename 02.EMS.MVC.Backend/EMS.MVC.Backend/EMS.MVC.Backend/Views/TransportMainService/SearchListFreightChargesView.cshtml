@@ -1,0 +1,197 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListFreightChargesViewModel>
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã bảng cước </th>
+            <th> Tên bảng cước </th>
+            <th> Dịch vụ chính </th>
+            <th> Thời gian áp dụng </th>
+            <th> Trạng thái </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(i++)</td>
+                    <td class="text-left">@item.TransportPostageCode</td>
+                    <td class="text-left">@item.TransportPostageName</td>
+                    <td class="text-left">@item.TransportServiceName</td>
+                    <td>
+                        <p>Từ @item.StartDate</p>
+                        @if (item.EndDate != "")
+                        {
+                            <p>đến @item.EndDate</p>
+                        }
+                    </td>
+                    <td>@item.Status.Name</td>
+                    <td class="text-left">
+
+                        @if (item.Status.Code == "C")
+                        {
+                            <button type="button" title="Chi tiết" onclick="location.href = '@Url.Action("EditFreightChargesView", "TransportMainService", new { TransportPostageID = item.TransportPostageID, TransportPostageCode = item.TransportPostageCode})'" class="badge badge-outline-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <button type="button" title="Bỏ xác nhận" onclick="UnConfirm(@item.TransportPostageID)" class="badge badge-outline-warning">
+                                <i class="fa fa-reply"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" title="Sửa" onclick="location.href = '@Url.Action("EditFreightChargesView", "TransportMainService", new { TransportPostageID = item.TransportPostageID, TransportPostageCode = item.TransportPostageCode})'" class="badge badge-outline-warning">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                        }
+                        @if (item.IsLock == "N")
+                        {
+                            <button type="button" title="Tạm dừng" onclick="ChangeIsLock(@item.TransportPostageID, 'Y')" class="badge badge-outline-danger">
+                                <i class="fa fa-stop"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" title="Mở" onclick="ChangeIsLock(@item.TransportPostageID, 'N')" class="badge badge-outline-primary">
+                                <i class="fa fa-play"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function ChangeIsLock(TransportPostageID, IsLock) {
+        var message = "";
+        if (IsLock == "N") {
+            message = "Bạn chắc chắn muốn mở gói cước này?";
+        } else if (IsLock == "Y") {
+            message = "Bạn chắc chắn muốn tạm dừng gói cước này?";
+        } else {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: message,
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeIsLock", "TransportMainService")',
+                    data: {
+                        TransportPostageID: TransportPostageID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    //Bỏ xác nhận
+    function UnConfirm(TransportPostageID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn bỏ xác nhận gói cước này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUnConfirm", "TransportMainService")',
+                    data: {
+                        TransportPostageID: TransportPostageID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,121 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Tiktok.Models.TIK_SearchListOrderViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="text-start">ID đơn hàng</th>
+            <th class="text-start">Thông tin gửi</th>
+            <th class="text-start">Thông tin nhận</th>
+            <th class="text-start">Cước thực tế</th>
+            <th class="text-start">Giá trị đơn hàng</th>
+            @*<th class="text-start">ID chuyển hoàn</th>*@
+            <th class="text-start">Tình trạng xuất kho</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-start">
+                    <a href="#" onclick="btnDetailOrder(@item.OrderID,@item.ShopID)">@item.OrderCode</a><br /><small class="text-muted text-3">
+                        @item.CreatedDate
+                    </small>
+                </td>
+                <td class="text-start">
+                    @item.SenderName<br />
+                    <small class="text-muted text-3">@item.SenderPhone</small><br />
+                    <small class="text-muted text-3">@item.SenderFullAddress</small>
+                </td>
+                <td class="text-start">
+                    @item.ReceiverName<br />
+                    <small class="text-muted text-3">@item.ReceiverPhone</small><br />
+                    <small class="text-muted text-3">@item.ReceiverFullAddress</small>
+                </td>
+                <td class="text-start">
+                    @item.PaymentFreightVat.ToString("N0") đ
+                </td>
+                <td class="text-start">
+                    @item.TotalOrderValue.ToString("N0") đ
+                </td>
+                @*<td class="text-start">
+                    @item.TiktokReverseOrderCode
+                </td>*@
+                <td class="text-start">
+                    @item.TiktokOrderInventoryStatus.Name
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        var SearchOrderStatus = '@ViewBag.SearchOrderStatus';
+        var CheckCustomerCode = '@ViewBag.CheckCustomerCode';
+        $('#SearchListDataTable').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            "language": {
+                "sSearch": "",
+                "searchPlaceholder": "Tìm kiếm nhanh",
+                "emptyTable": "Không có dữ liệu",
+                "zeroRecords": "Không có dữ liệu",
+                "sInfo": "_START_ - _END_ trên _TOTAL_",
+                "infoEmpty": "0 - 0 trên 0",
+                "infoFiltered": "(Tìm kiếm từ _MAX_ bản ghi)",
+                "oPaginate": {
+                    "sFirst": "Trang đầu",
+                    "sPrevious": "<",
+                    "sNext": ">",
+                    "sLast": "Trang cuối"
+                },
+                "lengthMenu": "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "searching": false,
+            "stateSave": true,
+            "dom": "tr<'row'<'col-4'l><'col-8 d-flex justify-content-end m-auto'<'mt-1 me-3'i>p>>",
+        });
+
+        $("#SearchListDataTable").removeClass('dataTable');
+
+        if ('@ViewBag.ReloadStatusNumber' == "Y") {
+            LoadCountStatus();
+        }
+    });
+
+    function LoadCountStatus() {
+        var data = @Html.Raw(Json.Encode(ViewBag.OrderStatusNumber));
+        var TotalOrder = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Count >= 1000) {
+                $("#OrderStatus" + data[i].Status).text("(999+)");
+            } else {
+                $("#OrderStatus" + data[i].Status).text("(" + data[i].Count + ")");
+            }
+            if (data[i].Status != "C" && data[i].Status != "D" && data[i].Status != "L") {
+                TotalOrder += data[i].Count;
+            }
+        }
+        if (TotalOrder >= 1000) {
+            $("#StatusAll").text("(999+)");
+        } else {
+            $("#StatusAll").text("(" + TotalOrder + ")");
+        }
+    }
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+
+    function btnDetailOrder(OrderID, ShopID) {
+        $.post('@Url.Action("TIK_DetailOrderView", "TIK_Order", new { area = "Tiktok" })', {
+            OrderID: OrderID, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+</script>

@@ -1,0 +1,206 @@
+﻿@model EMS.MVC.Frontend.Models.EditDetailInventoryImportViewModel
+
+@if (Model.ListInventoryImportDetail.Count > 0)
+{
+    foreach (var item in Model.ListInventoryImportDetail)
+    {
+        Model.NumberOfDetail++;
+        <tr class="row-item">
+            <td style="min-width: 200px">
+                <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@Model.NumberOfDetail" onchange="sltChangeProductVariant(@Model.NumberOfDetail)">
+                    <option value="">-- Sản phẩm --</option>
+                    @foreach (var ItemProductVariant in Model.ListProduct)
+                    {
+                        if (ItemProductVariant.ProductVariant.ID == item.Product.ProductVariant.ID)
+                        {
+                            <option value="@ItemProductVariant.ProductVariant.ID" selected>@ItemProductVariant.ProductName (@ItemProductVariant.ProductVariant.Options)</option>
+                        }
+                        else
+                        {
+                            <option value="@ItemProductVariant.ProductVariant.ID">@ItemProductVariant.ProductName (@ItemProductVariant.ProductVariant.Options)</option>
+                        }
+                    }
+                </select>
+                <span class="text-danger" id="errProductVariant_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <div id="ShowProductQuantity_@Model.NumberOfDetail" class="quantity-block" style="width: 100%">
+                    <button class="btn quantity-arrow-minus" onclick="btnMinus(@Model.NumberOfDetail)"> - </button>
+                    <input type="text" class="form-control quantity-num" name="ProductQuantity" id="ProductQuantity_@Model.NumberOfDetail" onchange="inpChangeProductQuantity(@Model.NumberOfDetail)" placeholder="Nhập số lượng" value="@item.Quantity" style="width: 100%;" data-inputmask="'alias': 'PositiveNumber'" maxlength="14">
+                    <button class="btn quantity-arrow-plus" onclick="btnPlus(@Model.NumberOfDetail)"> + </button>
+                </div>
+                <span class="text-danger" id="errProductQuantity_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control ProductPrice" name="ProductPrice" id="ProductPrice_@Model.NumberOfDetail" onchange="inpChangeProductPrice(@Model.NumberOfDetail)" placeholder="Nhập giá nhập" value="@item.Price" data-inputmask="'alias': 'PositiveNumber'" maxlength="14">
+                <span class="text-danger" id="errProductPrice_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <span class="TotalPrice" id="TotalPrice_@Model.NumberOfDetail">@item.TotalAmount.ToString("N0")</span>
+                <span>đ</span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="PalletCode" id="PalletCode_@Model.NumberOfDetail" onchange="inpChangePalletCode(@Model.NumberOfDetail)" placeholder="Nhập mã Pallet" value="@item.Product.ProductVariant.Pallet.PalletCode" maxlength="20">
+                <span class="text-danger" id="errPalletCode_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 100px" class="text-center">
+                <button class="btn btn-sm" type="button" onclick="btnRemoveRow(this)" title="Xoá" style="color: red;">
+                    <i class="icon-trash fs-18"></i>
+                </button>
+            </td>
+            <td hidden class="NumberOfDetail">@Model.NumberOfDetail</td>
+        </tr>
+    }
+}
+else
+{
+<tr class="row-item">
+    <td style="min-width: 200px">
+        <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@Model.NumberOfDetail" onchange="sltChangeProductVariant(@Model.NumberOfDetail)">
+            <option value="">-- Sản phẩm --</option>
+            @foreach (var item in Model.ListProduct)
+            {
+                <option value="@item.ProductVariant.ID">@item.ProductName (@item.ProductVariant.Options)</option>
+            }
+        </select>
+        <span class="text-danger" id="errProductVariant_@Model.NumberOfDetail"></span>
+    </td>
+    <td style="min-width: 200px">
+        <div id="ShowProductQuantity_@Model.NumberOfDetail" class="quantity-block d-none" style="width: 100%">
+            <button class="btn quantity-arrow-minus" onclick="btnMinus(@Model.NumberOfDetail)"> - </button>
+            <input type="text" class="form-control quantity-num" name="ProductQuantity" id="ProductQuantity_@Model.NumberOfDetail" onchange="inpChangeProductQuantity(@Model.NumberOfDetail)" placeholder="Nhập số lượng" value="0" style="width: 100%;" data-inputmask="'alias': 'PositiveNumber'" maxlength="14">
+            <button class="btn quantity-arrow-plus" onclick="btnPlus(@Model.NumberOfDetail)"> + </button>
+        </div>
+        <span class="text-danger" id="errProductQuantity_@Model.NumberOfDetail"></span>
+    </td>
+    <td style="min-width: 200px">
+        <input type="text" class="form-control ProductPrice d-none" name="ProductPrice" id="ProductPrice_@Model.NumberOfDetail" onchange="inpChangeProductPrice(@Model.NumberOfDetail)" placeholder="Nhập giá nhập" data-inputmask="'alias': 'PositiveNumber'" maxlength="14">
+        <span class="text-danger" id="errProductPrice_@Model.NumberOfDetail"></span>
+    </td>
+    <td style="min-width: 200px">
+        <span class="TotalPrice" id="TotalPrice_@Model.NumberOfDetail">0</span>
+        <span>đ</span>
+    </td>
+    <td style="min-width: 200px">
+        <input type="text" class="form-control" name="PalletCode" id="PalletCode_@Model.NumberOfDetail" onchange="inpChangePalletCode(@Model.NumberOfDetail)" placeholder="Nhập mã Pallet" maxlength="20">
+        <span class="text-danger" id="errPalletCode_@Model.NumberOfDetail"></span>
+    </td>
+    <td style="min-width: 100px" class="text-center">
+        <button class="btn btn-sm" type="button" onclick="btnRemoveRow(this)" title="Xoá" style="color: red;">
+            <i class="icon-trash fs-18"></i>
+        </button>
+    </td>
+    <td hidden class="NumberOfDetail">@Model.NumberOfDetail</td>
+</tr>
+}
+
+<script>
+    $(document).ready(function () {
+        $(":input").inputmask();
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    function btnRemoveRow(this1) {
+        var NumberOfRow = $(".row-item").length;
+        if (NumberOfRow > 1) {
+            $(this1).parents("tr").remove();
+        } else {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm");
+        }
+    }
+
+    function sltChangeProductVariant(NumberOfDetail) {
+        var ProductVariantValue = $("#ProductVariant_" + NumberOfDetail).val();
+        if (ProductVariantValue) {
+            var CheckDuplicate = CheckProductVariantDuplicate(NumberOfDetail);
+            if (CheckDuplicate == true) {
+                $('#ProductVariant_' + NumberOfDetail).val("").change();
+                CreateCustomSwal("error", "Sản phẩm đã tồn tại");
+                return;
+            }
+
+            $("#ProductQuantity_" + NumberOfDetail).val(0);
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+
+            $("#ProductPrice_" + NumberOfDetail).val(0);
+            $("#errProductPrice_" + NumberOfDetail).text("");
+
+            $("#ShowProductQuantity_" + NumberOfDetail).removeClass("d-none");
+            $("#ProductPrice_" + NumberOfDetail).removeClass("d-none");
+
+            $("#errListDetail").text("");
+        } else {
+            $("#ProductQuantity_" + NumberOfDetail).val(0);
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+
+            $("#ProductPrice_" + NumberOfDetail).val(0);
+            $("#errProductPrice_" + NumberOfDetail).text("");
+
+            $("#TotalPrice_" + NumberOfDetail).text("0");
+
+            $("#ShowProductQuantity_" + NumberOfDetail).addClass("d-none");
+            $("#ProductPrice_" + NumberOfDetail).addClass("d-none");
+        }
+    }
+
+    function CheckProductVariantDuplicate(NumberOfDetail) {
+        var arr = [];
+        var ChooseProductVariant = $("#ProductVariant_" + NumberOfDetail).val();
+        $('.row-item').each(function () {
+            var ProductVariant = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+            if (ProductVariant == ChooseProductVariant) {
+                arr.push(ProductVariant);
+            }
+        });
+
+        if (arr.length > 1 && arr.find(m => m == ChooseProductVariant)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function btnPlus(NumberOfDetail) {
+        var value = NumberReplace($("#ProductQuantity_" + NumberOfDetail).val());
+        $("#ProductQuantity_" + NumberOfDetail).val(parseInt(value) + 1).change();
+    }
+
+    function btnMinus(NumberOfDetail) {
+        var value = NumberReplace($("#ProductQuantity_" + NumberOfDetail).val());
+        if (value > 1) {
+            $("#ProductQuantity_" + NumberOfDetail).val(parseInt(value) - 1).change();
+        }
+    }
+
+    function LoadTotalPrice(NumberOfDetail) {
+        var ProductQuantity = NumberReplace($("#ProductQuantity_" + NumberOfDetail).val());
+        var ProductPrice = NumberReplace($("#ProductPrice_" + NumberOfDetail).val());
+        var TotalPrice = Number(ProductQuantity) * Number(ProductPrice);
+        $("#TotalPrice_" + NumberOfDetail).text(NumberFormat(TotalPrice));
+    }
+
+    function inpChangeProductQuantity(NumberOfDetail) {
+        var ProductQuantity = NumberReplace($("#ProductQuantity_" + NumberOfDetail).val());
+        if (parseInt(ProductQuantity) > 0) {
+            LoadTotalPrice(NumberOfDetail);
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+        }
+    }
+
+    function inpChangeProductPrice(NumberOfDetail) {
+        var ProductPrice = NumberReplace($("#ProductPrice_" + NumberOfDetail).val());
+        if (parseInt(ProductPrice) > 0) {
+            LoadTotalPrice(NumberOfDetail);
+            $("#errProductPrice_" + NumberOfDetail).text("");
+        }
+    }
+
+    function inpChangePalletCode(NumberOfDetail) {
+        var PalletCode = $("#PalletCode_" + NumberOfDetail).val();
+        var isError = false;
+        isError = CheckRegexValue(PalletCode, "SpecialCharButNotVietnamese", "PalletCode_" + NumberOfDetail, "Mã Pallet không hợp lệ", isError);
+        if (isError == true) {
+            return;
+        }
+    }
+</script>

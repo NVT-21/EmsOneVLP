@@ -1,0 +1,55 @@
+﻿@model EMS.MVC.Backend.Models.NotifyControlSearchListViewModel
+@if (Model != null)
+{
+    <div class="modal-dialog modal-800" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Model.NotifyName</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ClearModal">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="form-label font-weight-bold">Mô tả</label>
+                        <textarea class="form-control"  style="line-height: 1.4rem;" rows="6" id="NotifyContent" placeholder="Mô tả" maxlength="250" readonly>@Model.NotifyContent</textarea>
+                        <div class="text-right mt-2">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthNotifyContent">@Model.NotifyContent.Length</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.NotifyRedirectUrl))
+                {
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <strong><a style="text-decoration: none;" href="@Model.NotifyRedirectUrl" target="_blank"><i class="fa fa-link"></i>&nbsp; Truy cập khuyến mãi</a></strong>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer" style="justify-content: flex-start;">
+                <span class="font-weight-bold">Thời gian: </span>&nbsp;@Model.CreatedDate
+            </div>
+        </div>
+    </div>
+
+}
+else
+{
+    <p class="text-red">Không tìm thấy dữ liệu</p>
+}
+<script>
+    ShowInputLength("NotifyContent", "ShowLengthNotifyContent", 250);
+    function ShowInputLength(InputID, OutputID, MaxLength) {
+        $("#" + InputID).on("keyup keydown", function () {
+            var NoteLength = $("#" + InputID).val().length;
+            if (NoteLength <= MaxLength) {
+                $("#" + OutputID).text(NoteLength);
+            } else {
+                var SubString = $("#" + InputID).val().substring(0, MaxLength);
+                $("#" + InputID).val(SubString);
+            }
+        });
+    }
+</script>

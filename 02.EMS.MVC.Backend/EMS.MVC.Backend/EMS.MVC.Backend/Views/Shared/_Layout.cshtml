@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Backend EMSOne</title>
+    <link href="~/Assets/vendors/ti-icons/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/Assets/vendors/mdi/css/materialdesignicons.min.css" rel="stylesheet" />
+    <link href="~/Assets/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    @*<link href="~/Assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet" />*@
+    <link href="~/Assets/vendors/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+
+    @*<link href="~/Assets/vendors/jquery-ui/jquery-ui.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="~/Assets/vendors/jquery-ui/jquery-ui.js"></script>*@
+
+    <!-- START - MAIN JAVASCRIPT -->
+    <link href="~/Assets/vendors/css/vendor.bundle.base.css" rel="stylesheet" />
+    <script src="~/Assets/vendors/js/vendor.bundle.base.js"></script>
+    <!-- END - MAIN JAVASCRIPT -->
+
+    <!-- START - AUTOCOMPLETE SELECT LIST VNMAPCODE -->
+    <link href="~/Assets/vendors/jquery-ui-1.13.1/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Assets/vendors/jquery-ui-1.13.1/jquery-ui.js"></script>
+    <!-- END - AUTOCOMPLETE SELECT LIST VNMAPCODE -->
+
+    <!-- START - JS TREE -->
+    <link rel="stylesheet" href="~/Assets/vendors/jstree/dist/themes/default/style.min.css" />
+    <script src="~/Assets/vendors/jstree/dist/jstree.min.js"></script>
+    <!-- END - JS TREE-->
+
+    <link href="~/Assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/Assets/vendors/bootstrap-multiselect/bootstrap-multiselect.min.css" rel="stylesheet" />
+    <link href="~/Assets/vendors/bootstrap-select-1.13.14/dist/css/bootstrap-select.css" rel="stylesheet" />
+
+    <link href="~/Assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Assets/vendors/select2/select2.min.css" rel="stylesheet" />
+    @*<link href="~/Assets/vendors/bootstrap-datetimepicker-master/bootstrap-datetimepicker.min.css" rel="stylesheet" />*@
+
+    <!-- START - DATEPICKER -->
+    <link href="~/Assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <script src="~/Assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <link href="~/Assets/vendors/datetimepicker-master/jquery.datetimepicker.min.css" rel="stylesheet" />
+    <!-- END - DATEPICKER -->
+    @*<link href="~/Assets/vendors/datetimepicker-master/jquery.datetimepicker.min.css" rel="stylesheet" />*@
+
+    @*<link href="~/Assets/vendors/jquery-tags-input/jquery.tagsinput.min.css" rel="stylesheet">*@
+    <link href="~/Assets/vendors/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/Assets/css/main/style.css" rel="stylesheet" />
+    <link href="~/Assets/css/CustomStyle.css" rel="stylesheet" />
+    <script src="~/Assets/js/js.js?n=2"></script>
+    <link href="/favicon.ico" rel="shortcut icon" />
+</head>
+<body class="">
+    <!-- AJAX LOADER -->
+    <div id="ajax_loader" style="background-color: rgba(0, 0, 0, 0.5); z-index: 9999; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; display: none;" class="">
+        <div id="ajax_loader_contend" style="position: fixed; left: 50%; top: 50%; color:white"><img src="~/Assets/images/loading.gif" style="width:30px; height:30px" /></div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-common" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div id="modal-common-container"></div>
+    </div>
+
+    <!-- MODAL ZOOM IMAGE -->
+    <div id="ImageZoomModal" class="image-zoom-modal">
+        <!-- The Close Button -->
+        <span class="image-zoom-close">&times;</span>
+
+        <div id="ImageZoom">
+
+        </div>
+    </div>
+
+    <div class="container-scroller">
+        <!-- partial:partials/_navbar.html -->
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                @*<a class="navbar-brand brand-logo-mini" href="@Url.Action("Index", "Home")">
+                        <img src="~/Assets/images/logo-mini.png" alt="logo" />
+                    </a>*@
+                <button id="btnLogoMenu" class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="ti-layout-grid2"></span>
+                </button>
+                <a id="LogoMenu" class="navbar-brand brand-logo" href="@Url.Action("Index", "Home")">
+                    <img src="~/Assets/images/logo.png" class="mr-2 img-fluid" alt="logo" style="width: 70%; height: auto;" />
+                </a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+                <a id="LogoHeader" href="@Url.Action("Index", "Home")" style="display: none;">
+                    <img src="~/Assets/images/logo.png" class="mr-2 img-fluid" alt="logo" style="width: 60%; height: auto;" />
+                </a>
+                @*<ul class="navbar-nav mr-lg-2">
+                        <li class="nav-item nav-search d-none d-lg-block">
+                            <div class="input-group">
+                                <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                                    <span class="input-group-text" id="search">
+                                        <i class="ti-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="navbar-search-input" placeholder="Tìm kiếm" aria-label="search" aria-describedby="search">
+                            </div>
+                        </li>
+                    </ul>*@
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item dropdown pr-3">
+                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown" title="Thông báo">
+                            <i class="fa fa-bell-o mx-0"></i>
+                            <span class="count" id="NotifyCount"></span>
+                        </a>
+                        <div id="showNotificationDropdown" class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown" style="overflow-y: auto; height: auto;max-height: 400px;">
+                            @{ Html.RenderAction("NotifyListView", "Handle"); }
+                        </div>
+                    </li>
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            @{ var Session = XHelper.Session.UserProfile;
+                                if (Session != null)
+                                {
+                                    @Session.FullName <img src="~/Assets/images/image-default.png" alt="profile" />
+                                }
+                                else
+                                {
+                                    <img src="~/Assets/images/image-default.png" alt="profile" />
+                                }
+                            }
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" id="btnPassword">
+                                <i class="fa fa-key text-primary"></i>
+                                Đổi mật khẩu
+                            </a>
+                            <a class="dropdown-item" href="@Url.Action("LogOut", "Login", new { Area = "" })">
+                                <i class="ti-power-off text-primary"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                @RenderPage("_MenuLeft.cshtml")
+            </nav>
+            <!-- partial -->
+            <div class="main-panel" style="background-color: #ededed;">
+                <div class="content-wrapper">
+                    @RenderBody()
+                </div>
+                <!-- content-wrapper ends -->
+                <!-- partial:partials/_footer.html -->
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021 <a href="#" target="_blank">Mobisoft Co.,Ltd</a>. All rights reserved.</span>
+                        @*<span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Work hard, play hard <i class="ti-heart text-danger ml-1"></i></span>*@
+                    </div>
+                </footer>
+                <!-- partial -->
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- Modal Change Password -->
+    <script src="~/Assets/vendors/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/Assets/js/data-table.js"></script>
+    <script src="~/Assets/js/off-canvas.js"></script>
+    <script src="~/Assets/js/hoverable-collapse.js"></script>
+    <script src="~/Assets/js/template.js"></script>
+    <script src="~/Assets/js/settings.js"></script>
+    <script src="~/Assets/js/todolist.js"></script>
+    <script src="~/Assets/vendors/js/sweetalert/sweetalert.min.js"></script>
+    <script src="~/Assets/vendors/js/jquery.avgrund/jquery.avgrund.min.js"></script>
+    <script src="~/Assets/js/alerts.js"></script>
+    <script src="~/Assets/js/avgrund.js"></script>
+
+    <script src="~/Assets/vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/Assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+
+    @*<script src="~/Assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>*@
+    <script src="~/Assets/vendors/bootstrap-select-1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/Assets/vendors/bootstrap-select-1.13.14/dist/js/i18n/defaults-vi_VN.min.js"></script>
+    <script src="~/Assets/js/select2.js"></script>
+    <script src="~/Assets/vendors/select2/select2.min.js"></script>
+    @*<script src="~/Assets/js/popover.js"></script>
+        <script src="~/Assets/js/tooltips.js"></script>*@
+    <script src="~/Assets/vendors/inputmask/jquery.inputmask.bundle.js"></script>
+    <script src="~/Assets/js/inputmask.js"></script>
+    @*<script src="~/Assets/vendors/jquery-tags-input/jquery.tagsinput.min.js"></script>*@
+    <script src="~/Assets/vendors/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+    @*<script src="~/Assets/vendors/bootstrap-datetimepicker-master/bootstrap-datetimepicker.min.js"></script>*@
+    <script src="~/Assets/vendors/datetimepicker-master/jquery.datetimepicker.full.min.js"></script>
+    @*step*@
+    @*<script src="~/Assets/vendors/jquery-steps/jquery.steps.min.js"></script>
+        <script src="~/Assets/vendors/jquery-validation/jquery.validate.min.js"></script>
+        <script src="~/Assets/js/wizard.js"></script>*@
+    @*<script src="~/Assets/js/js.js?n=2"></script>*@
+    <!-- Datatables Create Button -->
+    <script src="~/Assets/vendors/datatables.net/dataTables.buttons.min.js"></script>
+    <script src="~/Assets/vendors/datatables.net/buttons.html5.min.js"></script>
+    <!-- Datatables Button Export Excel -->
+    <script src="~/Assets/vendors/datatables.net/jszip.min.js"></script>
+    <!-- Datatables Button Export PDF -->
+    @*<script src="~/Assets/vendors/datatables.net/pdfmake.min.js"></script>
+        <script src="~/Assets/vendors/datatables.net/vfs_fonts.js"></script>*@
+    <!-- Datatables Button Export PRINT -->
+    @*<script src="~/Assets/vendors/datatables.net/buttons.print.min.js"></script>*@
+
+    <!-- format string, example: String.format("ID={0}&Code={1}", id, code) -->
+    <script src="~/Assets/js/string.js"></script>
+
+    <script src="~/Assets/vendors/moment/moment.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            //$('[data-toggle="tooltip"]').tooltip();
+            //$('[data-toggle="popover"]').popover();
+
+            $('select.select2').select2(AttributeSelect2);
+
+            //$.toast({
+            //    heading: 'Thông báo',
+            //    text: '<div class="text-left">Bạn có yêu cầu hỗ trợ ' + "EMS000218" + ' của bưu gửi ' + "EC680001542VN" + ' cần được xử lý. Vui lòng xử lý <a style="cursor: pointer;" data-RequestSupportID="551" data-ShopID="150" data-RequestSupportCode="EMS000218" onclick="UpdateClickNotify(this)">tại đây</a></div>',
+            //    showHideTransition: 'slide',
+            //    stack: 3, // hien toi thieu la 3 thong bao
+            //    allowToastClose: true, // cho phep tat thong bao
+            //    position: 'bottom-right',
+            //    bgColor: '#0072BC',
+            //    textColor: 'white',
+            //    textAlign: 'center',
+            //    hideAfter: 10000 // thoi gian ton tai 10s
+            //})
+
+            $('.NoNegativeNumbers').on('input', function () {
+                this.value = this.value.replaceAll('-', '');
+            });
+
+            $(document).on('focus', ':input', function () {
+                $(this).attr('autocomplete', 'off');
+            });
+
+            $(".modal").on("hidden.bs.modal", function () {
+                $("#ClearModal").html("");
+            });
+        });
+        //function resetToastPosition() {
+        //    $('.jq-toast-wrap').removeClass('bottom-left bottom-right top-left top-right mid-center'); // to remove previous position class
+        //    $(".jq-toast-wrap").css({
+        //        "top": "",
+        //        "left": "",
+        //        "bottom": "",
+        //        "right": ""
+        //    }); //to remove previous position style
+        //};
+
+        //setInterval(function () {
+        //    $.toast({
+        //        heading: 'Thông báo',
+        //        text: '<div class="text-left">Bạn có yêu cầu hỗ trợ ' + "EMS000218" + ' của bưu gửi ' + "EC680001542VN" + ' cần được xử lý. Vui lòng xử lý <a style="cursor: pointer;" data-RequestSupportID="551" data-ShopID="150" data-RequestSupportCode="EMS000218" onclick="UpdateClickNotify(this)">tại đây</a></div>',
+        //        showHideTransition: 'slide',
+        //        stack: 3, // hien toi thieu la 3 thong bao
+        //        allowToastClose: true, // cho phep tat thong bao
+        //        position: 'bottom-right',
+        //        bgColor: '#0072BC',
+        //        textColor: 'white',
+        //        textAlign: 'center',
+        //        hideAfter: 10000 // thoi gian ton tai 10s
+        //    })
+        //}, 1000);
+
+        const intervalLoadRequestSupport = setInterval(LoadRequestSupport, 300000);
+
+        function LoadRequestSupport() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("NotifyList", "Handle")',
+                data: {
+                    MaxRequestSupportID: MaxRequestSupportID
+                },
+                dataType: 'json',
+                loading: true,
+                global: false,
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        if (data.MaxRequestSupportID > MaxRequestSupportID) {
+                            if (data.CountRequestSupport > 0) {
+                                $.each(data.ListRequestSupportNotify, function (index, value) {
+                                    $.toast({
+                                        heading: 'Thông báo',
+                                        text: '<div class="text-left">Bạn có yêu cầu hỗ trợ ' + value.RequestSupportCode + ' của bưu gửi ' + value.EShippingCode + ' cần được xử lý. Vui lòng xử lý <a style="cursor: pointer;" data-RequestSupportID="' + value.ID + '" data-ShopID="' + value.ShopID + '" data-RequestSupportCode="' + value.RequestSupportCode + '" onclick="UpdateClickNotify(this)">tại đây</a></div>',
+                                        showHideTransition: 'slide',
+                                        stack: 3, // hien toi thieu la 3 thong bao
+                                        allowToastClose: true, // cho phep tat thong bao
+                                        position: 'bottom-right',
+                                        bgColor: '#0072BC',
+                                        textColor: 'white',
+                                        textAlign: 'center',
+                                        hideAfter: 10000 // thoi gian ton tai 10s
+                                    })
+                                });
+                                var NotifyCountTemp = parseInt(data.CountRequestSupport) + parseInt($("#NotifyCount").text().split('+')[0]) /*parseInt($("#CountRequestSupport").val())*/;
+                                if (NotifyCountTemp >= 100) {
+                                    $("#NotifyCount").text("99+");
+                                    $("#NotifyCount").css("display", "block");
+                                } else {
+                                    $("#NotifyCount").text(NotifyCountTemp);
+                                    $("#NotifyCount").css("display", "block");
+                                }
+                            }
+                            MaxRequestSupportID = data.MaxRequestSupportID;
+                        }
+                    } else {
+                        if (res.Code == "99") {
+                            clearInterval(intervalLoadRequestSupport);
+                        }
+                    }
+                },
+                error: function () {
+                    clearInterval(intervalLoadRequestSupport);
+                },
+            });
+        };
+
+         @*setInterval(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("NotifyList", "Handle")',
+                data: {
+                    MaxRequestSupportID: MaxRequestSupportID
+                },
+                dataType: 'json',
+                loading: true,
+                global: false,
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        if (data.MaxRequestSupportID > MaxRequestSupportID) {
+                            if (data.CountRequestSupport > 0) {
+                                $.each(data.ListRequestSupportNotify, function (index, value) {
+                                    $.toast({
+                                        heading: 'Thông báo',
+                                        text: '<div class="text-left">Bạn có yêu cầu hỗ trợ ' + value.RequestSupportCode + ' của bưu gửi ' + value.EShippingCode + ' cần được xử lý. Vui lòng xử lý <a style="cursor: pointer;" data-RequestSupportID="' + value.ID+ '" data-ShopID="' + value.ShopID + '" data-RequestSupportCode="' + value.RequestSupportCode + '" onclick="UpdateClickNotify(this)">tại đây</a></div>',
+                                        showHideTransition: 'slide',
+                                        stack: 3, // hien toi thieu la 3 thong bao
+                                        allowToastClose: true, // cho phep tat thong bao
+                                        position: 'bottom-right',
+                                        bgColor: '#0072BC',
+                                        textColor: 'white',
+                                        textAlign: 'center',
+                                        hideAfter: 10000 // thoi gian ton tai 10s
+                                    })
+                                });
+                                var NotifyCountTemp = parseInt(data.CountRequestSupport) + parseInt($("#NotifyCount").text().split('+')[0]) /*parseInt($("#CountRequestSupport").val())*/;
+                                if (NotifyCountTemp >= 100) {
+                                    $("#NotifyCount").text("99+");
+                                    $("#NotifyCount").css("display", "block");
+                                } else {
+                                    $("#NotifyCount").text(NotifyCountTemp);
+                                    $("#NotifyCount").css("display", "block");
+                                }
+                            }
+                            MaxRequestSupportID = data.MaxRequestSupportID;
+                        }
+                    }
+                }
+            });
+        }, 300000); // 5 phut, 5 * 60s * 1000*@
+
+        $("#notificationDropdown").on("click", function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("NotifyListView", "Handle", new { IsLoad = "Y"})',
+                dataType: 'html',
+                loading: true,
+                global: false,
+                success: function (data) {
+                    $('#showNotificationDropdown').html(data);
+                }
+            });
+        });
+        $('#btnPassword').on('click', function () {
+            $.get('@Url.Action("ChangePasswordView", "User")', function (data) {
+                $('#modal-common-container').html(data);
+                $('#modal-common').modal('show');
+            });
+        });
+
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        $(document).ajaxError(function (xhr, props) {
+            var message = "";
+            switch (props.status) {
+                case 1:
+                    message = "Cửa hàng đã bị khoá. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 2:
+                    message = "Tài khoản không tồn tại. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 3:
+                    message = "Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 4:
+                    message = "Chi nhánh đã bị khoá. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 5:
+                    message = "Hết thời gian hoạt động. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 6:
+                    message = "Cửa hàng đã hết thời hạn sử dụng. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 7:
+                    message = "Tải danh sách menu thất bại. Vui lòng kiểm tra lại nhóm quyền.";
+                    break;
+                case 401:
+                    message = "Thời gian đăng nhập đã hết, vui lòng đăng nhập lại.";
+                    break;
+                case 413:
+                    message = "Hệ thống hỗ trợ tải tệp tin kích thước tối đa 5 MB.";
+                    break;
+                default:
+                    message = "Vui lòng đăng nhập lại";
+                    break;
+            }
+            swal({
+                title: "Thông báo",
+                text: message,
+                button: {
+                    text: "Đóng"
+                }
+            }).then(function () {
+                window.location.href = '@Url.Action("Logout","Login")';
+            });
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

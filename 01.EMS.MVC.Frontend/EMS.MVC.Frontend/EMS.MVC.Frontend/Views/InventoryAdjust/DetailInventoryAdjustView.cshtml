@@ -1,0 +1,216 @@
+﻿@model EMS.MVC.Frontend.Models.DetailInventoryAdjustViewModel
+@{
+    ViewBag.Title = "DetailInventoryAdjustView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="header-content">
+                <p class="fs-18 font-w600">Mã phiếu điều chỉnh @Model.Code</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-2">
+                    <label>Kho điều chỉnh: <b>@Model.Warehouse.Name</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Ngày điều chỉnh: <b>@Model.ImplementationDate</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Mã phiếu kiểm kho:<b>@Model.StockTake.Code</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    <label>Ghi chú: <b>@Model.Note</b></label>
+                </div>
+                <div class="col-lg-6 mb-2">
+                    @if (Model.Status.Code == "R" || Model.Status.Code == "C")
+                    {
+                        <label>Lý do: <b>@Model.Reason</b></label>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive table-primary">
+                <span class="text-danger err" id="errOrderedProducts"></span>
+                <table id="tableOrderedProducts" class="table table-responsive-md">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Tên sản phẩm</th>
+                            <th class="text-center">Tồn kho hiện tại</th>
+                            @if (Model.StockTake.ID != 0)
+                            {
+                                <th class="text-center">
+                                    Số lượng chênh lệch
+                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Là số lượng chênh lệch sản phẩm theo phiếu kiểm"></i>
+                                </th>
+                            }
+                            <th class="text-center">Số lượng điều chỉnh</th>
+                            <th class="text-center">
+                                Số lượng sau điều chỉnh
+                                <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Số lượng sau điều chỉnh = Tồn kho hiện tại + Số lượng điều chỉnh"></i>
+                            </th>                            
+                        </tr>
+                    </thead>
+                    @if (Model.StockTake.ID != 0)
+                    {
+                        <tbody>
+                            @*------- F = Hoàn thành , W = Chờ xác nhận -----------*@
+                            @if (Model.Status.Code == "F" || Model.Status.Code == "W")
+                            {
+                                foreach (var item in Model.Detail)
+                                {
+                                    <tr>
+                                        <td>@item.ProductVariant.ProductName ( @item.ProductVariant.Options)</td>
+                                        <td class="text-center">@item.WarehouseQuantity.ToString("N0")</td>
+                                        <td class="text-center">@item.StockTakeQuantity.ToString("N0")</td>
+                                        <td class="text-center">@item.QuantityAdjustment.ToString("N0")</td>
+                                        <td class="text-center">@item.QuantityAfterAdjustment.ToString("N0")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in Model.Detail)
+                                {
+                                    <tr>
+                                        <td>@item.ProductVariant.ProductName ( @item.ProductVariant.Options)</td>
+                                        <td class="text-center">-</td>
+                                        <td class="text-center">@item.StockTakeQuantity.ToString("N0")</td>
+                                        <td class="text-center">@item.QuantityAdjustment.ToString("N0")</td>
+                                        <td class="text-center">-</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    }
+                    else
+                    {
+                        <tbody>
+                            @*------- F = Hoàn thành , W = Chờ xác nhận -----------*@
+                            @if (Model.Status.Code == "F" || Model.Status.Code == "W")
+                            {
+                                foreach (var item in Model.Detail)
+                                {
+                                    <tr>
+                                        <td>@item.ProductVariant.ProductName ( @item.ProductVariant.Options)</td>
+                                        <td class="text-center">@item.WarehouseQuantity.ToString("N0")</td>
+                                        <td class="text-center">@item.QuantityAdjustment.ToString("N0")</td>
+                                        <td class="text-center">@item.QuantityAfterAdjustment.ToString("N0")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in Model.Detail)
+                                {
+                                    <tr>
+                                        <td>@item.ProductVariant.ProductName ( @item.ProductVariant.Options)</td>
+                                        <td class="text-center">-</td>
+                                        <td class="text-center">@item.QuantityAdjustment.ToString("N0")</td>
+                                        <td class="text-center">-</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    }
+                </table>
+            </div>
+            <div class="col-lg-12">
+                <div class="d-lg-flex justify-content-end align-items-center">
+                    @if (Model.Status.Code == "W")
+                    {
+                        <button id="btnReject" type="button" class="btn btn-danger">Từ chối</button>
+                        <button onclick="btnApprove(@ViewBag.ID)" type="button" class="btn btn-primary">Xác nhận</button>                       
+                    }
+                    else
+                    {
+                        <button onclick="location.href = '@Url.Action("InventoryAdjustView","InventoryAdjust")'" type="button" class="btn btn-outline-dark">Quay lại</button>
+                    }
+                </div>
+            </div>                
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("tableOrderedProducts");
+    });
+
+    $("#btnReject").on("click", function () {
+        $.get('@Url.Action("RejectInventoryAdjust", "InventoryAdjust")', { ID: @ViewBag.ID}, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+
+    function btnApprove(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn xác nhận phiếu này?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRequestConfirmInventoryAdjust", "InventoryAdjust")',
+                    data: {ID: @ViewBag.ID},
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = "@Url.Action("InventoryAdjustView", "InventoryAdjust")";
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

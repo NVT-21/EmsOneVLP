@@ -1,0 +1,75 @@
+﻿@model EMS.MVC.Backend.Models.NotifyListViewModel
+
+@if (Model != null)
+{
+    <input type="hidden" id="CountRequestSupport" value="@Model.CountRequestSupport" />
+    <input type="hidden" id="MaxRequestSupportID" value="@Model.MaxRequestSupportID" />
+    if (Model.ListRequestSupportNotify.Count > 0 && ViewBag.IsLoad == "Y")
+    {
+        foreach (var item in Model.ListRequestSupportNotify)
+        {
+            <a class="dropdown-item preview-item" data-RequestSupportID="@item.ID" data-ShopID="@item.ShopID" data-RequestSupportCode="@item.RequestSupportCode" onclick="UpdateClickNotify(this)">
+                <div class="preview-thumbnail">
+                    <div class="preview-icon bg-success">
+                        <i class="fa fa-bell-o mx-0" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="preview-item-content">
+                    <p class="font-weight-light small-text mb-0 text-muted">
+                        Bạn có yêu cầu hỗ trợ @item.RequestSupportCode của bưu gửi @item.EShippingCode cần được xử lý.<br />
+                        @item.CreatedDate
+                    </p>
+                </div>
+            </a>
+        }
+    }
+    else
+    {
+        <div class="text-center">Không có thông báo</div>
+    }
+}
+else
+{
+    <div class="text-center">Không có thông báo</div>
+}
+
+<script>
+    var MaxRequestSupportID = $("#MaxRequestSupportID").val();
+    var CountRequestSupport = $("#CountRequestSupport").val();
+    $(document).ready(function () {
+        if (parseInt(CountRequestSupport) >= 100) {
+            $("#NotifyCount").text("99+");
+            $("#NotifyCount").css("display", "block");
+        } else if (CountRequestSupport == 0) {
+            $("#NotifyCount").css("display", "none");
+        } else {
+            $("#NotifyCount").text(CountRequestSupport);
+            $("#NotifyCount").css("display", "block");
+        }
+    });
+    function UpdateClickNotify(this1) {
+        var DataUpdateNotifyClick = {
+            RequestSupportID: $(this1).attr("data-RequestSupportID"),
+            RequestSupportCode: $(this1).attr("data-RequestSupportCode"),
+            ShopID: $(this1).attr("data-ShopID")
+        };
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JUpdateClickNotify", "RequestSupport")',
+            data: {
+                RequestSupportID: DataUpdateNotifyClick.RequestSupportID,
+                ShopID: DataUpdateNotifyClick.ShopID
+            },
+            dataType: 'json',
+            loading: true,
+            global: false,
+            success: function (res) {
+                if (res.Code == "00") {
+                    var params = String.format("{0}&{1}", DataUpdateNotifyClick.RequestSupportID, DataUpdateNotifyClick.ShopID);
+                    var url = '@Url.Action("DetailRequestSupportView", "RequestSupport")?SearchKey=' + btoa(params);
+                    RedirectUsingAjax(url);
+                }
+            }
+        });
+    }
+</script>

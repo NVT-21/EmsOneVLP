@@ -1,0 +1,47 @@
+﻿@{
+    Layout = null;
+}
+@model List<EMS.MVC.Frontend.Models.PromotionProductVariantViewModel>
+
+@if (Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <li class="list-group-item" data-VariantID="@item.VariantID" style="border-bottom-left-radius: inherit; border-bottom-right-radius: inherit; ">@item.ProductName ( @item.VariantName ) <i class="fa fa-times del pull-right text-danger" data-toggle="tooltip" data-placement="top" title="Xoá" onclick="removeVariant('@item.VariantID',this);"></i></li>
+    }
+}
+
+<script>
+    function removeVariant(VariantID, This) {
+        debugger
+        var selectID = @Html.Raw(Json.Encode(@ViewBag.selectID));
+        $(selectID + " option[value='" + VariantID + "']").prop("selected", false);
+        //$("#AfoChild-Type-7 option[value='" + VariantID + "']").prop("disabled", false);
+        $(This).parent().remove();
+        funcRequired(selectID.replace('#', ''));
+    }
+    function funcRequired(ID, isError) {
+        var value = $('#' + ID).val();
+        if (Array.isArray(value)) {
+            if (value.length <= 0) {
+                $('#err' + ID).text('Trường này không được để trống.');
+                return true;
+            }
+            else {
+                $('#err' + ID).text('');
+                return isError;
+            }
+        }
+        else {
+            if (value == "" || value == "0") {
+                $('#err' + ID).text('Trường này không được để trống.');
+                return true;
+            }
+            else {
+                $('#err' + ID).text('');
+                return isError;
+            }
+        }
+    }
+</script>
+

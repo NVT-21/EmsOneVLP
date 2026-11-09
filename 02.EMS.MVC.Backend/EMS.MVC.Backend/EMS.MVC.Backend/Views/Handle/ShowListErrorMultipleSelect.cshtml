@@ -1,0 +1,117 @@
+﻿@model List<EMS.MVC.Backend.Models.ShowListErrorMultipleSelectViewModel>
+
+@if (ViewBag.Controller == "Order")
+{
+    <div class="modal-dialog modal-700" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Danh sách mã đơn hàng lỗi</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã đơn hàng</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.OrderCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12 col-md-12">
+                    <div class="row justify-content-between">
+                        <button type="button" class="btn btn-sm btn-danger form-control col-lg-3 col-md-3" onclick="location.href = '@Url.Action("OrderView", "Order")'">QUAY LẠI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "RequestSupport")
+{
+    <div class="modal-dialog modal-700" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Danh sách mã yêu cầu lỗi</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã yêu cầu</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.RequestSupportCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12 col-md-12">
+                    <div class="row justify-content-between">
+                        <button type="button" class="btn btn-sm btn-danger form-control col-lg-3 col-md-3" onclick="location.href = '@Url.Action("RequestSupportView","RequestSupport")'">QUAY LẠI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (ViewBag.Controller == "PaymentCOD")
+{
+    <div class="modal-dialog modal-700" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Danh sách xác nhận thanh toán lỗi</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="table-info text-center">
+                                <th>Mã bưu gửi</th>
+                                <th style="max-width: 400px;">Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@Item.EmsBarCode</td>
+                                    <td style="max-width: 400px; white-space: pre-line; line-height: inherit; text-align: justify; vertical-align: middle;">@Item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12 col-md-12">
+                    <div class="row justify-content-between">
+                        <button type="button" class="btn btn-sm btn-danger form-control col-lg-3 col-md-3" onclick="location.href = '@Url.Action("PaymentCOD","Payment")'">QUAY LẠI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

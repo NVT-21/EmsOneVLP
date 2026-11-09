@@ -1,0 +1,209 @@
+﻿@model EMS.MVC.Frontend.Models.GrabInfoShippingViewModel
+<style>
+    .timeline-with-icons {
+        border-left: 1px solid hsl(0, 0%, 90%);
+        position: relative;
+        list-style: none;
+    }
+
+        .timeline-with-icons .timeline-item {
+            position: relative;
+        }
+
+            .timeline-with-icons .timeline-item:after {
+                position: absolute;
+                display: block;
+                top: 0;
+            }
+
+        .timeline-with-icons .timeline-icon {
+            position: absolute;
+            left: -48px;
+            background-color: hsl(217, 88.2%, 90%);
+            color: hsl(217, 88.8%, 35.1%);
+            border-radius: 50%;
+            height: 31px;
+            width: 31px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
+@if (Model != null)
+{
+    <div class="col-xl-12 col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-body ">
+                <p class="fs-16 font-w600">Thông tin bưu gửi</p>
+                <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Mã bưu gửi</label>
+                        <p class="font-w600">@Html.DisplayFor(m => m.ShippingCode)</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Mã đơn hàng</label>
+                        <p class="font-w600">@Html.DisplayFor(m => m.OrderCode)</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Thời gian tạo</label>
+                        <p class="font-w600">@Html.DisplayFor(m => m.CreatedDate)</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Dịch vụ</label>
+                        <p class="font-w600">
+                            @Html.DisplayFor(m => m.Service.Name)
+                        </p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Khối lượng</label>
+                        <p class="font-w600">@Model.ListReceiverInfo[0].Weight.ToString("N0") gr</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Kích thước (dài x rộng x cao)</label>
+                        <p class="font-w600">@Html.DisplayFor(m => m.ListReceiverInfo[0].Length) x @Html.DisplayFor(m => m.ListReceiverInfo[0].Width) x @Html.DisplayFor(m => m.ListReceiverInfo[0].Height)</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Giá trị đơn hàng</label>
+                        <p class="font-w600">@Model.ListReceiverInfo[0].TotalAmount.ToString("N0") đ</p>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                        <label class="text-2">Tiền COD</label>
+                        <p class="font-w600">@Model.ListReceiverInfo[0].MoneyCollect.ToString("N0") đ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-12 col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-body ">
+                <p class="font-w600">Thông tin người gửi</p>
+                <div class="mb-2">
+                    <label class="text-2">Họ tên:</label>
+                    <label class="font-w600">@Html.DisplayFor(m => m.SenderInfo.FullName)</label>
+                </div>
+                <div class="mb-2">
+                    <label class="text-2">Số điện thoại:</label>
+                    <label class="font-w600">@Html.DisplayFor(m => m.SenderInfo.MobileNumber)</label>
+                </div>
+                <div class="mb-2">
+                    <label class="text-2">Địa chỉ:</label>
+                    <label class="font-w600">@Html.DisplayFor(m => m.SenderInfo.FullAddress)</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    foreach (var idestination in Model.ListReceiverInfo)
+    {
+        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+            <div class="card">
+                <div class="card-body ">
+                    <p class="font-w600">Thông tin người nhận</p>
+                    <div class="mb-2">
+                        <label class="text-2">Họ tên:</label>
+                        <label class="font-w600">@idestination.FullName</label>
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-2">Số điện thoại:</label>
+                        <label class="font-w600">@idestination.MobileNumber</label>
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-2">Địa chỉ:</label>
+                        <label class="font-w600">@idestination.FullAddress</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="col-xl-12 col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-16 col-md-6">
+                        <p class="font-w600">Thông tin vận chuyển</p>
+                        <div class="mb-2">
+                            <label class="text-2">Cước chính:</label>
+                            <label class="font-w600">@Model.TransportFee.ToString("N0") đ</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Phụ phí hệ thống:</label>
+                            <label class="font-w600">@Model.SystemSurcharge.ToString("N0") đ</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Tổng cước:</label>
+                            <label class="font-w600">@Model.TotalFee.ToString("N0") đ</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Khoảng cách:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Distance) km</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Thời gian dự kiến lấy hàng:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.ListReceiverInfo[0].EstimatedInfo.PickUpDate)</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Thời gian dự kiến giao hàng:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.ListReceiverInfo[0].EstimatedInfo.CompletedDate)</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-16 col-md-6">
+                        <p class="font-w600">Thông tin tài xế</p>
+                        <div class="mb-2">
+                            <label class="text-2">Họ tên:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.DriverInfo.FullName)</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Số điện thoại:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.DriverInfo.MobileNumber)</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Biển số xe:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.DriverInfo.LicensePlate)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+        <div class="card">
+            <div class="card-body ">
+                <p class="font-w600">Theo dõi hành trình đơn hàng</p>
+                @if (!string.IsNullOrEmpty(Model.ShareLink))
+                {
+                    <i class="fas fa-map ms-2 me-2" style="color: #007AFF;"></i><a class="font-w600" style="cursor: pointer; color:#007AFF;" href="@Model.ShareLink" target="_blank">Mở bản đồ</a>
+                }
+                <section class="ms-5 py-4">
+                    <ul class="timeline-with-icons">
+                        @foreach (var item in Model.ListOrderHistory)
+                        {
+                            <li class="timeline-item mb-2">
+                                <span class="timeline-icon">
+                                    <i class="fas fa-rocket text-primary fa-sm fa-fw"></i>
+                                </span>
+                                <p class="text-muted mb-2 fw-bold ms-4">@item.CreatedDate</p>
+                                <p class="text-muted ms-4">
+                                    @item.StatusName
+                                </p>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body ">
+                <p class="fs-16 font-w600">Dữ liệu không tồn tại.</p>
+            </div>
+        </div>
+    </div>
+}

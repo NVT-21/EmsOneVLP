@@ -1,0 +1,56 @@
+﻿@model EMS.MVC.Backend.Models.SearchListPeriodViewModel
+
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle"> Giá trị </th>
+            <th class="align-middle"> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <select class="select2" id="Value_@Model.Type">
+                    <option value="">--- Chọn ---</option>
+                    @if (Model.PeriodType == 1)
+                    {
+                        foreach (var item in Model.ListAllWeek)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in Model.ListAllDay)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <br />
+                <span class="text-danger mt-1" id="errValue_@Model.Type"></span>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="btnAdd('@Model.Type')">THÊM</button>
+            </td>
+        </tr>
+        @if (Model.ListData.Count > 0)
+        {
+            foreach (var item in Model.ListData)
+            {
+                <tr>
+                    <td class="text-left">@item.Text</td>
+                    <td>
+                        <button onclick="btnRemove(@item.ID, '@Model.Type')" class="btn btn-sm btn-danger">XÓA</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+</script>

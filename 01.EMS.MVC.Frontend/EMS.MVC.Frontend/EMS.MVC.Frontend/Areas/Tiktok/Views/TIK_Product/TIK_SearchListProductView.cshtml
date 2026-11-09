@@ -1,0 +1,250 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Tiktok.Models.TIK_SearchListProductViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%; overflow: auto">
+    <thead>
+        <tr>
+            <th class="text-center">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th class="text-start">Sản phẩm EMSOne</th>
+            <th class="text-start">SKU</th>
+            <th class="text-start">Tổng tồn kho</th>
+            <th class="text-start">Giá bán lẻ</th>
+            <th class="text-start">Ngày cập nhật</th>
+            <th class="text-start" style="min-width: 200px">ID SKU sản phẩm Tiktok</th>
+            <th class="text-start" style="width: 150px;">Tình trạng</th>
+            <th class="text-start" style="max-width: 260px;">Lý do</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.TiktokProductID) && !string.IsNullOrEmpty(item.TiktokSKUID))
+                    {
+                        <div class="form-check custom-checkbox ">
+                            <input type="checkbox" class="form-check-input" id="SelectData" data-ProductID="@item.ProductID" value="@item.SKU">
+                            <label class="form-check-label" for="checkbox1"></label>
+                        </div>
+                    }
+                </td>
+                <td class="text-start" style="min-width: 220px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                    <div class="media">
+                        @if (item.Channel == "TIK")
+                        {
+                            <img class="mt-2" style="width:60px;height:60px;" src="@item.ProductAvatar" alt="image">
+                        }
+                        else
+                        {
+                            <img class="mt-2" style="width:60px;height:60px;" src="@XHelper.pathImages@item.ProductAvatar" alt="image">
+                        }
+                        <div class="media-body p-3">
+                            <h6 class="mt-0">
+                                @item.ProductCode - @item.ProductName<br />
+                                <small class="text-muted text-3">Biến thể: @item.Options</small>
+                            </h6>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-start text-muted pt-4">
+                    @item.SKU
+                </td>
+                <td class="text-start text-muted pt-4">
+                    @item.Quantity.ToString("N0")
+                </td>
+                <td class="text-start text-muted pt-4">
+                    @item.Price.ToString("N0")
+                </td>
+                <td class="text-start text-muted pt-4">
+                    @item.UpdatedDate
+                </td>
+                <td class="text-start text-muted pt-4">
+                    @item.TiktokSKUID
+                </td>
+                <td class="text-start pt-4" style="width: 150px;">
+                    @if (item.TiktokStatusUpdatePrice == "Y")
+                    {
+                        <span title="Trạng thái cập nhật giá">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#34C759"></path>
+                                <path d="M9.6993 14.2821C9.51596 14.2821 9.3418 14.2088 9.21346 14.0805L6.6193 11.4863C6.35346 11.2205 6.35346 10.7805 6.6193 10.5146C6.88513 10.2488 7.32513 10.2488 7.59096 10.5146L9.6993 12.623L14.411 7.91129C14.6768 7.64546 15.1168 7.64546 15.3826 7.91129C15.6485 8.17712 15.6485 8.61712 15.3826 8.88296L10.1851 14.0805C10.0568 14.2088 9.88263 14.2821 9.6993 14.2821Z" fill="#34C759"></path>
+                            </svg>
+                        </span>
+                    }
+                    else if (item.TiktokStatusUpdatePrice == "N")
+                    {
+                        <span title="Trạng thái cập nhật giá">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#FF3B30"></path>
+                                <path d="M11.9717 11.0001L14.0801 8.89174C14.3459 8.62591 14.3459 8.18591 14.0801 7.92008C13.8142 7.65424 13.3742 7.65424 13.1084 7.92008L11.0001 10.0284L8.89174 7.92008C8.62591 7.65424 8.18591 7.65424 7.92008 7.92008C7.65424 8.18591 7.65424 8.62591 7.92008 8.89174L10.0284 11.0001L7.92008 13.1084C7.65424 13.3742 7.65424 13.8142 7.92008 14.0801C8.05758 14.2176 8.23174 14.2817 8.40591 14.2817C8.58008 14.2817 8.75424 14.2176 8.89174 14.0801L11.0001 11.9717L13.1084 14.0801C13.2459 14.2176 13.4201 14.2817 13.5942 14.2817C13.7684 14.2817 13.9426 14.2176 14.0801 14.0801C14.3459 13.8142 14.3459 13.3742 14.0801 13.1084L11.9717 11.0001Z" fill="#FF3B30"></path>
+                            </svg>
+                        </span>
+                    }
+                    @if (item.TiktokStatusUpdateStock == "Y")
+                    {
+                        <span title="Trạng thái cập nhật tồn kho">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#34C759"></path>
+                                <path d="M9.6993 14.2821C9.51596 14.2821 9.3418 14.2088 9.21346 14.0805L6.6193 11.4863C6.35346 11.2205 6.35346 10.7805 6.6193 10.5146C6.88513 10.2488 7.32513 10.2488 7.59096 10.5146L9.6993 12.623L14.411 7.91129C14.6768 7.64546 15.1168 7.64546 15.3826 7.91129C15.6485 8.17712 15.6485 8.61712 15.3826 8.88296L10.1851 14.0805C10.0568 14.2088 9.88263 14.2821 9.6993 14.2821Z" fill="#34C759"></path>
+                            </svg>
+                        </span>
+                    }
+                    else if (item.TiktokStatusUpdateStock == "N")
+                    {
+                        <span title="Trạng thái cập nhật tồn kho">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#FF3B30"></path>
+                                <path d="M11.9717 11.0001L14.0801 8.89174C14.3459 8.62591 14.3459 8.18591 14.0801 7.92008C13.8142 7.65424 13.3742 7.65424 13.1084 7.92008L11.0001 10.0284L8.89174 7.92008C8.62591 7.65424 8.18591 7.65424 7.92008 7.92008C7.65424 8.18591 7.65424 8.62591 7.92008 8.89174L10.0284 11.0001L7.92008 13.1084C7.65424 13.3742 7.65424 13.8142 7.92008 14.0801C8.05758 14.2176 8.23174 14.2817 8.40591 14.2817C8.58008 14.2817 8.75424 14.2176 8.89174 14.0801L11.0001 11.9717L13.1084 14.0801C13.2459 14.2176 13.4201 14.2817 13.5942 14.2817C13.7684 14.2817 13.9426 14.2176 14.0801 14.0801C14.3459 13.8142 14.3459 13.3742 14.0801 13.1084L11.9717 11.0001Z" fill="#FF3B30"></path>
+                            </svg>
+                        </span>
+                    }
+                    @if (item.TiktokSKUID == "")
+                    {
+                        <span title="Trạng thái liên kết sản phẩm">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#FF3B30"></path>
+                                <path d="M11.9717 11.0001L14.0801 8.89174C14.3459 8.62591 14.3459 8.18591 14.0801 7.92008C13.8142 7.65424 13.3742 7.65424 13.1084 7.92008L11.0001 10.0284L8.89174 7.92008C8.62591 7.65424 8.18591 7.65424 7.92008 7.92008C7.65424 8.18591 7.65424 8.62591 7.92008 8.89174L10.0284 11.0001L7.92008 13.1084C7.65424 13.3742 7.65424 13.8142 7.92008 14.0801C8.05758 14.2176 8.23174 14.2817 8.40591 14.2817C8.58008 14.2817 8.75424 14.2176 8.89174 14.0801L11.0001 11.9717L13.1084 14.0801C13.2459 14.2176 13.4201 14.2817 13.5942 14.2817C13.7684 14.2817 13.9426 14.2176 14.0801 14.0801C14.3459 13.8142 14.3459 13.3742 14.0801 13.1084L11.9717 11.0001Z" fill="#FF3B30"></path>
+                            </svg>
+                        </span>
+                    }
+                    else
+                    {
+                        <span title="Trạng thái liên kết sản phẩm">
+                            <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.4" d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z" fill="#34C759"></path>
+                                <path d="M9.6993 14.2821C9.51596 14.2821 9.3418 14.2088 9.21346 14.0805L6.6193 11.4863C6.35346 11.2205 6.35346 10.7805 6.6193 10.5146C6.88513 10.2488 7.32513 10.2488 7.59096 10.5146L9.6993 12.623L14.411 7.91129C14.6768 7.64546 15.1168 7.64546 15.3826 7.91129C15.6485 8.17712 15.6485 8.61712 15.3826 8.88296L10.1851 14.0805C10.0568 14.2088 9.88263 14.2821 9.6993 14.2821Z" fill="#34C759"></path>
+                            </svg>
+                        </span>
+                    }
+                </td>
+                <td class="text-start text-muted pt-4" style="max-width: 260px; white-space: inherit; text-align: left;">
+                    @if (item.TiktokStatusUpdatePrice == "Y")
+                    {
+                        <span>Lần cập nhật giá gần nhất thành công.</span><br />
+                    }
+                    else if (item.TiktokStatusUpdatePrice == "N")
+                    {
+                        <span>Lần cập nhật giá gần nhất không thành công.</span><br />
+                    }
+                    @if (item.TiktokStatusUpdateStock == "Y")
+                    {
+                        <span>Lần cập nhật tồn kho gần nhất thành công.</span>
+                    }
+                    else if (item.TiktokStatusUpdateStock == "N")
+                    {
+                        <span>Lần cập nhật tồn kho gần nhất không thành công.</span>
+                    }
+
+                    @if (item.TiktokSKUID == "")
+                    {
+                        <span>Sản phẩm chưa được liên kết</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+    function btnProductRemoveConnection() {
+        var table = $('#SearchListDataTable').DataTable();
+        var arr = [];
+        var obj = {};
+        table.$('input:checked').each(function () {
+            obj = {};
+            obj = {
+                ProductID: parseInt($(this).attr("data-ProductID")),
+                ProductVariantSKU: $(this).val(),
+            };
+            arr.push(obj);
+        });
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm huỷ liên kết");
+            return;
+        };
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có muốn huỷ liên kết sản phẩm?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("TIK_JProductUpdateConnection", "TIK_Product", new { area = "Tiktok" })',
+                    data: {
+                        TypeUpdate: "UNLINK",
+                        ShopID: '@XHelper.Session.EmployeeProfile.ShopInformation.ID',
+                        UpdatedBy: '@XHelper.Session.EmployeeProfile.ID',
+                        ListItem: arr
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else if (res.Code == "99") {
+                            CreateCustomSwal("error", res.Message);
+                        } else {
+                            swal({
+                                title: 'Thông báo',
+                                text: res.Message,
+                                buttons: {
+                                    confirm: {
+                                        text: "Xem chi tiết",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary",
+                                        closeModal: true
+                                    },
+                                    cancel: {
+                                        text: "Đóng",
+                                        value: false,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true,
+                                    }
+                                },
+                            }).then((value) => {
+                                if (value) {
+                                    $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle", new { area = "" })', {
+                                        Error: res.Data,
+                                        Controller: "TIK_Product"
+                                    }, function (data) {
+                                        $('#modal-ViewModal-html').html(data);
+                                        $('#ViewModal').modal('show');
+                                    });
+                                } else {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                arr = [];
+            }
+        });
+    }
+</script>

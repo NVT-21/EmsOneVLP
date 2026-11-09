@@ -1,0 +1,679 @@
+﻿<div class="tab-pane fade" id="MainFee-Content" role="tabpanel" aria-labelledby="MainFee">
+    <div class="form-group row">
+        <div class="col-lg-12 pt-0">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" id="MainFee_VAT">
+                    Cước đã bao gồm VAT
+                    <i class="input-helper"></i>
+                </label>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <label class="car-title-border-bottom">Căn cứ tính cước <span class="text-danger">(*)</span></label>
+                    <div class="">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="cbMainFee_Weight">
+                                Khối lượng
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="cbMainFee_RangeView" onclick="checkboxHideShow('MainFee_RangeView')">
+                                Phạm vi
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" id="MainFee_RangeView" style="display:none;">
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <label class="car-title-border-bottom">Phạm vi</label>
+                    <div class="row">
+                        <div class="col-lg-5" id="radioRange">
+                            @*@foreach (var item in ViewBag.TransportGetRange)
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="Range" value="@item.Value" onclick="checkRange()">
+                                            @item.Text
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                }*@
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input cbMainFee_Range" name="Range" value="1" checked onclick="checkRange()">
+                                    Nội tỉnh
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input cbMainFee_Range" id="cbMainFee_Range" name="Range" value="2" onclick="checkRange()">
+                                    Liên tỉnh
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <span class="error-message" id="errRange"></span>
+                        <div class="col-lg-7">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="TwoWay">
+                                    Hỗ trợ vận chuyển 2 chiều
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="cbRemoteAreaView" onclick="checkboxHideShow('RemoteAreaView')">
+                                    Vùng xa
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="cbIslandsAreaView" onclick="checkboxHideShow('IslandsAreaView')">
+                                    Vùng hải đảo
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="MainFee_Weight" style="display:none;">
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <label class="car-title-border-bottom">Khai báo cước theo khối lượng <span class="text-danger">(*)</span></label>
+                    @{ Html.RenderAction("TransportPostageWeight", "Transport");}
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="MainFee_Range" style="display:none;">
+            <div id="Range_Body">
+                @{ Html.RenderAction("TransportPostageRange", "Transport");}
+            </div>
+            <button class="btn btn-sm btn-primary pull-right mt-4" id="AddRange">Thêm phạm vi</button>
+        </div>
+        <div class="col-12" id="MainFee_Range_Weight" style="display:none;">
+            <div id="Range_Weight_Body">
+                @{ Html.RenderAction("TransportPostageRangeWeight", "Transport");}
+            </div>
+            <button class="btn btn-sm btn-primary pull-right mt-4" id="AddRangeWeight">Thêm phạm vi</button>
+        </div>
+
+    </div>
+</div>
+@*-----Khai báo phụ phí-----*@
+<div class="tab-pane fade" id="Surcharge-Content" role="tabpanel" aria-labelledby="Surcharge">
+    <div class="col-lg-12 pt-0">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="Surcharge_VAT">
+                Cước đã bao gồm VAT
+                <i class="input-helper"></i>
+            </label>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="card mt-3">
+            <div class="card-body pt-10px">
+                <label class="car-title-border-bottom">Phụ phí</label>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="cbFuel" onclick="checkboxHideShow('Fuel')">
+                                Xăng dầu
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="Fuel" style="display:none;">
+                    <div class="col-md-6 mb-3">
+                        <label>Đơn vị tính</label>
+                        <select class="form-control" onchange="SurchargeUnit(this)">
+                            <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                            <option value="2">Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Giá trị</label>
+                        <input class="form-control" type="text" id="ValueFuel" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối thiểu</label>
+                        <input class="form-control" id="ValueMinFuel" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối đa</label>
+                        <input class="form-control" id="ValueMaxFuel" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-check" id="RemoteAreaView" @*style="display:none;"*@>
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="cbRemoteArea" onclick="checkboxHideShow('RemoteArea')">
+                                Vùng xa
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="RemoteArea" style="display:none;">
+                    <div class="col-md-6 mb-3">
+                        <label>Đơn vị tính</label>
+                        <select class="form-control" onchange="SurchargeUnit(this)">
+                            <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                            <option value="2">Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Giá trị</label>
+                        <input class="form-control" id="ValueRemoteArea" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối thiểu</label>
+                        <input class="form-control" id="ValueMinRemoteArea" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối đa</label>
+                        <input class="form-control" id="ValueMaxRemoteArea" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-check" id="IslandsAreaView" @*style="display:none;"*@>
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="cbIslandsArea" onclick="checkboxHideShow('IslandsArea')">
+                                Vùng hải đảo
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="IslandsArea" style="display:none;">
+                    <div class="col-md-6 mb-3">
+                        <label>Đơn vị tính</label>
+                        <select class="form-control" onchange="SurchargeUnit(this)">
+                            <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                            <option value="2">Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Giá trị</label>
+                        <input class="form-control" id="ValueIslandsArea" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối thiểu</label>
+                        <input class="form-control" id="ValueMinIslandsArea" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mb-3 SurchargePercent d_none">
+                        <label>Số tiền tối đa</label>
+                        <input class="form-control" id="ValueMaxIslandsArea" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*-----Khai báo cước dịch vụ cộng thêm-----*@
+<div class="tab-pane fade" id="ExtraService-Content" role="tabpanel" aria-labelledby="ExtraService">
+    <div class="form-group row">
+        <div class="col-lg-6">
+            <label for="ExtraServiceID">Dịch vụ cộng thêm <span class="text-danger">(*)</span></label>
+            <select class="js-example-basic-single w-100 form-control" id="ExtraServiceID">
+                <option value="" selected>---Chọn---</option>
+                @foreach (var item in ViewBag.ExtraServiceList)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+            <span class="error-message" id="errExtraServiceID"></span>
+        </div>
+        <div class="col-lg-6">
+            <label>&nbsp;</label>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" id="ExtraService_VAT">
+                    Cước đã bao gồm VAT
+                    <i class="input-helper"></i>
+                </label>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <label class="car-title-border-bottom">Căn cứ tính cước</label>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_Postage" onclick="checkboxHideShow('ExtraService_Postage')">
+                                            Bưu gửi
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm trên 1 bưu gửi"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <input class="form-control mb-3" id="ExtraService_Postage" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" style="display: none;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_Quantity" onclick="checkboxHideShow('ExtraService_Quantity')">
+                                            Số lượng sản phẩm
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm trên 1 sản phẩm"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <input class="form-control mb-3" id="ExtraService_Quantity" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" style="display: none;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_HeavyGoods" onclick="checkboxHideShow('ExtraService_HeavyGoods')">
+                                            Hàng cồng kềnh
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm trên loại hàng cồng kềnh"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <input class="form-control mb-3" id="ExtraService_HeavyGoods" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" style="display: none;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_LightGoods" onclick="checkboxHideShow('ExtraService_LightGoods')">
+                                            Hàng nhẹ
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm trên loại hàng nhẹ"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <input class="form-control mb-3" id="ExtraService_LightGoods" placeholder="Nhập số tiền" data-inputmask="'alias': 'currency'" style="display: none;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_Range" @*onclick="checkboxHideShow('ExtraService_Range')"*@>
+                                            Phạm vi
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm tính theo phạm vi vận chuyển"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_Weight" @*onclick="checkboxHideShow('ExtraService_Weight')"*@>
+                                            Khối lượng
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm tính theo khối lượng sản phẩm"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_DeclaredValue" onclick="checkboxHideShow('ExtraService_DeclaredValue')">
+                                            Giá trị khái giá
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm tính theo % trên giá trị khai giá"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3" id="ExtraService_DeclaredValue" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label>Giá trị</label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="text" placeholder="Giá trị" data-inputmask="'alias': 'currency'" maxlength="2" name="Value" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text text-black-important"> % </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối thiểu</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối thiểu" data-inputmask="'alias': 'currency'" name="Min" />
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối đa</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối đa" data-inputmask="'alias': 'currency'" name="Max" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_MainFee" onclick="checkboxHideShow('ExtraService_MainFee')">
+                                            Cước chính
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm tính theo % trên giá trị cước chính"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3" id="ExtraService_MainFee" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label>Giá trị</label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="text" placeholder="Giá trị" data-inputmask="'alias': 'currency'" maxlength="2" name="Value" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text text-black-important"> % </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối thiểu</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối thiểu" data-inputmask="'alias': 'currency'" name="Min" />
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối đa</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối đa" data-inputmask="'alias': 'currency'" name="Max" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="cbExtraService_Surcharge" onclick="checkboxHideShow('ExtraService_Surcharge')">
+                                            Phụ phí
+                                            <i class="input-helper"></i>
+                                            <i class="fa fa-info-circle text-primary" title="Cước dịch vụ cộng thêm tính theo % trên giá trị phụ phí"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3" id="ExtraService_Surcharge" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label>Giá trị</label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="text" placeholder="Giá trị" data-inputmask="'alias': 'currency'" maxlength="2" name="Value" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text text-black-important"> % </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối thiểu</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối thiểu" data-inputmask="'alias': 'currency'" name="Min" />
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label>Số tiền tối đa</label>
+                                            <input class="form-control" type="text" placeholder="Số tiền tối đa" data-inputmask="'alias': 'currency'" name="Max" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="ExtraService_Weight" style="display:none;">
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <label class="car-title-border-bottom">Khai báo cước theo khối lượng <span class="text-danger">(*)</span></label>
+                    @{ Html.RenderAction("TransportPostageExtraServiceWeight", "Transport");}
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="ExtraService_Range" style="display:none;">
+            <div class="overflow-auto" id="ExtraService_Range_Body">
+                @{ Html.RenderAction("TransportPostageExtraServiceRange", "Transport");}
+            </div>
+            <button class="btn btn-sm btn-primary pull-right mt-3" id="ExtraService_AddRange">Thêm phạm vi</button>
+        </div>
+        <div class="col-12" id="ExtraService_Range_Weight" style="display:none;">
+            <div id="ExtraService_Range_Weight_Body">
+                @{ Html.RenderAction("TransportPostageExtraServiceRangeWeight", "Transport");}
+            </div>
+            <button class="btn btn-sm btn-primary pull-right mt-3" id="ExtraService_AddRangeWeight">Thêm phạm vi</button>
+        </div>
+    </div>
+</div>
+
+
+
+debugger;
+        if (agrs.MainFeeWeight == "Y" && agrs.MainFeeRange == 2) {
+            let list = $('#Range_Weight_Body').find('.card');
+            let arrRange = [];
+            for (let i = 0; i < list.length; i++) {
+                let obj = {};
+                let item = list[i];
+
+                obj.PostageID = PostageID;
+                obj.GroupID = 3;
+                obj.FromRange = $(item).find('[name=FromRange]').val();
+                debugger;
+                if (obj.FromRange == 1)//Vùng
+                {
+                    obj.FromRangeValue = $(item).find('[name=FromRegion]').val();
+                }
+                else//Tỉnh/TP
+                {
+                    obj.FromRangeValue = $(item).find('[name=FromProvince]').val();
+                }
+                obj.ToRange = $(item).find('[name=ToRange]').val();
+                if (obj.ToRange == 1)//Vùng
+                {
+                    obj.ToRangeValue = $(item).find('[name=ToRegion]').val();
+                }
+                else//Tỉnh/TP
+                {
+                    obj.ToRangeValue = $(item).find('[name=ToProvince]').val();
+                }
+
+                if (obj.FromRangeValue == "") {
+                    $(item).find('[name=errFromRangeValue]').text('Giá trị từ không được để trống.');
+                    isError = true;
+                }
+                if (obj.ToRangeValue == "") {
+                    $(item).find('[name=errToRangeValue]').text('Giá trị đến không được để trống.');
+                    isError = true;
+                }
+                let TransportPostageWeight = [];
+                let listWeight = $(item).find('.BodyMainFeeWeight').find('tr');
+                let MaxTemp = -1;
+                for (let j = 0; j < listWeight.length; j++) {
+                    let objWeight = {};
+                    let itemWeight = listWeight[j];
+                    objWeight.PostageID = PostageID;
+                    objWeight.GroupID = 3;
+                    objWeight.FromWeight = $(itemWeight).find('[name=FromWeight]').val().replaceAll(',','');
+                    objWeight.ToWeight = $(itemWeight).find('[name=ToWeight]').val().replaceAll(',', '');
+                    objWeight.Value = $(itemWeight).find('[name=Value]').val().replaceAll(',', '');
+
+                    //Giá trị từ: rỗng
+                    if (objWeight.FromWeight == "") {
+                        $(itemWeight).find('[name=errFromWeight]').text('Trường này không được để trống.');
+                        isError = true;
+                    }
+                    else {
+                        //Giá trị từ nhỏ hơn giá trị đến trước đó
+                        if (objWeight.FromWeight <= MaxTemp) {
+                            $(itemWeight).find('[name=errFromWeight]').text('Giá trị không hợp lệ. Vui lòng kiểm tra lại.');
+                            isError = true;
+                        }
+                    }
+                    //Giá trị đến: rỗng
+                    if (objWeight.ToWeight == "") {
+                        $(itemWeight).find('[name=errToWeight]').text('Trường này không được để trống.');
+                        isError = true;
+                    }
+                    else {
+                        //Lưu tạm giá trị đến
+                        MaxTemp = objWeight.ToWeight;
+                    }
+                    //Giá trị từ >= giá trị đến
+                    if (objWeight.FromWeight != "" && objWeight.ToWeight != "") {
+                        if (objWeight.FromWeight >= objWeight.ToWeight) {
+                            $(itemWeight).find('[name=errToWeight]').text('Giá trị đến phải lớn hơn giá trị từ.');
+                            isError = true;
+                        }
+                    }
+                    //Giá trị: rỗng
+                    if (objWeight.Value == "") {
+                        $(itemWeight).find('[name=errValue]').text('Trường này không được để trống.');
+                        isError = true;
+                    }
+                    if (isError) {
+                        return;
+                    }
+                    TransportPostageWeight.push(objWeight);
+                }
+                let objWeight = {};
+                objWeight.FromWeight = $(item).find('tfoot').find('[name=NextWeight]').val().replaceAll(',', '');
+                objWeight.Value = $(item).find('tfoot').find('[name=NextValue]').val().replaceAll(',', '');
+                if (objWeight.FromWeight != "" && objWeight.Value == "" || objWeight.FromWeight == "" && objWeight.Value != "") {
+                    $(itemWeight).find('[name=errNextWeight]').text('Khối lượng không được để trống.');
+                    $(itemWeight).find('[name=errNextValue]').text('Mức giá không được để trống.');
+                }
+                if (objWeight.FromWeight != "" && objWeight.Value != "") {
+                    TransportPostageWeight.push(objWeight);
+                }
+                obj.TransportPostageWeight = TransportPostageWeight;
+                arrRange.push(obj);
+            }
+            agrs.PostageRange = arrRange;
+            agrs.PostageWeight = [];
+        }
+        else if (agrs.MainFeeWeight == "Y") {
+            debugger;
+            let arrWeight = [];
+            let listWeight = $('#MainFee_Weight').find('.BodyMainFeeWeight').find('tr');
+            let MaxTemp = 0;
+            for (let j = 0; j < listWeight.length; j++) {
+                let objWeight = {};
+                let itemWeight = listWeight[j];
+                objWeight.PostageID = PostageID;
+                objWeight.GroupID = 2;
+                objWeight.FromWeight = $(itemWeight).find('[name=FromWeight]').val().replaceAll(',', '');
+                objWeight.ToWeight = $(itemWeight).find('[name=ToWeight]').val().replaceAll(',', '');
+                objWeight.Value = $(itemWeight).find('[name=Value]').val().replaceAll(',', '');
+
+                if (objWeight.FromWeight == "") {
+                    $(itemWeight).find('[name=errFromWeight]').text('Trường này không được để trống.');
+                    isError = true;
+                }
+                if (objWeight.ToWeight == "") {
+                    $(itemWeight).find('[name=errToWeight]').text('Trường này không được để trống.');
+                    isError = true;
+                }
+                else {
+                    if (objWeight.ToWeight < MaxTemp) {
+                        $(itemWeight).find('[name=errToWeight]').text('Giá trị không hợp lệ. Vui lòng kiểm tra lại.');
+                        isError = true;
+                    }
+                    else {
+                        MaxTemp = objWeight.ToWeight;
+                    }
+                }
+                if (objWeight.Value == "") {
+                    $(itemWeight).find('[name=errValue]').text('Trường này không được để trống.');
+                    isError = true;
+                }
+                if (isError) {
+                    return;
+                }
+                arrWeight.push(objWeight);
+            }
+            let objWeight = {};
+            objWeight.FromWeight = $('#MainFee_Weight').find('tfoot').find('[name=NextWeight]').val().replaceAll(',', '');
+            objWeight.Value = $('#MainFee_Weight').find('tfoot').find('[name=NextValue]').val().replaceAll(',', '');
+            if (objWeight.FromWeight != "" && objWeight.Value == "" || objWeight.FromWeight == "" && objWeight.Value != "") {
+                $('#MainFee_Weight').find('[name=errNextWeight]').text('Khối lượng không được để trống.');
+                $('#MainFee_Weight').find('[name=errNextValue]').text('Mức giá không được để trống.');
+            }
+            if (objWeight.FromWeight != "" && objWeight.Value != "") {
+                arrWeight.push(objWeight);
+            }
+            agrs.PostageWeight = arrWeight;
+            agrs.PostageRange = [];
+        } else if (agrs.MainFeeRange == 2)
+        {
+            let list = $('#Range_Body').find('.card');
+            let arrRange = [];
+            for (let i = 0; i < list.length; i++) {
+                let obj = {};
+                let item = list[i];
+                objWeight.PostageID = PostageID;
+                objWeight.GroupID = 1;
+                obj.FromRange = $(item).find('[name=FromRange]').val();
+                obj.FromRangeValue = $(item).find('[name=FromRangeValue]').val();
+                obj.ToRange = $(item).find('[name=ToRange]').val();
+                obj.ToRangeValue = $(item).find('[name=ToRangeValue]').val();
+                obj.Value = $(item).find('[name=Value]').val().replaceAll(',', '');
+                if (obj.FromRangeValue == "") {
+                    $(item).find('[name=errFromRangeValue]').text('Giá trị từ không được để trống.');
+                    isError = true;
+                }
+                if (obj.ToRangeValue == "") {
+                    $(item).find('[name=errToRangeValue]').text('Giá trị đến không được để trống.');
+                    isError = true;
+                }
+                if (obj.Value == "") {
+                    $(item).find('[name=errValue]').text('Trường không được để trống.');
+                    isError = true;
+                }
+            }
+            agrs.PostageRange = arrRange;
+            agrs.PostageWeight = [];
+            if (isError) {
+                return;
+            }
+        }

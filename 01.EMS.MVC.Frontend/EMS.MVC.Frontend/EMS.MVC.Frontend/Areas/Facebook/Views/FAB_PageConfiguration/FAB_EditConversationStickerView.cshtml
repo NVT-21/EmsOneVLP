@@ -1,0 +1,84 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_EditConversationStickerViewModel
+<div class="modal-dialog modal-xs modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Sửa thông tin thẻ hội thoại</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            @Html.HiddenFor(m => m.StickerID)
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tên thẻ hội thoại<span style="color: red">(*)</span></label>
+                    @Html.EditorFor(model => model.StickerName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên thẻ hội thoại", @maxlength = "20", @autocomplete = "off" } })
+                    <span class="text-danger" id="errStickerName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Màu thẻ hội thoại <span style="color: red">(*)</span></label>
+                    @Html.EditorFor(model => model.StickerColor, new { htmlAttributes = new { @type = "color", @class = "form-control", @placeholder = "Màu thẻ hội thoại", @autocomplete = "off" } })
+                    <span class="text-danger" id="errStickerColor"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Cập nhật</button>
+        </div>
+    </div>
+</div>
+<script>
+
+    CheckChangeValue("StickerName", "Vui lòng nhập tên nhãn.", "", "Y");
+    CheckChangeValue("StickerColor", "Vui lòng nhập màu nhãn.", "", "Y");
+    $("#btnSubmit").on("click", function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            StickerID: $("#StickerID").val(),
+            StickerName: $("#StickerName").val().trim(),
+            StickerColor: $("#StickerColor").val().trim()
+        }
+
+        IsError = CheckNullValue(data.StickerName, "StickerName", "Vui lòng nhập tên nhãn.", IsError);
+        IsError = CheckNullValue(data.StickerColor, "StickerColor", "Vui lòng nhập màu nhãn.", IsError);
+
+        if (IsError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_JEditConversationSticker", "FAB_PageConfiguration", new { area = "Facebook" })',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#ViewModal').modal('toggle');
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                    setTimeout(function () {
+                        $("#SearchKey").val("");
+                        $.get('@Url.Action("FAB_SearchListConversationStickerView", "FAB_PageConfiguration", new { area = "Facebook" })', function (data) {
+                            $('#tbl-data').html(data);
+                        });
+                    });
+                } else {
+                    $('#ViewModal').modal('toggle');
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>

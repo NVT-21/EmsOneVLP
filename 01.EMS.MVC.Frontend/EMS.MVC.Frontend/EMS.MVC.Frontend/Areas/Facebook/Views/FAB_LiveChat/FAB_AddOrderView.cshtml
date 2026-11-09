@@ -1,0 +1,1044 @@
+﻿@model EMS.MVC.Frontend.Models.AddOrderViewModel
+@Html.HiddenFor(m => m.RequestOrderID)
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Thông tin khách hàng</h5>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <div class="form-search">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                              fill="#86909C" />
+                    </svg>
+                    <input type="text" class="form-control" id="SearchCustomer" value="@Model.MobileNumber" placeholder="Tìm theo số điện thoại" maxlength="50">
+                    <span class="text-danger" id="errSearchCustomer"></span>
+                </div>
+            </div>
+        </div>
+        <div id="ShowSearchCustomerView">
+            @if (!string.IsNullOrEmpty(Model.MobileNumber))
+            {
+                Html.RenderAction("SearchCustomerView", "Order", new { area = "", MobileNumber = Model.MobileNumber, IsTransport = "Y" });
+            }
+        </div>
+        <h5 class="card-title">Thông tin sản phẩm</h5>
+        <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Sản phẩm</label>
+                <div class="form-search">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                              fill="#86909C" />
+                    </svg>
+                    <input type="text" class="form-control " placeholder="Tìm theo tên sản phẩm" id="SearchProduct">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Xuất kho <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.WareHouseID, new SelectList(Model.ListWareHouse, "ID", "WareHouseName"), new { @class = "select2" })
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div id="ShowSearchListProductView"></div>
+            </div>
+        </div>
+        <h5 class="card-title">Thông tin vận chuyển</h5>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <label class="mb-1">Loại hình kinh doanh:</label><br />
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.IsTransport, "Y", new { @class = "form-check-input", @checked = "checked" })
+                    <label class="form-check-label" for="12">
+                        Vận chuyển hàng
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.IsTransport, "N", new { @class = "form-check-input" })
+                    <label class="form-check-label " for="22">
+                        Bán tại cửa hàng
+                    </label>
+                </div>
+                <span class="text-danger" id="errIsTransport"></span>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Mã đơn hàng</label>
+                @Html.EditorFor(model => model.OrderCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã đơn hàng", @maxlength = "70" } })
+                <span class="text-danger" id="errOrderCode"></span>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Tên đơn hàng</label>
+                @Html.EditorFor(model => model.OrderName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên đơn hàng", @maxlength = "150" } })
+                <span class="text-danger" id="errOrderName"></span>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <div class="custom-props">
+                    <label class="mb-1">Giá trị đơn hàng</label>
+                    @Html.EditorFor(model => model.OrderValue, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Giá trị đơn hàng", @maxlength = "11", @data_inputmask = "'alias': 'currency'" } })
+                    <span class="props">đ</span>
+                </div>
+                <span class="text-danger" id="errOrderValue"></span>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                <label class="mb-1">Số lượng sản phẩm</label>
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số lượng sản phẩm", @maxlength = "3", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                <span class="text-danger" id="errQuantity"></span>
+            </div>
+        </div>
+        <div class="ShowTransport">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Kích thước (Dài x Rộng x Cao)</label>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <div class="custom-props">
+                                @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Dài", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                <span class="props">cm</span>
+                            </div>
+                            <span class="text-danger" id="errLength"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <div class="custom-props">
+                                @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Rộng", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                <span class="props">cm</span>
+                            </div>
+                            <span class="text-danger" id="errWidth"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <div class="custom-props">
+                                @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Cao", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                                <span class="props">cm</span>
+                            </div>
+                            <span class="text-danger" id="errHeight"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <div class="custom-props">
+                        <label class="mb-1">Khối lượng <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Khối lượng", @maxlength = "9", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                        <span class="props">gr</span>
+                    </div>
+                    <span class="text-danger" id="errWeight"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Hình thức thu gom <span class="text-danger">*</span></label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.CollectionType.ID, 1, new { @class = "form-check-input", @checked = "checked" })
+                            <label class="form-check-label" for="13">
+                                Thu gom tận nơi
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.CollectionType.ID, 2, new { @class = "form-check-input" })
+                            <label class="form-check-label " for="23">
+                                Gửi hàng tại bưu cục
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Người trả cước <span class="text-danger">*</span></label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.TransportPayer, 1, new { @class = "form-check-input", @checked = "checked", @id = "TransportPayer1" })
+                            <label class="form-check-label" for="13">
+                                Shop trả
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.TransportPayer, 2, new { @class = "form-check-input", @id = "TransportPayer2" })
+                            <label class="form-check-label " for="23">
+                                Người nhận
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Dịch vụ vận chuyển chính <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), "-- Chọn --", new { @class = "select2" })
+                    <span class="text-danger" id="errMainTransportServiceID"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Dịch vụ vận chuyển cộng thêm </label>
+                    @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                    <span class="text-danger" id="errExtraTransportServiceID"></span>
+                </div>
+                <div id="ShowTotalCOD" class="col-xl-6 col-lg-6 col-md-6 mb-2 @{if (Model.ExtraTransportServiceID != "108"){ Write("d-none"); }}">
+                    <div class="custom-props">
+                        <label class="mb-1">Tiền thu hộ <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.TotalCOD, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tiền thu hộ", @data_inputmask = "'alias': 'currency'", @maxlength = "10" } })
+                        <span class="props">đ</span>
+                    </div>
+                    <span class="text-danger" id="errTotalCOD"></span>
+                </div>
+                <div id="ShowTotalPHU" class="col-xl-6 col-lg-6 col-md-6 mb-2 @{if (Model.ExtraTransportServiceID != "421"){ Write("d-none"); }}">
+                    <div class="custom-props">
+                        <label class="mb-1">Thu phí hủy đơn <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.TotalPHU, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Thu phí hủy đơn", @data_inputmask = "'alias': 'currency'", @maxlength = "11" } })
+                        <span class="props">đ</span>
+                    </div>
+                    <span class="text-danger" id="errTotalPHU"></span>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <p class="font-w500">Cước tạm tính (Đã bao gồm VAT)</p>
+            <div class="row" id="TemporaryTransportServiceFee">
+                @{
+                    Html.RenderAction("TemporaryTransportServiceFeeView", "Order", new { area = "", IsLoad = "N" });
+                }
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <label class="mb-1">Ghi chú đơn hàng</label>
+                @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Nhập ghi chú đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                <div class="text-end">
+                    <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescriptionNote">0</span>/250</span>
+                </div>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                <label class="mb-1">Nội dung đơn hàng</label>
+                @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @placeholder = "Nhập nội dung đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+            </div>
+            <div class="text-end">
+                <span class="fs-12 font-w300 text-3"><span id="ShowLengthDescriptionMessage">0</span>/250</span>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 mt-3">
+                <table class="table table-clear">
+                    <tbody>
+                        <tr>
+                            <td class="left"><strong>Tổng tiền hàng</strong></td>
+                            <td class="right"><span id="TotalMoney">0</span>đ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer" style="display: block;">
+        <div class="row">
+            <div class="col-xl-12 d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-dark" id="btnAddOrderType3" onclick="btnAddOrder(3)">Lưu nháp</button>
+                <button type="button" class="btn btn-outline-primary" id="btnAddOrderType1" onclick="btnAddOrder(1)">Tạo đơn hàng</button>
+                <button type="button" class="btn btn-primary ShowTransport" id="btnAddOrderType2" onclick="btnAddOrder(2)">Tạo đơn & VC</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var TotalMoney = 0, TransportFee = 0;
+    //OnlyNumber("#SearchCustomer");
+    CheckChangeValue("StoreName", "Tên cửa hàng không được để trống.", "", "Y");
+    CheckChangeValue("Quantity", "Vui lòng nhập số lượng sản phẩm", "Number", "Y");
+    CheckChangeValue("OrderValue", "", "Number", "N");
+    CheckChangeValue("OrderCode", "", "SpecialCharButNotVietnamese", "N");
+
+    ShowInputLength("Note", "ShowLengthDescriptionNote", 250);
+    ShowInputLength("Message", "ShowLengthDescriptionMessage", 250);
+
+    CustomerAutocomplete("SearchCustomer");
+
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        $(":input").inputmask();
+        $("#ExtraTransportServiceID").selectpicker("refresh");
+        $('#SearchCustomer').val(MobileNumber).change();
+    });
+
+    $("input[name='TransportPayer']").on("change", function () {
+        var value = $(this).val();
+        if (value == 2) {
+            $("#MainTransportServiceID").change();
+        }
+    });
+
+    $('input[name="IsTransport"]').on('change', function (e) {
+        var IsTransport = $(this).val();
+        if (IsTransport == "Y") {
+            $(".ShowTransport").removeClass("d-none");
+        } else if (IsTransport == "N") {
+            $(".ShowTransport").addClass("d-none");
+        }
+    });
+
+    $('#SearchCustomer').keypress(function (event) {
+        if (event.keyCode == 13) {
+            SearchCustomer($(this).val().trim());
+        }
+    });
+
+    $('#SearchCustomer').on("change", function () {
+        SearchCustomer($(this).val().trim());
+    });
+
+    $("#SearchProduct").on("click", function () {
+        var arr = [];
+        $('.row-item').each(function () {
+            var obj = {};
+            obj.VariantID = $(this).attr("data-VariantID");
+            obj.NumberOfProduct = parseInt($("#NumberOfProduct_" + obj.VariantID).val());
+            arr.push(obj);
+        });
+
+        $.post('@Url.Action("SearchProductView", "Order", new { area = "" })', {
+            req: arr
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+
+    $("input").on("focus", function () {
+        $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", true);
+    });
+
+    $("input").on("focusout", function () {
+        $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", false);
+    });
+
+    $('#MainTransportServiceID, #ExtraTransportServiceID, #Weight, #Length, #Width, #Height, #Quantity, #TotalCOD, #TotalPHU, #OrderValue').on('change', function () {
+        var DivID = this.id;
+        var isError = false;
+        var data = {
+            SearchCustomer: $("#SearchCustomer").val(),
+            IsTransport: $("input[name='IsTransport']:checked").val(),
+            MainTransportServiceID: $('#MainTransportServiceID').val(),
+            ExtraTransportServiceID: $('#ExtraTransportServiceID').val().toString(),
+            arrExtraService: $('#ExtraTransportServiceID').val(),
+            Sender: {
+                Province: {
+                    ID: $('#Sender_Province_ID').val()
+                },
+                District: {
+                    ID: $('#Sender_District_ID').val()
+                },
+                Ward: {
+                    ID: $('#Sender_Ward_ID').val()
+                },
+            },
+            Receiver: {
+                ID: $('#Receiver_ID').val(),
+                Province: {
+                    ID: $('#Receiver_Province_ID').val()
+                },
+                District: {
+                    ID: $('#Receiver_District_ID').val()
+                },
+                Ward: {
+                    ID: $('#Receiver_Ward_ID').val()
+                },
+            },
+            Weight: NumberReplace($('#Weight').val()),
+            Length: $('#Length').val(),
+            Width: $('#Width').val(),
+            Height: $('#Height').val(),
+            Quantity: NumberReplace($('#Quantity').val()),
+            OrderValue: NumberReplace($('#OrderValue').val()),
+            TotalCOD: NumberReplace($('#TotalCOD').val()),
+            TotalPHU: NumberReplace($('#TotalPHU').val()),
+            TransportPayer: $("input[name='TransportPayer']:checked").val(),
+            IsLoad: "Y"
+        };
+        var ListProduct = document.getElementsByClassName('row-item');
+        if (DivID == "MainTransportServiceID") {
+            if (data.MainTransportServiceID) {
+                if (data.TransportPayer == 2) {
+                    switch (data.MainTransportServiceID) {
+                        //case "141":
+                        //case "360":
+                        case "481":
+                            if (data.ExtraTransportServiceID.includes("108") == false) {
+                                if (data.ExtraTransportServiceID) {
+                                    data.ExtraTransportServiceID += ",108";
+                                } else {
+                                    data.ExtraTransportServiceID = "108";
+                                }
+
+                                $("#ExtraTransportServiceID").selectpicker("val", data.ExtraTransportServiceID.split(","));
+                                $("#ExtraTransportServiceID").change();
+
+                                data.ExtraTransportServiceID = $('#ExtraTransportServiceID').val().toString();
+                                data.arrExtraService = $('#ExtraTransportServiceID').val();
+                            }
+                            break;
+                        default:
+                            if (data.ExtraTransportServiceID.includes("300") == false && data.ExtraTransportServiceID.includes("221") == false) {
+                                CreateCustomSwal("error", "Vui lòng sử dụng dịch vụ Thu phí ship hàng (PSH) hoặc dịch vụ PPA (PPA) để thu phí người nhận");
+                                $("#TransportPayer1").click();
+                            }
+                            break;
+                    }
+                }
+                $('#errMainTransportServiceID').text("");
+            } else {
+                $('#errMainTransportServiceID').text("Vui lòng chọn dịch vụ vận chuyển chính");
+                isError = true;
+            }
+        } else if (DivID == "ExtraTransportServiceID") {
+            if (data.TransportPayer == 2) {
+                switch (data.MainTransportServiceID) {
+                    case "141":
+                    case "360":
+                    case "481":
+                        if (data.ExtraTransportServiceID.includes("108") == false) {
+                            if (data.ExtraTransportServiceID) {
+                                data.ExtraTransportServiceID += ",108";
+                            } else {
+                                data.ExtraTransportServiceID = "108";
+                            }
+
+                            $("#ExtraTransportServiceID").selectpicker("val", data.ExtraTransportServiceID.split(","));
+                            $("#ExtraTransportServiceID").change();
+
+                            data.ExtraTransportServiceID = $('#ExtraTransportServiceID').val().toString();
+                            data.arrExtraService = $('#ExtraTransportServiceID').val();
+                        }
+                        break;
+                    default:
+                        $("#TransportPayer1").click();
+                        break;
+                }
+            }
+
+            var isServiceCOD = data.arrExtraService.includes("108");
+            if (isServiceCOD == true) {
+                $("#ShowTotalCOD").removeClass("d-none");
+            } else {
+
+                $("#ShowTotalCOD").addClass("d-none");
+                if (ListProduct.length == 0) {
+                    if ($("input[name='IsTransport']:checked").val() == "Y") {
+                        $('#TotalMoney').html(NumberFormat(data.OrderValue));
+                        TotalMoney = data.OrderValue;
+                    }
+                }
+            }
+
+            var isServicePHU = data.arrExtraService.includes("421");
+            if (isServicePHU == true) {
+                $("#ShowTotalPHU").removeClass("d-none");
+            } else {
+                $("#ShowTotalPHU").addClass("d-none");
+            }
+        } else if (DivID == "TotalCOD") {
+            if (ListProduct.length == 0) {
+                $('#TotalMoney').html(NumberFormat(data.TotalCOD));
+                TotalMoney = data.TotalCOD;
+            }
+        } else if (DivID == "TotalPHU") {
+            if (parseInt(data.TotalPHU) == 0) {
+                $('#errTotalPHU').text("Vui lòng nhập tiền thu phí hủy đơn.");
+                isError = true;
+            } else {
+                $('#errTotalPHU').text("");
+            }
+        } else if (DivID == "Weight") {
+            if (parseInt(data.Weight) == 0) {
+                $('#errWeight').text("Vui lòng nhập trọng lượng.");
+                isError = true;
+            } else {
+                $('#errWeight').text("");
+            }
+        } else if (DivID == "OrderValue") {
+            if (ListProduct.length == 0) {
+                $("#TotalMoney").text(NumberFormat(data.OrderValue));
+                TotalMoney = data.OrderValue;
+            }
+        }
+
+        if (!data.SearchCustomer) {
+            $('#errSearchCustomer').text("Vui lòng nhập số điện thoại và tìm kiếm.");
+            isError = true;
+        } else {
+            if (!parseInt(data.Receiver.ID)) {
+                $('#errReceiver_ID').css("color", "red");
+                isError = true;
+            }
+        }
+
+        if (data.IsTransport == "Y") {
+            if (isError == true) {
+                $("#errTemporaryTransportServiceFee").text("Chưa đủ thông tin để tính cước");
+            } else {
+                LoadTotalFee(data);
+            }
+        } else {
+            $('#errMainTransportServiceID').text("");
+            $('#errTotalCOD').text("");
+            $('#errWeight').text("");
+        }
+    });
+
+    function SearchCustomer(MobileNumber) {
+        if (MobileNumber) {
+            var IsValid = CheckNullAndRegexValue(MobileNumber, "MobileNumber", "SearchCustomer", "Số điện thoại không được để trống.", "Số điện thoại không hợp lệ.", false);
+            if (!IsValid) {
+                $.post('@Url.Action("SearchCustomerView","Order", new { area = "" })', {
+                    MobileNumber: MobileNumber, IsTransport: $("input[name='IsTransport']:checked").val(),
+                }, function (data) {
+                    $("#ShowSearchCustomerView").html(data);
+                    if ($("#Receiver_ID").val() > 0 && $("input[name='IsTransport']:checked").val() == "Y") {
+                        LoadTotalFee(null);
+                    }
+                });
+            }
+        }
+    }
+
+    function ShowAddCustomerView() {
+        $.post('@Url.Action("AddCustomerView", "Customer", new { area = "" })', { IsReload: "N"}, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function CheckNumberOfProductInWareHouseQuantity(VariantID, WareHouseQuantity, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        if (parseInt(value) > parseInt(WareHouseQuantity)) {
+            $("#errVariant_" + VariantID).text("Số lượng mua vượt quá số lượng trong kho");
+            return true;
+        } else {
+            if (Type == 2) {
+                //Nhấn dấu trừ ở view tạo đơn
+                LoadTotalPrice();
+            }
+            $("#errVariant_" + VariantID).text("");
+            return false;
+        }
+    }
+
+    function btnPlus(VariantID, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        $("#NumberOfProduct_" + VariantID).val(parseInt(value) + 1);
+        $("#NumberOfProduct_" + VariantID).change();
+
+        if (Type == 2) {
+            //Nhấn dấu trừ ở view tạo đơn
+            LoadTotalPrice();
+        }
+    }
+
+    function btnMinus(VariantID, Type) {
+        var value = $("#NumberOfProduct_" + VariantID).val();
+        if (value > 1) {
+            $("#NumberOfProduct_" + VariantID).val(parseInt(value) - 1);
+            $("#NumberOfProduct_" + VariantID).change();
+        }
+
+        if (Type == 2) {
+            //Nhấn dấu trừ ở view tạo đơn
+            LoadTotalPrice();
+        }
+    }
+
+    function btnDeleteProduct(this1) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn xoá sản phẩm này?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-outline-light",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $(this1).parents("tr").remove();
+                LoadTotalPrice();
+                var RowItem = document.getElementsByClassName('row-item');
+                if (RowItem.length == 0) {
+                    $("#ShowSearchListProductView").addClass("d-none");
+                }
+            }
+        });
+    }
+
+    function LoadTotalPrice() {
+        var OrderName = "";
+        var TotalProduct = 0;
+        var TotalPrice = 0;
+        var TotalWeight = 0;
+
+        $('.row-item').each(function () {
+            if (!OrderName) {
+                OrderName = $(this).attr("data-ProductName");
+            }
+            var VariantID = $(this).attr("data-VariantID");
+            var PriceProduct = parseInt($(this).attr("data-PriceProduct"));
+            var SearchNumberOfProduct = parseInt($("#NumberOfProduct_" + VariantID).val());
+            var SearchTotalPrice = PriceProduct * SearchNumberOfProduct;
+            var SearchTotalWeight = parseInt($(this).attr("data-Weight")) * SearchNumberOfProduct;
+            TotalProduct += SearchNumberOfProduct;
+            TotalPrice += SearchTotalPrice;
+            TotalWeight += SearchTotalWeight;
+
+            $("#TotalPrice_" + VariantID).text(SearchTotalPrice.toLocaleString());
+        });
+
+        $("#OrderName").val(OrderName);
+        $("#Quantity").val(TotalProduct); // Số lượng sản phẩm
+        $("#OrderValue").val(TotalPrice); // Giá trị đơn hàng
+        $("#TotalCOD").val(TotalPrice); // Tiền thu hộ
+        $("#Weight").val(TotalWeight); // Khối lượng
+        //$("#TotalDiscount").text("0"); // Giá giảm
+        $("#TotalMoney").text(TotalPrice.toLocaleString());
+
+        if ($("input[name='IsTransport']:checked").val() == "Y") {
+            LoadTotalFee(null);
+        }
+
+        TotalMoney = TotalPrice;
+    }
+
+    function LoadTotalFee(data) {
+        if (!data) {
+            var ReceiverID = $("#Receiver_ID").val();
+            data = {
+                MainTransportServiceID: $('#MainTransportServiceID').val(),
+                ExtraTransportServiceID: $('#ExtraTransportServiceID').val().toString(),
+                arrExtraService: $('#ExtraTransportServiceID').val(),
+                Sender: {
+                    Province: {
+                        ID: ReceiverID > 0 ? $('#Sender_Province_ID').val() : 0
+                    },
+                    District: {
+                        ID: ReceiverID > 0 ? $('#Sender_District_ID').val() : 0
+                    },
+                    Ward: {
+                        ID: ReceiverID > 0 ? $('#Sender_Ward_ID').val() : 0
+                    },
+                },
+                Receiver: {
+                    ID: ReceiverID > 0 ? $('#Receiver_ID').val() : 0,
+                    Province: {
+                        ID: ReceiverID > 0 ? $('#Receiver_Province_ID').val() : 0
+                    },
+                    District: {
+                        ID: ReceiverID > 0 ? $('#Receiver_District_ID').val() : 0
+                    },
+                    Ward: {
+                        ID: ReceiverID > 0 ? $('#Receiver_Ward_ID').val() : 0
+                    },
+                },
+                Weight: NumberReplace($('#Weight').val()),
+                Length: $('#Length').val(),
+                Width: $('#Width').val(),
+                Height: $('#Height').val(),
+                Quantity: NumberReplace($('#Quantity').val()),
+                OrderValue: NumberReplace($('#OrderValue').val()),
+                TotalCOD: NumberReplace($('#TotalCOD').val()),
+                IsTransport: $("input[name='IsTransport']:checked").val(),
+                IsLoad: "Y"
+            };
+        }
+
+        if (!data.MainTransportServiceID || !data.Sender.Province.ID || !data.Receiver.Province.ID || !data.Weight) {
+            $("#errTemporaryTransportServiceFee").text("Chưa đủ thông tin để tính cước");
+        } else {
+            $.post('@Url.Action("TemporaryTransportServiceFeeView", "Order", new { area = "" })', data, function (data) {
+                $('#TemporaryTransportServiceFee').html(data);
+            });
+        }
+    }
+
+    function btnAddOrder(AddType) {
+        var ListProduct = [];
+        var isError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+
+        $('.row-item').each(function () {
+            var ProductID = $(this).attr("data-ProductID");
+            var VariantID = $(this).attr("data-VariantID");
+            var PriceProduct = parseInt($(this).attr("data-PriceProduct"));
+            var WareHouseQuantity = parseInt($(this).attr("data-WareHouseQuantity"));
+            var SearchNumberOfProduct = parseInt($("#NumberOfProduct_" + VariantID).val());
+
+            if (!SearchNumberOfProduct) {
+                $("#errVariant_" + VariantID).text("Vui lòng nhập số lượng sản phẩm.");
+                $("#NumberOfProduct_" + VariantID).focus();
+                isError = true;
+                return false;
+            }
+
+            if (!PriceProduct) {
+                $("#errVariant_" + VariantID).text("Sản phẩm không có giá bán, vui lòng kiểm tra lại.");
+                isError = true;
+                return false;
+            }
+
+            if (SearchNumberOfProduct > WareHouseQuantity) {
+                $("#errVariant_" + VariantID).text("Số lượng mua vượt quá số lượng trong kho.");
+                $("#NumberOfProduct_" + VariantID).focus();
+                isError = true;
+                return false;
+            }
+
+            var obj = {};
+            obj.ProductID = ProductID;
+            obj.VariantID = VariantID;
+            obj.NumberOfProduct = SearchNumberOfProduct;
+            obj.Price = PriceProduct;
+            ListProduct.push(obj);
+        });
+
+
+        if (isError == true) {
+            return;
+        }
+
+        var data = {
+            SearchCustomer: $("#SearchCustomer").val(),
+            Sender: {
+                PickUpAddressID: 0,
+                FullName: "",
+                MobileNumber: "",
+                Province: {
+                    ID: 0
+                },
+                District: {
+                    ID: 0
+                },
+                Ward: {
+                    ID: 0
+                },
+                Street: "",
+                FullAddress: "",
+            },
+            Receiver: {
+                ID: 0,
+                FullName: "",
+                MobileNumber: "",
+                Province: {
+                    ID:0
+                },
+                District: {
+                    ID: 0
+                },
+                Ward: {
+                    ID: 0
+                },
+                Street: "",
+                FullAddress: "",
+            },
+            IsUpdateReceiver: "N",
+            WareHouseID: $("#WareHouseID").val(),
+            ListProduct: ListProduct,
+            //ListInventoryOutput: ListInventoryOutput,
+            IsTransport: $("input[name='IsTransport']:checked").val(),
+            OrderCode: $('#OrderCode').val().trim(),
+            OrderName: $('#OrderName').val().trim(),
+            OrderValue: NumberReplace($('#OrderValue').val()),
+            Quantity: NumberReplace($('#Quantity').val()),
+            Length: $('#Length').val(),
+            Width: $('#Width').val(),
+            Height: $('#Height').val(),
+            Weight: NumberReplace($('#Weight').val()),
+            CollectionType: {
+                ID: $("input[name='CollectionType.ID']:checked").val()
+            },
+            MainTransportServiceID: $("#MainTransportServiceID").val(),
+            ExtraTransportServiceID: $("#ExtraTransportServiceID").val().toString(),
+            TotalCOD: NumberReplace($('#TotalCOD').val()),
+            TotalPHU: NumberReplace($('#TotalPHU').val()),
+            TransportFee: TransportFee,
+            Note: $('#Note').val(),
+            Message: $('#Message').val(),
+            Channel: "FB",
+            TotalMoney: TotalMoney,
+            TotalDiscount: 0,
+            AddType: AddType,
+            OrderStatus: AddType == 3 ? "D" : null,
+            TransportPayer: $("input[name='TransportPayer']:checked").val(),
+            RequestOrderID: $('#RequestOrderID').val(),
+            IsRequestOrder: $('#RequestOrderID').val() == 0 ? "N" : "Y",
+        };
+
+        if (data.SearchCustomer) {
+            if (parseInt($("#Receiver_ID").val())) {
+                data.Sender = {
+                    PickUpAddressID: $("#PickUpAddressID").val(),
+                    FullName: $("#Sender_FullName").val().trim(),
+                    MobileNumber: $('#Sender_MobileNumber').val().trim(),
+                    Province: {
+                        ID: $("#Sender_Province_ID").val()
+                    },
+                    District: {
+                        ID: $("#Sender_District_ID").val()
+                    },
+                    Ward: {
+                        ID: $("#Sender_Ward_ID").val()
+                    },
+                    Street: $("#Sender_Street").val().trim(),
+                    FullAddress: $("#PickUpAddressID").val() != "0" ? $("#Sender_FullAddress").val() : ConvertAddress($('#Sender_Street').val(), $('#Sender_Ward_ID').val() == "" ? "" : $("#Sender_Ward_ID option:selected").text(), $("#Sender_District_ID option:selected").text(), $("#Sender_Province_ID option:selected").text()),
+                };
+                data.Receiver = {
+                    ID: $('#Receiver_ID').val(),
+                    FullName: $("#Receiver_FullName").val().trim(),
+                    MobileNumber: $('#Receiver_MobileNumber').val().trim(),
+                    Province: {
+                        ID: $("#Receiver_Province_ID").val()
+                    },
+                    District: {
+                        ID: $("#Receiver_District_ID").val()
+                    },
+                    Ward: {
+                        ID: $("#Receiver_Ward_ID").val()
+                    },
+                    Street: $("#Receiver_Street").val().trim(),
+                    FullAddress: ConvertAddress($('#Receiver_Street').val().trim(), $('#Receiver_Ward_ID').val() == "" ? "" : $("#Receiver_Ward_ID option:selected").text(), $("#Receiver_District_ID option:selected").text(), $("#Receiver_Province_ID option:selected").text()),
+
+                };
+                data.IsUpdateReceiver = $("input[name='IsUpdateReceiver']:checked").val();
+            }
+        }
+
+        if (data.AddType == 1 || data.AddType == 2) {
+            isError = CheckNullValue($("#SearchCustomer").val(), "SearchCustomer", "Vui lòng nhập số điện thoại và tìm kiếm.", isError);
+            if (isError == false) {
+                if (!parseInt($("#Receiver_ID").val())) {
+                    $('#errReceiver_ID').css("color", "red");
+                    $('#SearchCustomer').focus();
+                    isError = true;
+                }
+            }
+
+            if (data.AddType == 2 && data.IsTransport == "N") {
+                $('#errIsTransport').text('Vui lòng chọn vận chuyển hàng.');
+                $('#IsTransport').focus();
+                isError = true;
+            }
+
+            if (data.OrderCode) {
+                if (data.OrderCode.length > 70) {
+                    $('#errOrderCode').text('Mã đơn hàng không hợp lệ.');
+                    $('#OrderCode').focus();
+                    isError = true;
+                } else {
+                    isError = CheckRegexValue(data.OrderCode, "SpecialCharButNotVietnamese", "OrderCode", Message, isError);
+                }
+            } else {
+                $("#errOrderCode").text("");
+            }
+
+            if (parseInt(data.OrderValue) > 100000000) {
+                $('#errOrderValue').text('Giá trị đơn hàng không vượt quá 100 triệu đồng.');
+                $('#OrderValue').focus();
+                isError = true;
+            }
+
+            if (data.IsTransport == "Y") {
+                isError = CheckNullAndRegexValue(data.Receiver.FullName, "Vietnamese", "Receiver_FullName", "Vui lòng nhập Họ và tên.", Message, isError);
+                isError = CheckNullAndRegexValue(data.Receiver.MobileNumber, "MobileNumber", "Receiver_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+                isError = CheckNullValue(data.Receiver.Province.ID, "Receiver_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+                isError = CheckNullValue(data.Receiver.District.ID, "Receiver_District_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                isError = CheckNullValue(data.Receiver.Ward.ID, "Receiver_Ward_ID", "Vui lòng chọn Phường/ Xã.", isError);
+                isError = CheckNullValue(data.Receiver.Street, "Receiver_Street", "Vui lòng nhập địa chỉ.", isError);
+
+                isError = CheckNullValue(data.Sender.PickUpAddressID, "Sender_PickUpAddressID", "Vui lòng chọn địa chỉ lấy hàng.", isError);
+                isError = CheckNullValue(data.Sender.FullName, "Sender_FullName", "Vui lòng nhập Họ và tên.", isError);
+                isError = CheckNullAndRegexValue(data.Sender.MobileNumber, "MobileNumber", "Sender_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+                isError = CheckNullValue(data.Sender.Province.ID, "Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+                isError = CheckNullValue(data.Sender.District.ID, "Sender_District_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                isError = CheckNullValue(data.Sender.Ward.ID, "Sender_Ward_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                isError = CheckNullValue(data.Sender.Street, "Sender_Street", "Vui lòng nhập địa chỉ.", isError);
+
+                isError = CheckNullAndRegexValue(parseInt(data.Weight), "Number", "Weight", "Vui lòng nhập trọng lượng", "Chỉ được nhập số", isError);
+                isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn Dịch vụ vận chuyển chính", isError);
+
+                if (data.ExtraTransportServiceID) {
+                    var ListExtraTransportService = $('#ExtraTransportServiceID').val();
+                    //Dịch vụ khai giá
+                    var isServiceKG = ListExtraTransportService.includes("103");
+                    if (isServiceKG == true) {
+                        if (parseInt(data.OrderValue) == 0) {
+                            $("#errOrderValue").text("Vui lòng nhập giá trị đơn hàng.");
+                            isError = true;
+                        }
+                    }
+
+                    //Dịch vụ thu hộ
+                    var isServiceCOD = ListExtraTransportService.includes("108");
+                    if (isServiceCOD == true) {
+                        if (parseInt(data.TotalCOD) > 50000000) {
+                            $('#errTotalCOD').text('Số tiền COD tối đa 50 triệu đồng/BG.');
+                            $('#TotalCOD').focus();
+                            isError = true;
+                        }
+                    } else {
+                        data.TotalCOD = 0;
+                    }
+
+                    //Dịch vụ thu phí hủy đơn
+                    var isServicePHU = ListExtraTransportService.includes("421");
+                    if (isServicePHU == true) {
+                        if (parseInt(data.TotalPHU) == 0) {
+                            $("#errTotalPHU").text("Vui lòng nhập thu phí hủy đơn.");
+                            isError = true;
+                        }
+                    } else {
+                        data.TotalPHU = 0;
+                    }
+                } else {
+                    data.TotalCOD = 0;
+                    data.TotalPHU = 0;
+                    $("#errOrderValue").text("");
+                    $("#errTotalCOD").text("");
+                    $("#errTotalPHU").text("");
+                }
+
+                if (data.TransportPayer == 2) {
+                    switch (data.MainTransportServiceID) {
+                        //case "141":
+                        //case "360":
+                        case "481":
+                            if (data.ExtraTransportServiceID.includes("108") == false) {
+                                if (data.ExtraTransportServiceID) {
+                                    data.ExtraTransportServiceID += ",108";
+                                } else {
+                                    data.ExtraTransportServiceID = "108";
+                                }
+                            }
+                            break;
+                        default:
+                            if (data.ExtraTransportServiceID.includes("300") == false && data.ExtraTransportServiceID.includes("221") == false) {
+                                isError = true;
+                                CreateCustomSwal("error", "Vui lòng sử dụng dịch vụ Thu phí ship hàng (PSH) hoặc dịch vụ PPA (PPA) để thu phí người nhận");
+                                $("#TransportPayer1").click();
+                            }
+                            break;
+                    }
+                }
+
+                if (data.MainTransportServiceID && data.ExtraTransportServiceID) {
+                    if ((data.MainTransportServiceID == 102 || data.MainTransportServiceID == 141 || data.MainTransportServiceID == 502 || data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543)
+                        && (data.ExtraTransportServiceID.includes("104") == true || data.ExtraTransportServiceID.includes("105") == true || data.ExtraTransportServiceID.includes("106") == true)) {
+                        //Nếu DV chính là Phát hỏa tốc, CPN TMĐT đồng giá TMĐ, CPN Tài liệu, EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                        //Thì không được chọn các DV cộng thêm là Hàng nhạy cảm EMS - VUN, Dịch vụ EMS cây cảnh, Dịch vụ EMS thực phẩm
+                        isError = true;
+                        $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+                    } else if ((data.MainTransportServiceID == 502 || data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543)
+                        && (data.ExtraTransportServiceID.includes("108") == true || data.ExtraTransportServiceID.includes("341") == true || data.ExtraTransportServiceID.includes("342") == true || data.ExtraTransportServiceID.includes("420") == true)) {
+                        //Nếu DV chính là CPN Tài liệu, EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                        //Thì không được chọn các DV cộng thêm là Thu hộ - chi hộ, Bốc xếp khâu chấp nhận, Bốc xếp khâu phát hàng, Phát hàng siêu thị
+                        isError = true;
+                        $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+                    } else if ((data.MainTransportServiceID == 541 || data.MainTransportServiceID == 542 || data.MainTransportServiceID == 543) && (data.ExtraTransportServiceID.includes("462") == true)) {
+                        //Nếu DV chính là EMS TCNH Bạc, EMS TCNH Vàng, EMS TCNH Tiêu chuẩn
+                        //Thì không được chọn các DV cộng thêm là Phát hàng một phần chiều đến
+                        isError = true;
+                        $("#errMainTransportServiceID").text("Dịch vụ chính và Dịch vụ cộng thêm không phù hợp. Vui lòng điều chỉnh");
+                    }
+                }
+            }
+
+            isError = CheckNullValue(data.WareHouseID, "WareHouseID", "Vui lòng chọn kho cần xuất", isError);
+
+            if (!parseInt(data.Quantity)) {
+                data.Quantity = 1;
+            }
+
+        } else {
+            isError = false;
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        var MessageNotify = "";
+        var MessageSuccess = "";
+        switch (AddType) {
+            case 3:
+                MessageNotify = "Bạn chắc chắn muốn lưu nháp đơn hàng?";
+                MessageSuccess = "Lưu nháp thành công";
+                break;
+            default:
+                MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                MessageSuccess = "Tạo đơn hàng thành công";
+                break;
+        };
+
+        swal({
+            title: 'Thông báo',
+            text: MessageNotify,
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAddOrder", "Order", new { area = "" })',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function () {
+                                $("#p_TabOrderCustomer").removeClass("active");
+                                $("#orderCustomer").removeClass("show");
+                                $("#orderCustomer").removeClass("active");
+
+                                $("#p_TabInfoCustomer").removeClass("active");
+                                $("#p_TabInfoCustomer").addClass("active");
+
+                                $("#infoCustomer").addClass("show");
+                                $("#infoCustomer").addClass("active");
+
+                                LoadDataOrderHistory();
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

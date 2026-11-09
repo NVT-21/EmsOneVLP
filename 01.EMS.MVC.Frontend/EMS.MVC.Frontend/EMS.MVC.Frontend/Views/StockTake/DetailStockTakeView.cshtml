@@ -1,0 +1,215 @@
+﻿@model EMS.MVC.Frontend.Models.DetailStockTakeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.StockTakeID)
+<div class="container-fluid">
+    <div class="header-content">
+        <p class="fs-20 font-w600">Chi tiết phiếu kiểm kho - @Model.StockTakeCode</p>
+    </div>
+    <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-2">
+                            <label class="text-2">Mã phiếu kiểm kho: </label>
+                            <label class="font-w600">@Model.StockTakeCode</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Kho: </label>
+                            <label class="font-w600">@Model.WareHouse.WareHouseName</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Ghi chú: </label>
+                            <label class="font-w600">@Model.Note</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Trạng thái: </label>
+                            <label class="font-w600">@Model.Status.Name</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-2">
+                            <label class="text-2">Người kiểm kho: </label>
+                            <label class="font-w600">@Model.CreatedName</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Thời gian kiểm kho: </label>
+                            <label class="font-w600">@Model.CreatedDate</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Người xác nhận: </label>
+                            <label class="font-w600">@Model.UpdatedName</label>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-2">Thời gian xác nhận: </label>
+                            <label class="font-w600">@Model.UpdatedDate</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive table-secondary">
+                        <table id="ListDataTableSearch" class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Tên biến thể</th>
+                                    <th>Mã SKU</th>
+                                    <th>SL tồn kho</th>
+                                    <th>SL thực tế</th>
+                                    <th>Chênh lệch</th>
+                                    <th>Giá trị chênh lệch</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ListStockTakeDetail.Count > 0)
+                                {
+                                    foreach (var item in Model.ListStockTakeDetail)
+                                    {
+                                        <tr class="row-item">
+                                            <td>@item.Product.ProductName</td>
+                                            <td>@item.ProductVariant.Options</td>
+                                            <td>@item.ProductVariant.SKU</td>
+                                            <td class="NumberOfInventory">@item.NumberOfInventory.ToString("N0")</td>
+                                            <td class="NumberOfActual">@item.NumberOfActual.ToString("N0")</td>
+                                            <td class="NumberOfDifferent">@item.NumberOfDifferent.ToString("N0")</td>
+                                            <td class="MoneyOfDifferent">@item.MoneyOfDifferent.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-start" colspan="3">Tổng: @Model.TotalProduct.ToString("N0")</th>
+                                    <th>@Model.TotalInventory.ToString("N0")</th>
+                                    <th>@Model.TotalActual.ToString("N0")</th>
+                                    <th>@Model.TotalDifferent.ToString("N0")</th>
+                                    <th>@Model.TotalMoney.ToString("N0")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <button type="button" class="btn btn-outline-dark light" onclick="window.location.href = '@Url.Action("StockTakeView", "StockTake")'">Quay lại</button>
+                        </div>
+                        @if (Model.Status.Code == "N" || Model.Status.Code == "D")
+                        {
+                            <div class="col-xl-9 col-lg-9 col-md-9 d-flex justify-content-end">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="btnReject()">Từ chối</button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="btnApprove()">Xác nhận</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            MyCreateDataTable("ListDataTableSearch");
+        });
+
+        function btnReject() {
+            swal({
+                title: "Thông báo",
+                text: "Bạn có chắc chắc muốn từ chối phiếu kiểm kho?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JRejectStockTake", "StockTake")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            ID: $("#StockTakeID").val()
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            })
+        }
+
+        function btnApprove(ID) {
+            swal({
+                title: "Thông báo",
+                text: "Bạn có chắc chắc muốn xác nhận phiếu kiểm kho?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAcceptStockTake", "StockTake")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            ID: $("#StockTakeID").val()
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+}
+
+

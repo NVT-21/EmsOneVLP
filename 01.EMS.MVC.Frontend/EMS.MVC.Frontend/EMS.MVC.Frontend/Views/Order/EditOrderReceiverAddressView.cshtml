@@ -1,0 +1,127 @@
+﻿@model EMS.MVC.Frontend.Models.EditOrderReceiverAddressViewModel
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Sửa địa chỉ người nhận - @Model.OrderCode</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Địa chỉ cũ</label>
+                    <input class="form-control" id="EditOrderReceiverAddressView_StreetOld" disabled />
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Địa chỉ mới <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "EditOrderReceiverAddressView_Street", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                    <span class="text-danger" id="errEditOrderReceiverAddressView_Street"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @id = "EditOrderReceiverAddressView_ProvinceID", @onchange = "LoadListDistrict('EditOrderReceiverAddressView_ProvinceID', 'EditOrderReceiverAddressView_DistrictID', 'EditOrderReceiverAddressView_WardID')" })
+                    <span class="text-danger" id="errEditOrderReceiverAddressView_ProvinceID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Quận/Huyện <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @id = "EditOrderReceiverAddressView_DistrictID", @onchange = "LoadListWard('EditOrderReceiverAddressView_DistrictID', 'EditOrderReceiverAddressView_WardID')" })
+                    <span class="text-danger" id="errEditOrderReceiverAddressView_DistrictID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Phường/Xã <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2", @id = "EditOrderReceiverAddressView_WardID", })
+                    <span class="text-danger" id="errEditOrderReceiverAddressView_WardID"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer d-block">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-dark light" data-bs-dismiss="modal">HỦY BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnEditOrderReceiverAddress">CẬP NHẬT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    VNPMapsAutocomplete("EditOrderReceiverAddressView_Street", "EditOrderReceiverAddressView_ProvinceID", "EditOrderReceiverAddressView_DistrictID", "EditOrderReceiverAddressView_WardID");
+    CheckChangeValue("EditOrderReceiverAddressView_Street", "Địa chỉ không được để trống.", "", "Y");
+    CheckChangeValue("EditOrderReceiverAddressView_ProvinceID", "Tỉnh/ Thành phố không được để trống", "", "Y");
+    CheckChangeValue("EditOrderReceiverAddressView_DistrictID", "Quận/ Huyện không được để trống.", "", "Y");
+    CheckChangeValue("EditOrderReceiverAddressView_WardID", "Phường/ Xã không được để trống.", "", "Y");
+
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        var ProvinceName = $("#EditOrderReceiverAddressView_ProvinceID option:selected").text();
+        var DistrictName = $("#EditOrderReceiverAddressView_DistrictID option:selected").text();
+        var WardName = $("#EditOrderReceiverAddressView_WardID option:selected").text();
+        var Street = $("#EditOrderReceiverAddressView_Street").val().trim();
+        $("#EditOrderReceiverAddressView_StreetOld").val(ConvertAddress(Street, WardName, DistrictName, ProvinceName));
+    });
+
+    $("#btnEditOrderReceiverAddress").on("click", function () {
+        var isError = false;
+        var data = {
+            OrderID: @Model.OrderID,
+            OrderCode: '@Model.OrderCode',
+            BatchCode: '@Model.BatchCode',
+            Street: $("#EditOrderReceiverAddressView_Street").val().trim(),
+            ProvinceID: $("#EditOrderReceiverAddressView_ProvinceID").val(),
+            ProvinceName: $("#EditOrderReceiverAddressView_ProvinceID option:selected").text(),
+            DistrictID: $("#EditOrderReceiverAddressView_DistrictID").val(),
+            DistrictName: $("#EditOrderReceiverAddressView_DistrictID option:selected").text(),
+            WardID: $("#EditOrderReceiverAddressView_WardID").val(),
+            WardName: $("#EditOrderReceiverAddressView_WardID option:selected").text(),
+        };
+
+        isError = CheckNullValue(data.Street, "EditOrderReceiverAddressView_Street", "Vui lòng nhập địa chỉ", isError);
+        isError = CheckNullValue(data.ProvinceID, "EditOrderReceiverAddressView_ProvinceID", "Vui lòng chọn Tỉnh/ Thành phố", isError);
+        isError = CheckNullValue(data.DistrictID, "EditOrderReceiverAddressView_DistrictID", "Vui lòng chọn Quận/ Huyện", isError);
+        isError = CheckNullValue(data.WardID, "EditOrderReceiverAddressView_WardID", "Vui lòng chọn Phường/ Xã", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEditOrderReceiverAddress", "Order")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    if (data.BatchCode) {
+                        var table = $('#SearchListDataTable').DataTable();
+                        table.$('input').filter(function (element) {
+                            var OrderID = $(this).val();
+                            var BatchCode = $(this).attr("data-BatchCode");
+                            if (BatchCode == data.BatchCode) {
+                                $("#ReceiverFullAddress-" + OrderID).attr("onclick", `btnEditReceiverAddress(${data.OrderID}, '${data.OrderCode}', '${data.BatchCode}', ${data.ProvinceID}, ${data.DistrictID}, ${data.WardID}, '${data.Street}')`);
+                                $("#ReceiverFullAddress-" + OrderID).html(String.format("{0},{1},{2},<b>{3}</b>", data.Street, data.WardName, data.DistrictName, data.ProvinceName));
+                            }
+                        });
+                    } else {
+                        $("#ReceiverFullAddress-" + data.OrderID).attr("onclick", `btnEditReceiverAddress(${data.OrderID}, '${data.OrderCode}', '${data.BatchCode}', ${data.ProvinceID}, ${data.DistrictID}, ${data.WardID}, '${data.Street}')`);
+                        $("#ReceiverFullAddress-" + data.OrderID).html(String.format("{0},{1},{2},<b>{3}</b>", data.Street, data.WardName, data.DistrictName, data.ProvinceName));
+                    }
+                    $(".btn-close").click();
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,329 @@
+﻿@model EMS.MVC.Frontend.Areas.Zalo.Models.ZAL_LiveChatViewModel
+@{
+    Layout = "~/Areas/Zalo/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.PageID)
+@Html.HiddenFor(m => m.PageName)
+@Html.HiddenFor(m => m.PageAvatar)
+
+<div class="d-none" id="Info-@Model.PageID" data-DisplayName="@Model.PageName" data-Avatar="@Model.PageAvatar"></div>
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 col-lg-4 col-xl-3 border-right p-0">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control my-3" placeholder="Search...">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ListConversion" class="CustomScrollBar" style="height: 750px; overflow-y: scroll; overflow-x: hidden; width: 400px;">
+                            @{
+                                Html.RenderAction("ZAL_SearchListConversionView", "ZAL_LiveChat", new { area = "Zalo" });
+                            }
+                        </div>
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-md-8 col-lg-8 col-xl-9" id="MessageOfConversion" style="height: 750px; ">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("div.nav-control").click();
+            $("#footer").addClass("d-none");
+            $(".content-body").css("min-height","");
+        });
+
+        var ZaloHubProxy = $.connection.ZaloHub;
+
+        $.connection.hub.url = 'https://social-webhook.somee.com/signalr/hubs';
+        //$.connection.hub.url = 'https://localhost:44321/signalr/hubs';
+        //$.connection.hub.url = 'https://webhook.emsone.com.vn/signalr/hubs';
+
+        //var ConnectionID = $.connection.hub.id;
+
+        var PageID = $("#PageID").val();
+
+        $.connection.hub.qs = { 'name': PageID };
+
+        $.connection.hub.start()
+            .done(function () { console.log('Now connected'); })
+            .fail(function () { console.log('Could not Connect!'); });
+
+        //ZaloHubProxy.on("UserSendMessageToPage", (data) => {
+        //    console.log(data);
+        //});
+
+        ZaloHubProxy.client.UserSendMessageToPage = function (data) {
+            var ResponseData = JSON.parse(data);
+
+            switch (ResponseData.event_name) {
+                case "user_send_text":
+                    LoadConversion(ResponseData.sender.id, ResponseData.message.text, "TEXT").then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.sender.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.message.msg_id, 0, ResponseData.sender.id, ResponseData.message.text, "TEXT", ResponseData.timestamp);
+                        }
+                    }).catch(function () {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+                case "user_send_sticker":
+                    LoadConversion(ResponseData.sender.id, "", "STICKER").then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.sender.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.message.attachments[0].payload.id, 0, ResponseData.sender.id, "", "STICKER", "", ResponseData.message.attachments[0].payload.url);
+                        }
+                    }).catch(function () {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+                case "user_send_image":
+                    LoadConversion(ResponseData.sender.id, "", "IMAGE").then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.sender.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.message.msg_id, 0, ResponseData.sender.id, ResponseData.message.text, "IMAGE", ResponseData.timestamp, ResponseData.message.attachments[0].payload.thumbnail);
+                        }
+                    }).catch(function () {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+            }
+        };
+
+        ZaloHubProxy.client.PageSendMessageToUser = function (data) {
+            var ResponseData = JSON.parse(data);
+            switch (ResponseData.event_name) {
+                case "oa_send_text":
+                    LoadConversion(ResponseData.recipient.id, ResponseData.message.text, "TEXT").then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.recipient.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.message.msg_id, 1, ResponseData.sender.id, ResponseData.message.text, "TEXT", ResponseData.timestamp, "");
+                        }
+                    }).catch(function () {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+            }
+        };
+
+        //var srcIconDoubleCheck = "data:image/gif;base64,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";
+
+        ZaloHubProxy.client.UserReceivedMessage = function (data) {
+            $("#StatusMessage").text("Đã nhận");
+        };
+
+        ZaloHubProxy.client.UserSeenMessage = function (data) {
+            //$("#StatusMessage").html("<img class='vertical-mid' src='~/Assets/images/icon/icon_double_check.png' width='16' /> Đã xem");
+            $("#StatusMessage").text("Đã xem");
+        };
+
+        async function LoadConversion(UserID, MessageText, MessageType) {
+            var CheckConversionExist = $("#conversion-" + UserID).length;
+            if (CheckConversionExist == 1) {
+                var CheckConversionIndex = $("#conversion-" + UserID).attr("data-index");
+                var CheckConversionActive = $("#conversion-" + UserID).hasClass("active");
+                if (CheckConversionIndex == 1) {
+                    var NumberOfMessage = parseInt($("#NumberOfMessage-" + UserID).text());
+
+                    if (CheckConversionActive == true) {
+                        $("#NumberOfMessage-" + UserID).addClass("d-none");
+                        $("#NumberOfMessage-" + UserID).text("0");
+                    } else {
+                        $("#NumberOfMessage-" + UserID).text(NumberOfMessage + 1);
+                        if ($("#NumberOfMessage-" + UserID).hasClass("d-none")) {
+                            $("#NumberOfMessage-" + UserID).removeClass("d-none");
+                        }
+                    }
+
+                    switch (MessageType) {
+                        case "STICKER":
+                            $("#MessageOfConversion-" + UserID).html('<img src="~/Assets/images/icon/sticker.ico" width="13" height="13" style="opacity: 0.7;" /> [Sticker]');
+                            break;
+                        case "IMAGE":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fas fa-image"></i> [Hình ảnh]');
+                            break;
+                        default:
+                            $("#MessageOfConversion-" + UserID).text(MessageText);
+                            break;
+                    };
+                } else {
+                    var NumberOfMessage = parseInt($("#NumberOfMessage-" + UserID).text()) + 1;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ZAL_ConversionView", "ZAL_LiveChat", new { area = "Zalo" })',
+                        dataType: 'html',
+                        async: false,
+                        data: {
+                            ConversionID: $("#Info-" + UserID).attr("data-ConversionID"),
+                            UserID: $("#Info-" + UserID).attr("data-UserID"),
+                            SenderID: UserID,
+                            DisplayName: $("#Info-" + UserID).attr("data-DisplayName"),
+                            Avatar: $("#Info-" + UserID).attr("data-Avatar"),
+                            MessageText: MessageText,
+                            MessageType: MessageType,
+                            NumberOfMessage: NumberOfMessage,
+                            UpdatedDate: '@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")',
+                            ConversionIndex: 1,
+                        },
+                        success: function (html) {
+                            $("#conversion-" + UserID).remove();
+                            $("#ListConversion").prepend(html);
+                            if (CheckConversionActive == true) {
+                                $("#conversion-" + UserID).addClass("active");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG",
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            } else {
+                //Nếu chưa có cuộc hội thoại
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SearchListConversion", "Handle", new { area = "" })',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        Channel: "ZA",
+                        UserID: UserID,
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            var ResponseData = JSON.parse(res.Data);
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Action("ZAL_ConversionView", "ZAL_LiveChat", new { area = "Zalo" })',
+                                dataType: 'html',
+                                async: false,
+                                data: {
+                                    ConversionID: ResponseData[0].ConversionID,
+                                    UserID: ResponseData[0].UserID,
+                                    SenderID: UserID,
+                                    DisplayName: ResponseData[0].DisplayName,
+                                    Avatar: ResponseData[0].Avatar,
+                                    MessageText: MessageText,
+                                    MessageType: MessageType,
+                                    NumberOfMessage: 1,
+                                    UpdatedDate: moment().format('DD/MM/YYYY HH:mm:ss'),
+                                    ConversionIndex: 1,
+                                },
+                                success: function (html) {
+                                    $("#conversion-" + UserID).remove();
+                                    $("#ListConversion").prepend(html);
+                                },
+                                error: function (xhr, status, error) {
+                                    var err = eval("(" + xhr.responseText + ")");
+                                    swal({
+                                        title: 'Lỗi',
+                                        text: err.Message,
+                                        button: {
+                                            text: "ĐÓNG",
+                                        }
+                                    });
+                                    return;
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        }
+
+        function LoadMessageOfConversion(MessageID, FromWhom, UserID, MessageText, MessageType, TimeStamp, Url) {
+            if (!TimeStamp) {
+                TimeStamp = moment().format('DD/MM/YYYY HH:mm:ss');
+            } else {
+                TimeStamp = moment(parseInt(TimeStamp)).format('DD/MM/YYYY HH:mm:ss');
+            }
+
+            var arr = [{
+                FromWhom: FromWhom,
+                MessageID: MessageID,
+                DisplayName: $("#Info-" + UserID).attr("data-DisplayName"),
+                Avatar: $("#Info-" + UserID).attr("data-Avatar"),
+                MessageType: MessageType,
+                MessageText: MessageText,
+                CreatedDate: TimeStamp,
+                LinkURL: Url,
+                Thumbnail: Url,
+                Status: {
+                    Code: "N",
+                    Name: "Đã gửi"
+                }
+            }];
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ZAL_MessageOfConversionView", "ZAL_LiveChat", new { area = "Zalo" })',
+                dataType: 'html',
+                async: false,
+                data: {
+                    model: arr
+                },
+                beforeSend: function () {
+                    $(".IsStatusMessage").remove();
+                },
+                success: function (html) {
+                    $(html).appendTo("#ContentMessage");
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+
+        //ZaloHubProxy.client.UserSendMessageToPage = function (data) {
+        //    var ResponseData = JSON.parse(data);
+        //    switch (ResponseData.event_name) {
+        //        case "user_send_text":          //Sự kiện người dùng gửi tin nhắn
+        //        case "user_send_image":         //Sự kiện người dùng gửi tin nhắn hình ảnh
+        //        case "user_send_link":          //Sự kiện người dùng gửi tin nhắn liên kết
+        //        case "user_send_sticker":       //Sự kiện người dùng gửi tin nhắn sticker
+        //        case "user_send_gif":           //Sự kiện người dùng gửi tin nhắn gif
+        //        case "user_send_location":      //Sự kiện người dùng gửi vị trí
+        //        case "user_send_audio":         //Sự kiện người dùng gửi tin nhắn voice
+        //        case "user_reacted_message":    //Sự kiện người dùng thả biểu tượng cảm xúc lên tin nhắn
+        //            break;
+        //    }
+        //    console.log(JSON.parse(data));
+        //};
+    </script>
+}

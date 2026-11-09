@@ -1,0 +1,73 @@
+﻿@model EMS.MVC.Backend.Models.RejectShopViewModel
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Từ chối hồ sơ</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-lg-12 mb-2">
+                    <label for="">Lý do <span class="text-danger">(*)</span></label>
+                    @Html.TextAreaFor(model => model.Reason, new { @class = "form-control", @placeholder = "Vui lòng nhập lý do. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                    <span class="text-danger" id="errReason"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12 col-md-12">
+                <div class="row justify-content-between">
+                    <button type="button" class="btn btn-sm btn-danger form-control col-lg-3 col-md-4" id="btnM_Close" data-dismiss="modal" aria-label="Close">HUỶ BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary form-control col-lg-3 col-md-4" id="btnM_Submit">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    CheckChangeValue("Reason", "Vui lòng nhập lý do", "", "Y");
+
+    $("#btnM_Submit").on("click", function () {
+        var isError = false;
+        var data = {
+            ID: @Model.ID,
+            Reason: $("#Reason").val().trim()
+        }
+
+        isError = CheckNullValue(data.Reason, "Reason", "Vui lòng nhập lý do", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRejectShop", "Shop")',
+            dataType: 'json',
+            data: data,
+            success: function (res) {
+                if (res.Code == '00') {
+                    CreateCustomSwal("success", res.Message, '@Url.Action("ShopView", "Shop")');
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                };
+            },
+            error: function (ex) {
+                swal({
+                    title: 'Lỗi kết nối hệ thống',
+                    text: 'Vui lòng kiểm tra lại kết nối mạng',
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                })
+            }
+        });
+    });
+</script>

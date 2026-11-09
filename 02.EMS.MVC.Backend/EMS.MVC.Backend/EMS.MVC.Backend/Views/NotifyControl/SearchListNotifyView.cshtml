@@ -1,0 +1,311 @@
+﻿@model List<EMS.MVC.Backend.Models.NotifyControlSearchListViewModel>
+@{
+    Layout = null;
+    var stt = 1;
+}
+<table id="ListDataTableSearch" class="table table-bordered table-hover">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Thông tin thông báo </th>
+            <th> Nội dung thông báo </th>
+            <th> Khách hàng áp dụng </th>
+            <th> Thời gian tạo </th>
+            <th> Thời gian gửi </th>
+            <th> Số lượng TB đã gửi </th>
+            <th> Số lượng TB đã xem </th>
+            <th> Trạng thái </th>
+            <th> Tình trạng gửi </th>
+            <th style="max-width: 110px;"> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-left">
+                        <span style="line-height: 1.4rem;">@item.NotifyTypeName</span><br />
+                        <span style="line-height: 1.4rem;">@item.NotifyReceiverTypeName</span><br />
+                        <span style="line-height: 1.4rem;">Người tạo: @item.CreatedByName</span>
+                    </td>
+                    <td class="text-left">
+                        <b style="line-height: 1.4rem;cursor: pointer;" onclick="NotifyViewDetail(@item.NotifyID)">
+                            @if (item.NotifyName.Length > 50)
+                            {
+                                <span style="line-height: 1.4rem;"> @item.NotifyName.Substring(0, 46) ...</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;">@item.NotifyName</span>
+                            }
+                        </b>
+                        <br />
+                        <span style="line-height: 1.4rem;">
+                            @{
+                                if (item.NotifyContent.Length > 50)
+                                {
+                                    <span style="line-height: 1.4rem;">@item.NotifyContent.Substring(0, 46) ...</span>
+                                }
+                                else
+                                {
+                                    <span style="line-height: 1.4rem;">@item.NotifyContent</span>
+                                }
+                            }
+                        </span>
+                        <br />
+                        @if (!string.IsNullOrEmpty(item.NotifyRedirectUrl))
+                        {
+                            <a style="text-decoration: none;line-height: 1.4rem;" class="font-weight-bold" target="_blank" href="@item.NotifyRedirectUrl"> < Xem khuyến mãi ></a>
+                        }
+                    </td>
+                    <td class="text-left">
+                        @{
+                            if (!string.IsNullOrEmpty(item.NotifyReceiverCRM))
+                            {
+                                <b>Mã CRM:</b><br />
+                                var splitNotifyReceiverCRM = item.NotifyReceiverCRM.Split(',');
+                                for (var i = 0; i < splitNotifyReceiverCRM.Length; i++)
+                                {
+                                    <span style="line-height: 1.4rem;">@splitNotifyReceiverCRM[i]</span>
+                                    <br />
+                                }
+                            }
+                            else
+                            {
+                                if (item.NotifyReceiverType == "ALL")
+                                {
+                                    <span style="line-height: 1.4rem;"><b>Tất cả khách hàng</b></span>
+                                }
+                                else if (item.NotifyReceiverType == "GROUP")
+                                {
+                                    <b>Nhóm khách hàng:</b><br />
+                                    var splitNotifyReceiverGroupName = item.NotifyReceiverGroupName.Split(',');
+                                    for (var i = 0; i < splitNotifyReceiverGroupName.Length; i++)
+                                    {
+                                        <span style="line-height: 1.4rem;">@splitNotifyReceiverGroupName[i]</span>
+                                        <br />
+                                    }
+                                }
+                            }
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            if (item.CreatedDate != "")
+                            {
+                                var splitCreatedDate = item.CreatedDate.Split(' ');
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;"></span>
+                                <br />
+                                <span style="line-height: 1.4rem;"></span>
+                            }
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            if (item.NotifySendDate != "")
+                            {
+                                var splitNotifySendDate = item.NotifySendDate.Split(' ');
+                                <span style="line-height: 1.4rem;">@splitNotifySendDate[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitNotifySendDate[1]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;"></span>
+                                <br />
+                                <span style="line-height: 1.4rem;"></span>
+                            }
+                        }
+                    </td>
+                    <td class="text-center">@item.NotifyQuantitySend.ToString("N0")</td>
+                    <td class="text-center">@item.NotifyQuantityViewed.ToString("N0")</td>
+                    <td class="text-center">
+                        @if (item.IsLock == "N")
+                        {
+                            <b class="text-success">Mở khoá</b>
+                        }
+                        else if (item.IsLock == "Y")
+                        {
+                            <b class="text-danger">Đã khoá</b>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.IsSend == "N")
+                        {
+                            <b class="text-danger">Chờ gửi</b>
+                        }
+                        else if (item.IsSend == "P")
+                        {
+                            <b class="text-warning">Đang xử lý</b>
+                        }
+                        else if (item.IsSend == "Y")
+                        {
+                            <b class="text-success">Đã gửi</b>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.IsSend == "N")
+                        {
+                            <button onclick="fnChangeLock(@item.NotifyID,@if (item.IsLock == "N") { Write("'Y'"); } else { Write("'N'"); })" title="@if (item.IsLock == "N") { Write("Khoá"); } else { Write("Mở khoá"); }" class="badge badge-outline-warning">
+                                <i class="@if (item.IsLock == "N") { Write("fa fa-lock"); } else { Write("fa fa-unlock"); }"></i>
+                            </button>
+                            <button onclick="NotifyViewEdit(@item.NotifyID)" title="Chỉnh sửa" class="badge badge-outline-info">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        }
+                        @if (item.IsSend != "P" || item.IsLock == "Y")
+                        {
+                            <button title="Xoá" type="button" onclick="fnDelete(@item.NotifyID)" class="badge badge-outline-danger">
+                                <i class="fa fa-trash text-danger"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [10,20, 30, 50, 100, 500, -1],
+                [10,20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 10,
+            'language': {
+                'sSearch': "",
+                'searchPlaceholder': "Tìm kiếm nhanh",
+                'emptyTable': "Không có dữ liệu",
+                'zeroRecords': "Không có dữ liệu",
+                'sInfo': 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                'infoEmpty': "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                'infoFiltered': "(Tìm kiếm từ _MAX_ bản ghi)",
+                'oPaginate': {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                'lengthMenu': "Hiển thị _MENU_ bản ghi"
+            },
+            'ordering': false,
+            'stateSave': true
+        });
+    });
+    function fnDelete(NotifyID) {
+        swal({
+            text: "Bạn chắc chắn muốn xoá?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JDelete", "NotifyControl")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        NotifyID: NotifyID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function (res) {
+                                $('#btnSearch').click();
+                            }, 1200);
+                        }
+                        else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+    function fnChangeLock(NotifyID, IsLock) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JChangeLock", "NotifyControl")',
+            dataType: 'json',
+            loading: true,
+            data: {
+                NotifyID: NotifyID,
+                IsLock: IsLock
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                    setTimeout(function (res) {
+                        $('#btnSearch').click();
+                    }, 1200);
+                }
+                else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            }
+        });
+    }
+    function NotifyViewDetail(NotifyID) {
+        $.post('@Url.Action("NotifyDetailView", "NotifyControl")', {
+            NotifyID: NotifyID
+        }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+    function NotifyViewEdit(NotifyID) {
+        $.post('@Url.Action("NotifyEditView", "NotifyControl")', {
+            NotifyID: NotifyID
+        }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+</script>
+

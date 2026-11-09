@@ -1,0 +1,46 @@
+﻿@model List<EMS.MVC.Frontend.Models.ReconciliationListFeeTradeDiscountsViewModel>
+<table id="SearchListDataTable" class="table table-responsive-xl">
+    <thead>
+        <tr>
+            <th>Mã bưu gửi</th>
+            <th>Ngày phát hành</th>
+            <th>Mã BC trả</th>
+            <th>
+                Khối lượng <br>
+                tạm tính (gr)
+            </th>
+            <th>Cước dịch vụ</th>
+            <th>Cước chính</th>
+            <th>Cước giảm</th>
+            <th>Cước thực tế</th>
+            <th>Cước thu hộ</th>
+            <th>Số tiền thu hộ</th>
+            <th>Địa chỉ nhận</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><span class="text-secondary"><a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(item.EmsBarCode), ShopID = EMS.Library.Security.EncodeBase64(XHelper.Session.EmployeeProfile.ShopInformation.ID.ToString()) })" target="_blank">@item.EmsBarCode</a></span></td>
+                <td>
+                    @item.TimeRelease
+                </td>
+                <td><span class="text-secondary">@item.ReceiveProvice</span></td>
+                <td>@item.ProvisionalVolume</td>
+                <td>@item.ServiceFee.ToString("N0")</td>
+                <td>@item.MainFee.ToString("N0")</td>
+                <td>@item.ReducedRates.ToString("N0")</td>
+                <td>@item.TransportFee.ToString("N0")</td>
+                <td>@item.TransportFeePublic.ToString("N0")</td>
+                <td>@item.FeePublic.ToString("N0")</td>
+                <td>@item.Note</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

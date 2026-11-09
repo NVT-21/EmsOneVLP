@@ -1,0 +1,290 @@
+﻿@model EMS.MVC.Frontend.Models.NotifyListModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label class="">Thời gian</label>
+                                <div class="datepicker-form">
+                                    @Html.EditorFor(model => model.AllDate, new { htmlAttributes = new { @type = "text", @class = "form-control input-daterange-datepicker" } })
+                                    @Html.HiddenFor(model => model.FromDate)
+                                    @Html.HiddenFor(model => model.ToDate)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                            <label class="">Loại thông báo</label>
+                            @Html.DropDownListFor(model => model.NotifyType, new SelectList(Model.ListNotifyType, "Value", "Text"), "Tất cả", new { @class = "select2" })
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                            <label class="">Trạng thái</label>
+                            <select class="select2" id="IsCheck">
+                                <option value="" selected>Tất cả</option>
+                                <option value="Y">Đã đọc</option>
+                                <option value="N">Chưa đọc</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                            <label class="">&nbsp;</label>
+                            <div class="me-2">
+                                <button type="button" class="btn btn-primary" onclick="btnCheckViewNotify()">
+                                    &nbsp;Đánh dấu đã đọc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body ">
+            <div id="tbl-data" class="table-primary">
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+           $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        $(document).ready(function () {
+            $('select.select2').select2(AttributeSelect2);
+            CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+        });
+
+        $("#AllDate, #NotifyType, #IsCheck").on("change", function () {
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+                NotifyType: $("#NotifyType").val(),
+                IsCheck: $("#IsCheck").val()
+            };
+            NotifySearchList(req);
+        });
+        function NotifySearchList(req) {
+            var errMsg = '', isError = false;
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            $.get('@Url.Action("NotifySearchListView", "Notify")', req, function (data) {
+                $('#tbl-data').html(data);
+            });
+        }
+        function btnCheckViewNotify() {
+            var table = $('#SearchListDataTable').DataTable();
+            var arr = [];
+            table.$('input:checked').each(function () {
+                arr.push(parseInt($(this).val()));
+            });
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn thông báo");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có muốn đánh dấu các thông báo này thành đã đọc?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JUpdateClickNotify", "Notify")',
+                        data: {
+                            StrID: arr.toString()
+                        },
+                        dataType: 'json',
+                        loading: true,
+                        global: false,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    button: false,
+                                    timer: 1500
+                                });
+                                setTimeout(function () {
+                                    NotifyCount();
+                                    var req = {
+                                        FromDate: $("#AllDate").val().split(" - ")[0],
+                                        ToDate: $("#AllDate").val().split(" - ")[1],
+                                        NotifyType: $("#NotifyType").val(),
+                                        IsCheck: $("#IsCheck").val()
+                                    };
+                                    NotifySearchList(req);
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        }
+                    });
+                } else {
+                    arr = [];
+                }
+            });
+        }
+        function btnRemoveNotify(ID, IsCheck) {
+            swal({
+                title: 'Thông báo',
+                text: "Bạn muốn xoá thông báo này?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JRemoveClickNotify", "Notify")',
+                        data: {
+                            ID: ID
+                        },
+                        dataType: 'json',
+                        loading: true,
+                        global: false,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    button: false,
+                                    timer: 1500
+                                });
+                                setTimeout(function () {
+                                    if (IsCheck == "N") {
+                                        NotifyCount();
+                                    }
+                                    var req = {
+                                        FromDate: $("#AllDate").val().split(" - ")[0],
+                                        ToDate: $("#AllDate").val().split(" - ")[1],
+                                        NotifyType: $("#NotifyType").val(),
+                                        IsCheck: $("#IsCheck").val()
+                                    };
+                                    NotifySearchList(req);
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                                return;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function NotifyClick(ShippingCode, ID, IsCheck, NotifyType) {
+            UpdateNotify(ID, IsCheck);
+            switch (NotifyType) {
+                case "ORDER_STATUS":
+                    var param = String.format("ShippingCode={0}&ShopID={1}", btoa(ShippingCode), btoa(@XHelper.Session.EmployeeProfile.ShopInformation.ID.ToString()));
+                    window.open('/tra-cuu-buu-gui?' + param, '_blank');
+                    break;
+                case "EMS":
+                    NotifyViewDetail(parseInt(ID), IsCheck);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+        function NotifyViewDetail(ID, IsCheck) {
+            UpdateNotify(ID, IsCheck);
+            $.post('@Url.Action("NotifyDetailView", "Notify")', {
+                ID: ID
+            }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        }
+        function UpdateNotify(ID, IsCheck) {
+            if (IsCheck == "N") {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUpdateClickNotify", "Notify")',
+                    data: {
+                        StrID: ID.toString()
+                    },
+                    dataType: 'json',
+                    loading: true,
+                    global: false,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            NotifyCount();
+                            var req = {
+                                FromDate: $("#AllDate").val().split(" - ")[0],
+                                ToDate: $("#AllDate").val().split(" - ")[1],
+                                NotifyType: $("#NotifyType").val(),
+                                IsCheck: $("#IsCheck").val()
+                            };
+                            NotifySearchList(req);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+}

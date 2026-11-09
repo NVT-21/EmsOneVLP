@@ -1,0 +1,81 @@
+﻿@model EMS.MVC.Frontend.Models.ProductVariantIndexViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" id="ProductID" value="@Model.ProductID" />
+
+<div class="container-fluid pb-100">
+    <div id="ShowListVariant" class="product">
+        @if (Model.Variants != null)
+        {
+            <div class=" product-left">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fs-18 font-w600">Danh sách biến thể</div>
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" id="addVariant">
+                                <rect width="32" height="32" rx="6" fill="#0054A6" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M16 10.75C16.4142 10.75 16.75 11.0858 16.75 11.5V15.25H20.5C20.9142 15.25 21.25 15.5858 21.25 16C21.25 16.4142 20.9142 16.75 20.5 16.75H16.75V20.5C16.75 20.9142 16.4142 21.25 16 21.25C15.5858 21.25 15.25 20.9142 15.25 20.5V16.75H11.5C11.0858 16.75 10.75 16.4142 10.75 16C10.75 15.5858 11.0858 15.25 11.5 15.25H15.25V11.5C15.25 11.0858 15.5858 10.75 16 10.75Z"
+                                      fill="white" />
+                            </svg>
+                        </div>
+                        <div class="CustomScrollBar p-2" style="max-height: 622px; overflow-y: scroll;">
+                            <ul class="ul" id="ListVariant">
+                                @foreach (var item in Model.Variants)
+                                {
+                                    <li class="w-100 list-group-item list-group-item-action" style="border-top-width: 1px;" id="Variant_@item.ID" onclick="FuncVariantDetail(@item.ID, this)">
+                                        <img data-value="@item.Avatar" src="@XHelper.pathImages@item.Avatar" width="32">
+                                        @item.Options
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="product-right" id="VariantDetailView">
+                @{
+                    if (Model.VariantID != 0)
+                    {
+                        Html.RenderAction("ProductVariantDataByID", "Product", new { VariantID = Model.VariantID });
+                    }
+                    else
+                    {
+                        Html.RenderAction("ProductVariantAdd", "Product", new { ProductID = Model.ProductID });
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <label>Không có dữ liệu</label>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#Variant_' + @Model.VariantID).addClass('active');
+            var lastProductVariant = sessionStorage.getItem('lastProductVariant');
+            if (lastProductVariant) {
+                $("#Variant_" + lastProductVariant).click();
+            }
+        });
+        function FuncVariantDetail(ID, This) {
+            $.get('@Url.Action("ProductVariantDataByID", "Product")?VariantID='+ID, function (data) {
+                $('#VariantDetailView').html(data);
+            });
+            let list = $('#ListVariant').find('li.active');
+            for (var i = 0; i < list.length; i++) {
+                $(list[i]).removeClass('active')
+            }
+            $(This).addClass('active');
+        }
+        $('#addVariant').on('click', function () {
+            $.get('@Url.Action("ProductVariantAdd", "Product")?ProductID=' + @Model.ProductID, function (data) {
+                    $('#VariantDetailView').html(data);
+            });
+        });
+    </script>
+}

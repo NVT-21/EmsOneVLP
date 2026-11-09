@@ -1,0 +1,185 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 mb-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col-lg-12 mb-3">
+                        <label>Loại mẫu in <span class="text-danger">(*)</span></label>
+                        <select class="select2" id="PrintType">
+                            <option value="">-- Chọn --</option>
+                            @foreach (var item in ViewBag.ListPrintType)
+                            {
+                                <option value="@item.Value" @{ if (item.Value == ViewBag.PrintTypeDefault) { Write("selected"); } }>@item.Text</option>
+                            }
+                        </select>
+                        <span class="text-danger" id="errPrintType"></span>
+                    </div>
+                    <div class="col-lg-12 mb-3">
+                        <div class="col-lg-12 mb-3" id="ShowChooseInfoTemplatePrint"></div>
+                        <div class="col-lg-12 mb-3">
+                            <span class="text-danger" id="errTemplatePrintID"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6 float-start text-start">
+                            <button class="btn btn-outline-dark" onclick="window.location.href = '@Url.Action("TemplatePrintView","TemplatePrint")'">Quay lại</button>
+                        </div>
+                        <div class="col-lg-6 float-end text-end">
+                            <button class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Đơn hàng mẫu <span id="TextPrintType"></span></h4>
+                    <center>
+                        <div class="col-lg-8">
+                            <div id="ShowTemplatePrintData" style="min-height: 600px;"></div>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#PrintType").change();
+        });
+
+        $("#PrintType").on("change", function () {
+            if ($("#PrintType").val() == "") {
+                $("#errPrintType").text("Vui lòng chọn kiểu in.");
+                $("#PrintType").focus();
+                $("#ShowChooseInfoTemplatePrint").html("");
+                $("#ShowTemplatePrintData").html("");
+                //$("#TextPrintType").text("");
+                return;
+            } else {
+                $("#errPrintType").text("");
+                $.post('@Url.Action("ChooseInfoTemplatePrint", "TemplatePrint")', { PrintType: $("#PrintType").val()}, function (htmlString) {
+                    $("#ShowChooseInfoTemplatePrint").html(htmlString);
+                    //$("#TextPrintType").text("(" + $("#PrintType").val() + ")");
+                });
+            }
+        });
+
+        $("#btnSubmit").on("click", function () {
+            //get_checked: lay tat ca nut duoc check
+            //get_selected: lay tat ca nut duoc check
+            //get_top_checked: lay nut cha va nut con
+            //get_bottom_checked: lay nut con
+            //get_undetermined: lay nut chua duoc check
+
+            var CheckedID = [];
+            var SelectedNodes = $("#tree").jstree("get_bottom_checked", null, true);
+            $.each(SelectedNodes, function () {
+                CheckedID.push(this);
+            });
+
+            var isError = false;
+
+            var data = {
+                strTemplatePrintID: CheckedID.join(","),
+                PrintType: $("#PrintType").val()
+            };
+
+            if (data.PrintType == "") {
+                $("#errPrintType").text("Vui lòng chọn kiểu in.");
+                $("#PrintType").focus();
+                isError = true;
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn cập nhật chi tiết in?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JUpdateRole", "TemplatePrint")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: res.Message,
+                                    html: true,
+                                    button: false,
+                                    timer: 1500
+                                }).then(function () {
+                                    $('#tree').jstree(true).refresh();
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        function SearchTemplatePrint(PrintType) {
+            var ResponseData = {}
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SearchListTemplatePrint", "Handle")',
+                data: {
+                    PrintType: PrintType
+                },
+                loading: true,
+                async: false,
+                dataType: 'json',
+                success: function (res) {
+                    ResponseData = res;
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            });
+            return ResponseData;
+        }
+    </script>
+}
+

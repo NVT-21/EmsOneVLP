@@ -1,0 +1,457 @@
+﻿@model EMS.MVC.Frontend.Models.DetailShippingViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="robots" content="" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+
+    <title>EMSOne</title>
+
+    <link rel="shortcut icon"
+          type="image/png"
+          href="~/favicon.png" />
+
+    @Styles.Render("~/bundles/css")
+
+    <script src="~/Assets/js/global.min.js"></script>
+    <script src="~/Assets/js/MyJS.js?n=@XHelper.JavaScriptVersion"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eef1f5;
+        }
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+        .content-body-small {
+            min-height: 100vh !important;
+
+            /* Sát mép trên / trái */
+            padding: 4px 6px 12px 6px !important;
+
+            margin: 0 !important;
+        }
+
+        /* Bootstrap container-fluid mặc định có padding trái/phải,
+           nên bỏ hoàn toàn để nội dung sát lề */
+        .ems-page-container {
+            width: 100%;
+            max-width: none !important;
+
+            margin: 0 !important;
+
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+        .ems-header-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin: 0 0 4px 0;
+            padding: 0;
+        }
+
+        /* =========================================================
+           LOGO
+        ========================================================= */
+        .brand-logo-search {
+            margin: 0;
+            padding: 0;
+            flex: 0 0 auto;
+        }
+
+        .content-body-small .brand-logo-search img {
+            display: block;
+
+            max-height: 32px;
+            width: auto;
+
+            margin: 0;
+            padding: 0;
+        }
+
+        /* =========================================================
+           SEARCH BOX
+           Đã bỏ icon kính lúp
+        ========================================================= */
+        .content-body-small .form-search {
+            display: flex;
+            align-items: center;
+
+            width: 100%;
+            max-width: 380px;
+
+            margin: 0;
+            padding: 8px 14px;
+
+            background: #ffffff;
+
+            border: 1.5px solid #e1e6ee;
+            border-radius: 999px;
+
+            box-shadow: 0 2px 6px rgba(11, 56, 102, 0.05);
+
+            transition:
+                border-color 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .content-body-small .form-search:focus-within {
+            border-color: #1768b3;
+
+            box-shadow:
+                0 0 0 3px rgba(23, 104, 179, 0.12);
+        }
+
+        .content-body-small .form-search .form-control {
+            width: 100%;
+
+            border: 0 !important;
+            outline: none !important;
+
+            box-shadow: none !important;
+
+            padding: 0 !important;
+            margin: 0 !important;
+
+            height: auto !important;
+            min-height: 0 !important;
+
+            background: transparent !important;
+
+            font-size: 0.82rem;
+            color: #1f2937;
+        }
+
+        .content-body-small .form-search .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        /* =========================================================
+           RESULT
+        ========================================================= */
+        #ShowDetailShipping {
+            margin-top: 6px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Bootstrap .row mặc định margin âm.
+           Bỏ margin âm để khối kết quả không lệch ra ngoài */
+        #ShowDetailShipping.row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* =========================================================
+           AJAX LOADER
+        ========================================================= */
+        #ajax_loader {
+            background-color: rgba(0, 0, 0, 0.5);
+
+            z-index: 99999999;
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: none;
+        }
+
+        #ajax_loader_contend {
+            position: fixed;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
+
+            color: white;
+        }
+
+        #ajax_loader_contend img {
+            width: 30px;
+            height: 30px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+        @@media (max-width: 767px) {
+
+            .content-body-small {
+                padding: 4px 6px 10px 6px !important;
+            }
+
+            .ems-header-bar {
+                flex-direction: column;
+                align-items: stretch;
+
+                gap: 8px;
+            }
+
+            .brand-logo-search {
+                width: auto;
+            }
+
+            .content-body-small .form-search {
+                width: 100%;
+                max-width: none;
+
+                margin: 0;
+            }
+
+            #ShowDetailShipping {
+                margin-top: 6px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         AJAX LOADER
+    ========================================================== -->
+    <div id="ajax_loader">
+        <div id="ajax_loader_contend">
+            <img src="~/Assets/images/default/loading.gif"
+                 alt="Loading" />
+        </div>
+    </div>
+
+
+    <!-- =========================================================
+         MODAL ZOOM IMAGE
+    ========================================================== -->
+    <div id="ImageZoomModal"
+         class="image-zoom-modal">
+
+        <div id="image-controls">
+
+            <span class="btn-modify-img"
+                  onclick="downloadCurrentZoomGallery(this)"
+                  title="Tải tất cả ảnh trong mục này">
+                ⬇ Tải tất cả
+            </span>
+
+            <span class="btn-modify-img"
+                  onclick="rotateImage(-90)">
+                ⟲
+            </span>
+
+            <span class="btn-modify-img"
+                  onclick="rotateImage(90)">
+                ⟳
+            </span>
+
+            <span class="btn-modify-img"
+                  onclick="zoomImage(1.25)">
+                ➕
+            </span>
+
+            <span class="btn-modify-img"
+                  onclick="zoomImage(0.8)">
+                ➖
+            </span>
+
+            <span class="btn-modify-img"
+                  onclick="resetTransform()">
+                ⟳ Reset
+            </span>
+
+            <span class="btn-modify-img image-zoom-close">
+                &times;
+            </span>
+
+        </div>
+
+        <div id="ImageZoom"></div>
+
+    </div>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+    <div class="content-body-small">
+
+        <div class="container-fluid ems-page-container">
+
+            <!-- HEADER -->
+            <div class="ems-header-bar">
+
+                <!-- LOGO -->
+                <div class="d-flex align-items-center brand-logo-search">
+
+                    <img src="~/Assets/images/logo/logo-full.svg"
+                         alt="EMSOne" />
+
+                </div>
+
+
+                <!-- SEARCH -->
+                <div class="form-search">
+
+                    @Html.EditorFor(
+                        model => model.ShippingCode,
+                        new
+                        {
+                            htmlAttributes = new
+                            {
+                                @type = "text",
+                                @class = "form-control",
+                                @placeholder = "Tìm theo mã bưu gửi hoặc mã đơn hàng",
+                                @Value = Model.ShippingCode,
+                                @autocomplete = "off"
+                            }
+                        })
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+            <div class="row"
+                 id="ShowDetailShipping">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @Scripts.Render("~/bundles/js")
+
+
+    <script>
+
+        var ShopID = '@Model.ShopID';
+
+
+        $(document).ready(function () {
+
+            /*
+             * Khi mở trang:
+             * Nếu đã có ShippingCode thì trigger search luôn.
+             */
+            var shippingCode = $("#ShippingCode").val();
+
+            if (shippingCode && shippingCode.trim() !== "") {
+                SearchCode(
+                    shippingCode.trim(),
+                    ShopID
+                );
+            }
+
+        });
+
+
+        /*
+         * Search khi input bị change
+         */
+        $("#ShippingCode").on("change", function () {
+
+            var shippingCode = $(this).val().trim();
+
+            SearchCode(
+                shippingCode,
+                ShopID
+            );
+
+        });
+
+
+        /*
+         * Search khi nhấn Enter
+         */
+        $("#ShippingCode").on("keypress", function (event) {
+
+            if (event.which === 13 || event.keyCode === 13) {
+
+                event.preventDefault();
+
+                var shippingCode = $(this).val().trim();
+
+                SearchCode(
+                    shippingCode,
+                    ShopID
+                );
+
+            }
+
+        });
+
+
+        /*
+         * Tra cứu mã bưu gửi / mã đơn hàng
+         */
+        function SearchCode(OrderCodeOrShippingCode, ShopID) {
+
+            if (!OrderCodeOrShippingCode) {
+                return;
+            }
+
+            $.post(
+                '@Url.Action("InfoShippingView", "Handle")',
+                {
+                    ShippingCode: OrderCodeOrShippingCode,
+                    ShopID: ShopID
+                },
+                function (data) {
+
+                    $("#ShowDetailShipping").html(data);
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Hiện loading khi AJAX chạy
+         */
+        $(document).ajaxStart(function () {
+
+            $("#ajax_loader").show();
+
+        });
+
+
+        /*
+         * Ẩn loading khi AJAX hoàn thành
+         */
+        $(document).ajaxStop(function () {
+
+            $("#ajax_loader").hide();
+
+        });
+
+    </script>
+
+</body>
+</html>

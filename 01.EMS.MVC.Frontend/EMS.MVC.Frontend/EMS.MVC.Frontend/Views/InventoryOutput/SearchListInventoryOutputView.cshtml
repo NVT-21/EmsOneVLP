@@ -1,0 +1,295 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListInventoryOutputViewModel>
+<table id="SearchListDataTable" class="table" style="width: 100%;">
+    <thead>
+        <tr>
+            @*<th hidden></th>*@
+            <th class="align-middle">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th>Mã phiếu xuất</th>
+            <th>Mã đơn hàng</th>
+            <th>Trạng thái</th>
+            <th>Người tạo</th>
+            <th>Thời gian tạo</th>
+            <th>Thời gian xử lý</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td hidden>@item.Code || @item.Order.OrderCode</td>*@
+                <td class="py-2">
+                    <div class="form-check custom-checkbox ">
+                        <input type="checkbox" class="form-check-input" onclick="chbSelectData(this)" data-BatchCode="@item.Order.BatchCode" data-OrderID="@item.Order.OrderID" data-ShopID="@item.ShopID" value="@item.ID">
+                        <label class="form-check-label" for="checkbox1"></label>
+                    </div>
+                </td>
+                <td>
+                    <a href="@Url.Action("DetailInventoryOutputView", "InventoryOutput", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString()) })">@item.Code</a>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Order.OrderCode))
+                    {
+                        <ul>
+                            <li><a href="#" onclick="btnDetailOrderView(@item.Order.OrderID, @item.ShopID)">@item.Order.OrderCode</a></li>
+                            <li><a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(item.Order.ShippingCode), ShopID = EMS.Library.Security.EncodeBase64(item.ShopID.ToString()) })" target="_blank">@item.Order.ShippingCode</a></li>
+                            <li><a href="#" onclick="btnDetailOrderBatchView('@item.Order.BatchCode', @item.ShopID)">@item.Order.BatchCode</a></li>
+                        </ul>
+                    }
+                </td>
+                <td>@item.Status.Name</td>
+                <td>@item.CreaterName</td>
+                <td style="width: 9%;">@item.CreatedDate</td>
+                <td style="width: 10%;">@item.UpdatedDate</td>
+                <td class="text-center">
+                    <button class="btn" type="button" id="inventory-output-dropdown-1"
+                            data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                            aria-expanded="false">
+                        <span>
+                            Chọn
+                        </span>
+                        <i class="icon-arrow-b"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="inventory-output-dropdown-1">
+                        <div class="py-2">
+                            @if (item.Status.Code == "N" || item.Status.Code == "P")
+                            {
+                                if (item.Order.OrderID == 0)
+                                {
+                                    <a class="dropdown-item" title="Sửa phiếu xuất kho" href="@Url.Action("EditInventoryOutputView", "InventoryOutput", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString())})">
+                                        <i class="fas fa-edit"></i>Sửa phiếu xuất kho
+                                    </a>
+                                }
+
+                                if (item.Status.Code == "N")
+                                {
+                                    <a class="dropdown-item" title="Xử lý" onclick="btnProcess(@item.ID)">
+                                        <i class="fa fa-check me-1"></i>Xử lý
+                                    </a>
+                                }
+
+                                <a class="dropdown-item" title="Xác nhận" href="@Url.Action("DetailInventoryOutputView", "InventoryOutput", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString())})">
+                                    <i class="fas fa-paper-plane me-1"></i>Xác nhận
+                                </a>
+
+                                <a class="dropdown-item" title="Từ chối" onclick="btnReject(@item.ID)">
+                                    <i class="fa fa-times me-1"></i>Từ chối
+                                </a>
+                            }
+
+                            <a class="dropdown-item" title="Xuất Word" onclick="btnExportWord(@item.ID, @item.ShopID)">
+                                <i class="fa fa-file-word"></i> Xuất Word
+                            </a>
+
+                            <a class="dropdown-item" title="Xuất Excel" onclick="btnExportExcel(@item.ID, @item.ShopID)">
+                                <i class="fa fa-file-excel"></i> Xuất Excel
+                            </a>
+
+                            <a class="dropdown-item" title="In phiếu xuất kho" onclick="btnPrintInventoryOutput(@item.ID, @item.ShopID)">
+                                <i class="fa fa-print"></i> In phiếu xuất kho
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+
+    function chbSelectData(this1) {
+        var isChecked = $(this1).is(":checked");
+        var BatchCode = $(this1).attr("data-BatchCode");
+        if (BatchCode) {
+            var table = $('#SearchListDataTable').DataTable();
+            var ListBatchCode = table.$('input[type="checkbox"]').filter(function () { return $(this).attr("data-BatchCode") == BatchCode });
+            ListBatchCode.each(function () {
+                $(this).prop("checked", isChecked);
+            });
+        }
+    }
+
+    function btnDetailInventoryOutput() {
+
+    }
+
+    function btnDetailOrderView(OrderID, ShopID) {
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: OrderID, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnDetailOrderBatchView(BatchCode, ShopID) {
+        $.post('@Url.Action("DetailOrderBatchView", "OrderBatch")', {
+            BatchCode: BatchCode, ShopID: ShopID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnProcess(InventoryOutputID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xử lý phiếu xuất kho?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JProcessInventoryOutput", "InventoryOutput")',
+                    data: {
+                        ID: InventoryOutputID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        };
+                    }
+                });
+            }
+        });
+    }
+
+    @*function btnCompleted(ID, EMSOneCode) {
+        var data = {
+            ID: ID,
+            Order: {
+                EMSOneCode: EMSOneCode,
+            }
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xác nhận phiếu xuất kho?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAcceptInventoryOutput", "InventoryOutput")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visiitemle: Transporttrue,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }*@
+
+    function btnReject(ID) {
+        $.get('@Url.Action("RejectInventoryOutputView", "InventoryOutput")', {
+            ID: ID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+
+    function btnExportWord(InventoryOutputID, ShopID) {
+        var param = String.format("ID={0}&ShopID={1}", InventoryOutputID, ShopID);
+        window.location.href = "@Url.Action("ExportWord", "InventoryOutput")?" + param;
+    }
+
+    function btnExportExcel(InventoryOutputID, ShopID) {
+        var param = String.format("ID={0}&ShopID={1}", InventoryOutputID, ShopID);
+        window.location.href = "@Url.Action("ExportExcel", "InventoryOutput")?" + param;
+    }
+
+    function btnPrintInventoryOutput(InventoryOutputID, ShopID) {
+        var arr = [];
+        if (InventoryOutputID && ShopID) {
+            var obj = {};
+            obj.ID = InventoryOutputID;
+            //obj.ShopID = ShopID;
+            arr.push(obj);
+        } else {
+            var table = $('#SearchListDataTable').DataTable();
+            table.$('input:checked').each(function () {
+                var obj = {};
+                obj.ID = $(this).val();
+                //obj.ShopID = $(this).attr("data-ShopID");
+                arr.push(obj);
+            });
+        }
+
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn phiếu xuất kho cần in.");
+            return;
+        }
+
+        localStorage.setItem('ListDataInventoryOutputPrint', JSON.stringify(arr));
+        var link = document.createElement('a');
+        link.target = "_blank";
+        link.href = '@Url.Action("PrintInventoryOutputView", "InventoryOutput")';
+        link.click();
+    }
+</script>

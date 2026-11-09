@@ -1,0 +1,117 @@
+﻿@model EMS.MVC.Backend.Models.TransportPostageMainFeeModel
+@{
+    ViewBag.Title = "TransportPostageMainFee";
+    Layout = null;
+}
+<div class="form-group row">
+    <div class="col-12 mb-2">
+        <div class="form-check w-auto">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="MainFee_VAT" @{ if (Model.MainFeeVAT == "Y") { Write("checked"); } }>
+                Cước đã bao gồm VAT
+                <i class="input-helper"></i>
+            </label>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <label class="form-label">Loại phạm vi <span class="text-danger">(*)</span></label>
+            @Html.DropDownListFor(model => model.MainFeeRange, new SelectList(Model.RangeList, "Value", "Text"), "--- Chọn ---", new { @class = "form-control", @onchange = "checkNull(this.value, '#errMainFeeRange')" })
+            <span class="text-danger" id="errMainFeeRange"></span>
+        </div>
+    </div>
+    @if (Model.MainFeeRange != 0)
+    {
+        <div class="col-auto">
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <a class="form-control border-0 text-primary" href="@Url.Action("TransportPostageDetail","Transport", new { PostageID = Model.PostageID})"><i class="fa fa-cog"></i> Cấu hình cước dịch vụ chính</a>
+            </div>
+        </div>
+    }
+</div>
+<div class="col-12 pt-3 pb-3">
+    @if (Model.Status == "U" || Model.Status == "E")//U:Chưa xác nhận, E:Đã hết hạn
+    {
+        <button class="btn btn-sm btn-success pull-left text-left w-auto" onclick="Confirm()">Xác nhận</button>
+
+        <button class="btn btn-sm btn-primary pull-right text-left w-auto ml-3" onclick="UpdateMainFee('Next')">Cập nhật và tiếp theo</button>
+        <button class="btn btn-sm btn-primary pull-right ml-3" onclick="UpdateMainFee('Reload')">Cập nhật</button>
+    }
+    @*<a class="btn btn-secondary pull-right text-left w-auto" href="@Url.Action("TransportPostageSurcharge", "Transport", new{ PostageID = Model.PostageID})"> Tiếp theo</a>*@
+    <button class="btn btn-sm btn-secondary pull-right text-left w-auto" id="nextStep3">Tiếp theo</button>
+</div>
+
+<script>
+    function UpdateMainFee(Value) {
+        let isError = false;
+        let PostageID = $('#PostageID').val();
+        let agrs = {
+            PostageID: PostageID,
+            MainFeeRange: $('#MainFeeRange').val(),
+            MainFeeVAT: getCheckboxValue("MainFee_VAT")
+        };
+
+        isError = checkNull(agrs.MainFeeRange, '#errMainFeeRange', isError);
+        //Lỗi - trả về
+        if (isError) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportPostageMainFeeEdit", "Transport")',
+            dataType: 'json',
+            loading: true,
+            data: agrs,
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        timer: 2000,
+                        button: false
+                    }).then(function () {
+                                if (Value == "Next") {
+                                    @*window.location.href = '@Url.Action("TransportPostageSurcharge", "Transport", new { PostageID = Model.PostageID } )';*@
+                                    $('#step3').click();
+                                }
+                                else {
+                                    /*window.location.reload();*/
+                                    $('#step2').click();
+                                }
+                            });
+
+                } else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+    $('#nextStep3').on('click', function () {
+        $('#step3').click();
+    });
+</script>
+

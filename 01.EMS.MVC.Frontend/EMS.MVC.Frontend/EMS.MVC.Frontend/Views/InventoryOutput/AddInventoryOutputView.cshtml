@@ -1,0 +1,277 @@
+﻿@model EMS.MVC.Frontend.Models.AddInventoryOutputViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="mb-3">
+                        <label class="mb-1">Kho xuất  <span class="text-danger">*</span></label>
+                        <select class="select2" id="WareHouseID">
+                            @foreach (var item in Model.ListWareHouse)
+                            {
+                                <option value="@item.ID" data-FullAddress="@item.FullAddress" @{ if (item.IsDefault == "Y") { Write("selected"); } }>
+                                    @item.WareHouseName
+                                </option>
+                            }
+                        </select>
+                        <span class="text-danger" id="errWareHouseID"></span>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="mb-3">
+                        <label class="mb-1">Địa chỉ</label>
+                        @Html.TextAreaFor(model => model.FullAddress, new { @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "250", @rows = "2", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="mb-3 mt-3">
+                        <label class="mb-1">Ngày xuất  <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.DateOfInventoryOutput, new { htmlAttributes = new { @type = "text", @class = "form-control input-daterange-datepicker" } })
+                        <span class="text-danger" id="errDateOfInventoryOutput"></span>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="mb-3 mt-3">
+                        <label class="mb-1">Người nhận</label>
+                        @Html.EditorFor(model => model.ReceiverName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Người nhận" } })
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Ghi chú</label>
+                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Ghi chú", @maxlength = "250", @rows = "2" })
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">0</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <span class="text-danger" id="errListDetail"></span>
+            <div class="table-primary table-responsive">
+                <table class="table table-bordered" style="width: 100%;">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Tên sản phẩm</th>
+                            <th>Tồn kho</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            <th>Mã Pallet</th>
+                            <th>
+                                <button class="btn btn-sm btn-outline-secondary" type="button" id="btnAddRow" title="Thêm">Thêm</button>
+                            </th>
+                            <th hidden></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        @{
+                            Html.RenderAction("AddDetailInventoryOutputView", "InventoryOutput", new { NumberOfDetail = 1, WareHouseID = Model.WareHouseID });
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-3">
+                    <button type="button" class="btn btn-outline-dark" onclick="window.location.href= '@Url.Action("InventoryOutputView","InventoryOutput")'">Hủy bỏ</button>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-md-9 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Tạo phiếu xuất kho</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        ShowInputLength("Note", "ShowLengthNote", 250);
+
+        CheckChangeValue("WareHouseID", "Vui lòng chọn kho cần xuất", "", "Y");
+        CheckChangeValue("DateOfInventoryOutput", "Vui lòng chọn ngày cần xuất", "", "Y");
+        CheckChangeValue("ReceiverName", "", "Vietnamese", "N");
+
+        $(document).ready(function () {
+            CreateDatePickerAndTime("DateOfInventoryOutput", "");
+            $("#FullAddress").val($("option:selected", $("#WareHouseID")).attr("data-FullAddress"));
+        });
+
+        var TotalRow = 2;
+
+        $("#btnAddRow").on("click", function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddDetailInventoryOutputView", "InventoryOutput")',
+                dataType: 'html',
+                loading: true,
+                data: {
+                    NumberOfDetail: TotalRow,
+                    WareHouseID: $("#WareHouseID").val()
+                },
+                beforeSend: function () {
+                    $("#btnAddRow").attr("disabled", true).append("<i class= 'fa fa-spinner fa-spin ms-1' id='iLoading'></i>");
+                },
+                success: function (data) {
+                    TotalRow = TotalRow + 1;
+                    $('#tBody').append(data);
+                },
+                complete: function () {
+                    $("#btnAddRow").attr("disabled", false).find("i#iLoading").remove();
+                }
+            })
+        });
+
+        $("#WareHouseID").on("change", function () {
+            var WareHouseID = $(this).val();
+            $("#FullAddress").val($("option:selected", $("#WareHouseID")).attr("data-FullAddress"));
+            LoadListProductVariant(WareHouseID);
+        });
+
+        function LoadListProductVariant(WareHouseID) {
+            var ListProductVariant = SearchListProductVariant(WareHouseID).responseJSON;
+            $(".ProductVariant").empty();
+            $("<option/>", {
+                value: "",
+                text: "-- Sản phẩm --",
+            }).appendTo(".ProductVariant");
+            ClearData(null);
+            if (ListProductVariant.length > 0) {
+                $.each(ListProductVariant, function (index, value) {
+                    $("<option/>", {
+                        "value": value.ProductVariantID,
+                        "text": value.ProductName + " (" + value.ProductVariantName + ")",
+                        "data-SKU": value.ProductVariantSKU,
+                        "data-Price": value.ProductVariantPrice,
+                        "data-Inventory": value.NumberOfInventory
+                    }).appendTo(".ProductVariant");
+                });
+            }
+        }
+
+        $("#btnSubmit").on("click", function () {
+            var isError = false;
+            var data = {
+                WareHouseID: $('#WareHouseID').val(),
+                DateOfInventoryOutput: $('#DateOfInventoryOutput').val(),
+                ReceiverName: $('#ReceiverName').val().trim(),
+                Note: $('#Note').val().trim(),
+            };
+
+            isError = CheckNullValue(data.WareHouseID, "WareHouseID", "Vui lòng chọn kho cần xuất", isError);
+            isError = CheckNullValue(data.DateOfInventoryOutput, "DateOfInventoryOutput", "Vui lòng nhập ngày xuất", isError);
+            isError = CheckRegexValue(data.ReceiverName, "Vietnamese", "ReceiverName", "Giá trị hợp lệ không bao gồm ký tự đặc biệt", isError);
+
+            var arr = [];
+            $('.row-item').each(function () {
+                var ProductVariantID = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+                var WareHouseQuantity = NumberReplace($(this).closest('tr').find('.WareHouseQuantity').html().trim());
+                var ProductQuantity = NumberReplace($(this).find("td:eq(2) input[name='ProductQuantity']").val().trim());
+                var PalletCode = $(this).find("td:eq(5) input[name='PalletCode']").val().trim();
+                var ProductPrice = NumberReplace($(this).closest('tr').find('.ProductPrice').html().trim());
+                //var TotalPrice = NumberReplace($(this).closest('tr').find('.TotalPrice').html().trim());
+                var NumberOfDetail = $(this).closest('tr').find('.NumberOfDetail').html().trim();
+
+                if (ProductVariantID) {
+                    if (parseInt(ProductQuantity) > parseInt(WareHouseQuantity)) {
+                        $("#errProductQuantity_" + NumberOfDetail).text("Số lượng xuất kho vượt quá số lượng trong kho");
+                        isError = true;
+                    }
+
+                    if (!parseInt(ProductQuantity)) {
+                        $("#errProductQuantity_" + NumberOfDetail).text("Vui lòng nhập số lượng");
+                        isError = true;
+                    }
+
+                    if (!parseInt(ProductPrice)) {
+                        $("#errProductPrice_" + NumberOfDetail).text("Vui lòng kiểm tra lại sản phẩm.");
+                        isError = true;
+                    }
+
+                    isError = CheckRegexValue(PalletCode, "SpecialCharButNotVietnamese", "PalletCode_" + NumberOfDetail, "Mã Pallet không hợp lệ", isError);
+
+                    var obj = {};
+                    obj.ProductVariantID = ProductVariantID;
+                    obj.Quantity = ProductQuantity;
+                    obj.PalletCode = PalletCode;
+                    arr.push(obj);
+                }
+            });
+
+            data.ListInventoryOutputDetail = arr;
+
+            if (data.ListInventoryOutputDetail.length == 0) {
+                $("#errListDetail").text("Vui lòng chọn sản phẩm cần xuất.");
+                isError = true;
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn tạo phiếu xuất kho?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddInventoryOutput", "InventoryOutput")',
+                        dataType: 'json',
+                        loading: true,
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("InventoryOutputView", "InventoryOutput")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+

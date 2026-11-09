@@ -1,0 +1,691 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListMessageOfConversionViewModel
+@using Newtonsoft.Json
+@{
+    Layout = null;
+    DateTime dt = DateTime.Now;
+    var dtFormat = dt.ToString("dd/MM/yyyy");
+    var OfficialAccountAvatar = XHelper.Session.FacebookProfile.PageAvatar;
+    var OfficialAccountName = XHelper.Session.FacebookProfile.PageName;
+    var CreatedDateSearch = "";
+}
+
+@Html.HiddenFor(m => m.ConversionID)
+@Html.HiddenFor(m => m.UserID)
+<style>
+    .drop-area {
+        border: 1px solid black;
+    }
+
+        .drop-area:hover {
+            background-color: #ccc;
+        }
+</style>
+<div id="drop-area">
+    <div class="py-2 border-bottom d-none d-lg-block">
+        <div class="d-flex align-items-center py-1">
+            <div class="position-relative">
+                <img src="@Model.UserAvatar" class="rounded-circle mr-1" alt="@Model.UserName" width="40" height="40">
+            </div>
+            <div class="flex-grow-1 pl-3">
+                @if (string.IsNullOrEmpty(Model.UserLink))
+                {
+                    <strong class="ms-3">@Model.UserName</strong>
+                }
+                else
+                {
+                    <strong class="ms-3"><a href="@Model.UserLink" target="_blank">@Model.UserName</a></strong>
+                }
+                <div class="text-muted small ms-3"><em>Vừa truy cập</em></div>
+            </div>
+        </div>
+        @if (Model.ListSticker != null)
+        {
+            if (Model.ListSticker.Count > 0)
+            {
+                <div class="row">
+                    <div class="col-12" id="iSticker_@Model.UserID">
+                        @{
+                            foreach (var iSticker in Model.ListSticker)
+                            {
+                                <div id="iSticker_@Model.UserID@("_")@iSticker.StickerID" class="badge badge-outline-secondary m-1" style="color: @iSticker.StickerColor; border-color: @iSticker.StickerColor">@iSticker.StickerName</div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <input type="hidden" id="LastTimeMessage-@Model.UserID" />
+    <div class="position-relative" style="height: 620px;">
+        <div class="chat-messages-facebook p-4 CustomScrollBar" id="ContentMessage">
+            @{
+                Html.RenderAction("FAB_MessageOfConversionView", "FAB_LiveChat", new { model = Model.ListMessage, area = "Facebook" });
+            }
+        </div>
+    </div>
+    <div class="row collapse pe-3" id="collapseEmoji">
+        <div class="profile">
+            <!-- Nav tabs -->
+            <div class="custom-tab-1">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" onclick="fnTabEmojiClick('emoji')">
+                        <a class="nav-link active fs-23" data-bs-toggle="tab" href="#emoji" id="p_Tab_emoji">😃</a>
+                    </li>
+                    <li class="nav-item" onclick="fnTabEmojiClick('sticker_ami')">
+                        <a class="nav-link fs-18" data-bs-toggle="tab" href="#sticker_ami" id="p_Tab_sticker_ami">
+                            <img src="~/Assets/images/default/Ami001.png"
+                                 style="background-repeat: no-repeat;
+                             background-size: 35px 35px;
+                             height: 35px; width: 35px; border-image: none;" border="0">
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="fnTabEmojiClick('sticker_ami_gif')">
+                        <a class="nav-link fs-18" data-bs-toggle="tab" href="#sticker_ami_gif" id="p_Tab_sticker_ami_gif">
+                            <img src="~/Assets/images/default/Ami01.gif"
+                                 style="background-repeat: no-repeat;
+                             background-size: 35px 35px;
+                             height: 35px; width: 35px; border-image: none;" border="0">
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="fnTabEmojiClick('sticker_usagyuun')">
+                        <a class="nav-link fs-18" data-bs-toggle="tab" href="#sticker_usagyuun" id="p_Tab_sticker_usagyuun">
+                            <img src="~/Assets/images/default/usagyuuun_and_nekogyuuun_15.png"
+                                 style="background-repeat: no-repeat;
+                             background-size: 35px 35px;
+                             height: 35px; width: 35px; border-image: none;" border="0">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade fade show active" id="emoji" role="tabpanel">
+                    <div class="container-fluid">
+                        <div class="row" id="data_html_emoji">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade " id="sticker_ami">
+                    <div class="container-fluid">
+                        <div class="row" id="data_html_sticker_ami">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade " id="sticker_ami_gif">
+                    <div class="container-fluid">
+                        <div class="row" id="data_html_sticker_ami_gif">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade " id="sticker_usagyuun">
+                    <div class="container-fluid">
+                        <div class="row" id="data_html_sticker_usagyuun">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex-grow-0 py-3 border-top mb-2">
+        <div class="row">
+            <div class="col-10">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="MessageContent" placeholder="Nhập nội dung tin nhắn ...">
+                    <button class="btn btn-primary" id="btnSend" onclick="btnSend()">Gửi</button>&nbsp;&nbsp;
+                </div>
+            </div>
+            <div class="col-2">
+                <input type="file" id="file-input"
+                       accept="application/msword,
+                               application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+                               application/vnd.ms-excel,
+                               application/vnd.openxmlformats-officedocument.presentationml.presentation,
+                               application/xml,
+                               application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                               image/gif,
+                               application/pdf,
+                               image/jpeg,
+                               audio/mpeg,
+                               video/mp4, video/avi, video/mov"
+                       hidden
+                       multiple>
+                <i id="file-icon" class="fa fa-paperclip mt-2 me-2 fs-24 c-pointer" style="color:#f5821f;"></i>
+                <i id="file-icon-emoji" class="fa fa-grin-hearts mt-2 me-2 fs-24 c-pointer"
+                   style="color:#f5821f;"
+                   data-bs-toggle="collapse"
+                   data-bs-target="#collapseEmoji"
+                   aria-expanded="false"
+                   aria-controls="collapseEmoji"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var input = document.getElementById("MessageContent");
+    input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("btnSend").click();
+        }
+    });
+
+    $(document).keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13') {
+            document.getElementById("btnSend").click();
+        }
+    });
+
+    function btnSend() {
+        if ($("#MessageContent").val() == "") {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_JSendMessage", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'json',
+            data: {
+                recipient: {
+                    id: $("#UserID").val()
+                },
+                message: {
+                    text: $("#MessageContent").val()
+                }
+            },
+            loading: true,
+            global: false,
+            beforeSend: function () {
+                $("#btnSend").attr("disabled", true);
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    $("#MessageContent").val('');
+                    $("#btnSend").attr("disabled", false);
+                    $('#ContentMessage').scrollTop($('#ContentMessage')[0].scrollHeight);
+                    emojiText = "";
+                } else if (res.Code == "-216") {
+                    $.ajax({
+                        url: '@Url.Action("JRedirectFacebook", "Channel", new { area = "" })',
+                        type: "POST",
+                        dataType: 'json',
+                        global: false,
+                        data: {
+                            PageID: '@XHelper.Session.FacebookProfile.PageID'
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: "Gửi tin nhắn thất bại, vui lòng thử lại.",
+                                    button: {
+                                        text: "Đóng"
+                                    }
+                                }).then(function () {
+                                    $("#btnSend").attr("disabled", false);
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    swal({
+                        title: 'Lỗi',
+                        text: res.Message,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+
+    var TimeForLoadDetailConversion = "";
+
+    var CreatedDate = '@CreatedDateSearch';
+
+    var OffSet = parseInt($(".MessageBox").length) + 100;
+
+    $('#ContentMessage').on('scroll', function () {
+        var div = document.getElementById("ContentMessage");
+        if (div.scrollTop == 0) {
+            $.ajax({
+                url: '@Url.Action("MessageOfConversion", "Handle", new { area = "" })',
+                type: "POST",
+                dataType: 'json',
+                global: false,
+                data: {
+                    ConversionID: $("#ConversionID").val(),
+                    Channel: "FB",
+                    LimitRow: OffSet,
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        var time = "";
+                        $.each(data, function (index, value) {
+                            var checkDiv = $("#content-" + value.MessageID).length;
+                            if (checkDiv == 0) {
+                                var html = '';
+                                if (value.CreatedDate.split(' ')[0] != time) {
+                                    html += '<div class="chat-date">';
+                                    html += '<div class="start line"></div>';
+                                    if ('@dtFormat' == value.CreatedDate.split(' ')[0]) {
+                                        html += '<span> Hôm nay - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                    } else {
+                                        html += '<span>' + value.CreatedDate.split(' ')[0] + ' - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                    }
+                                    html += '<div class="flx">';
+                                    html += '<div class="end line"></div>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    time = value.CreatedDate.split(' ')[0];
+                                }
+
+                                if (value.FromWhom == 0) {
+                                    html += '<div class="chat-message-left mb-2 MessageBox" id="content-' + value.MessageID + '">';
+                                } else {
+                                    html += '<div class="chat-message-right mb-2 MessageBox" id="content-' + value.MessageID + '">';
+                                }
+                                html += '<div>';
+                                html += '<img src="' + value.Avatar + '" class="rounded-circle mr-1" alt="' + value.DisplayName + '" width="40" height="40">';
+                                html += '</div>';
+
+                                if (value.FromWhom == 0) {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3" style="background-color: #fff; margin-left: 15px;">';
+                                } else {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3" style="background-color: #e5efff; margin-right: 15px;">';
+                                }
+
+                                html += '<div class="row">';
+                                html += '<div class="col-md-12">';
+                                if (value.MessageType == "TEXT") {
+                                    html += value.MessageText;
+                                } else if (value.MessageType == "IMAGE") {
+                                    //html += `<div class="rounded" role = "img" tabindex = "-1" style = "background-image: url('` + value.LinkURL + `'); background-repeat: no-repeat; background-size: 250px 250px; cursor: default; height: 250px; width: 250px;" ></div >`;
+                                    html += `<div class="img-item">
+                                                 <img class="img-fluid img-modals"
+                                                 style="cursor: pointer;"
+                                                 width="120" height="120"
+                                                 src="'` + value.LinkURL + `'"
+                                                 data-ListImage="`+ JSON.stringify(value.LinkURL) +`"
+                                                 onerror="ImageError(this)"
+                                                 onclick="ImageZoomAndSlider(this)" />
+                                             </div>`;
+                                } else if (value.MessageType == "AUDIO") {
+                                    html += `<div class="audio-message">
+                                                <div class="audio-content">
+                                                    <audio controls>
+                                                        <source src="` + value.LinkURL + `" type="audio/mpeg">
+                                                    </audio>
+                                                </div>
+                                            </div>`;
+                                } else if (value.MessageType == "VIDEO") {
+                                    html += `<div class="video-message">
+                                                <div class="video-content">
+                                                    <video controls style="height:250px; width:300px">
+                                                        <source src="` + value.LinkURL + `" type="video/mp4">
+                                                    </video>
+                                                </div>
+                                            </div>`;
+                                } else if (value.MessageType == "FILE") {
+                                    //html += `<div class="file-message">
+                                    //            <div class="file-content">
+                                    //                <a href="` + value.LinkURL + `" download>Download file</a>
+                                    //            </div>
+                                    //        </div>`;
+                                    var regexType = new RegExp(/[a-z\-_0-9\/\:\.]*\.(pdf|doc|docx|xls|xlsx|ppt|pptx)/);
+                                    var regexName = new RegExp(/[\w-]+\.(pdf|doc|docx|xls|xlsx|ppt|pptx)/);
+                                    var matchType = value.LinkURL.match(regexType);
+                                    var matchName = value.LinkURL.match(regexName);
+                                    var nameValue = matchName[0];
+                                    if (nameValue.length > 10) {
+                                        nameValue = nameValue.split('.')[0].substring(0, 5)
+                                            + "..."
+                                            + nameValue.split('.')[0].substring(nameValue.split('.')[0].Length - 5, 5)
+                                            + "."
+                                            + nameValue.split('.')[1];
+                                    }
+                                    switch (matchType[1].toUpperCase())
+                                    {
+                                        case "PDF":
+                                            html += `<div class="file-message">
+                                                        <img src="~/Assets/images/default/pdf_icon.png" alt="PDF Picture" width="80" height="80">
+                                                        <h5>` + nameValue + `</h5>
+                                                        <div class="file-content">
+                                                            <a href="` + value.LinkURL + `" download>Download file</a>
+                                                        </div>
+                                                    </div>`;
+                                            break;
+                                        case "DOC":
+                                        case "DOCX":
+                                            html += `<div class="file-message">
+                                                        <img src="~/Assets/images/default/word_icon.png" alt="Word Picture" width="80" height="80">
+                                                        <h5>` + nameValue + `</h5>
+                                                        <div class="file-content">
+                                                            <a href="` + value.LinkURL + `" download>Download file</a>
+                                                        </div>
+                                                    </div>`;
+                                            break;
+                                        case "XLS":
+                                        case "XLSX":
+                                            html += `<div class="file-message">
+                                                        <img src="~/Assets/images/default/excel_icon.png" alt="Excel Picture" width="80" height="80">
+                                                        <h5>` + nameValue + `</h5>
+                                                        <div class="file-content">
+                                                            <a href="` + value.LinkURL + `" download>Download file</a>
+                                                        </div>
+                                                    </div>`;
+                                            break;
+                                        case "PPT":
+                                        case "PPTX":
+                                            html += `<div class="file-message">
+                                                        <img src="~/Assets/images/default/powerpoint_icon.png" alt="Powerpoint Picture" width="80" height="80">
+                                                        <h5>` + nameValue + `</h5>
+                                                        <div class="file-content">
+                                                            <a href="` + value.LinkURL + `" download>Download file</a>
+                                                        </div>
+                                                    </div>`;
+                                            break;
+                                        default:
+                                            html += `<div class="file-message">
+                                                        <img src="~/Assets/images/default/default_message_file.png" alt="Profile picture" width="50" height="50">
+                                                        <div class="file-content">
+                                                            <a href="` + value.LinkURL + `" download>Download file</a>
+                                                        </div>
+                                                    </div>`;
+                                            break;
+                                    }
+                                }
+                                html += '<div class="d-flex justify-content-between">';
+                                html += '<div class="text-muted small me-1">' + value.CreatedDate.split(' ')[1] + '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                $("#ContentMessage").scrollTop(250);
+                                $("#ContentMessage").prepend(html);
+                            }
+                        });
+                        OffSet = OffSet + 100;
+                    } else if (res.Code == "408") {
+                        swal({
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        }).then(function () {
+                            window.location.href = '@Url.Action("Logout","Account", new { area = "" })';
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    // ========= Start File
+    var icon = document.querySelector("#file-icon");
+    var fileInput = document.querySelector("input[type='file']");
+    icon.addEventListener("click", function () {
+        fileInput.click();
+    });
+    fileInput.onchange = () => {
+        var formdata = new FormData();
+        for (i = 0; i < fileInput.files.length; i++) {
+            formdata = new FormData();
+            formdata.append(fileInput.files[i].name, fileInput.files[i]);
+            fnSendFile(fileInput.files[i].name.split('.').pop().toUpperCase(), fileInput.files[i].size, formdata);
+        }
+        fileInput.value = '';
+    };
+    function fnSendFile(extension, filesize, formdata) {
+        var TypeFile = ["JPG", "JPEG", "PNG", "GIF",
+                        "DOC", "DOCX", "XLS", "XLSX",
+                        "PDF", "MOV", "MP4", "AVI",
+                        "PPTX", "XML", "MP3", "M4A"];
+        var check = TypeFile.includes(extension);
+        if (check == false) {
+            FileName = "";
+            swal({
+                title: 'Lỗi',
+                text: "Hệ thống không hỗ trợ tập tin.",
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            });
+            return;
+        } else if (filesize >= 100000000) {
+            //100MB
+            FileName = "";
+            swal({
+                title: 'Lỗi',
+                text: "Hệ thống hỗ trợ tải tệp tin kích thước tối đa 100 MB.",
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            });
+            return;
+        } else {
+            //LoadingProcess("block");
+            var url = '@Url.Action("UploadFacebookFile", "DataFile", new { area = "" })';
+            var typePath = '@XHelper.pathFabFile';
+            var typeAttachment = "";
+            switch (extension) {
+                case "JPG":
+                case "JPEG":
+                case "GIF":
+                case "PNG":
+                    typeAttachment = "image";
+                    break;
+                case "MOV":
+                case "MP4":
+                case "AVI":
+                    typeAttachment = "video";
+                    break;
+                case "DOC":
+                case "DOCX":
+                case "XLS":
+                case "XLSX":
+                case "PPTX":
+                case "PDF":
+                case "XML":
+                    typeAttachment = "file";
+                    break;
+                case "MP3":
+                case "M4A":
+                    typeAttachment = "audio";
+                    break;
+                default:
+                    break;
+            }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formdata,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        var resData = JSON.parse(res.Data);
+                        fnFacebookSendFile(typePath + resData[0].FileName, typeAttachment);
+                    } else {
+                        swal({
+                            title: 'Lỗi',
+                            text: res.Message,
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                    };
+                },
+                error: function (xhr, status, error) {
+                    swal({
+                        title: 'Lỗi',
+                        text: error,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+    }
+    function fnFacebookSendFile(urlAttachment, typeAttachment) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_JSendFile", "FAB_LiveChat", new { area = "Facebook" })',
+            dataType: 'json',
+            data: {
+                recipient: {
+                    id: $("#UserID").val()
+                },
+                message: {
+                    attachment: {
+                        type: typeAttachment,
+                        payload: {
+                            url: urlAttachment,
+                            is_reusable: true
+                        }
+                    }
+                }
+            },
+            loading: true,
+            global: false,
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#ContentMessage').scrollTop($('#ContentMessage')[0].scrollHeight);
+                } else {
+                    swal({
+                        title: 'Lỗi',
+                        text: res.Message,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+    // ========= End File
+
+    // ========= Start DropArea
+    var dropArea = document.getElementById("drop-area");
+    dropArea.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+    dropArea.addEventListener("drop", function (event) {
+        event.preventDefault();
+        var formdata = new FormData();
+        var files = event.dataTransfer.files;
+        for (i = 0; i < files.length; i++) {
+            formdata = new FormData();
+            formdata.append(files[i].name, files[i]);
+            fnSendFile(files[i].name.split('.').pop().toUpperCase(), files[i].size, formdata);
+        }
+    });
+    // ========= End DropArea
+
+    // ========= Start Collapse
+    var collapse = document.querySelector('#collapseEmoji');
+    collapse.addEventListener('show.bs.collapse', () => {
+        var arrTabEmoji = ["emoji", "sticker_ami", "sticker_ami_gif", "sticker_usagyuun"];
+        var lastTabEmoji = "";
+        if (sessionStorage.getItem('lastTabEmoji') != null) {
+            lastTabEmoji = sessionStorage.getItem('lastTabEmoji');
+        } else {
+            lastTabEmoji = "emoji";
+        }
+        var arrTabEmojiFilter = arrTabEmoji.filter((item) => item !== lastTabEmoji);
+        for (var i = 0; i < arrTabEmojiFilter.length; i++) {
+            $("#" + arrTabEmojiFilter[i]).removeClass("show");
+            $("#" + arrTabEmojiFilter[i]).removeClass("active");
+            $("#p_Tab_" + arrTabEmojiFilter[i]).removeClass("active");
+        }
+        $("#" + lastTabEmoji).addClass("show");
+        $("#" + lastTabEmoji).addClass("active");
+        $("#p_Tab_" + lastTabEmoji).addClass("active");
+        fnTabEmojiClick(lastTabEmoji);
+    });
+    function fnTabEmojiClick(id) {
+        sessionStorage.setItem('lastTabEmoji', id);
+        var pathJson = "";
+        var pathName = "";
+        switch (id) {
+            case "emoji":
+                break;
+            case "sticker_ami":
+                pathName = "_ami";
+                pathJson = "../Areas/Facebook/DataJson/FAB_Ami.json";
+                break;
+            case "sticker_ami_gif":
+                pathName = "_ami_gif";
+                pathJson = "../Areas/Facebook/DataJson/FAB_Ami_Gif.json";
+                break;
+            case "sticker_usagyuun":
+                pathName = "_usagyuun";
+                pathJson = "../Areas/Facebook/DataJson/FAB_Usagyuun.json";
+                break;
+            default:
+                break;
+        }
+        var req = {
+            PathName: pathName,
+            PathJson: pathJson
+        };
+
+        if (id == "emoji") {
+            $.get('@Url.Action("FAB_LiveChatEmojiView", "FAB_LiveChat")', function (data) {
+                $("#data_html_" + id).html(data);
+            });
+        } else {
+            $.get('@Url.Action("FAB_LiveChatStickerView", "FAB_LiveChat")', req, function (data) {
+                $("#data_html_" + id).html(data);
+            });
+        }
+    }
+    function ChooseSticker(urlPath) {
+        fnFacebookSendFile(urlPath, "image");
+    }
+    // ========= End Collapse
+    function LoadingProcess(type) {
+        $("#loadingProcess").css("display", type);
+    }
+</script>

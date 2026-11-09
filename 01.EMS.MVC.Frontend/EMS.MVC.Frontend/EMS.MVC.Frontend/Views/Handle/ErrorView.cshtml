@@ -1,0 +1,81 @@
+﻿@{
+    Layout = null;
+
+    var errorMessage = TempData["ErrorMessage"] as string;
+    var errorTitle = TempData["ErrorTitle"] as string;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .error-container {
+            max-width: 700px;
+            margin: 80px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 5px solid #dc3545;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .error-title {
+            color: #dc3545;
+            margin-top: 0;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #333;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 10px 16px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+            .back-link:hover {
+                background: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-title">
+            @(string.IsNullOrEmpty(errorTitle) ? "Có lỗi xảy ra" : errorTitle)
+        </h1>
+
+        <div class="error-message">
+            @if(!string.IsNullOrEmpty(errorMessage))
+            {
+                <p>@errorMessage</p>
+            }
+            else
+            {
+                <p>An error occurred while processing your request.</p>
+            }
+        </div>
+
+        <a href="javascript:history.back()" class="back-link">
+            Quay lại
+        </a>
+    </div>
+</body>
+</html>

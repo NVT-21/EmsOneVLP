@@ -1,0 +1,908 @@
+﻿@model EMS.MVC.Frontend.Models.ImportExcelViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.License)
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header border-0 ">
+            <h5 class="card-title">Tạo sản phẩm bằng nhập file excel</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <form id="DocumentUpload" enctype="multipart/form-data">
+                        @Html.EditorFor(model => model.Document, new { htmlAttributes = new { @type = "file", @class = "form-control", @style = "padding: .3125rem 0.7rem;" } })
+                    </form>
+                    <span class="text-danger" id="errDocument"></span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="d-flex align-items-center me-2" title="Số sản phẩm hợp lệ">
+                    <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#34C759" />
+                        <path d="M9.6993 14.2821C9.51596 14.2821 9.3418 14.2088 9.21346 14.0805L6.6193 11.4863C6.35346 11.2205 6.35346 10.7805 6.6193 10.5146C6.88513 10.2488 7.32513 10.2488 7.59096 10.5146L9.6993 12.623L14.411 7.91129C14.6768 7.64546 15.1168 7.64546 15.3826 7.91129C15.6485 8.17712 15.6485 8.61712 15.3826 8.88296L10.1851 14.0805C10.0568 14.2088 9.88263 14.2821 9.6993 14.2821Z"
+                              fill="#34C759" />
+                    </svg>
+                    <span id="NumberOfSuccess">0/0</span>
+                </span>
+                <span class="d-flex align-items-center me-2" title="Số sản phẩm không hợp lệ">
+                    <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#FF3B30" />
+                        <path d="M11.9717 11.0001L14.0801 8.89174C14.3459 8.62591 14.3459 8.18591 14.0801 7.92008C13.8142 7.65424 13.3742 7.65424 13.1084 7.92008L11.0001 10.0284L8.89174 7.92008C8.62591 7.65424 8.18591 7.65424 7.92008 7.92008C7.65424 8.18591 7.65424 8.62591 7.92008 8.89174L10.0284 11.0001L7.92008 13.1084C7.65424 13.3742 7.65424 13.8142 7.92008 14.0801C8.05758 14.2176 8.23174 14.2817 8.40591 14.2817C8.58008 14.2817 8.75424 14.2176 8.89174 14.0801L11.0001 11.9717L13.1084 14.0801C13.2459 14.2176 13.4201 14.2817 13.5942 14.2817C13.7684 14.2817 13.9426 14.2176 14.0801 14.0801C14.3459 13.8142 14.3459 13.3742 14.0801 13.1084L11.9717 11.0001Z"
+                              fill="#FF3B30" />
+                    </svg>
+                    <span id="NumberOfInvalid">0/0</span>
+                </span>
+                <span class="d-flex align-items-center me-2" title="Số sản phẩm lỗi">
+                    <svg class="me-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4"
+                              d="M11.0007 20.1663C16.0633 20.1663 20.1673 16.0623 20.1673 10.9997C20.1673 5.93706 16.0633 1.83301 11.0007 1.83301C5.93804 1.83301 1.83398 5.93706 1.83398 10.9997C1.83398 16.0623 5.93804 20.1663 11.0007 20.1663Z"
+                              fill="#FF9500" />
+                        <path d="M11 12.6045C10.6242 12.6045 10.3125 12.2928 10.3125 11.917V7.10449C10.3125 6.72866 10.6242 6.41699 11 6.41699C11.3758 6.41699 11.6875 6.72866 11.6875 7.10449V11.917C11.6875 12.2928 11.3758 12.6045 11 12.6045Z"
+                              fill="#FF9500" />
+                        <path d="M11.0007 15.8128C10.8815 15.8128 10.7623 15.7853 10.6523 15.7394C10.5331 15.6936 10.4415 15.6295 10.3498 15.547C10.2673 15.4553 10.2032 15.3544 10.1482 15.2444C10.1023 15.1344 10.084 15.0153 10.084 14.8961C10.084 14.6578 10.1756 14.4194 10.3498 14.2453C10.4415 14.1628 10.5331 14.0986 10.6523 14.0528C10.9915 13.9061 11.3948 13.9886 11.6515 14.2453C11.734 14.3369 11.7981 14.4286 11.844 14.5478C11.8898 14.6578 11.9173 14.7769 11.9173 14.8961C11.9173 15.0153 11.8898 15.1344 11.844 15.2444C11.7981 15.3544 11.734 15.4553 11.6515 15.547C11.4773 15.7211 11.2482 15.8128 11.0007 15.8128Z"
+                              fill="#FF9500" />
+                    </svg>
+                    <span id="NumberOfError">0/0</span>
+                </span>
+            </div>
+            <p class="text-secondary font-w600">
+                Xuất file excel những thông tin tải lên bị lỗi
+            </p>
+            Lưu ý
+            <ul class="ps-4 mb-2">
+                <li>
+                    Tải mẫu file nhập <a data-redirect="false" data-file="true" href="~/Assets/file/MauImportSanPham.xlsm">tại đây</a>.
+                </li>
+                <li>
+                    Hệ thống chỉ hỗ trợ file tối đa 1.000 dòng và có định dạng .xls, .xlsx hoặc .xlsm
+                </li>
+            </ul>
+
+        </div>
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" class="btn btn-outline-dark" onclick="excelExport()">Xuất Excel</button>
+            <button type="button" class="btn btn-primary" onclick="excelImport()">Tạo sản phẩm</button>
+        </div>
+
+        <div class="card-body">
+            <div class="col-xl-12 col-lg-12 col-md-12" id="JSpreadSheet">
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("div.nav-control").click();
+        });
+        var jspreadSheetLicense = $("#License").val();
+        var totalData = 0;
+        var hightExcel = window.innerHeight - 530;
+        var showJSpreadSheet = "";
+        var jspreadSheetID = document.getElementById("JSpreadSheet");
+        var isChangeExcel = false;
+        var arrColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"];
+        var totalColumn = arrColumn.length - 1;
+        var totalRow = 50;
+
+        $(window).on('beforeunload', function (event) {
+            if (isChangeExcel) {
+                return 'Are you sure you want to leave?';
+            } else {
+                event.preventDefault();
+            }
+        });
+
+        $("a").click(function (event) {
+            event.preventDefault();
+            if (isChangeExcel) {
+                var isRedirect = $(this).attr("data-redirect");
+                if (isRedirect == "true") {
+                    swal({
+                        title: 'Thông báo',
+                        text: "Đang có dữ liệu chưa xử lý, bạn có muốn thoát trang không?",
+                        className: 'width-358',
+                        buttons: {
+                            confirm: {
+                                text: "Xác nhận",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary",
+                                closeModal: true
+                            },
+                            cancel: {
+                                text: "Đóng",
+                                value: false,
+                                visible: true,
+                                className: "btn btn-danger",
+                                closeModal: true,
+                            }
+                        },
+                    }).then((value) => {
+                        if (value) {
+                            isChangeExcel = false;
+                            window.location.href = event.currentTarget.href;
+                        }
+                    });
+                } else {
+                    var isFile = $(this).attr("data-file");
+                    if (isFile == "true") {
+                        isChangeExcel = false;
+                        window.location.href = event.currentTarget.href;
+                    }
+                }
+            } else {
+                window.location.href = event.currentTarget.href;
+            }
+        });
+
+        jspreadsheet.setLicense(jspreadSheetLicense);
+
+        var objWorksheet = {
+            minDimensions: [totalColumn, totalRow],
+            filters: true,
+            columns: [
+                { type: 'text', title: 'Trạng thái', primaryKey: true, readOnly: true },
+                { type: 'dropdown', title: 'Mã nhóm sản phẩm', width: 120, align: 'left', source: @Html.Raw(Json.Encode(Model.ListProductGroup)), autocomplete: true, multiple: false, wrap: true },
+                { type: 'text', title: 'Mã sản phẩm', width: 120, align: 'left', wrap: true },
+                { type: 'text', title: 'Tên sản phẩm', width: 115, align: 'left', wrap: true },
+                { type: 'text', title: 'Mô tả', width: 92, wrap: true },
+                { type: 'number', title: 'Khối lượng(gram)', width: 105, mask: '#,##0' },
+                { type: 'number', title: 'Giá', width: 90, mask: '#,##0' },
+                { type: 'text', title: 'Thuộc tính 1', width: 65, wrap: true },
+                { type: 'text', title: 'Giá trị thuộc tính 1', width: 72, wrap: true },
+                { type: 'text', title: 'Thuộc tính 2', width: 65, wrap: true },
+                { type: 'text', title: 'Giá trị thuộc tính 2', width: 72, wrap: true },
+                { type: 'text', title: 'Thuộc tính 3', width: 65, wrap: true },
+                { type: 'text', title: 'Giá trị thuộc tính 3', width: 72, wrap: true },
+                { type: 'image', title: 'Hình ảnh', width: 100, options: { width: '100px' } },
+                { type: 'number', title: 'Dài', width: 55, mask: '#,##0.##' },
+                { type: 'number', title: 'Rộng', width: 65, mask: '#,##0.##' },
+                { type: 'number', title: 'Cao', width: 60, mask: '#,##0.##' },
+                { type: 'dropdown', title: 'Đơn vị tính', width: 120, align: 'left', source: @Html.Raw(Json.Encode(Model.ListProductUnit)), autocomplete: true, multiple: false, wrap: true },
+                { type: 'text', title: 'Số lô', width: 115, align: 'left', wrap: true },
+                { type: 'dropdown', title: 'Mã kho', width: 120, align: 'left', source: @Html.Raw(Json.Encode(Model.ListWareHouse)), autocomplete: true, multiple: false, wrap: true },
+                { type: 'number', title: 'Số lượng nhập kho', width: 80, mask: '#,##0' },
+                { type: 'text', title: 'Mã Pallet', width: 100, align: 'left', wrap: true },
+            ],
+            allowComments: true,
+            tableOverflow: true,
+            tableHeight: hightExcel,
+            freezeColumns: 1,
+            allowInsertColumn: false,
+        };
+
+        var customToolbar = {
+            items: [
+                {
+                    content: 'search',
+                    onclick: function (a, b, c) {
+                        if (c.children[0].innerText == 'search') {
+                            jspreadsheet.current.showSearch();
+                            c.children[0].innerText = 'search_off';
+                        } else {
+                            jspreadsheet.current.hideSearch();
+                            c.children[0].innerText = 'search';
+                        }
+                    },
+                    tooltip: 'Toggle Search',
+                    updateState: function (a, b, c, worksheet) {
+                        // Call this one when the worksheet is opened and on the selection of any cells
+                        if (worksheet.options.search == true) {
+                            c.children[0].innerText = 'search_off';
+                        } else {
+                            c.children[0].innerText = 'search';
+                        }
+                    }
+                },
+                {
+                    content: 'fullscreen',
+                    onclick: function (a, b, c) {
+                        if (c.children[0].innerText == 'fullscreen') {
+                            jspreadsheet.current.fullscreen(true);
+                            c.children[0].innerText = 'fullscreen_exit';
+                        } else {
+                            jspreadsheet.current.fullscreen(false);
+                            c.children[0].innerText = 'fullscreen';
+                        }
+                    },
+                    tooltip: 'Toggle Fullscreen',
+                    updateState: function (a, b, c, d) {
+                        if (d.parent.config.fullscreen == true) {
+                            c.children[0].innerText = 'fullscreen_exit';
+                        } else {
+                            c.children[0].innerText = 'fullscreen';
+                        }
+                    }
+                },
+            ]
+        }
+
+        showJSpreadSheet = jspreadsheet(jspreadSheetID, {
+            toolbar: customToolbar,
+            worksheets: [objWorksheet],
+            contextMenu: function (o, x, y, e, items, section) {
+                return false;
+            },
+            onchange: function (worksheet, domElement, column, row, newValue, oldValue) {
+                JSpreadSheetChange(worksheet, domElement, column, row, newValue, oldValue);
+            },
+            onafterchanges: function (worksheet, records) {
+                isChangeExcel = true;
+            },
+            onpaste: function (worksheet, data) {
+                //JSpreadSheetPaste(worksheet, data);
+            },
+        });
+
+        function JSpreadSheetChange(worksheet, domElement, column, row, newValue, oldValue) {
+            var numberColumn = Number(column);
+            var numberRow = Number(row);
+            if (numberColumn != 0) {
+                checkRowData(worksheet, domElement, numberColumn, numberRow, newValue, oldValue);
+            }
+        };
+
+        function checkRowData(worksheet, domElement, numberColumn, numberRow, newValue, oldValue) {
+            var rowData = numberRow + 1;
+            var countEmptyColumn = 0;
+            $.each(arrColumn, function (index, value) {
+                var indexColumn = value + rowData;
+                if (!worksheet.getValue(indexColumn) && value != "A") {
+                    countEmptyColumn++;
+                }
+                switch (value) {
+                    case "B":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Nhóm sản phẩm", 255, "", "N");
+                        break;
+                    case "C":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Mã sản phẩm", 19, "ProductCode", "Y");
+                        break;
+                    case "D":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Tên sản phẩm", 150, "Vietnamese", "Y");
+                        break;
+                    case "E":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Mô tả", 255, "", "N");
+                        break;
+                    case "F":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn).toString(), indexColumn, "Khối lượng(gram)", 5, "Number", "N");
+                        break;
+                    case "G":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn).toString(), indexColumn, "Giá", 14, "Number", "N");
+                        break;
+                    case "H":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Thuộc tính 1", 50, "", "N");
+                        break;
+                    case "I":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Giá trị thuộc tính 1", 500, "", "N");
+                        break;
+                    case "J":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Thuộc tính 2", 50, "", "N");
+                        break;
+                    case "K":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Giá trị thuộc tính 2", 500, "", "N");
+                        break;
+                    case "L":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Thuộc tính 3", 50, "", "N");
+                        break;
+                    case "M":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Giá trị thuộc tính 3", 500, "", "N");
+                        break;
+                    case "O":
+                        var Length = worksheet.getValue(indexColumn).toString();
+                        if (Length.indexOf('.') > 0) {
+                            Length = Length.replace(/\./g, '');
+                        }
+                        CheckDataJSpreadSheet(Length, indexColumn, "Dài", 3, "", "N");
+                        break;
+                    case "P":
+                        var Width = worksheet.getValue(indexColumn).toString();
+                        if (Width.indexOf('.') > 0) {
+                            Width = Width.replace(/\./g, '');
+                        }
+                        CheckDataJSpreadSheet(Width, indexColumn, "Rộng", 3, "", "N");
+                        break;
+                    case "Q":
+                        var Height = worksheet.getValue(indexColumn).toString();
+                        if (Height.indexOf('.') > 0) {
+                            Height = Height.replace(/\./g, '');
+                        }
+                        CheckDataJSpreadSheet(Height, indexColumn, "Cao", 3, "", "N");
+                        break;
+                    case "S":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Số lô", 100, "", "N");
+                        break;
+                    case "T":
+                    case "U":
+                        var WareHouseCode = worksheet.getValue('T' + rowData);
+                        var NumberOfProduct = worksheet.getValue('U' + rowData);
+                        if (WareHouseCode && !NumberOfProduct) {
+                            showJSpreadSheet[0].setComments('U' + rowData, "Vui lòng nhập số lượng nhập kho");
+                        } else if (!WareHouseCode && NumberOfProduct) {
+                            showJSpreadSheet[0].setComments('T' + rowData, "Vui lòng nhập chọn kho cần nhập");
+                        } else {
+                            CheckDataJSpreadSheet(worksheet.getValue('T' + rowData).toString(), 'T' + rowData, "Mã kho", 100, "", "N");
+                            CheckDataJSpreadSheet(worksheet.getValue('U' + rowData).toString(), 'U' + rowData, "Số lượng nhập kho", 14, "Number", "N");
+                        }
+                        break;
+                    case "V":
+                        CheckDataJSpreadSheet(worksheet.getValue(indexColumn), indexColumn, "Mã Pallet", 20, "SpecialCharButNotVietnamese", "N");
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            //excelSetComment(worksheet, numberColumn, rowData);
+
+            if (countEmptyColumn == (arrColumn.length - 1)) {
+                excelResetComment(worksheet, numberColumn, rowData);
+            } else {
+                excelSetComment(worksheet, numberColumn, rowData);
+            }
+        }
+
+        function excelResetComment(worksheet, column, row) {
+            for (var i = 0; i < arrColumn.length; i++) {
+                worksheet.setComments(arrColumn[i] + row, "");
+            };
+            worksheet.setValue(arrColumn[0] + row, '', true);
+            excelSetStyle(worksheet, column, row, "Success");
+            countData(worksheet);
+        }
+
+        function excelSetComment(worksheet, column, row) {
+            var commentError = "";
+            for (var i = 1; i < arrColumn.length; i++) {
+                var iComment = worksheet.getComments(arrColumn[i] + row);
+                if (iComment) {
+                    commentError += iComment;
+                }
+            };
+            worksheet.setComments(arrColumn[0] + row, commentError);
+
+            if (commentError) {
+                worksheet.setValue(arrColumn[0] + row, 'Không hợp lệ', true);
+                excelSetStyle(worksheet, column, row, "Error");
+            } else {
+                worksheet.setValue(arrColumn[0] + row, 'Hợp lệ', true);
+                excelSetStyle(worksheet, column, row, "Success");
+            }
+
+            countData(worksheet);
+        }
+
+        function excelSetStyle(worksheet, column, row, Type) {
+            for (var i = 1; i < arrColumn.length; i++) {
+                if (Type == "Reset") {
+                    worksheet.resetStyle(arrColumn[i] + row);
+                } else {
+                    if (Type == "Success") {
+                        if (worksheet.getStyle(arrColumn[i] + row) != "background-color: white") {
+                            worksheet.setStyle(arrColumn[i] + row, "background-color", "white");
+                        }
+                    } else {
+                        if (worksheet.getStyle(arrColumn[i] + row) != "background-color: yellow") {
+                            worksheet.setStyle(arrColumn[i] + row, "background-color", "yellow");
+                        }
+                    }
+                }
+            };
+        }
+
+        function excelSetRowBlank(worksheet, column, row) {
+            for (var i = 0; i < arrColumn.length; i++) {
+                worksheet.resetStyle(arrColumn[i] + row);
+                worksheet.setComments(arrColumn[i] + row, "");
+            };
+        }
+
+        function countData(worksheet) {
+            var columnStatus = worksheet.getColumnData(0);
+            var filterColumnStatus = columnStatus.filter(function (element) { return element != ""; });
+            var NumberOfSuccess = 0, NumberOfInvalid = 0, NumberOfError = 0;
+            for (var i = 0; i < filterColumnStatus.length; i++) {
+                switch (filterColumnStatus[i]) {
+                    case "Hợp lệ":
+                        NumberOfSuccess++;
+                        break;
+                    case "Không hợp lệ":
+                        NumberOfInvalid++;
+                        break;
+                    case "Lỗi":
+                        NumberOfError++;
+                        break;
+                }
+            }
+
+            totalData = NumberOfSuccess + NumberOfInvalid + NumberOfError;
+
+            $('#NumberOfSuccess').html(NumberOfSuccess + "/" + totalData);
+            $('#NumberOfInvalid').html(NumberOfInvalid + "/" + totalData);
+            $('#NumberOfError').html(NumberOfError + "/" + totalData);
+        }
+
+        function excelImport() {
+            var ListDataExcel = showJSpreadSheet[0].getData(false, false);
+            var FilterDataExcel = ListDataExcel.filter(function (element) { return element[0] != ""; });
+            var NumberOfExcel = FilterDataExcel.length;
+
+            var ListDataImport = [];
+            var arrayKHL = [];
+            var countKHL = 0;
+            var countLoi = 0;
+
+            for (var i = 0; i < NumberOfExcel; i++) {
+                var item = FilterDataExcel[i];
+                var ListProductVariant = [];
+                var objProduct = {
+                    ProductGroup: {
+                        ID: item[1],
+                        Name: showJSpreadSheet[0].getValueFromCoords(1, i, true)
+                    },
+                    Code: item[2].toUpperCase(),
+                    Name: item[3],
+                    Description: item[4],
+                    Weight: item[5],
+                    Price: item[6],
+                    OptionName1: item[7].trim(),
+                    OptionValue1: item[8].trim(),
+                    OptionName2: item[9].trim(),
+                    OptionValue2: item[10].trim(),
+                    OptionName3: item[11].trim(),
+                    OptionValue3: item[12].trim(),
+                    Images: item[13],
+                    Size: "",
+                    Long: item[14],
+                    Width: item[15],
+                    Height: item[16],
+                    ProductUnit: {
+                        ID: item[17],
+                        Name: showJSpreadSheet[0].getValueFromCoords(17, i, true)
+                    },
+                    BatchNumber: item[18],
+                    NumberOfProduct: item[20],
+                    PalletCode: item[21],
+                };
+
+                if (objProduct.Long) {
+                    objProduct.Size += objProduct.Long + "D";
+                }
+
+                if (objProduct.Width) {
+                    objProduct.Size += objProduct.Width + "R";
+                }
+
+                if (objProduct.Height) {
+                    objProduct.Size += objProduct.Height + "C";
+                }
+
+                if (objProduct.OptionName1 && objProduct.OptionValue1) {
+                    objProduct.Option1 = { Code: objProduct.OptionName1, Name: objProduct.OptionValue1 };
+                } else {
+                    if (objProduct.OptionName2 && objProduct.OptionValue2) {
+                        objProduct.Option1 = { Code: objProduct.OptionName2, Name: objProduct.OptionValue2 };
+                        objProduct.OptionName2 = ""; objProduct.OptionValue2 = "";
+                    } else if (objProduct.OptionName3 && objProduct.OptionValue3){
+                        objProduct.Option1 = { Code: objProduct.OptionName3, Name: objProduct.OptionValue3 };
+                        objProduct.OptionName3 = ""; objProduct.OptionValue3 = "";
+                    }
+                }
+
+                if (objProduct.OptionName2 && objProduct.OptionValue2) {
+                    objProduct.Option2 = { Code: objProduct.OptionName2, Name: objProduct.OptionValue2 };
+                    objProduct.OptionName2 = ""; objProduct.OptionValue2 = "";
+                } else if (objProduct.OptionName3 && objProduct.OptionValue3) {
+                    objProduct.Option2 = { Code: objProduct.OptionName3, Name: objProduct.OptionValue3 };
+                    objProduct.OptionName3 = ""; objProduct.OptionValue3 = "";
+                }
+
+                if (objProduct.OptionName3 && objProduct.OptionValue3) {
+                    objProduct.Option3 = { Code: objProduct.OptionName3, Name: objProduct.OptionValue3 };
+                }
+
+                if (objProduct.Option1 && objProduct.Option2 && objProduct.Option3) {
+                    $.each(objProduct.Option1.Name.split(','), function (index1, value1) {
+                        $.each(objProduct.Option2.Name.split(','), function (index2, value2) {
+                            $.each(objProduct.Option3.Name.split(','), function (index3, value3) {
+                                var objVariant = {
+                                    Options: value1.trim() + " / " + value2.trim() + " / " + value3.trim(),
+                                    OptionName1: objProduct.Option1.Code,
+                                    OptionValue1: value1.trim(),
+                                    OptionName2: objProduct.Option2.Code,
+                                    OptionValue2: value2.trim(),
+                                    OptionName3: objProduct.Option3.Code,
+                                    OptionValue3: value3.trim(),
+                                    BatchNumber: item[18]
+                                }
+                                ListProductVariant.push(objVariant);
+                            });
+                        });
+                    });
+                } else if (objProduct.Option1 && objProduct.Option2) {
+                    $.each(objProduct.Option1.Name.split(','), function (index1, value1) {
+                        $.each(objProduct.Option2.Name.split(','), function (index2, value2) {
+                            var objVariant = {
+                                Options: value1.trim() + " / " + value2.trim(),
+                                OptionName1: objProduct.Option1.Code,
+                                OptionValue1: value1.trim(),
+                                OptionName2: objProduct.Option2.Code,
+                                OptionValue2: value2.trim(),
+                                OptionName3: "",
+                                OptionValue3: "",
+                                BatchNumber: item[18]
+                            }
+                            ListProductVariant.push(objVariant);
+                        });
+                    });
+                    objProduct.Option3 = { Code: "", Name: "" };
+                } else if (objProduct.Option1) {
+                    $.each(objProduct.Option1.Name.split(','), function (index1, value1) {
+                        var objVariant = {
+                            Options: value1.trim(),
+                            OptionName1: objProduct.Option1.Code,
+                            OptionValue1: value1.trim(),
+                            OptionName2: "",
+                            OptionValue2: "",
+                            OptionName3: "",
+                            OptionValue3: "",
+                            BatchNumber: item[18]
+                        }
+                        ListProductVariant.push(objVariant);
+                    });
+                    objProduct.Option2 = { Code: "", Name: "" };
+                    objProduct.Option3 = { Code: "", Name: "" };
+                } else {
+                    var objVariant = {
+                        Options: "Mặc định",
+                        OptionName1: "Tiêu đề",
+                        OptionValue1: "Mặc định",
+                        OptionName2: "",
+                        OptionValue2: "",
+                        OptionName3: "",
+                        OptionValue3: "",
+                        BatchNumber: item[18]
+                    }
+                    ListProductVariant.push(objVariant);
+
+                    objProduct.Option1 = { Code: "Tiêu đề", Name: "Mặc định" };
+                    objProduct.Option2 = { Code: "", Name: "" };
+                    objProduct.Option3 = { Code: "", Name: "" };
+                }
+
+                objProduct.ListProductVariant = ListProductVariant;
+
+                var obj = {
+                    WareHouse: {
+                        ID: item[19],
+                        WareHouseName: showJSpreadSheet[0].getValueFromCoords(19, i, true)
+                    },
+                    ListProduct: [objProduct]
+                };
+
+                if (item[0] == "Hợp lệ") {
+                    if (ListDataImport.length == 0) {
+                        ListDataImport.push(obj);
+                    } else {
+                        if (obj.WareHouse.ID == 0) {
+                            ListDataImport.push(obj);
+                        } else {
+                            var ItemImportIndex = ListDataImport.findIndex(m => m.WareHouse.ID == obj.WareHouse.ID);
+                            if (ItemImportIndex >= 0) {
+                                ListDataImport[ItemImportIndex].ListProduct.push(objProduct);
+                            } else {
+                                ListDataImport.push(obj);
+                            }
+                        }
+
+                    }
+                } else if (item[0] == "Không hợp lệ") {
+                    var Comment = showJSpreadSheet[0].getComments(arrColumn[0] + Number(i + 1));
+                    item.push(Comment);
+                    arrayKHL.push(item);
+                    countKHL++;
+                } else if (item[0] == "Lỗi") {
+                    var Comment = showJSpreadSheet[0].getComments(arrColumn[0] + Number(i + 1));
+                    item.push(Comment);
+                    arrayKHL.push(item);
+                    countLoi++;
+                }
+            }
+
+            if (ListDataImport.length == 0) {
+                CreateCustomSwal("error", "Sản phẩm không hợp lệ, vui lòng kiểm tra lại");
+                return;
+            };
+
+            isChangeExcel = false;
+            $.ajax({
+                url: '@Url.Action("JImportExcel", "Product")', //ReadExcelFile is a Action Name and ExcelUpload is Controller name
+                type: 'POST',
+                data: {
+                    data: ListDataImport,
+                    countKHL: countKHL,
+                    countLoi: countLoi
+                },
+                dataType: 'json',
+                success: function (res) {
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('float-left');
+                    wrapper.classList.add('text-left');
+                    wrapper.innerHTML = res.Message;
+                    if (res.Code == "00" && arrayKHL.length == 0) {
+                        swal({
+                            title: 'Thông báo',
+                            content: wrapper,
+                            timer: 2000
+                        }).then(function () {
+                            window.location.href = '@Url.Action("ProductView", "Product")';
+                        });
+                    } else if (res.Code == "10" || res.Code == "00" && arrayKHL.length > 0) {
+                        swal({
+                            title: "Thông báo",
+                            content: wrapper,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        }).then(function () {
+
+                            showJSpreadSheet[0].loadData([]);
+                            var responseData = JSON.parse(res.Data);
+                            var responseDataLength = 0;
+
+                            //Hiển thị lại các dữ liệu thêm bị lỗi
+                            if (res.Code == "10") {
+                                responseDataLength = responseData.length;
+                                showJSpreadSheet[0].setData(JSON.parse(res.Data));
+                                for (var i = 0; i < responseDataLength; i++) {
+                                    var numberRow = Number(i) + 1;
+                                    
+                                    if (responseData[i][5].toString() != "0" && responseData[i][5].toString() != "") {
+                                        showJSpreadSheet[0].setValue('F' + numberRow, responseData[i][5].toString(), true);
+                                    }
+
+                                    if (responseData[i][6].toString() != "0" && responseData[i][6].toString() != "") {
+                                        showJSpreadSheet[0].setValue('G' + numberRow, responseData[i][6].toString(), true);
+                                    }
+
+                                    showJSpreadSheet[0].setValue(arrColumn[0] + numberRow, 'Lỗi', true);
+                                    excelSetStyle(showJSpreadSheet[0], 0, numberRow, "Error");
+                                    showJSpreadSheet[0].setComments(arrColumn[0] + numberRow, responseData[i][22]);
+                                }
+                            }
+
+                            var nextRow = Number(responseDataLength);
+                            // Hiện thị lại các dữ liệu không hợp lệ
+                            for (var i = 0; i < arrayKHL.length; i++) {
+                                var numberRow = nextRow + 1;
+                                if (nextRow >= totalRow) {
+                                    showJSpreadSheet[0].insertRow(arrayKHL[i]);
+                                    excelSetStyle(showJSpreadSheet[0], 0, numberRow, "Reset");
+                                } else {
+                                    showJSpreadSheet[0].setRowData(nextRow, arrayKHL[i], true);
+                                }
+
+                                if (arrayKHL[i][5].toString() != "0" && arrayKHL[i][5].toString() != "") {
+                                    showJSpreadSheet[0].setValue('F' + numberRow, arrayKHL[i][5].toString(), true);
+                                }
+
+                                if (arrayKHL[i][6].toString() != "0" && arrayKHL[i][6].toString() != "") {
+                                    showJSpreadSheet[0].setValue('G' + numberRow, arrayKHL[i][6].toString(), true);
+                                }
+
+                                showJSpreadSheet[0].setValue(arrColumn[0] + numberRow, arrayKHL[i][0], true);
+                                excelSetStyle(showJSpreadSheet[0], 0, numberRow, "Error");
+                                showJSpreadSheet[0].setComments(arrColumn[0] + numberRow, arrayKHL[i][22]);
+                                nextRow++;
+                            }
+
+                            if (nextRow <= totalRow) {
+                                var listBlank = showJSpreadSheet[0].getData(false, false);
+                                var filterListBlank = listBlank.filter(function (element) { return element[0] == ""; });
+                                for (var i = nextRow; i < filterListBlank.length; i++) {
+                                    var numberRow = nextRow + 1;
+                                    excelSetRowBlank(showJSpreadSheet[0], 0, numberRow);
+                                    nextRow++;
+                                }
+                            }
+
+                            countData(showJSpreadSheet[0]);
+                        });
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                },
+                complete: function (data) {
+                    $('#DocumentUpload')[0].reset(); // this will reset the form fields
+                    $("#errDocument").text("");
+                }
+            });
+        }
+
+        function excelExport() {
+            var listDataExcel = showJSpreadSheet[0].getData(false, false);
+            var filterDataExcel = listDataExcel.filter(function (element) { return element[0] != ""; });
+            var numberOfExcel = filterDataExcel.length;
+            var listDataExport = [];
+            for (var i = 0; i < numberOfExcel; i++) {
+                var item = filterDataExcel[i];
+                var messageError = "";
+                if (item[0] == "Lỗi" || item[0] == "Không hợp lệ") {
+                    messageError = showJSpreadSheet[0].getComments(arrColumn[0] + Number(i + 1));
+                }
+                var obj = {
+                    WareHouseName: showJSpreadSheet[0].getValueFromCoords(19, i, true),
+                    ProductGroupName: showJSpreadSheet[0].getValueFromCoords(1, i, true),
+                    Code: item[2].toUpperCase(),
+                    Name: item[3],
+                    Description: item[4],
+                    Weight: item[5],
+                    Price: item[6],
+                    OptionName1: item[7].trim(),
+                    OptionValue1: item[8].trim(),
+                    OptionName2: item[9].trim(),
+                    OptionValue2: item[10].trim(),
+                    OptionName3: item[11].trim(),
+                    OptionValue3: item[12].trim(),
+                    Images: item[13],
+                    Long: item[14],
+                    Width: item[15],
+                    Height: item[16],
+                    ProductUnitName: showJSpreadSheet[0].getValueFromCoords(17, i, true),
+                    BatchNumber: item[18],
+                    NumberOfProduct: item[20],
+                    PalletCode: item[21],
+                    MessageError: messageError
+                };
+
+                listDataExport.push(obj);
+            }
+
+            if (listDataExport.length == 0) {
+                CreateCustomSwal("error", "Không có dữ liệu để xuất Excel. Vui lòng kiểm tra lại.");
+                return;
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JExportExcel", "Product")',
+                data: {
+                    ListData: listDataExport
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                global: false,
+                success: function (data) {
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(data);
+                    link.download = 'DanhSachSanPham.xlsm';
+                    link.click();
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+
+        $("#Document").on('click', function () {
+            var fileInput = document.getElementById('Document');
+            fileInput.value = '';
+        });
+
+        $("#Document").on('change', function () {
+            var TypeFile = ["XLS", "XLSX", "XLSM"];
+            var ListExcel = new FormData(); //FormData object
+            var FileInput = document.getElementById('Document');
+            if (FileInput.files.length == 0) {
+                return;
+            }
+            var Filename = FileInput.files[0].name;
+            //var Filesize = FileInput.files[0].size;
+            var Extension = Filename.split('.').pop().toUpperCase();
+            var CheckExtension = TypeFile.includes(Extension);
+            if (CheckExtension) {
+                $("#errDocument").text("");
+                for (var i = 0; i < FileInput.files.length; i++) {
+                    ListExcel.append(FileInput.files[i].name, FileInput.files[i]);
+                }
+                $.ajax({
+                    url: '@Url.Action("JImportExcelData", "Product")',
+                    dataType: "html",
+                    type: "POST",
+                    data: ListExcel,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        var res = JSON.parse(data);
+                        if (res.Code == "00") {
+                            var responseData = JSON.parse(res.Data);
+                            showJSpreadSheet[0].loadData([]);
+                            showJSpreadSheet[0].setData(JSON.parse(res.Data));
+
+                            //for (var i = 0; i < responseData.length; i++) {
+                            //    var numberRow = i + 1;
+
+                            //    //if (responseData[i][6].toString() != "0" && responseData[i][6].toString() != "") {
+                            //    //    showJSpreadSheet[0].setValue('G' + numberRow, NumberReplace(responseData[i][6].toString()), true);
+                            //    //}
+
+                            //    if (responseData[i][22]) {
+                            //        showJSpreadSheet[0].setValue(arrColumn[0] + numberRow, 'Lỗi', true);
+                            //        excelSetStyle(showJSpreadSheet[0], 0, numberRow, "Error");
+                            //        showJSpreadSheet[0].setComments(arrColumn[0] + numberRow, responseData[i][22]);
+                            //    }
+                            //}
+
+                            var nextRow = responseData.length;
+                            if (nextRow <= totalRow) {
+                                var listBlank = showJSpreadSheet[0].getData(false, false);
+                                var filterListBlank = listBlank.filter(function (element) { return element[0] == ""; });
+                                for (var i = nextRow; i < filterListBlank.length; i++) {
+                                    var numberRow = nextRow + 1;
+                                    excelSetRowBlank(showJSpreadSheet[0], 0, numberRow);
+                                    nextRow++;
+                                }
+                            }
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    },
+                });
+
+            } else {
+                $('#DocumentUpload')[0].reset();
+                $("#errDocument").text("Hệ thống chỉ hỗ trợ tải tập tin Excel định dạng xls, xlsx hoặc xlsm.");
+            }
+        });
+
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+    </script>
+
+}

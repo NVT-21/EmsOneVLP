@@ -1,0 +1,208 @@
+﻿@{
+    Layout = null;
+}
+
+<tr class="row-item">
+    <td>
+        <select class="form-control ClearDataProduct select2" name="ProductVariant" id="ProductVariant@(ViewBag.Number)" onchange="loadInformation('@ViewBag.Number')"></select>
+        <div class="text-danger mt-1" id="errProductVariant@(ViewBag.Number)"></div>
+    </td>
+    <td class="ClearData ProductVariantSKU" id="ProductVariantSKU@(ViewBag.Number)"></td>
+    <td class="ClearData Price" id="Price@(ViewBag.Number)"></td>
+    <td class="ClearData NumberOfInventory" id="NumberOfInventory@(ViewBag.Number)"></td>
+    <td class="text-center">
+        <div class="d-inline-block">
+            <div class="quantity-block">
+                <button type="button" class="btn quantity-arrow-minus" onclick="minus(this)"> - </button>
+                <input type="text" class="quantity-num OnlyNumber ClearDataInput" name="NumberOfActual" id="NumberOfActual@(ViewBag.Number)" value="0" onchange="loadNumberOfActual('@ViewBag.Number')" data-Number="@ViewBag.Number" />
+                <button type="button" class="btn quantity-arrow-plus" onclick="plus(this)"> + </button>
+            </div>
+            <div class="text-danger mt-1" id="errNumberOfActual@(ViewBag.Number)"></div>
+        </div>        
+    </td>
+    <td class="ClearData NumberOfDifferent" id="NumberOfDifferent@(ViewBag.Number)"></td>
+    <td class="ClearData MoneyOfDifferent" id="MoneyOfDifferent@(ViewBag.Number)"></td>
+    <td>
+        <button class="btn btn-sm btn-outline-danger" type="button" onclick="removeRow(this)" title="Xoá hàng">
+            <i class="fa fa-minus-circle" style="margin-left: 0;"></i>
+        </button>
+    </td>
+</tr>
+
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            language: {
+                noResults: function () {
+                    return 'Không tìm thấy dữ liệu.';
+                },
+            },
+        });
+        loadProductVariant("", @ViewBag.Number);
+    });
+
+    $(".OnlyNumber").on("keypress keyup blur", function (event) {
+        $(this).val($(this).val().replace(/[^\d].+/, ""));
+        if ((event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+    });
+
+    function CheckDuplicated() {
+        $('.row-item').each(function () {
+            var Number = $(this).find("td:eq(4) input[name='NumberOfActual']").data("number");
+            var ProductVariant = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+            if (ProductVariant == "") {
+                $("#ProductVariant" + Number).empty();
+                loadProductVariant("", Number);
+            }
+        });
+    }
+
+    function loadTotal() {
+        var count = 0;
+        var TotalInventory = 0;
+        var TotalActual = 0;
+        var TotalDifferent = 0;
+        var TotalMoney = 0;
+        $('.row-item').each(function () {
+            count++;
+            var ValueInventory = $(this).closest('tr').find('.NumberOfInventory').html();
+            var ValueActual = $(this).find("td:eq(4) input[name='NumberOfActual']").val() == "" ? 0 : $(this).find("td:eq(4) input[name='NumberOfActual']").val();
+            var ValueDifferent = $(this).closest('tr').find('.NumberOfDifferent').html();
+            var ValueMoney = $(this).closest('tr').find('.MoneyOfDifferent').html();
+            TotalInventory = TotalInventory + parseInt(ValueInventory);
+            TotalActual = TotalActual + parseInt(ValueActual);
+            TotalDifferent = TotalDifferent + parseInt(ValueDifferent);
+            TotalMoney = TotalMoney + parseInt(ValueMoney.trim().replaceAll(",", ""));
+        });
+        $("#TotalProduct").text(count);
+        $("#TotalInventory").text(TotalInventory);
+        $("#TotalActual").text(TotalActual);
+        $("#TotalDifferent").text(TotalDifferent);
+        $("#TotalMoney").text(NumberFormat(TotalMoney));
+    }
+
+    function loadMoneyOfDifferent(Number) {
+        var NumberOfDifferent = $("#NumberOfDifferent" + Number).text();
+        var Price = $("#ProductVariant" + Number).find(':selected').data('price') == undefined ? 0 : $("#ProductVariant" + Number).find(':selected').data('price');
+        var total = parseInt(Price) * parseFloat(NumberOfDifferent);
+        $("#MoneyOfDifferent" + Number).text(NumberFormat(total));
+    }
+
+    function loadNumberOfActual(Number) {
+        var NumberOfActual = $("#NumberOfActual" + Number).val() == "" ? 0 : $("#NumberOfActual" + Number).val();
+        if (NumberOfActual == "") {
+            $("#NumberOfActual" + Number).val("0");
+        }
+        var NumberOfInventory = $("#ProductVariant" + Number).find(':selected').data('inventory') == undefined ? 0 : $("#ProductVariant" + Number).find(':selected').data('inventory');
+        var total = parseInt(NumberOfActual) - parseInt(NumberOfInventory);
+        $("#NumberOfDifferent" + Number).text(total);
+        loadMoneyOfDifferent(Number);
+        loadTotal();
+    }
+
+    function loadInformation(Number) {
+        var ProductVariantSKU = $("#ProductVariant" + Number).find(':selected').data('sku');
+        var NumberOfInventory = $("#ProductVariant" + Number).find(':selected').data('inventory');
+        var Price = $("#ProductVariant" + Number).find(':selected').data('price');
+        $("#ProductVariantSKU" + Number).text(ProductVariantSKU);
+        $("#NumberOfInventory" + Number).text(NumberOfInventory);
+        $("#Price" + Number).text(NumberFormat(Price));
+        $("#errProductVariant" + Number).text("");
+        loadNumberOfActual(Number);
+        loadTotal();
+        CheckDuplicated();
+    }
+
+    function loadProductVariant(Type, Number) {
+        var WarehouseID = $("#WarehouseID").val();
+        var appendTag = "";
+        if (Type == "WarehouseOnChange") {
+            appendTag = ".ClearDataProduct";
+        } else {
+            appendTag = "#ProductVariant" + Number;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/Handle/GetListProductVariantByWareHouseID?WareHouseID=' + WarehouseID,
+            loading: true,
+            dataType: 'json',
+            success: function (data) {
+                var arrTemp = [];
+                $('.row-item').each(function () {
+                    var ProductVariant = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+                    arrTemp.push(ProductVariant);
+                });
+                $("<option/>", {
+                    value: "",
+                    text: " ---Chọn sản phẩm--- ",
+                    'data-SKU': '',
+                    'data-Price': 0,
+                    'data-Inventory': 0
+                }).appendTo(appendTag);
+                $.each(data, function (index, value) {
+                    var disabled = false;
+                    for (var i = 0; i < arrTemp.length; i++) {
+                        if (value.DetailID == arrTemp[i]) {
+                            disabled = true;
+                            break;
+                        }
+                    }
+                    $("<option/>", {
+                        value: value.DetailID,
+                        text: value.DetailName,
+                        'disabled': disabled,
+                        'data-SKU': value.ProductVariantSKU,
+                        'data-Price': value.ProductVariantPrice,
+                        'data-Inventory': value.NumberOfInventory
+                    }).appendTo(appendTag);
+                });
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+
+    function removeRow(this1) {
+        $(this1).parents("tr").remove();
+        loadTotal();
+        CheckDuplicated();
+    }
+
+    function minus(ctl) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 0 : $input.val();
+        var count = parseInt(value) - 1;
+        count = count <= 0 ? 0 : count;
+        $input.val(count);
+        $input.change();
+        loadTotal();
+        return false;
+    };
+
+    function plus(ctl) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 0 : $input.val();
+        var count = parseInt(value) + 1;
+        $input.val(count);
+        $input.change();
+        loadTotal();
+        return false;
+    };
+</script>

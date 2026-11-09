@@ -1,0 +1,90 @@
+﻿@model EMS.MVC.Frontend.Models.PartnerWebhookAddViewModel
+
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Đăng ký đối tác Webhook</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tên đối tác <span style="color: red">(*)</span></label>
+                    @Html.EditorFor(model => model.PartnerName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên đối tác", @maxlength = "100", @autocomplete = "off" } })
+                    <span class="text-danger" id="errPartnerName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Link Webhook <span style="color: red">(*)</span></label>
+                    @Html.EditorFor(model => model.PartnerURL, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Link Webhook", @autocomplete = "off" } })
+                    <span class="text-danger" id="errPartnerURL"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>API Key</label>
+                    @Html.EditorFor(model => model.PartnerKey, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "API Key", @maxlength = "100", @autocomplete = "off" } })
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Thêm mới</button>
+        </div>
+    </div>
+</div>
+<script>
+
+    CheckChangeValue("PartnerName", "Vui lòng nhập tên đối tác.", "Vietnamese", "Y");
+    CheckChangeValue("PartnerURL", "Vui lòng nhập Link Webhook.", "", "Y");
+
+    $("#btnSubmit").on("click", function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            PartnerName: $("#PartnerName").val().trim(),
+            PartnerURL: $("#PartnerURL").val().trim(),
+            PartnerKey: $('#PartnerKey').val().trim(),
+        }
+
+        IsError = CheckNullValue(data.PartnerName, "PartnerName", "Vui lòng nhập tên đối tác.", IsError);
+        IsError = CheckNullValue(data.PartnerURL, "PartnerURL", "Vui lòng nhập Link Webhook.", IsError);
+
+
+        if (IsError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAdd", "PartnerWebhook")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#ViewModal').modal('toggle');
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                    setTimeout(function () {
+                        $.get('@Url.Action("SearchListPartnerWebhookView", "PartnerWebhook")', function (data) {
+                            $('#tbl-data').html(data);
+                        });
+                    });
+                } else {
+                    //CreateCustomSwal("error", res.Message);
+                    $('#ViewModal').modal('toggle');
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>

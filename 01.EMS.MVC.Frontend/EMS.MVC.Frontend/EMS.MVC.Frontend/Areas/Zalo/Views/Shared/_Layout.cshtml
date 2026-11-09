@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" type="image/png" href="~/favicon.png" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="robots" content="" />
+    <meta name="format-detection" content="telephone=no">
+    <title>EMSOne</title>
+    @Styles.Render("~/bundles/css")
+    @Styles.Render("~/bundles/fonts")
+    <script src="~/Assets/js/global.min.js"></script>
+    <script src="~/Assets/js/MyJS.js?n=@XHelper.JavaScriptVersion"></script>
+</head>
+<body>
+    <!-- WINDOW LOADER -->
+    <div id="preloader">
+        <img src="~/Assets/images/logo/logo-full.svg" />
+    </div>
+    <!-- AJAX LOADER -->
+    <div id="ajax_loader" style="background-color: rgba(0, 0, 0, 0.5); z-index: 99999999; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; display: none;" class="">
+        <div id="ajax_loader_contend" style="position: fixed; left: 50%; top: 50%; color:white"><img src="~/Assets/images/default/loading.gif" style="width:30px; height:30px" /></div>
+    </div>
+    <!-- MODAL -->
+    <div id="ViewModal" class="modal fade" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div id="modal-ViewModal-html"></div>
+    </div>
+    <div id="main-wrapper">
+        <div class="nav-header">
+            <a href="@Url.Action("Index","Home", new { area = "" })" class="brand-logo">
+                <img class="logo-abbr" src="~/Assets/images/logo/logo-abbr.svg" />
+                <img class="brand-title" src="~/Assets/images/logo/logo-title.svg" />
+            </a>
+            <div class="nav-control">
+                <div class="hamburger">
+                    <span class="line"></span><span class="line"></span><span class="line"></span>
+                </div>
+            </div>
+        </div>
+        <div id="header" class="header">
+            <div class="header-content">
+                <nav class="navbar navbar-expand">
+                    <div class="collapse navbar-collapse justify-content-end">
+                        @*<div class="header-left">
+                            <div class="nav-item">
+                                <div class="form-search">
+                                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                              fill="#86909C" />
+                                    </svg>
+                                    <input type="text" class="form-control " placeholder="Tìm theo mã bưu gửi hoặc mã đơn hàng" required>
+                                </div>
+                            </div>
+                        </div>*@
+                        <ul class="navbar-nav header-right">
+                            @*<li class="nav-item">
+                                <button class="btn btn-primary d-flex align-items-center" type="button" id="add-order-dropdown"
+                                        data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                                    Tạo đơn hàng <i class="icon-arrow-b fs-20"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="add-order-dropdown">
+                                    <div class="py-2">
+                                        <a class="dropdown-item" href="@Url.Action("AddOrderView","Order", new { area = "" })">Tạo đơn hàng</a>
+                                        <a class="dropdown-item" href="@Url.Action("ImportExcelView","Order", new { area = "", Version = "1" })">File Excel V1</a>
+                                        <a class="dropdown-item" href="@Url.Action("ImportExcelView","Order", new { area = "", Version = "2" })">File Excel V2</a>
+                                    </div>
+                                </div>
+                            </li>*@
+                            @*<li class="nav-item dropdown notification_dropdown">
+                                <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                              d="M10 0.083252C10.4142 0.083252 10.75 0.419038 10.75 0.833252V1.79839C13.5713 2.16589 15.75 4.57847 15.75 7.49992V8.41958C15.75 9.80371 16.2353 11.144 17.1214 12.2073L17.4648 12.6195C18.7765 14.1935 17.6572 16.5833 15.6083 16.5833H13.25V16.6666C13.25 18.4615 11.7949 19.9166 10 19.9166C8.20509 19.9166 6.75001 18.4615 6.75001 16.6666V16.5833H4.39175C2.34281 16.5833 1.22351 14.1935 2.53521 12.6195L2.87865 12.2073C3.76475 11.144 4.25001 9.80371 4.25001 8.41958V7.49992C4.25001 4.57847 6.42874 2.16589 9.25001 1.79839V0.833252C9.25001 0.419038 9.5858 0.083252 10 0.083252ZM8.25001 16.5833V16.6666C8.25001 17.6331 9.03351 18.4166 10 18.4166C10.9665 18.4166 11.75 17.6331 11.75 16.6666V16.5833H8.25001ZM12.5 15.0833H7.50001H4.39175C3.61456 15.0833 3.19 14.1768 3.68754 13.5798L4.03098 13.1676C5.14172 11.8347 5.75001 10.1546 5.75001 8.41958V7.49992C5.75001 5.15271 7.6528 3.24992 10 3.24992C12.3472 3.24992 14.25 5.15271 14.25 7.49992V8.41958C14.25 10.1546 14.8583 11.8347 15.969 13.1676L16.3125 13.5797C16.81 14.1768 16.3855 15.0833 15.6083 15.0833H12.5Z"
+                                              fill="#86909C" />
+                                    </svg>
+                                    <span class="text-1 mx-2 fs-16">Thông báo</span>
+                                    <span class="badge light text-white " id="NotifyCount">14</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="overflow-y: auto; height: auto;max-height: 400px;">
+                                    @{ Html.RenderAction("NotifyListView", "Handle", new { area = "" }); }
+                                </div>
+                            </li>*@
+                            <li class="nav-item dropdown header-profile">
+                                <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
+                                    <img src="~/Assets/images/default/avatar.jpg" width="20" alt="" />
+                                    <div class="header-info me-3">
+                                        <span class="fs-16 d-flex align-items-center">
+                                            @XHelper.Session.EmployeeProfile.FullName
+                                            <i class="icon-arrow-b fs-20"></i>
+                                        </span>
+                                        <!-- <small class="fs-14 font-w400">toannadi@gmail.com</small> -->
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="@Url.Action("ShopView","Shop", new { area = "" })" class="dropdown-item ai-icon">
+                                        <span class="ms-2">Thông tin tài khoản </span>
+                                    </a>
+                                    <a href="#" id="ShowChangePasswordView" class="dropdown-item ai-icon">
+                                        <span class="ms-2">Đổi mật khẩu </span>
+                                    </a>
+                                 
+                                    <a href="@Url.Action("LogOut","Account", new { area = "" })" class="dropdown-item ai-icon">
+                                        <span class="ms-2">Đăng xuất </span>
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item"></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div id="sidebar" class="deznav">
+            <div class="deznav-scroll">
+                <ul class="metismenu" id="menu">
+                    @RenderPage("~/Areas/Zalo/Views/Shared/_MenuLeft.cshtml")
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-body">
+            @RenderBody()
+        </div>
+    </div>
+    <div id="footer" class="footer">
+        <div class="footer-content">
+            @RenderPage("~/Views/Shared/_Footer.cshtml")
+        </div>
+    </div>
+
+    <a href="" target="_blank" class="DZ-bt-support-now DZ-theme-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.1182 14.702L14 15.5C11.2182 14.1038 9.49995 12.5 8.49995 10L9.26991 5.8699L7.81447 2L4.06355 2C2.936 2 2.04809 2.93178 2.21649 4.04668C2.6369 6.83 3.87648 11.8765 7.49995 15.5C11.3052 19.3052 16.7857 20.9564 19.802 21.6127C20.9667 21.8662 22 20.9575 22 19.7655L21.9999 16.1812L18.1182 14.702Z"
+                  fill="white" />
+        </svg>
+
+        <span>Hotline: <b>1900 54 54 33</b></span>
+    </a>
+    @Scripts.Render("~/bundles/js")
+    @*<script src="https://localhost:44321/signalr/hubs"></script>*@
+    @*<script src="https://webhook.emsone.com.vn/signalr/hubs"></script>*@
+    <script src="https://social-webhook.somee.com/signalr/hubs"></script>
+    <script>
+        $(document).ready(function () {
+            $('select.select2').select2(AttributeSelect2);
+        });
+
+        $("#ShowChangePasswordView").on("click", function (event) {
+            //event.preventDefault();
+            $.get('@Url.Action("ChangePasswordView", "Account", new { area = "" })', function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        });
+
+        $(".modal").on("hidden.bs.modal", function () {
+            $("#ClearModal").html("");
+        });
+
+        //$(document).ajaxStart(function () {
+        //    $('#ajax_loader').show();
+        //});
+
+        //$(document).ajaxStop(function () {
+        //    $('#ajax_loader').hide();
+        //});
+
+        $(document).ajaxError(function (xhr, props) {
+            var message = "";
+            switch (props.status) {
+                case 1:
+                    message = "Dữ liệu không tồn tại.";
+                    break;
+                case 2:
+                    message = "Cửa hàng đã bị xóa. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 3:
+                    message = "Cửa hàng đã bị khoá. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 4:
+                    message = "Cửa hàng đã hết thời hạn sử dụng. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 5:
+                    message = "Nhân viên đã bị xóa. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 6:
+                    message = "Nhân viên đã bị khóa. Vui lòng liên hệ quản trị viên.";
+                    break;
+                case 7:
+                    message = "Hết thời gian hoạt động. Vui lòng liên hệ quản trị viên.";
+                    break;
+                //case 7:
+                //    message = "Tải danh sách menu thất bại. Vui lòng kiểm tra lại nhóm quyền.";
+                //    break;
+                case 403:
+                    message = "Không có quyền thực hiện chức năng này.";
+                    break;
+                case 408:
+                    message = "Thời gian đăng nhập đã hết, vui lòng đăng nhập lại.";
+                    break;
+                case 413:
+                    message = "Hệ thống hỗ trợ tải tệp tin kích thước tối đa 5 MB.";
+                    break;
+                default:
+                    message = props.statusText;
+                    break;
+            }
+            if (props.status == 403) {
+                CreateCustomSwal("error", message);
+            } else {
+                CreateCustomSwal("success", message, '@Url.Action("LogOut", "Account", new { area = "" })');
+            }
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

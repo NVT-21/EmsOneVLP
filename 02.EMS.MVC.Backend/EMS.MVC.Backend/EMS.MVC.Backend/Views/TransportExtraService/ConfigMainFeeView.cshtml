@@ -1,0 +1,40 @@
+﻿@model EMS.MVC.Backend.Models.ConfigMainFeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView","TransportExtraService")">Danh sách bảng cước DV cộng thêm</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("EditFreightChargesView","TransportExtraService", new { TransportPostageID = Model.TransportPostageID})">@Model.TransportServiceName</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cấu hình cước DV cộng thêm</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body" id="Data">
+            @if (Model.ChargingConditionsID == 4 || Model.ChargingConditionsID == 5 || Model.ChargingConditionsID == 6)
+            {
+                Html.RenderAction("ConfigMainFeeDetailView", "TransportExtraService", new { TransportPostageID = Model.TransportPostageID, ChargingConditionsID = Model.ChargingConditionsID });
+            }
+            else
+            {
+                <p>Căn cứ tính cước này không được cấu hình.</p>
+                <p>Kiểm tra lại căn cứ tính cước </p>
+                <a href="@Url.Action("EditFreightChargesView","TransportExtraService", new { TransportPostageID = Model.TransportPostageID })">Tại đây</a>
+            }
+        </div>
+    </div>
+</div>
+

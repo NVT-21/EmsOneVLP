@@ -1,0 +1,110 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Lý do huỷ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <textarea class="form-control" rows="3" id="Reason" placeholder="Vui lòng nhập lý do"></textarea>
+            <span class="text-danger" id="errReason"></span>
+        </div>
+        <div class="modal-footer">
+            <div class="justify-content-end align-items-center">
+                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Đóng</button>
+                <button onclick="btnSubmit(@ViewBag.ID)" type="button" class="btn btn-primary">Xác nhận</button>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<script>
+
+    function btnSubmit(ID) {
+        var IsError = false;
+        var data = {
+            ID: ID,
+            Reason: $("#Reason").val().trim()
+        };
+        if (data.Reason == "") {
+            $("#errReason").text("Vui lòng nhập lý do");
+            IsError = true;
+            $("#Reason").focus();
+        }
+        else {
+            $("#errReason").text("");
+        }
+        if (IsError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn huỷ phiếu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRejectInventoryAdjust", "InventoryAdjust")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = "@Url.Action("InventoryAdjustView", "InventoryAdjust")";
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+
+</script>

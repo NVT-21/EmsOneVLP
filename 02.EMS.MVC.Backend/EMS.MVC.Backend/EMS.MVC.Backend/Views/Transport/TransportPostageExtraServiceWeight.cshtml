@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+<table class="table table-bordered">
+    <thead style="background-color: #d5e9ff;">
+        <tr class="text-center align-middle">
+            <th colspan="2">
+                Khối lượng (gram)
+            </th>
+            <th rowspan="2" style="vertical-align: middle!important;">Mức giá</th>
+            <th rowspan="2"><button type="button" class="btn btn-sm btn-primary form-control-sm" onclick="AddItemPostageExtraServiceWeight(this)"><i class="fa fa-plus m-0"></i></button></th>
+        </tr>
+        <tr class="text-center">
+            <th>Từ</th>
+            <th>Đến</th>
+        </tr>
+    </thead>
+    <tbody class="BodyExtraServiceWeight">
+        <tr>
+            <td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" /></td>
+            <td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" /></td>
+            <td class="col-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        @*<label>Đơn vị tính</label>*@
+                        <select class="form-control form-control-sm" onchange="CheckUnit(this)">
+                            <option value="1" selected>Việt nam đồng (VNĐ)</option>
+                            <option value="2">Phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        @*<label>Giá trị</label>*@
+                        <input class="form-control form-control-sm" type="text" name="Value" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mt-3 SurchargePercent d_none Percent">
+                        @*<label>Số tiền tối thiểu</label>*@
+                        <input class="form-control form-control-sm" name="Min" placeholder="Nhập số tiền tối thiểu" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-md-6 mt-3 SurchargePercent d_none Percent">
+                        @*<label>Số tiền tối đa</label>*@
+                        <input class="form-control form-control-sm" name="Max" placeholder="Nhập số tiền tối đa" data-inputmask="'alias': 'currency'" />
+                    </div>
+                </div>
+            </td>
+            <td class="text-center"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">
+                <div class="input-group input-group-sm">
+                    <div class="input-group input-group-prepend">
+                        <span class="input-group-text text-black-important">Mỗi </span>
+                    </div>
+                    <input class="form-control" style="width: 100px;" type="text" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" />
+                    <div class="input-group-prepend input-group-append">
+                        <span class="input-group-text text-black-important"> tiếp theo giá </span>
+                    </div>
+                    <input style="width: 100px;" class="form-control" type="text" placeholder="Nhập mức giá" data-inputmask="'alias': 'currency'" />
+                </div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<script>
+    function AddItemPostageExtraServiceWeight(This) {
+        var strHtml = '<tr>' +
+            '<td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+            '<td class="col-2"><input class="form-control form-control-sm w-100" type="text" placeholder="Nhập khối lượng" data-inputmask="' + "'alias': 'currency'" + '"/></td>' +
+            '<td class="col-8">' +
+            '<div class="row">' +
+            '<div class="col-md-6">' +
+            '<select class="form-control form-control-sm" onchange="CheckUnit(this)">' +
+            '<option value="1" selected>Việt nam đồng (VNĐ)</option>' +
+            '<option value="2">Phần trăm (%)</option>' +
+            '</select>' +
+            '</div>' +
+            '<div class="col-md-6">' +
+            '<input class="form-control form-control-sm" type="text" name="Value" placeholder="Nhập giá trị" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+            '</div>' +
+            '<div class="col-md-6 mt-3 SurchargePercent d_none Percent">' +
+            '<input class="form-control form-control-sm" name="Min" placeholder="Nhập số tiền tối thiểu" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+            '</div>' +
+            '<div class="col-md-6 mt-3 SurchargePercent d_none Percent">' +
+            '<input class="form-control form-control-sm" name="Max" placeholder="Nhập số tiền tối đa" data-inputmask="' + "'alias': 'currency'" + '"/>' +
+            '</div>' +
+            '</div>' +
+            '</td>' +
+            '<td class="text-center"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>' +
+            '</tr>'
+        $(This).parents('table').find('tbody.BodyExtraServiceWeight').append(strHtml);
+
+        var ROOT = window.location.origin;
+        loadjs(ROOT + '/Assets/js/inputmask.js');
+    }
+</script>
+

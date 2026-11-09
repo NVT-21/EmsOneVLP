@@ -1,0 +1,127 @@
+﻿@model EMS.MVC.Frontend.Models.AddWareHouseViewModel
+
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Thêm kho</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Mã kho <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.WareHouseCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã kho", @maxlength = "20" } })
+                    <span class="text-danger" id="errWareHouseCode"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Tên kho <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.WareHouseName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên kho", @maxlength = "100" } })
+                    <span class="text-danger" id="errWareHouseName"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">Họ tên người liên hệ</label>
+                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ tên người liên hệ" } })
+                    <span class="text-danger" id="errFullName"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label class="mb-1">SĐT người liên hệ</label>
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "SĐT người liên hệ", @maxlength = "11" } })
+                    <span class="text-danger" id="errMobileNumber"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                    <span class="text-danger" id="errStreet"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Tỉnh/Thành phố</label>
+                    @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('ProvinceID', 'WardID')" })
+                    <span class="text-danger" id="errProvinceID"></span>
+                </div>
+                @*<div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Quận/Huyện</label>
+                    @Html.DropDownListFor(model => model.DistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('DistrictID', 'WardID')" })
+                    <span class="text-danger" id="errDistrictID"></span>
+                </div>*@
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="form-label">Phường/Xã</label>
+                    @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errWardID"></span>
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-8 mb-2">
+                    <div class="form-check custom-checkbox ms-1">
+                        @Html.EditorFor(model => model.IsDefault, new { htmlAttributes = new { @type = "checkbox", @class = "form-check-input" } })
+                        @*<input type="checkbox" class="form-check-input" id="IsDefault">*@
+                        <label class="form-check-label" for="basic_checkbox_1">Kho mặc định</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Thêm mới</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    VNPMapsAutocomplete("Street", "ProvinceID", "DistrictID", "WardID");
+    CheckChangeValue("WareHouseCode", "Vui lòng nhập mã kho", "Code", "Y");
+    CheckChangeValue("WareHouseName", "Vui lòng nhập tên kho", "", "Y");
+    CheckChangeValue("FullName", "", "Vietnamese", "N");
+    OnlyNumber("#MobileNumber");
+    CheckChangeValue("MobileNumber", "", "MobileNumber", "N");
+    CheckChangeValue("ProvinceID", "Vui lòng chọn Tỉnh/ thành phố", "", "Y");
+    //CheckChangeValue("DistrictID", "Vui lòng chọn Quận/ huyện", "", "Y");
+    CheckChangeValue("WardID", "Vui lòng chọn Phường/ xã", "", "Y");
+    CheckChangeValue("Street", "Vui lòng nhập địa chỉ.", "", "Y");
+
+    $("#btnSubmit").on("click", function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            WareHouseCode: $("#WareHouseCode").val().trim(),
+            WareHouseName: $("#WareHouseName").val().trim(),
+            FullName: $('#FullName').val().trim(),
+            MobileNumber: $('#MobileNumber').val().trim(),
+            ProvinceID: $("#ProvinceID").val(),
+            DistrictID: $("#DistrictID").val(),
+            WardID: $("#WardID").val(),
+            Street: $("#Street").val().trim(),
+            IsDefault: $('#IsDefault').is(':checked') == true ? "Y" : "N",
+        }
+
+        IsError = CheckNullAndRegexValue(data.WareHouseCode, "Code", "WareHouseCode", "Vui lòng nhập mã kho", Message, IsError);
+        IsError = CheckNullValue(data.WareHouseName, "WareHouseName", "Vui lòng nhập tên kho", IsError);
+        IsError = CheckRegexValue(data.FullName, "Vietnamese", "FullName", Message, IsError);
+        IsError = CheckRegexValue(data.MobileNumber, "MobileNumber", "MobileNumber", "Số điện thoại không hợp lệ", IsError);
+        IsError = CheckNullValue(data.ProvinceID, "ProvinceID", "Vui lòng chọn Tỉnh/ thành phố.", IsError);
+        //IsError = CheckNullValue(data.DistrictID, "DistrictID", "Vui lòng chọn Quận/ huyện.", IsError);
+        IsError = CheckNullValue(data.WardID, "WardID", "Vui lòng chọn Phường/ Xã.", IsError);
+        IsError = CheckNullValue(data.Street, "Street", "Vui lòng nhập địa chỉ.", IsError);
+
+        if (IsError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddWareHouse", "WareHouse")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            }
+        });
+    });
+</script>

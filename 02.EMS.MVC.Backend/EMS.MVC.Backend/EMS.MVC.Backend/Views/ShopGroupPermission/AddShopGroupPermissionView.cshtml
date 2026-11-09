@@ -1,0 +1,218 @@
+﻿@{
+    ViewBag.Title = "Thêm nhóm quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "ShopGroupPermission")">QL nhóm quyền CH</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Thêm nhóm quyền CH</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label for="GroupPermissionCode">Mã nhóm quyền <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="GroupPermissionCode" onkeypress="return blockSpecialCharAndSpace(event)" placeholder="Vui lòng nhập mã nhóm quyền" autocomplete="off">
+                    <span class="text-danger" id="errGroupPermissionCode"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label for="GroupPermissionName">Tên nhóm quyền <span class="text-danger">(*)</span></label>
+                    <input type="text" class="form-control" id="GroupPermissionName" placeholder="Vui lòng nhập tên nhóm quyền">
+                    <span class="text-danger" id="errGroupPermissionName"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label for="ShopLevel">Cấp sử dụng <span class="text-danger">(*)</span></label>
+                    <select class="form-control select2" id="ShopLevel" style="color: black;">
+                        <option value="">--- Chọn ---</option>
+                        @foreach (var item in ViewBag.ListShopLevel)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                    <span class="text-danger" id="errShopLevel"></span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <label for="IsLock">Trạng thái <span class="text-danger">(*)</span></label>
+                    <select class="form-control select2" id="IsLock" style="color: black;">
+                        @foreach (var item in ViewBag.ListIsLock)
+                        {
+                            <option value="@item.Value" @{ if (item.Value == "N") { Write("selected"); } }>@item.Text</option>
+                        }
+                    </select>
+                    <span class="text-danger" id="errIsLock"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label for="Description">Mô tả </label>
+                    <input type="text" class="form-control" id="Description" placeholder="Vui lòng nhập mô tả">
+                    <span class="text-danger" id="errDescription"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <div class="row justify-content-between mr-0 ml-0">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href = '@Url.Action("Index","ShopGroupPermission")'">QUAY LẠI</button>
+                        <button type="button" class="btn btn-sm btn-primary" id="btnSubmit">XÁC NHẬN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            language: {
+                noResults: function () {
+                    return 'Không tìm thấy dữ liệu.';
+                },
+            },
+        });
+        //$(document).on('focus', '.select2-selection.select2-selection--single', function (e) {
+        //    $(this).closest(".select2-container").siblings('select:enabled').select2('open');
+        //});
+
+        //$('select.select2').on('select2:closing', function (e) {
+        //    $(e.target).data("select2").$selection.one('focus focusin', function (e) {
+        //        e.stopPropagation();
+        //    });
+        //});
+        OnChangeValidate("#GroupPermissionCode", "#errGroupPermissionCode", "Mã nhóm quyền không được để trống.");
+        OnChangeValidateRegexVersion3("#GroupPermissionName", "#errGroupPermissionName", "Tên nhóm quyền không được để trống.", "NotSpecialCharButVietnamese", "Y");
+        OnChangeValidate("#ShopLevel", "#errShopLevel", "Cấp sử dụng không được để trống.");
+        OnChangeValidateRegexVersion3("#Description", "#errDescription", "", "NotSpecialCharButVietnamese", "N");
+    });
+    $("#btnSubmit").on("click", function () {
+        var isError = false;
+        var data = {
+            GroupPermissionCode: $("#GroupPermissionCode").val().trim(),
+            GroupPermissionName: $("#GroupPermissionName").val().trim(),
+            ShopLevel: $("#ShopLevel").val(),
+            IsLock: $("#IsLock").val(),
+            Description: $("#Description").val().trim()
+        };
+
+        if (data.GroupPermissionCode == "") {
+            $("#errGroupPermissionCode").text("Vui lòng nhập mã nhóm quyền.");
+            $("#GroupPermissionCode").focus();
+            isError = true;
+        }
+
+        if (data.GroupPermissionName == '') {
+            $("#errGroupPermissionName").text("Vui lòng nhập tên nhóm quyền.");
+            $("#GroupPermissionName").focus();
+            isError = true;
+        } else {
+            if (Validate("NotSpecialCharButVietnamese", data.GroupPermissionName)) {
+                $("#errGroupPermissionName").text("Tên nhóm quyền không được phép có ký tự đặc biệt.");
+                $("#GroupPermissionName").focus();
+                isError = true;
+            } else {
+                $("#errGroupPermissionName").text("");
+            }
+        }
+
+        if (data.ShopLevel == "") {
+            $("#errShopLevel").text("Vui lòng chọn cấp sử dụng.");
+            isError = true;
+        }
+
+        if (data.Description != '') {
+            if (Validate("NotSpecialCharButVietnamese", data.Description)) {
+                $("#errDescription").text("Mô tả không được phép có ký tự đặc biệt.");
+                $("#Description").focus();
+                isError = true;
+            } else {
+                $("#errDescription").text("");
+            }
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn thêm nhóm quyền " + data.GroupPermissionName + "?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddShopGroupPermission", "ShopGroupPermission")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == '00') {
+                            swal({
+                                icon: 'success',
+                                title: 'Thông báo',
+                                text: res.Message,
+                                button: false
+                            });
+                            setTimeout(function () { window.location.href = '@Url.Action("Index", "ShopGroupPermission")' }, 1500);
+                        } else {
+                            swal({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+</script>
+

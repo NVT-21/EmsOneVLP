@@ -1,0 +1,224 @@
+﻿@model EMS.MVC.Frontend.Models.EditDetailInventoryOutputViewModel
+
+@if (Model.ListInventoryOutputDetail.Count > 0)
+{
+    foreach (var item in Model.ListInventoryOutputDetail)
+    {
+        Model.NumberOfDetail++;
+        <tr class="row-item">
+            <td style="min-width: 200px">
+                <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@Model.NumberOfDetail" onchange="sltChangeProductVariant(@Model.NumberOfDetail)">
+                    <option value="">-- Sản phẩm --</option>
+                    @foreach (var ItemProductVariant in Model.ListProductVariant)
+                    {
+                        if (ItemProductVariant.ProductVariantID == item.Product.ProductVariant.ID)
+                        {
+                            <option value="@ItemProductVariant.ProductVariantID" data-SKU="@ItemProductVariant.ProductVariantSKU" data-Price="@ItemProductVariant.ProductVariantPrice" data-Inventory="@ItemProductVariant.NumberOfInventory" selected>@ItemProductVariant.ProductName (@ItemProductVariant.ProductVariantName)</option>
+                        }
+                        else
+                        {
+                            <option value="@ItemProductVariant.ProductVariantID" data-SKU="@ItemProductVariant.ProductVariantSKU" data-Price="@ItemProductVariant.ProductVariantPrice" data-Inventory="@ItemProductVariant.NumberOfInventory">@ItemProductVariant.ProductName (@ItemProductVariant.ProductVariantName)</option>
+                        }
+                    }
+                </select>
+                <span class="text-danger" id="errProductVariant_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <span class="ClearData WareHouseQuantity" id="WareHouseQuantity_@Model.NumberOfDetail">@item.WareHouseQuantity.ToString("N0")</span>
+            </td>
+            <td style="min-width: 200px">
+                <div class="quantity-block" style="width: 100%">
+                    <button class="btn quantity-arrow-minus" onclick="btnMinus(@Model.NumberOfDetail)"> - </button>
+                    <input type="text" class="form-control quantity-num ClearDataInputInt" name="ProductQuantity" id="ProductQuantity_@Model.NumberOfDetail" onchange="inpChangeProductQuantity(@Model.NumberOfDetail)" placeholder="Nhập số lượng" value="@item.Quantity" style="width: 100%;">
+                    <button class="btn quantity-arrow-plus" onclick="btnPlus(@Model.NumberOfDetail)"> + </button>
+                </div>
+                <span class="text-danger" id="errProductQuantity_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <div>
+                    <span class="ClearData ProductPrice" id="ProductPrice_@Model.NumberOfDetail">@item.Price.ToString("N0")</span>
+                    <span>đ</span>
+                </div>
+                <span class="text-danger" id="errProductPrice_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <span class="ClearData TotalPrice" id="TotalPrice_@Model.NumberOfDetail">@item.TotalAmount.ToString("N0")</span>
+                <span>đ</span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control ClearDataInputString" name="PalletCode" id="PalletCode_@Model.NumberOfDetail" onchange="inpChangePalletCode(@Model.NumberOfDetail)" value="@item.Product.ProductVariant.Pallet.PalletCode" placeholder="Nhập mã Pallet" maxlength="20">
+                <span class="text-danger" id="errPalletCode_@Model.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 100px" class="text-center">
+                <button class="btn btn-sm" type="button" onclick="btnRemoveRow(this)" title="Xoá" style="color: red;">
+                    <i class="icon-trash fs-18"></i>
+                </button>
+            </td>
+            <td hidden class="NumberOfDetail">@Model.NumberOfDetail</td>
+        </tr>
+    }
+}
+else
+{
+    <tr class="row-item">
+        <td style="min-width: 200px">
+            <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@Model.NumberOfDetail" onchange="sltChangeProductVariant(@Model.NumberOfDetail)">
+                <option value="">-- Sản phẩm --</option>
+                @foreach (var item in Model.ListProductVariant)
+                {
+                    <option value="@item.ProductVariantID" data-SKU="@item.ProductVariantSKU" data-Price="@item.ProductVariantPrice" data-Inventory="@item.NumberOfInventory">@item.ProductName (@item.ProductVariantName)</option>
+                }
+            </select>
+            <span class="text-danger" id="errProductVariant_@Model.NumberOfDetail"></span>
+        </td>
+        <td style="min-width: 200px">
+            <span class="ClearData WareHouseQuantity" id="WareHouseQuantity_@Model.NumberOfDetail">0</span>
+        </td>
+        <td style="min-width: 200px">
+            <div class="quantity-block d-none" style="width: 100%">
+                <button class="btn quantity-arrow-minus" onclick="btnMinus(@Model.NumberOfDetail)"> - </button>
+                <input type="text" class="form-control quantity-num ClearDataInputInt" name="ProductQuantity" id="ProductQuantity_@Model.NumberOfDetail" onchange="inpChangeProductQuantity(@Model.NumberOfDetail)" placeholder="Nhập số lượng" value="0" style="width: 100%;">
+                <button class="btn quantity-arrow-plus" onclick="btnPlus(@Model.NumberOfDetail)"> + </button>
+            </div>
+            <span class="text-danger" id="errProductQuantity_@Model.NumberOfDetail"></span>
+        </td>
+        <td style="min-width: 200px">
+            <div>
+                <span class="ClearData ProductPrice" id="ProductPrice_@Model.NumberOfDetail">0</span>
+                <span>đ</span>
+            </div>
+            <span class="text-danger" id="errProductPrice_@Model.NumberOfDetail"></span>
+        </td>
+        <td style="min-width: 200px">
+            <span class="ClearData TotalPrice" id="TotalPrice_@Model.NumberOfDetail">0</span>
+            <span>đ</span>
+        </td>
+        <td style="min-width: 200px">
+            <input type="text" class="form-control ClearDataInputString" name="PalletCode" id="PalletCode_@Model.NumberOfDetail" onchange="inpChangePalletCode(@Model.NumberOfDetail)" placeholder="Nhập mã Pallet" maxlength="20">
+            <span class="text-danger" id="errPalletCode_@Model.NumberOfDetail"></span>
+        </td>
+        <td style="min-width: 100px" class="text-center">
+            <button class="btn btn-sm" type="button" onclick="btnRemoveRow(this)" title="Xoá" style="color: red;">
+                <i class="icon-trash fs-18"></i>
+            </button>
+        </td>
+        <td hidden class="NumberOfDetail">@Model.NumberOfDetail</td>
+    </tr>
+}
+
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    function ClearData(NumberOfDetail) {
+        if (NumberOfDetail) {
+            $("#WareHouseQuantity_" + NumberOfDetail).text("0");
+            $("#ProductQuantity_" + NumberOfDetail).val(0);
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+            $("#ProductPrice_" + NumberOfDetail).text("0");
+            $("#errProductPrice_" + NumberOfDetail).text("");
+            $("#TotalPrice_" + NumberOfDetail).text("0");
+            $("#PalletCode" + NumberOfDetail).val("");
+            $("#errPalletCode_" + NumberOfDetail).text("");
+        } else {
+            $(".ClearData").text("0");
+            $(".ClearDataInputInt").val(0);
+            $(".ClearDataInputString").val("");
+            $(".quantity-block").addClass("d-none");
+            $(".text-danger").text("");
+        }
+    }
+
+    function btnRemoveRow(this1) {
+        var NumberOfRow = $(".row-item").length;
+        if (NumberOfRow > 1) {
+            $(this1).parents("tr").remove();
+        } else {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm");
+        }
+    }
+
+    function sltChangeProductVariant(NumberOfDetail) {
+        var ProductVariantValue = $("#ProductVariant_" + NumberOfDetail).val();
+        if (ProductVariantValue) {
+            var CheckDuplicate = CheckProductVariantDuplicate(NumberOfDetail);
+            if (CheckDuplicate == true) {
+                $('#ProductVariant_' + NumberOfDetail).val("").change();
+                CreateCustomSwal("error", "Sản phẩm đã tồn tại");
+                return;
+            }
+            var WareHouseQuantity = $("option:selected", $("#ProductVariant_" + NumberOfDetail)).attr("data-Inventory");
+            var ProductPrice = $("option:selected", $("#ProductVariant_" + NumberOfDetail)).attr("data-Price");
+
+            $("#WareHouseQuantity_" + NumberOfDetail).text(NumberFormat(WareHouseQuantity));
+            $("#ProductQuantity_" + NumberOfDetail).val(0);
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+            $("#ProductPrice_" + NumberOfDetail).text(NumberFormat(ProductPrice));
+            $(".quantity-block").removeClass("d-none");
+            $("#errListDetail").text("");
+        } else {
+            ClearData(NumberOfDetail);
+        }
+    }
+
+    function inpChangeProductQuantity(NumberOfDetail) {
+        LoadTotalPrice(NumberOfDetail);
+        CheckProductQuantityInWareHouseQuantity(NumberOfDetail);
+    }
+
+    function btnPlus(NumberOfDetail) {
+        var value = $("#ProductQuantity_" + NumberOfDetail).val();
+        $("#ProductQuantity_" + NumberOfDetail).val(parseInt(value) + 1).change();
+    }
+
+    function btnMinus(NumberOfDetail) {
+        var value = $("#ProductQuantity_" + NumberOfDetail).val();
+        if (value > 1) {
+            $("#ProductQuantity_" + NumberOfDetail).val(parseInt(value) - 1).change();
+        }
+    }
+
+    function CheckProductQuantityInWareHouseQuantity(NumberOfDetail) {
+        var WareHouseQuantity = $("option:selected", $("#ProductVariant_" + NumberOfDetail)).attr("data-Inventory");
+        var value = $("#ProductQuantity_" + NumberOfDetail).val();
+        if (parseInt(value) > parseInt(WareHouseQuantity)) {
+            $("#errProductQuantity_" + NumberOfDetail).text("Số lượng xuất kho vượt quá số lượng trong kho.");
+        } else {
+            $("#errProductQuantity_" + NumberOfDetail).text("");
+        }
+    }
+
+    function CheckProductVariantDuplicate(NumberOfDetail) {
+        var arr = [];
+        var ChooseProductVariant = $("#ProductVariant_" + NumberOfDetail).val();
+        $('.row-item').each(function () {
+            var ProductVariant = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+            if (ProductVariant == ChooseProductVariant) {
+                arr.push(ProductVariant);
+            }
+        });
+
+        if (arr.length > 1 && arr.find(m => m == ChooseProductVariant)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function LoadTotalPrice(NumberOfDetail) {
+        var ProductQuantity = $("#ProductQuantity_" + NumberOfDetail).val();
+        var ProductPrice = $("option:selected", $("#ProductVariant_" + NumberOfDetail)).attr("data-Price");
+        var TotalPrice = Number(ProductQuantity) * Number(ProductPrice);
+        $("#TotalPrice_" + NumberOfDetail).text(NumberFormat(TotalPrice));
+    }
+
+    function inpChangePalletCode(NumberOfDetail) {
+        var PalletCode = $("#PalletCode_" + NumberOfDetail).val();
+        var isError = false;
+        isError = CheckRegexValue(PalletCode, "SpecialCharButNotVietnamese", "PalletCode_" + NumberOfDetail, "Mã Pallet không hợp lệ", isError);
+        if (isError == true) {
+            return;
+        }
+    }
+</script>

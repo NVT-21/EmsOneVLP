@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderImportWorker", "OrderImportWorker\OrderImportWorker.csproj", "{7CD0DF0F-7311-4E62-A6FF-78F2B35CDC5F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CD0DF0F-7311-4E62-A6FF-78F2B35CDC5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CD0DF0F-7311-4E62-A6FF-78F2B35CDC5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CD0DF0F-7311-4E62-A6FF-78F2B35CDC5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CD0DF0F-7311-4E62-A6FF-78F2B35CDC5F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8011860-50B2-4314-80A9-E06FF2B7E9DA}
+	EndGlobalSection
+EndGlobal

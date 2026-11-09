@@ -1,0 +1,140 @@
+﻿@model EMS.MVC.Backend.Models.ShopViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("ShopView","Shop")">Tài khoản khách hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label class="">Tìm theo</label>
+                    @Html.DropDownListFor(model => model.DateType, new SelectList(Model.ListDateType, "Value", "Text"), new { @class = "select2" })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label for="">Từ ngày</label>
+                    @Html.EditorFor(model => model.FromDate, new { htmlAttributes = new { @type = "datetime", @class = "form-control", @placeholder = "dd / mm / yyyy" } })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label for="">Đến ngày</label>
+                    @Html.EditorFor(model => model.ToDate, new { htmlAttributes = new { @type = "datetime", @class = "form-control", @placeholder = "dd / mm / yyyy" } })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>Mã khách hàng</label>
+                    @Html.EditorFor(model => model.CustomerCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã khách hàng" } })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>Mã CRM/Paypost</label>
+                    @Html.EditorFor(model => model.CrmOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã CRM/Paypost" } })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>Số điện thoại</label>
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>Trạng thái</label>
+                    @Html.DropDownListFor(model => model.AccountStatus, new SelectList(Model.ListAccountStatus, "Value", "Text"), "---Chọn---", new { @class = "select2" })
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>&nbsp;</label>
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control form-control-sm text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-lg-3 col-md-4 mb-2">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-sm btn-primary form-control form-control-sm" onclick="location.href='@Url.Action("AddShopView", "Shop")'">
+                        <i class="fa fa-plus-circle"></i> THÊM MỚI
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data" class="table-responsive">
+                @{
+                    Html.RenderAction("SearchListShopView", "Shop", new { FromDate = Model.FromDate, ToDate = Model.ToDate, DateType = "CREATED_DATE" });
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            OnlyNumber("#MobileNumber");
+            CreateDatePicker("#FromDate, #ToDate");
+        });
+
+        $('#btnSearch').on('click', function () {
+            var errMsg = "", isError = false;
+
+            var data = {
+                FromDate: $('#FromDate').val().trim(),
+                ToDate: $('#ToDate').val().trim(),
+                AccountStatus: $('#AccountStatus').val().trim(),
+                MobileNumber: $('#MobileNumber').val().trim(),
+                CustomerCode: $('#CustomerCode').val().trim(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().trim(),
+                DateType: $('#DateType').val(),
+            };
+
+            if (!data.FromDate) {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (!data.ToDate) {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            if (isError == true) {
+                swal({
+                    title: 'Thông báo',
+                    text: errMsg,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+
+                })
+                return;
+            }
+
+            $.get('@Url.Action("SearchListShopView", "Shop")', data, function (htmlString) {
+                $('#tbl-data').html(htmlString);
+            });
+        });
+
+        function btnExportExcel() {
+            var req = {
+                FromDate: $('#FromDate').val().trim(),
+                ToDate: $('#ToDate').val().trim(),
+                AccountStatus: $('#AccountStatus').val().trim(),
+                MobileNumber: $('#MobileNumber').val().trim(),
+                CustomerCode: $('#CustomerCode').val().trim(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().trim(),
+                DateType: $('#DateType').val(),
+            };
+            var param = String.format("FromDate={0}&ToDate={1}&AccountStatus={2}&MobileNumber={3}&CustomerCode={4}&CrmOrPaypostCode={5}&DateType={6}",
+                req.FromDate, req.ToDate, req.AccountStatus, req.MobileNumber, req.CustomerCode, req.CrmOrPaypostCode, req.DateType);
+            window.location.href = '@Url.Action("ExportListShop", "Shop")?' + param;
+        }
+    </script>
+}

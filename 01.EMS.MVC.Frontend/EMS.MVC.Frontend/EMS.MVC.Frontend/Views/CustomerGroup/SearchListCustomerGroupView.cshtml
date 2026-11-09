@@ -1,0 +1,75 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListCustomerGroupViewModel>
+<table id="ListDataTableSearch" class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>STT</th>
+            <th>Mã nhóm</th>
+            <th>Tên nhóm</th>
+            <th>Số đơn hàng thành công</th>
+            <th>Số tiền mua hàng</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@item.CustomerGroup.Code || @item.CustomerGroup.Name </td>
+                    <td>@(stt++)</td>
+                    <td>@item.CustomerGroup.Code</td>
+                    <td>@item.CustomerGroup.Name</td>
+                    <td>
+                        @if (item.OrderSuccess == 0)
+                        {
+                            Write("---");
+                        }
+                        else
+                        {
+                            Write(item.OrderSuccess.ToString("N0"));
+                        }
+                    </td>
+                    <td>
+                        @if (item.PurchaseMoney == 0)
+                        {
+                            Write("---");
+                        }
+                        else
+                        {
+                            Write(item.PurchaseMoney.ToString("N0"));
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button title="Xem khách hàng trong nhóm" onclick="ShowCustomerInGroup('@item.CustomerGroup.Name')" class="btn btn-view light">
+                            <i class="icon-eye fs-18"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("ListDataTableSearch");
+    });
+
+    function ShowCustomerInGroup(GroupName) {
+        var param = String.format("GroupName={0}", GroupName);
+        var link = document.createElement('a');
+        link.target = "_blank";
+        link.href = '@Url.Action("ShowCustomerInGroup", "CustomerGroup")?' + param;
+        link.click();
+
+        //window.location.href = '@Url.Action("ShowCustomerInGroup", "CustomerGroup")?GroupName=' + GroupName;
+
+        @*$.post('@Url.Action("CustomerView", "Customer")', {
+            CustomerGroup: GroupName
+        }, function (data) {
+            $("#ViewShow").html(data);
+        });*@
+    }
+</script>

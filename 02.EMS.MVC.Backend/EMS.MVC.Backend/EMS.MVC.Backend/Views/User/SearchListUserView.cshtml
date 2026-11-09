@@ -1,0 +1,255 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListUserViewModel>
+
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Tài khoản </th>
+            <th> Tên nhân viên </th>
+            <th> Email </th>
+            <th> Số điện thoại </th>
+            <th> Nhóm người dùng </th>
+            <th> Thời gian đăng nhập cuối cùng </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody class="text-left">
+        @if (Model != null)
+        {
+            var i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.UserName</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Email</td>
+                    <td class="text-center">@item.MobileNumber</td>
+                    <td>@item.UserGroup.Name</td>
+                    <td>@item.LastLogin</td>
+                    <td class="text-center">
+                        @if (item.IsLock == "N")
+                        {
+                            <button onclick="ChangeToLocked(@item.ID)" title="Khoá" class="badge badge-outline-primary">
+                                <i class="fa fa-unlock"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button onclick="ChangeToUnlocked(@item.ID)" title="Mở khoá" class="badge badge-outline-danger">
+                                <i class="fa fa-lock"></i>
+                            </button>
+                        }
+
+                        <button @*onclick="Edit(@item.ID)"*@ onclick="window.location.href = '@Url.Action("EditUserView", "User", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString()) })'" title="Sửa" class="badge badge-outline-danger">
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <button title="Khôi phục mật khẩu" type="button" onclick="Reset(@item.ID,'@item.UserName')" class="badge badge-outline-warning">
+                            <i class="fa fa-refresh text-warning"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function ChangeToLocked(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn Khoá nhân viên này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeToLocked", "User")',
+                    data: {
+                        ID: ID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function ChangeToUnlocked(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn Mở Khoá nhân viên này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChangeToUnlocked", "User")',
+                    data: {
+                        ID: ID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function Reset(ID, UserName) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn đặt lại mật khẩu?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JResetPassword", "User")',
+                    data: {
+                        ID,
+                        UserName
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false
+                            });
+                            setTimeout(function () { location.reload(); }, 1200);
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Close"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    @*function Edit(ID) {
+        var ID = parseInt(ID);
+        $.get('@Url.Action("EditUserView", "User")', { ID: ID }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }*@
+</script>

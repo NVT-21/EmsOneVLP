@@ -1,0 +1,61 @@
+﻿@model List<EMS.MVC.Frontend.Models.EmployeeListViewModel>
+@{
+    Layout = null;
+    var countListEmployee = Model.Count;
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    <select id="EmployeeID" name="EmployeeID" class="selectpicker form-control" data-live-search="true" data-selected-text-format="count" data-actions-box="true" multiple>
+        @foreach (var item in Model)
+        {
+            <option value="@item.ID">@item.FullName</option>
+        }
+    </select>
+}
+else
+{
+    <select id="EmployeeID" class="form-control">
+        <option value="">--- Chọn --- </option>
+    </select>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#EmployeeID').selectpicker('refresh');
+        $('#EmployeeID').selectpicker();
+        $('#EmployeeID').selectpicker('selectAll');
+        $('#EmployeeID').on('change', function () {
+            if ($('#EmployeeID').val() == '') {
+                $("#errEmployeeID").text("Vui lòng chọn nhân viên.");
+                $("#EmployeeID").focus();
+                return;
+            } else {
+                $("#errEmployeeID").text("");
+            }
+        });
+    });
+
+    $('#EmployeeID').on('changed.bs.select loaded.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        var $title = $(this).parent().find('.filter-option-inner-inner');
+        var selectedText = $title.text();
+        var $rootEl = $(this).parent();
+
+        if ($(this).parent().find('.bs-placeholder').length === 0) {
+            var countListEmployee = @countListEmployee;
+            if ($('#EmployeeID').val().length == countListEmployee) {
+                $title.text("Tất cả");
+            }
+
+            var selectedCount = selectedText.split(', ').length;
+            if (selectedCount > 2) {
+                selectedText = selectedCount;
+            }
+            //$title.text($(this).data('prefix') + selectedText);
+            $rootEl.addClass('has-selected');
+        } else {
+            //$title.text($(this).data('placeholder'));
+            $rootEl.removeClass('has-selected');
+        }
+    });
+</script>

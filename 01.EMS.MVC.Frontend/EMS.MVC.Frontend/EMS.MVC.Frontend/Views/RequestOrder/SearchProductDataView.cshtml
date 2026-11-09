@@ -1,0 +1,190 @@
+﻿@model List<EMS.Entity.ZOrderSearchProductResponse>
+@{
+    Layout = null;
+}
+
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="list-group" style="overflow-y:auto; height:450px;" id="ListProduct">
+        @foreach (var item in Model)
+        {
+            <div class="accordion-item">
+                <div class="accordion-header rounded-lg" id="accord-11One" data-bs-toggle="collapse"
+                     data-bs-target="#collapse11One" aria-controls="collapse11One" aria-expanded="true" role="button">
+                    <span class="accordion-header-indicator"></span>
+                    <span class="accordion-header-icon"></span>
+                    <span for="ProductID_@item.ProductID" class="accordion-header-text">@item.ProductName</span>
+                </div>
+                <div id="collapse11One" class="collapse accordion__body show" aria-labelledby="accord-11One"
+                     data-bs-parent="#accordion-eleven">
+                    @foreach (var itemVariant in item.Variants)
+                    {
+                        var Key = itemVariant.ProductID.ToString() + "-" + itemVariant.VariantID.ToString();
+                        <div class="tbody">
+                            <div class="th" style="width:50px;">
+                                <div style="width:50px;"></div>
+                            </div>
+                            <div class="th">
+                                <div class="name">
+                                    <div class="form-check custom-checkbox  check-lg me-3">
+                                        <input type="checkbox" class="form-check-input @item.ProductID" id="checkbox_@Key" name="itemProduct" onchange="checkProduct(this)" onclick="FuncCheck(this);" data-VariantID="@itemVariant.VariantID" data-ProductID="@itemVariant.ProductID" data-SKU="@itemVariant.SKU">
+                                        <label class="form-check-label" data-key="@Key" for="checkbox_@Key"></label>
+                                    </div>
+                                    <img src="@XHelper.pathImages@itemVariant.Image" alt="">
+                                    @itemVariant.VariantName
+                                </div>
+                            </div>
+                            <div class="th" data-value="@itemVariant.Quantity" id="Quantity_@Key">@itemVariant.Quantity</div>
+                            <div class="th" id="Text_@Key">@itemVariant.Price.ToString("N0") vnđ</div>
+                            <div class="th">
+                                <div class="quantity-block">
+                                    <button class=" btn quantity-arrow-minus"> - </button>
+                                    <input class="quantity-num OnlyNumber @item.ProductID" type="number" value="1" id="OrderQuantity_@Key" onkeyup="checkNumberOfProductInSearchProductDataView(this, @itemVariant.Quantity, '@Key')"/>
+                                    <button class="btn quantity-arrow-plus"> + </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <label>Không tìm thấy kết quả cho "@ViewBag.textSearch"</label>
+}
+
+<script>
+    function checkNumberOfProductInSearchProductDataView(ID, WareHouseQuantity, Key) {
+        var value = parseInt($(ID).val());
+        if (value > parseInt(WareHouseQuantity)) {
+            $("#errMessage_"+Key).text("Số lượng mua vượt quá số lượng trong kho");
+        } else {
+            $("#errMessage_" + Key).text("");
+        }
+    }
+
+    $(".OnlyNumber").on("keypress keyup blur", function (event) {
+        $(this).val($(this).val().replace(/[^\d].+/, ""));
+        if ((event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+    });
+
+    function checkProduct(this1) {
+        debugger
+        var ProductID = $(this1).attr("data-ProductID");
+        var VariantID = $(this1).attr("data-VariantID");
+        var Key = ProductID + "-" + VariantID;
+        var ckbID = document.getElementById("checkbox_" + Key).checked;
+        if (ckbID == false) {
+            $("#OrderQuantity_" + Key).css('display', 'none');
+            $("#minus_" + Key).css('display', 'none');
+            $("#plus_" + Key).css('display', 'none');
+        }
+        else {
+            $("#OrderQuantity_" + Key).css('display', 'inline');
+            $("#minus_" + Key).css('display', 'inherit');
+            $("#plus_" + Key).css('display', 'inherit');
+        }
+    };
+
+    var SelectedList = @Html.Raw(Json.Encode(ViewBag.SelectedList));
+    var CheckedList = @Html.Raw(Json.Encode(ViewBag.CheckedList));
+    var lstOrderedProduct = document.getElementsByName("OrderedProduct");
+    var lstProduct = document.getElementsByName("Product");
+    for (var i = 0; i < lstOrderedProduct.length; i++) {
+        var key = lstOrderedProduct[i].getAttribute("data-key");
+        $("#Text_" + key).text("Sản phẩm đã được thêm");
+        $("#checkbox_" + key).remove();
+    }
+
+    for (var i = 0; i < CheckedList.length; i++) {
+        var key = CheckedList[i].ProductID + "-" + CheckedList[i].VariantID;
+        $("#checkbox_" + key).prop("checked", true);
+    }
+
+    var lstCheck = document.getElementsByName('Product');
+    for (var i = 0; i < lstCheck.length; i++) {
+        var lstChild = $(lstCheck[i]).children();
+        var lstProduct = $(lstChild[1]).find('input[name="itemProduct"]');
+        var check = 0;
+        for (var k = 0; k < lstProduct.length; k++) {
+            if (lstProduct[k].checked == true) {
+                check++;
+            }
+        }
+        if (check == lstProduct.length && check > 0) {
+            $(lstChild[0]).find('input[type="checkbox"]').prop("checked", true);
+        }
+    }
+
+    $('input[type="checkbox"]').change(function (e) {
+        $("#errtextSearchProduct").text("");
+        var checked = $(this).prop("checked"),
+            container = $(this).parent().parent(),
+            siblings = container.siblings();
+            container.find('input[type="checkbox"]').prop({
+                indeterminate: false,
+                checked: checked
+            });
+        function checkSiblings(el) {
+            var parent = el.parents("li"),
+                all = true;
+
+            el.siblings().each(function () {
+                return all = ($(this).children().find('input[type="checkbox"]').prop("checked") === checked);
+            });
+
+            if (all && checked) {
+                for (var i = 1; i < el.find('input[type="checkbox"]').length; i++) {
+                    el.find('input[type="checkbox"]')[i].onchange();
+                }
+                parent.children().find('input[type="checkbox"]').prop({
+                    indeterminate: false,
+                    checked: checked
+                });
+            } else if (all && !checked) {
+                for (var i = 1; i < el.find('input[type="checkbox"]').length; i++) {
+                    el.find('input[type="checkbox"]')[i].onchange();
+                }
+                parent.children().children('input[type="checkbox"]').prop("checked", checked);
+                parent.children().children('input[type="checkbox"]').prop("indeterminate", (parent.find('input[type="checkbox"]:checked').length > 0));
+            } else {
+                for (var i = 1; i < el.find('input[type="checkbox"]').length; i++) {
+                    el.find('input[type="checkbox"]')[i].onchange();
+                }
+                el.parents("li").children().children('input[type="checkbox"]').prop({
+                    indeterminate: true,
+                    checked: false
+                });
+            }
+        }
+        checkSiblings(container);
+    });
+    function minus(ctl, key) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 1 : $input.val();
+        var count = parseInt(value) - 1;
+        count = count <= 0 ? 1 : count;
+        $input.val(count);
+        $input.change();
+        FuncUpdateIntoMoney(key);
+        return false;
+    };
+
+    function plus(ctl, key) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 0 : $input.val();
+        var count = parseInt(value) + 1;
+        $input.val(count);
+        $input.change();
+        FuncUpdateIntoMoney(key);
+        return false;
+    };
+</script>
+<script src="~/Assets/js/inputmask.js"></script>
+

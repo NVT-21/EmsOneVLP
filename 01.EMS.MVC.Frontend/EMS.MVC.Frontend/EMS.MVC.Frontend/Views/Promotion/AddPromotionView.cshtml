@@ -1,0 +1,38 @@
+﻿
+@{
+    //ViewBag.Title = "JAddPromotionView";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document" style="margin-top: 10%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Tạo khuyến mãi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <a class="btn btn-outline-light d-flex align-items-center justify-content-between" href="@Url.Action("AddPromotionCode","Promotion")">
+                        <div class="d-flex flex-column align-items-start">
+                            <label class="mb-1 text-black font-w600">Tạo mã khuyến mãi</label>
+                            <div class="text-2">Khách hàng sẽ nhận giảm giá khi nhập mã khuyến mãi cho đơn hàng</div>
+                        </div>
+                        <i class="icon-arrow-r fs-20"></i>
+                    </a>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <a class="btn btn-outline-light d-flex align-items-center justify-content-between" href="@Url.Action("AddPromotion","Promotion")">
+                        <div class="d-flex flex-column align-items-start">
+                            <label class="mb-1 text-black font-w600">Tạo chương trình khuyến mãi</label>
+                            <div class="text-2">Khách hàng sẽ nhận được giảm giá tự động cho đơn hàng</div>
+                        </div>
+                        <i class="icon-arrow-r fs-20"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

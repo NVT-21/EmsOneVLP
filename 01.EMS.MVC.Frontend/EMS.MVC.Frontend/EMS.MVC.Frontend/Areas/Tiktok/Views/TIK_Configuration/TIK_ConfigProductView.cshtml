@@ -1,0 +1,242 @@
+﻿@model EMS.MVC.Frontend.Areas.Tiktok.Models.TIK_ConfigProductViewModel
+<h4 class="font-w700">Cấu hình đồng bộ sản phẩm</h4>
+<div class="card card-basis">
+    <div class="card-left boder-left">
+        <ul>
+            <li>
+                <div class="d-flex justify-content-center py-1 mb-2">
+                    <div class="position-relative">
+                        <img src="@XHelper.Session.TiktokProfile.PageAvatar" class="rounded-circle mr-1 me-3" width="52" height="52">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center py-1">
+                    <div class="flex-grow-1 pl-2">
+                        <b>Cửa hàng:</b>&nbsp;@XHelper.Session.TiktokProfile.PageName
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="card-right">
+        <div class="card-body">
+            <p class="fs-16 font-w600">Điều kiện để đồng bộ:</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="ms-3">
+                        <li class="text-muted">Nhà bán hàng đã được duyệt và ở trạng thái đang hoạt động.</li>
+                        <li class="text-muted">Nhà bán hàng cần đảm bảo sản phẩm đã có ở cả hai hệ thống EMSOne và Tiktok Shop.</li>
+                        <li class="text-muted">Biến thể sản phẩm trên EMSOne đã liên kết với biến thể sản phẩm trên Tiktok Shop.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="fs-16 font-w600">Thông tin đồng bộ:</p>
+            <div class="row">
+                @Html.HiddenFor(m => m.ID)
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ms-3">
+                            <small class="text-muted mb-0"><i class="ti-gift me-1"></i>Đồng bộ sản phẩm</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleSyncProduct" onclick="btnToggleClick(1)">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ms-3">
+                            <small class="text-muted mb-0"><i class="ti-wallet me-1"></i>Đồng bộ giá bán lẻ</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleSyncProductPrice" onclick="btnToggleClick(2)">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ms-3">
+                            <small class="text-muted mb-0"><i class="ti-harddrives me-1"></i>Đồng bộ số lượng</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleSyncProductStock" onclick="btnToggleClick(3)">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        if("@Model.IsSyncProduct" == "Y")
+        {
+            $("#btnToggleSyncProduct").addClass("active");
+            $("#btnToggleSyncProduct").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleSyncProduct").addClass("focus");
+            $("#btnToggleSyncProduct").attr("aria-pressed", false);
+        }
+
+        if("@Model.IsSyncProductPrice" == "Y")
+        {
+            $("#btnToggleSyncProductPrice").addClass("active");
+            $("#btnToggleSyncProductPrice").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleSyncProductPrice").addClass("focus");
+            $("#btnToggleSyncProductPrice").attr("aria-pressed", false);
+        }
+
+        if("@Model.IsSyncProductStock" == "Y")
+        {
+            $("#btnToggleSyncProductStock").addClass("active");
+            $("#btnToggleSyncProductStock").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleSyncProductStock").addClass("focus");
+            $("#btnToggleSyncProductStock").attr("aria-pressed", false);
+        }
+    });
+    function btnToggleClick(Type) {
+        var ID = $("#ID").val();
+        var Status = "";
+        var TypeUpdate = "";
+        switch (Type) {
+            case 1:
+                Status = $("#btnToggleSyncProduct").attr('aria-pressed') == "true" ? "N" : "Y";
+                TypeUpdate = "SYNC_PRODUCT";
+                //$("#btnToggleSyncProduct").removeClass("active");
+                //$("#btnToggleSyncProduct").removeAttr("aria-pressed");
+                //if (Status == "Y") {
+                //    $("#btnToggleSyncProduct").addClass("active");
+                //    $("#btnToggleSyncProduct").attr("aria-pressed", true);
+                //}
+                //else {
+                //    $("#btnToggleSyncProduct").addClass("focus");
+                //    $("#btnToggleSyncProduct").attr("aria-pressed", false);
+                //}
+                break;
+            case 2:
+                Status = $("#btnToggleSyncProductPrice").attr('aria-pressed') == "true" ? "N" : "Y";
+                TypeUpdate = "SYNC_PRODUCT_PRICE";
+                //$("#btnToggleSyncProductPrice").removeClass("active");
+                //$("#btnToggleSyncProductPrice").removeAttr("aria-pressed");
+                //if (Status == "Y") {
+                //    $("#btnToggleSyncProductPrice").addClass("active");
+                //    $("#btnToggleSyncProductPrice").attr("aria-pressed", true);
+                //}
+                //else {
+                //    $("#btnToggleSyncProductPrice").addClass("focus");
+                //    $("#btnToggleSyncProductPrice").attr("aria-pressed", false);
+                //}
+                break;
+            case 3:
+                Status = $("#btnToggleSyncProductStock").attr('aria-pressed') == "true" ? "N" : "Y";
+                TypeUpdate = "SYNC_PRODUCT_STOCK";
+                //$("#btnToggleSyncProductStock").removeClass("active");
+                //$("#btnToggleSyncProductStock").removeAttr("aria-pressed");
+                //if (Status == "Y") {
+                //    $("#btnToggleSyncProductStock").addClass("active");
+                //    $("#btnToggleSyncProductStock").attr("aria-pressed", true);
+                //}
+                //else {
+                //    $("#btnToggleSyncProductStock").addClass("focus");
+                //    $("#btnToggleSyncProductStock").attr("aria-pressed", false);
+                //}
+                break;
+            default:
+                break;
+        }
+        fnUpdate(ID, Status, TypeUpdate);
+    }
+    function fnUpdate(ID, Status, Type) {
+        swal({
+            text: "Bạn chắc chắn muốn thay đổi trạng thái?",
+            html: true,
+            buttons: {
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-light",
+                    closeModal: true,
+                },confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("TIK_JConfigProductChange", "TIK_Configuration", new { area = "Tiktok" })',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: ID,
+                        Status: Status,
+                        Type: Type
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        }
+                        else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    }
+                });
+            } else {
+                switch (Type) {
+                    case 1:
+                        $("#btnToggleSyncProduct").removeClass("active");
+                        $("#btnToggleSyncProduct").removeAttr("aria-pressed");
+                        if (status == "Y") {
+                            $("#btnToggleSyncProduct").addClass("focus");
+                            $("#btnToggleSyncProduct").attr("aria-pressed", false);
+                        }
+                        else {
+                            $("#btnToggleSyncProduct").addClass("active");
+                            $("#btnToggleSyncProduct").attr("aria-pressed", true);
+                        }
+                        break;
+                    case 2:
+                        $("#btnToggleSyncProductPrice").removeClass("active");
+                        $("#btnToggleSyncProductPrice").removeAttr("aria-pressed");
+                        if (status == "Y") {
+                            $("#btnToggleSyncProductPrice").addClass("focus");
+                            $("#btnToggleSyncProductPrice").attr("aria-pressed", false);
+                        }
+                        else {
+                            $("#btnToggleSyncProductPrice").addClass("active");
+                            $("#btnToggleSyncProductPrice").attr("aria-pressed", true);
+                        }
+                        break;
+                    case 3:
+                        $("#btnToggleSyncProductStock").removeClass("active");
+                        $("#btnToggleSyncProductStock").removeAttr("aria-pressed");
+                        if (status == "Y") {
+                            $("#btnToggleSyncProductStock").addClass("focus");
+                            $("#btnToggleSyncProductStock").attr("aria-pressed", false);
+                        }
+                        else {
+                            $("#btnToggleSyncProductStock").addClass("active");
+                            $("#btnToggleSyncProductStock").attr("aria-pressed", true);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+</script>

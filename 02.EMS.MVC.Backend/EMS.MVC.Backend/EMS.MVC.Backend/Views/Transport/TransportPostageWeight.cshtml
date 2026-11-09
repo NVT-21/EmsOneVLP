@@ -1,0 +1,53 @@
+﻿@{
+    Layout = null;
+}
+<table class="table table-bordered">
+    <thead style="background-color: #d5e9ff;">
+        <tr class="text-center align-middle">
+            <th colspan="2">
+                Khối lượng (gram)
+            </th>
+            <th rowspan="2" style="vertical-align: middle!important;">Mức giá</th>
+            <th rowspan="2"><button type="button" class="btn btn-sm btn-primary form-control-sm" onclick="AddItemPostageWeight(this)"><i class="fa fa-plus m-0"></i></button></th>
+        </tr>
+        <tr class="text-center">
+            <th>Từ</th>
+            <th>Đến</th>
+        </tr>
+    </thead>
+    <tbody class="BodyMainFeeWeight">
+        <tr>
+            <td class="vertical-top">
+                <input class="form-control form-control-sm w-100 mb-1" type="text" name="FromWeight" disabled value="0" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" />
+                <span class="error-message" name="errFromWeight"></span>
+            </td>
+            <td class="vertical-top">
+                <input class="form-control form-control-sm w-100 mb-1" type="text" name="ToWeight" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" />
+                <span class="error-message" name="errToWeight"></span>
+            </td>
+            <td class="vertical-top">
+                <input class="form-control form-control-sm w-100 mb-1" type="text" name="Value" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập mức giá" data-inputmask="'alias': 'currency'" />
+                <span class="error-message" name="errValue"></span>
+            </td>
+            <td class="text-center vertical-top"><button type="button" class="btn btn-sm btn-warning form-control-sm" onclick="RemoveItemPostageWeight(this)"><i class="fa fa-minus"></i></button></td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">
+                <div class="input-group input-group-sm">
+                    <div class="input-group input-group-prepend">
+                        <span class="input-group-text text-black-important">Mỗi </span>
+                    </div>
+                    <input class="form-control" name="NextWeight" style="width: 100px;" type="text" placeholder="Nhập khối lượng" data-inputmask="'alias': 'currency'" />
+                    <div class="input-group-prepend input-group-append">
+                        <span class="input-group-text text-black-important"> tiếp theo giá </span>
+                    </div>
+                    <input style="width: 100px;" class="form-control" name="NextValue" type="text" placeholder="Nhập mức giá" data-inputmask="'alias': 'currency'" />
+                </div>
+                <span class="error-message" name="errNextWeight"></span>
+                <span class="error-message" name="errNextValue"></span>
+            </td>
+        </tr>
+    </tfoot>
+</table>

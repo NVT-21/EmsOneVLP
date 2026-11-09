@@ -1,0 +1,628 @@
+﻿@model EMS.MVC.Frontend.Models.OrderViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-9 col-lg-12 col-md-12 mb-2">
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-4">
+                                    <label class="">Thời gian</label>
+                                    <div class="datepicker-form">
+                                        @Html.EditorFor(model => model.AllDate, new { htmlAttributes = new { @type = "text", @class = "form-control input-daterange-datepicker" } })
+                                        @Html.HiddenFor(model => model.FromDate)
+                                        @Html.HiddenFor(model => model.ToDate)
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4">
+                                    <label class="">Mã PP/CRM</label>
+                                    @Html.DropDownListFor(model => model.CrmOrPaypostCode, new SelectList(Model.ListCrmOrPaypostCode, "CrmOrPaypostCode", "MobileAndCrmOrPaypostCode"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_actions_box = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @multiple = "true" })
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4">
+                                    <label class="">Trạng thái đơn</label>
+                                    @Html.DropDownListFor(model => model.OrderStatus, new SelectList(Model.ListOrderStatus, "Value", "Text"), "Tất cả", new { @class = "select2" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-12 col-md-12 mb-2 d-flex justify-content-end align-items-end">
+                            <div class="dropdown ">
+                                <button class="btn btn-upload" onclick="btnExportExcel()">
+                                    <i class="icon-down fs-18"></i> Xuất file
+                                </button>
+                            </div>
+                            <div class="dropdown ms-3">
+                                <button class="btn btn-upload " type="button" id="import-dropdown"
+                                        data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                                    <i class="icon-up fs-18"></i> Nhập file
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="import-dropdown">
+                                    <div class="py-2">
+                                        <a class="dropdown-item" href="@Url.Action("ImportExcelView","Order", new { Version = "EMSV2" })">File Excel (EMSCode)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <label class="">Trạng thái in</label>
+                            @Html.DropDownListFor(model => model.PrintStatus, new SelectList(Model.ListPrintStatus, "Value", "Text"), "Tất cả", new { @class = "select2" })
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <label class="">Loại bưu gửi</label>
+                            @Html.DropDownListFor(model => model.PostalType, new SelectList(Model.ListPostalType, "Value", "Text"), new { @class = "select2" })
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <label class="">D/v chính</label>
+                            @Html.DropDownListFor(model => model.MainTransportService, new SelectList(Model.ListMainTransportService, "ID", "Name"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_actions_box = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @multiple = "true" })
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-3">
+                            <label class="">D/v cộng thêm</label>
+                            @Html.DropDownListFor(model => model.ExtraTransportService, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_actions_box = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @multiple = "true" })
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 mb-2">
+                            <label>&nbsp;</label>
+                            <div class="form-search">
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                          fill="#86909C" />
+                                </svg>
+                                @Html.EditorFor(model => model.SearchKey, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tìm kiếm nhanh" } })
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 mb-2 d-flex justify-content-end align-items-end">
+                            <div class="dropdown">
+                                <button class="btn btn-upload d-flex align-items-center" type="button"
+                                        id="order-dropdown-1" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <span>
+                                        Thao tác hàng loạt
+                                    </span>
+                                    <i class="icon-arrow-b fs-20"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                                    <div class="py-2">
+                                        <a class="dropdown-item d-none" id="btnAcceptOrder" href="#" onclick="btnAcceptOrder(null, null, null, null)">Duyệt đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnCancelOrder(null, null, null, null)">Hủy đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnPrintOrder(null, null)">In đơn hàng</a>
+                                        <a class="dropdown-item" href="#" onclick="btnSendTransport(null, null, null, null)">Gửi đơn vị vận chuyển</a>
+                                        <a class="dropdown-item" href="#" onclick="btnCancelTransport(null, null, null, null)">Hủy yêu cầu vận chuyển</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary d-flex align-items-center ms-3" type="button" id="add-order-dropdown"
+                                    data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                                Tạo đơn hàng <i class="icon-arrow-b fs-20"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="add-order-dropdown">
+                                <div class="py-2">
+                                    <a class="dropdown-item" href="@Url.Action("AddOrderView","Order")" data-redirect="true">Tạo đơn hàng</a>
+                                    <a class="dropdown-item" href="@Url.Action("AddOrderBatchView","OrderBatch")" data-redirect="true">Tạo đơn hàng lô</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="MouseScrollX table-responsive custom-tab-1 mt-3 mb-3" style="width: 100%; overflow: auto;">
+                        <ul class="nav nav-tabs mb-1" role="tablist" style="border-bottom: none; padding-bottom:0; cursor: pointer; width: max-content;">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="ActiveTab_" data-bs-toggle="tab" href="#" role="tab" data-status="" onclick="btnSearch('ALL')">
+                                    Tất cả
+                                    <span id="StatusAll"></span>
+                                </a>
+                            </li>
+                            @foreach (var item in Model.ListOrderStatus)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" id="ActiveTab_@item.Value" data-bs-toggle="tab" href="#" role="tab" data-status="@item.Value" onclick="btnSearch('@item.Value')">
+                                        @item.Text
+                                        <span id="OrderStatus@(item.Value)"></span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div id="tbl-data" class="table-primary table-responsive">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+           $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        var SearchListOrder = [];
+
+        $(document).ready(function () {
+            $("#CrmOrPaypostCode, #MainTransportService, #ExtraTransportService").selectpicker("refresh");
+            CreateDateTimeRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+        });
+
+        ScrollX(".MouseScrollX");
+
+        $("#AllDate, #CrmOrPaypostCode, #OrderStatus, #PrintStatus, #PostalType, #MainTransportService, #ExtraTransportService").on("change", function () {
+            $("#btnAcceptOrder").addClass("d-none");
+            var DivID = this.id;
+            if (DivID == "AllDate") {
+                var AllDateValue = $("#AllDate").val();
+                if (AllDateValue) {
+                    var SplitAllDateValue = AllDateValue.split('-');
+                    $('#FromDate').val(SplitAllDateValue[0].trim());
+                    $('#ToDate').val(SplitAllDateValue[1].trim());
+                }
+            } else if (DivID == "CrmOrPaypostCode") {
+                var CrmOrPaypostCodeValue = $("#CrmOrPaypostCode").val().toString();
+                if (!CrmOrPaypostCodeValue) {
+                    $("#CrmOrPaypostCode").selectpicker("val", "@Model.CrmOrPaypostCode");
+                    $("#CrmOrPaypostCode").selectpicker("refresh");
+                }
+            } else if (DivID == "OrderStatus") {
+                var OrderStatusValue = $("#OrderStatus").val();
+                $(".nav-link").removeClass("active");
+                $("#ActiveTab_" + OrderStatusValue).addClass("active");
+            }
+            btnSearch();
+        });
+
+        function btnSearch(OrderStatus) {
+            var OrderStatusValue = "";
+            var ReloadStatusNumberValue = "";
+            if (OrderStatus) {
+                if (OrderStatus == "ALL") {
+                    OrderStatus = "";
+                }
+
+                if ($("#OrderStatus").val() == "") {
+                    OrderStatusValue = OrderStatus;
+                } else if ($("#OrderStatus").val() != "") {
+                    if (OrderStatus == $("#OrderStatus").val()) {
+                        OrderStatusValue = $("#OrderStatus").val();
+                    } else {
+                        if (OrderStatus == "" && ($("#OrderStatus").val() != "C" && $("#OrderStatus").val() != "D" && $("#OrderStatus").val() != "L")) {
+                            OrderStatusValue = $("#OrderStatus").val();
+                        } else {
+                            OrderStatusValue = "ERROR";
+                        }
+                    }
+                }
+                ReloadStatusNumberValue = "N";
+            } else {
+                OrderStatusValue = $("#OrderStatus").val();
+                ReloadStatusNumberValue = "Y";
+            }
+
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().toString(),
+                OrderStatus: OrderStatusValue,
+                PrintStatus: $('#PrintStatus').val(),
+                PostalType: $("#PostalType").val(),
+                MainTransportService: $("#MainTransportService").val().toString(),
+                ExtraTransportService: $("#ExtraTransportService").val().toString(),
+                SearchKey: "",
+                ReloadStatusNumber: ReloadStatusNumberValue
+            };
+
+            $.post('@Url.Action("SearchListOrderView", "Order")', req, function (data) {
+                $('#tbl-data').html(data);
+                if (req.OrderStatus == "D") {
+                    $("#btnAcceptOrder").removeClass("d-none");
+                } else {
+                    $("#btnAcceptOrder").addClass("d-none");
+                }
+            });
+        }
+
+        function btnExportExcel() {
+            var req = {
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().toString(),
+                OrderStatus: $("#OrderStatus").val(),
+                PrintStatus: $('#PrintStatus').val(),
+                PostalType: $("#PostalType").val(),
+                MainTransportService: $("#MainTransportService").val().toString(),
+                ExtraTransportService: $("#ExtraTransportService").val().toString(),
+                SearchKey: "",
+            };
+            var param = String.format("FromDate={0}&ToDate={1}&CrmOrPaypostCode={2}&OrderStatus={3}&PrintStatus={4}&PostalType={5}&MainTransportService={6}&ExtraTransportService={7}&SearchKey={8}",
+                req.FromDate, req.ToDate, req.CrmOrPaypostCode, req.OrderStatus, req.PrintStatus, req.PostalType, req.MainTransportService, req.ExtraTransportService, req.SearchKey);
+            window.location.href = '@Url.Action("ExportListOrder","Order")?' + param;
+        }
+
+        function btnAcceptOrder(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần duyệt.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn duyệt đơn hàng?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JNewOrder", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            } else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnCancelOrder(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần hủy.");
+                return;
+            }
+
+            $.post('@Url.Action("RejectOrderView", "Order")', { SearchKey: JSON.stringify(arr) }, function (data) {
+                $('#modal-ViewModal-html').html(data);
+                $('#ViewModal').modal('show');
+            });
+        }
+
+        function btnPrintOrder(EMSOneCode, ShopID) {
+            var arr = [];
+
+            if (EMSOneCode && ShopID) {
+                var obj = {};
+                obj.EMSOneCode = EMSOneCode;
+                obj.ShopID = ShopID;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.EMSOneCode = $(this).attr("data-EMSOneCode");
+                    obj.ShopID = $(this).attr("data-ShopID");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần in.");
+                return;
+            }
+
+            localStorage.setItem('ListDataOrderPrint', JSON.stringify(arr));
+            var link = document.createElement('a');
+            link.target = "_blank";
+            //link.href = '@Url.Action("PrintOrderView", "Handle")';
+            link.href = '@Url.Action("PrintOrderView", "Order")';
+            link.click();
+        }
+
+        function btnSendTransport(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần gửi đơn vị vận chuyển.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn gửi đơn vị vận chuyển?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JSendTransport", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            }
+                            else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function btnCancelTransport(OrderID, OrderCode, BatchCode, OrderStatus) {
+            var arr = [];
+
+            if (OrderID) {
+                var obj = {};
+                obj.OrderID = OrderID;
+                obj.OrderCode = OrderCode;
+                obj.BatchCode = BatchCode;
+                obj.OrderStatus = OrderStatus;
+                arr.push(obj);
+            } else {
+                var table = $('#SearchListDataTable').DataTable();
+                table.$('input:checked').each(function () {
+                    var obj = {};
+                    obj.OrderID = $(this).val();
+                    obj.OrderCode = $(this).attr("data-OrderCode");
+                    obj.BatchCode = $(this).attr("data-BatchCode");
+                    obj.OrderStatus = $(this).attr("data-OrderStatus");
+                    arr.push(obj);
+                });
+            }
+
+            if (arr.length == 0) {
+                CreateCustomSwal("error", "Vui lòng chọn đơn hàng cần huỷ yêu cầu vận chuyển.");
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn có chắc chắn muốn huỷ yêu cầu vận chuyển?",
+                html: true,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JCancelTransport", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: {
+                            req: arr
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message);
+                            }
+                            else
+                            if (res.Code == "10") {
+                                swal({
+                                    title: 'Thông báo',
+                                    text: res.Message,
+                                    buttons: {
+                                        confirm: {
+                                            text: "Xem chi tiết",
+                                            value: true,
+                                            visible: true,
+                                            className: "btn btn-primary",
+                                            closeModal: true
+                                        },
+                                        cancel: {
+                                            text: "Đóng",
+                                            value: false,
+                                            visible: true,
+                                            className: "btn btn-danger",
+                                            closeModal: true,
+                                        }
+                                    },
+                                }).then((value) => {
+                                    if (value) {
+                                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                            Error: res.Data,
+                                            Controller: "Order"
+                                        }, function (data) {
+                                            $('#modal-ViewModal-html').html(data);
+                                            $('#ViewModal').modal('show');
+                                        });
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $("#SearchKey").on("keyup keydown", function () {
+            MySearchingDataTable(this, "SearchListDataTable");
+        });
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListCustomerStickerViewModel>
+
+<table id="ListDataTableSearch" class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>STT</th>
+            <th>Mã nhãn</th>
+            <th>Tên nhãn</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@item.CustomerSticker.Code || @item.CustomerSticker.Name</td>
+                    <td>@(stt++)</td>
+                    <td>@item.CustomerSticker.Code</td>
+                    <td>@item.CustomerSticker.Name</td>
+                    <td>@Html.DisplayFor(m => item.CreatedDate)</td>
+                    <td>
+                        <button onclick="btnRemove(@item.ID)" title="Xoá" class="btn btn-trash light">
+                            <i class="icon-trash fs-18"></i>
+                        </button>
+                    </td>
+                </tr>
+
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("ListDataTableSearch");
+    });
+
+    function btnRemove(ID) {
+       swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá nhãn khách hàng?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveCustomerSticker", "CustomerSticker")',
+                    data: {
+                        ID: ID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

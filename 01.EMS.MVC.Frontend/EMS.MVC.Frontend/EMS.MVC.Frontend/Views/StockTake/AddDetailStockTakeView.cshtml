@@ -1,0 +1,178 @@
+﻿@model EMS.MVC.Frontend.Models.AddDetailStockTakeViewModel
+<tr class="row-item">
+    <td>
+        <select class="select2 ProductVariant" name="ProductVariant" id="ProductVariant_@Model.NumberOfDetail" onchange="sltChangeProductVariant(@Model.NumberOfDetail)">
+            <option value="">-- Sản phẩm --</option>
+            @foreach (var item in Model.ListProductVariant)
+            {
+                <option value="@item.ProductVariantID" data-SKU="@item.ProductVariantSKU" data-Price="@item.ProductVariantPrice" data-Inventory="@item.NumberOfInventory">@item.ProductName (@item.ProductVariantName)</option>
+            }
+        </select>
+        <span class="text-danger" id="errProductVariant_@Model.NumberOfDetail"></span>
+    </td>
+    <td class="ProductVariantSKU" id="ProductVariantSKU_@Model.NumberOfDetail"></td>
+    <td class="Price" id="Price_@Model.NumberOfDetail">0</td>
+    <td class="NumberOfInventory" id="NumberOfInventory_@Model.NumberOfDetail">0</td>
+    <td class="text-center">
+        <div id="ShowProductQuantity_@Model.NumberOfDetail" class="ShowProductQuantity quantity-block d-none" style="width: 100%">
+            <button class="btn quantity-arrow-minus" onclick="btnMinus(@Model.NumberOfDetail)"> - </button>
+            <input type="text" class="form-control quantity-num NumberOfActual" name="NumberOfActual" id="NumberOfActual_@Model.NumberOfDetail" onchange="LoadNumberOfActual(@Model.NumberOfDetail)" placeholder="Nhập số lượng" value="0" style="width: 100%;" data-inputmask="'alias': 'PositiveNumber'" maxlength="14" data-Number="@Model.NumberOfDetail" />
+            <button class="btn quantity-arrow-plus" onclick="btnPlus(@Model.NumberOfDetail)"> + </button>
+        </div>
+        <span class="text-danger" id="errNumberOfActual_@Model.NumberOfDetail"></span>
+    </td>
+    <td class="NumberOfDifferent" id="NumberOfDifferent_@Model.NumberOfDetail">0</td>
+    <td class="MoneyOfDifferent" id="MoneyOfDifferent_@Model.NumberOfDetail">0</td>
+    <td class="text-center">
+        <button class="btn btn-sm" type="button" onclick="btnRemoveRow(this)" title="Xoá" style="color: red;">
+            <i class="icon-trash fs-18"></i>
+        </button>
+    </td>
+</tr>
+<script>
+    $(document).ready(function () {
+        $(":input").inputmask();
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    function btnPlus(NumberOfDetail) {
+        var value = NumberReplace($("#NumberOfActual_" + NumberOfDetail).val());
+        $("#NumberOfActual_" + NumberOfDetail).val(parseInt(value) + 1);
+        LoadNumberOfActual(NumberOfDetail);
+    }
+
+    function btnMinus(NumberOfDetail) {
+        var value = NumberReplace($("#NumberOfActual_" + NumberOfDetail).val());
+        if (value > 0) {
+            $("#NumberOfActual_" + NumberOfDetail).val(parseInt(value) - 1);
+            LoadNumberOfActual(NumberOfDetail);
+        }
+    }
+
+    function btnRemoveRow(this1) {
+        var NumberOfRow = $(".row-item").length;
+        if (NumberOfRow > 1) {
+            LoadTotalPrice();
+            $(this1).parents("tr").remove();
+        } else {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm");
+        }
+    }
+
+    function ClearData() {
+        $(".ProductVariantSKU").text("");
+        $(".Price").text("0");
+        $(".NumberOfInventory").text("0");
+        $(".NumberOfActual").val(0);
+        $(".NumberOfDifferent").text("0");
+        $(".MoneyOfDifferent").text("0");
+        $(".text-danger").text("");
+        $(".ShowProductQuantity").addClass("d-none");
+        $("#TotalProduct").text("0");
+        $("#TotalInventory").text("0");
+        $("#TotalActual").text("0");
+        $("#TotalDifferent").text("0");
+        $("#TotalMoney").text("0");
+    }
+
+    function sltChangeProductVariant(NumberOfDetail) {
+        var ProductVariantValue = $("#ProductVariant_" + NumberOfDetail).val();
+        if (ProductVariantValue) {
+            var CheckDuplicate = CheckProductVariantDuplicate(NumberOfDetail);
+            if (CheckDuplicate == true) {
+                $('#ProductVariant_' + NumberOfDetail).val("").change();
+                CreateCustomSwal("error", "Sản phẩm đã tồn tại");
+                return;
+            }
+            var ProductVariantSKU = $("#ProductVariant_" + NumberOfDetail).find(':selected').data('sku');
+            var NumberOfInventory = $("#ProductVariant_" + NumberOfDetail).find(':selected').data('inventory');
+            var Price = $("#ProductVariant_" + NumberOfDetail).find(':selected').data('price');
+            $("#ProductVariantSKU_" + NumberOfDetail).text(ProductVariantSKU);
+            $("#NumberOfInventory_" + NumberOfDetail).text(NumberOfInventory.toLocaleString());
+            $("#Price_" + NumberOfDetail).text(Price.toLocaleString());
+            $("#errProductVariant_" + NumberOfDetail).text("");
+
+            $("#ShowProductQuantity_" + NumberOfDetail).removeClass("d-none");
+            $("#errListDetail").text("");
+
+            LoadNumberOfActual(NumberOfDetail);
+        } else {
+            $("#ProductVariantSKU_" + NumberOfDetail).text("");
+            $("#Price_" + NumberOfDetail).text("0");
+            $("#NumberOfInventory_" + NumberOfDetail).text("0");
+            $("#NumberOfActual_" + NumberOfDetail).val(0);
+            $("#NumberOfDifferent_" + NumberOfDetail).text("0");
+            $("#MoneyOfDifferent_" + NumberOfDetail).text("0");
+            LoadTotalPrice();
+        }
+    }
+
+    function LoadNumberOfActual(NumberOfDetail) {
+        var NumberOfActual = $("#NumberOfActual_" + NumberOfDetail).val() == "" ? 0 : $("#NumberOfActual_" + NumberOfDetail).val();
+        NumberOfActual = NumberReplace(NumberOfActual);
+        if (!NumberOfActual) {
+            $("#NumberOfActual_" + NumberOfDetail).val("0");
+        }
+        var NumberOfInventory = $("#ProductVariant_" + NumberOfDetail).find(':selected').data('inventory') == undefined ? 0 : $("#ProductVariant_" + NumberOfDetail).find(':selected').data('inventory');
+        NumberOfInventory = NumberReplace(NumberOfInventory);
+        var total = parseInt(NumberOfActual) - parseInt(NumberOfInventory);
+        $("#NumberOfDifferent_" + NumberOfDetail).text(total.toLocaleString());
+        LoadMoneyOfDifferent(NumberOfDetail);
+    }
+
+    function LoadMoneyOfDifferent(NumberOfDetail) {
+        var NumberOfDifferent = $("#NumberOfDifferent_" + NumberOfDetail).text();
+        NumberOfDifferent = NumberReplace(NumberOfDifferent);
+        var Price = $("#ProductVariant_" + NumberOfDetail).find(':selected').data('price') == undefined ? 0 : $("#ProductVariant_" + NumberOfDetail).find(':selected').data('price');
+        Price = NumberReplace(Price);
+        var total = parseInt(Price) * parseFloat(NumberOfDifferent);
+        $("#MoneyOfDifferent_" + NumberOfDetail).text(total.toLocaleString());
+        LoadTotalPrice();
+    }
+
+    function LoadTotalPrice() {
+        var count = 0;
+        var TotalInventory = 0;
+        var TotalActual = 0;
+        var TotalDifferent = 0;
+        var TotalMoney = 0;
+        $('.row-item').each(function () {
+            count++;
+            var ValueInventory = $(this).closest('tr').find('.NumberOfInventory').html();
+            ValueInventory = NumberReplace(ValueInventory);
+            var ValueActual = $(this).find("td:eq(4) input[name='NumberOfActual']").val() == "" ? 0 : $(this).find("td:eq(4) input[name='NumberOfActual']").val();
+            ValueActual = NumberReplace(ValueActual);
+            var ValueDifferent = $(this).closest('tr').find('.NumberOfDifferent').html();
+            ValueDifferent = NumberReplace(ValueDifferent);
+            var ValueMoney = $(this).closest('tr').find('.MoneyOfDifferent').html();
+            ValueMoney = NumberReplace(ValueMoney);
+            TotalInventory = TotalInventory + parseInt(ValueInventory);
+            TotalActual = TotalActual + parseInt(ValueActual);
+            TotalDifferent = TotalDifferent + parseInt(ValueDifferent);
+            TotalMoney = TotalMoney + parseInt(ValueMoney);
+        });
+        $("#TotalProduct").text(count.toLocaleString());
+        $("#TotalInventory").text(TotalInventory.toLocaleString());
+        $("#TotalActual").text(TotalActual.toLocaleString());
+        $("#TotalDifferent").text(TotalDifferent.toLocaleString());
+        $("#TotalMoney").text(TotalMoney.toLocaleString());
+    }
+
+    function CheckProductVariantDuplicate(NumberOfDetail) {
+        var arr = [];
+        var ChooseProductVariant = $("#ProductVariant_" + NumberOfDetail).val();
+        $('.row-item').each(function () {
+            var ProductVariant = $(this).find("td:eq(0) select[name='ProductVariant']").val();
+            if (ProductVariant == ChooseProductVariant) {
+                arr.push(ProductVariant);
+            }
+        });
+
+        if (arr.length > 1 && arr.find(m => m == ChooseProductVariant)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+

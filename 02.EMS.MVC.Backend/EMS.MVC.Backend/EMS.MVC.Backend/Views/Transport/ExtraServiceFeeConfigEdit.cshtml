@@ -1,0 +1,376 @@
+﻿@model EMS.MVC.Backend.Models.TransportPostageExtraDetailViewModel
+@{
+    ViewBag.Title = "ExtraServiceFeeConfigEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("TransportPostageExtraServiceIndex","Transport")">Danh sách bảng cước DV cộng thêm</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("TransportPostageExtraService","Transport", new { PostageID = Model.PostageID})">@Model.ServiceName</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cấu hình cước DV cộng thêm</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body" id="Data">
+            @if (Model.ChargingConditionsID == 4 || Model.ChargingConditionsID == 5 || Model.ChargingConditionsID == 6)
+            {
+                Html.RenderAction("ExtraServiceFeeConfigEditData", "Transport", new { PostageID = Model.PostageID });
+            }
+            else
+            {
+                <p>Căn cứ tính cước này không được cấu hình.</p>
+                <p>Kiểm tra lại căn cứ tính cước </p>
+                <a href="@Url.Action("TransportPostageExtraService","Transport", new { PostageID = Model.PostageID })">Tại đây</a>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function funcAdd() {
+        debugger;
+        var model = @Html.Raw(Json.Encode(Model));
+        let isError = false;
+        let isFocus = "";
+        let agrs = {};
+        $('#errProductVariantID').text('');
+        $('#errQuantityAdjustment').text('');
+        if (model.ChargingConditionsID == 4) {
+            agrs.PostageID = model.PostageID;
+            agrs.Weight = $('#Weight').val().replaceAll(',', '');
+            agrs.LocalFee = $('#LocalFee').val().replaceAll(',', '');
+            agrs.Key = "E4";
+        }
+        else if (model.ChargingConditionsID == 5) {
+            agrs.PostageID = model.PostageID;
+            agrs.Weight = $('#Weight').val().replaceAll(',', '');
+            agrs.LocalFee = $('#LocalFee').val().replaceAll(',', '');
+            agrs.IntercityFee1 = $('#IntercityFee1').val().replaceAll(',', '');
+            agrs.IntercityFee2 = $('#IntercityFee2').val().replaceAll(',', '');
+            agrs.Key = "E5";
+        }
+        else if (model.ChargingConditionsID == 6){
+            agrs.PostageID = model.PostageID;
+            agrs.Weight = $('#Weight').val().replaceAll(',', '');
+            agrs.LocalFee = $('#LocalFee').val().replaceAll(',', '');
+            agrs.IntercityFee1 = $('#IntercityFee1').val().replaceAll(',', '');
+            agrs.IntercityFee2 = $('#IntercityFee2').val().replaceAll(',', '');
+            agrs.Key = "E6";
+        }
+        else {
+            swal({
+                title: "Thông báo",
+                text: "Không xác định được loại phạm vi tính cước. Vui lòng thử lại hoăc liên hệ quản trị.",
+                button: {
+                    text: "ĐÓNG"
+                }
+            });
+            return;
+        }
+        $('#errWeight').text('');
+        if (agrs.Weight == "" || agrs.Weight == "0") {
+            $('#errWeight').text('Khối lượng phải > 0.');
+            isError = true;
+            isFocus = "#Weight";
+        }
+        if (isError) {
+            $(isFocus).focus();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportPostageDetailAdd", "Transport")',
+            dataType: 'json',
+            loading: true,
+            data: agrs,
+            success: function (res) {
+                if (res.Code == "00") {
+                    $.get('@Url.Action("ExtraServiceFeeConfigEditData", "Transport")?PostageID=' + @Model.PostageID, function (data) {
+                        $('#Data').html(data);
+                    });
+                } else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    };
+
+    //
+    function funcEditDetail(DetailID, ChargingConditionsID, IsStep) {
+        let isError = false;
+        let agrs = {
+            ID: DetailID
+        };
+        if (ChargingConditionsID == 4) {
+            if (IsStep == 'Y') {
+                agrs.Weight = $('#StepWeight').val().replaceAll(',', '');
+            }
+            agrs.LocalFee = $('#LocalFee_' + DetailID).val().replaceAll(',', '');
+        }
+        else if (ChargingConditionsID == 5) {
+            if (IsStep == 'Y') {
+                agrs.Weight = $('#StepWeight').val().replaceAll(',', '');
+            }
+            agrs.LocalFee = $('#LocalFee_' + DetailID).val().replaceAll(',', '');
+            agrs.IntercityFee1 = $('#IntercityFee1_' + DetailID).val().replaceAll(',', '');
+            agrs.IntercityFee2 = $('#IntercityFee2_' + DetailID).val().replaceAll(',', '');
+        }
+        else if (ChargingConditionsID == 6) {
+            if (IsStep == 'Y') {
+                agrs.Weight = $('#StepWeight').val().replaceAll(',', '');
+            }
+            agrs.LocalFee = $('#LocalFee_' + DetailID).val().replaceAll(',', '');
+            agrs.IntercityFee1 = $('#IntercityFee1_' + DetailID).val().replaceAll(',', '');
+            agrs.IntercityFee2 = $('#IntercityFee2_' + DetailID).val().replaceAll(',', '');
+        }
+        else {
+            swal({
+                title: "Thông báo",
+                text: "Không xác định được loại phạm vi tính cước. Vui lòng thử lại hoăc liên hệ quản trị.",
+                button: {
+                    text: "ĐÓNG"
+                }
+            });
+            return;
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn chỉnh sửa?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JTransportPostageDetailEdit", "Transport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: agrs,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            $.get('@Url.Action("ExtraServiceFeeConfigEditData", "Transport")?PostageID=' + @Model.PostageID, function (data) {
+                                $('#Data').html(data);
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            };
+        });
+    }
+    function funcCancelEditDetail() {
+        $.get('@Url.Action("ExtraServiceFeeConfigEditData", "Transport")?PostageID=' + @Model.PostageID , function (data) {
+            $('#Data').html(data);
+        });
+    }
+
+    function funcSetupEditDetail(DetailID, ChargingConditionsID, IsStep) {
+        //Vô hiệu hoá thêm sản phẩm
+        if (ChargingConditionsID == 4) {
+            $('#Weight').val('0');
+            $('#LocalFee').val('0');
+            $('#Weight').prop('disabled', true);
+            $('#LocalFee').prop('disabled', true);
+            $('#Add_Detail').prop('disabled', true); StepWeight
+            if (IsStep == 'Y') {
+                $('#StepWeight').prop('disabled', false);
+            }
+            $('#LocalFee_' + DetailID).prop('disabled', false);
+        }
+        else if (ChargingConditionsID == 5) {
+            $('#Weight').val('0');
+            $('#LocalFee').val('0');
+            $('#IntercityFee1').val('0');
+            $('#IntercityFee2').val('0');
+            $('#Weight').prop('disabled', true);
+            $('#LocalFee').prop('disabled', true);
+            $('#IntercityFee1').prop('disabled', true);
+            $('#IntercityFee2').prop('disabled', true);
+            $('#Add_Detail').prop('disabled', true);
+            if (IsStep == 'Y') {
+                $('#StepWeight').prop('disabled', false);
+            }
+            $('#LocalFee_' + DetailID).prop('disabled', false);
+            $('#IntercityFee1_' + DetailID).prop('disabled', false);
+            $('#IntercityFee2_' + DetailID).prop('disabled', false);
+        }
+        else if (ChargingConditionsID == 6) {
+            $('#Weight').val('0');
+            $('#LocalFee').val('0');
+            $('#IntercityFee1').val('0');
+            $('#IntercityFee2').val('0');
+            $('#Weight').prop('disabled', true);
+            $('#LocalFee').prop('disabled', true);
+            $('#IntercityFee1').prop('disabled', true);
+            $('#IntercityFee2').prop('disabled', true);
+            $('#Add_Detail').prop('disabled', true);
+            if (IsStep == 'Y') {
+                $('#StepWeight').prop('disabled', false);
+            }
+            $('#LocalFee_' + DetailID).prop('disabled', false);
+            $('#IntercityFee1_' + DetailID).prop('disabled', false);
+            $('#IntercityFee2_' + DetailID).prop('disabled', false);
+        }
+        else {
+            swal({
+                title: "Thông báo",
+                text: "Không xác định được loại phạm vi tính cước. Vui lòng thử lại hoăc liên hệ quản trị.",
+                button: {
+                    text: "ĐÓNG"
+                }
+            });
+            return;
+        }
+
+        ////hiện button xác nhận - huỷ
+        $('#EditConfirmation_' + DetailID).css('display', 'block');
+        $('#CancelEdit_' + DetailID).css('display', 'block');
+
+        //ẩn các button thêm - sửa - xoá
+        $('button[name="btnEditDetail"]').css('display', 'none');
+        $('button[name="btnRemoveDetail"]').css('display', 'none');
+    }
+    function funcRemoveDetail(DetailID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá bỏ?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JTransportPostageDetailRemove", "Transport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        ID: DetailID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                $.get('@Url.Action("ExtraServiceFeeConfigEditData", "Transport")?PostageID=' + @Model.PostageID, function (data) {
+                                    $('#Data').html(data);
+                                });
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    //ENTER
+    $('#Weight, #LocalFee, #IntercityFee1, #IntercityFee2, #IntercityFee3, #IntercityFee4').keypress(function (e) {
+        if (e.keyCode === 13) {
+            $('#Add_Detail').click();
+        }
+    });
+</script>

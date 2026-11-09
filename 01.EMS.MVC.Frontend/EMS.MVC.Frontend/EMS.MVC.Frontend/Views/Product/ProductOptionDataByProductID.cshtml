@@ -1,0 +1,219 @@
+﻿@model EMS.MVC.Frontend.Models.ProductOptionDataByProductIDViewModel
+@{
+    Layout = null;
+}
+<table class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th style="width:45%">Thuộc tính</th>
+            <th>Giá trị</th>
+            <th style="width:80px">
+                Thao tác
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.Option01.Count > 0)
+            {
+                <tr>
+                    <td>
+                        @Model.Option01[0].Name
+                    </td>
+                    <td style="max-width: max-content;white-space: inherit; line-height: inherit; text-align: left;">
+                        @foreach (var item in Model.Option01)
+                        {
+                            <span class="badge badge-primary mr-1 mb-1">@item.Value</span>
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-trash light mb-0 mt-0" onclick="RemoveProductOption('@Model.Option01[0].Name')"><i class="icon-trash"></i></button>
+                    </td>
+                </tr>
+            }
+            if (Model.Option02.Count > 0)
+            {
+                <tr>
+                    <td>
+                        @Model.Option02[0].Name
+                    </td>
+                    <td style="max-width: max-content;white-space: inherit; line-height: inherit; text-align: left;">
+                        @foreach (var item in Model.Option02)
+                        {
+                            <span class="badge badge-primary mr-1 mb-1">@item.Value</span>
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-trash light mb-0 mt-0" onclick="RemoveProductOption('@Model.Option02[0].Name')"><i class="icon-trash"></i></button>
+                    </td>
+                </tr>
+            }
+            if (Model.Option03.Count > 0)
+            {
+                <tr>
+                    <td>
+                        @Model.Option03[0].Name
+                    </td>
+                    <td style="max-width: max-content;white-space: inherit; line-height: inherit; text-align: left;">
+                        @foreach (var item in Model.Option03)
+                        {
+                            <span class="badge badge-primary mr-1 mb-1">@item.Value</span>
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-trash light mb-0 mt-0" onclick="RemoveProductOption('@Model.Option03[0].Name')"><i class="icon-trash"></i></button>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        <input class="form-control" id="OptionName" onkeyup="RemoveErrorMessage(this)" placeholder="Nhập thuộc tính" maxlength="50" />
+                        <span class="error-message pt-1 text-danger" id="errOptionName"></span>
+                    </td>
+                    <td>
+                        <input class="form-control" id="OptionValue" onkeypress="RemoveErrorMessage(this)" placeholder="Nhập giá trị" maxlength="50" />
+                        <span class="error-message pt-1 text-danger" id="errOptionValue"></span>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary" id="AddOption">Thêm</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $('#AddOption').on('click', function () {
+        var ProductID = $('#ProductID').val();
+        var isError = false;
+        var agrs = {
+            ProductID: $('#ProductID').val(),
+            Name: $('#OptionName').val().trim(),
+            Value: $('#OptionValue').val().trim(),
+        };
+        isError = CheckRegexValue(agrs.Name, 'Vietnamese', 'OptionName', 'Trường dữ liệu không hợp lệ.', isError);
+        isError = CheckRegexValue(agrs.Value, 'Vietnamese', 'OptionValue', 'Trường dữ liệu không hợp lệ.', isError);
+
+        if (isError) {
+            return;
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn thêm thuộc tính sản phẩm?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JProductOptionAdd", "Product")',
+                    data: agrs,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            //CreateCustomSwal("success", res.Message);
+                            $.get('@Url.Action("ProductOptionDataByProductID", "Product")', { ProductID: ProductID}, function (data) {
+                                $('#ProductOptionData').html(data);
+                            });
+                            $('#ProductVariantData').html('');
+                                $.get('@Url.Action("ProductVariantDataByProductID", "Product")', { ProductID: ProductID, VariantID: 0 }, function (data) {
+                                $('#ProductVariantData').append(data);
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        CreateCustomSwal("error", err.Message);
+                        return;
+                    }
+                });
+            }
+        });
+    });
+    function RemoveProductOption(Name) {
+        let agrs = {
+            Name: Name,
+            ProductID: $('#ProductID').val()
+        };
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá thuộc tính " + Name + "?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JProductOptionRemoveByName", "Product")',
+                    data: agrs,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            //CreateCustomSwal("success", res.Message);
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1000
+                            }).then(
+                                function () {
+                                    $.get('@Url.Action("ProductOptionDataByProductID", "Product")', { ProductID: ProductID}, function (data) {
+                                        $('#ProductOptionData').html(data);
+                                    });
+                                    $('#ProductVariantData').html('');
+                                    $.get('@Url.Action("ProductVariantDataByProductID", "Product")', { ProductID: ProductID, VariantID: 0 }, function (data) {
+                                        $('#ProductVariantData').append(data);
+                                    });
+                                }
+                            );
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        CreateCustomSwal("error", err.Message);
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

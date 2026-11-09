@@ -1,0 +1,433 @@
+﻿@model EMS.MVC.Backend.Models.EditBasicInfoTabViewModel
+
+<div class="row mb-2">
+    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+        <label>Mã bảng cước <span class="text-danger">(*)</span></label>
+        @Html.EditorFor(model => model.TransportPostageCode, new { htmlAttributes = new { @type = "text", @class = "form-control text-uppercase", @placeholder = "Mã bảng cước", @maxlength = "20" } })
+        <span class="text-danger" id="errTransportPostageCode"></span>
+    </div>
+    <div class="col-lg-6 mb-3">
+        <label>Tên bảng cước <span class="text-danger">(*)</span></label>
+        @Html.EditorFor(model => model.TransportPostageName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tên bảng cước", @maxlength = "300" } })
+        <span class="text-danger" id="errTransportPostageName"></span>
+    </div>
+    <div class="col-lg-6 mb-3">
+        <label for="PricesOriginal">Ngày bắt đầu <span class="text-danger">(*)</span> </label>
+        @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @size = "16", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off" } })
+        <span class="text-danger" id="errStartDate"></span>
+    </div>
+    <div class="col-lg-6 mb-3">
+        @if (string.IsNullOrEmpty(Model.EndDate))
+        {
+            <div class="form-check mt-0">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" id="ckbEndDate">
+                    Ngày kết thúc
+                    <i class="input-helper"></i>
+                </label>
+            </div>
+            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off", @disabled = "disabled" } })
+
+        }
+        else
+        {
+            <div class="form-check mt-0">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" id="ckbEndDate" checked>
+                    Ngày kết thúc
+                    <i class="input-helper"></i>
+                </label>
+            </div>
+            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off" } })
+        }
+        <span class="text-danger" id="errEndDate"></span>
+    </div>
+    <div class="col-lg-6 mb-3">
+        <label for="MainServiceID">Dịch vụ chính <span class="text-danger">(*)</span></label>
+        @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+        <span class="text-danger" id="errMainTransportServiceID"></span>
+    </div>
+    <div class="col-6">
+        <label for="">Dịch vụ cộng thêm <span class="text-danger"></span></label>
+        @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+        <span class="text-danger" id="errExtraTransportServiceID"></span>
+    </div>
+    <div class="col-6 mb-3">
+        <label for="ProvinceApply">Tỉnh áp dụng <span class="text-danger">(*)</span></label>
+        @Html.DropDownListFor(model => model.ProvinceApply, new SelectList(Model.ListProvinceApply, "Value", "Text"), new { @class = "select2" })
+        <span class="text-danger" id="errProvinceApply"></span>
+    </div>
+    <div class="col-6 mb-3">
+        <label for="AreaApply">Vùng áp dụng <span class="text-danger">(*)</span></label>
+        @Html.DropDownListFor(model => model.AreaApply, new SelectList(Model.ListAreaApply, "Value", "Text"), new { @class = "select2" })
+        <span class="text-danger" id="errAreaApply"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+        <label>Áp dụng cho <span class="text-danger">(*)</span></label>
+        @Html.DropDownListFor(model => model.SubjectOfApplication, new SelectList(Model.ListSubjectOfApplication, "Value", "Text"), new { @class = "select2" })
+        <span class="text-danger" id="errSubjectOfApplication"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="ApplyToShopsView" style="display: none;">
+        <label for="">Mã CRM/Paypost <span class="text-danger">(*)</span></label>
+        @Html.EditorFor(model => model.CrmOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã CRM/Paypost" } })
+        <span class="text-danger" id="errCrmOrPaypostCode"></span>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="ApplyToProvincesView" style="display: none;">
+        <label for="">Nơi xuất phát <span class="text-danger">(*)</span></label>
+        @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+        <span class="text-danger" id="errProvinceID"></span>
+    </div>
+
+    <div class="col-12" id="ApplicationObjectValueView" style="display:none;">
+        <div class="card mt-3">
+            <div class="card-body pt-10px">
+                <label class="">Các mục đã chọn</label>
+                <div class="row pt-2 border-top" id="ApplicationObjectValue">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between">
+        @if (Model.Status == "U" || Model.Status == "E")//U:Chưa xác nhận, E:Đã hết hạn
+        {
+            <button class="btn btn-sm btn-success" onclick="btnConfirm()">XÁC NHẬN</button>
+            <button class="btn btn-sm btn-primary" onclick="btnUpdate('UpdateAndNext')">CẬP NHẬT VÀ TIẾP THEO</button>
+            <button class="btn btn-sm btn-primary" onclick="btnUpdate('Update')">CẬP NHẬT</button>
+        }
+        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('step2').click()">TIẾP THEO</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        CreateDateTimePicker("#StartDate, #EndDate");
+        CreateSelectPicker("#ApplyToProvinces");
+
+        var listExtraTransportServiceID = '@Model.ExtraTransportServiceID';
+        $('#ExtraTransportServiceID').selectpicker('val', listExtraTransportServiceID.split(','));
+
+        @*var listCrmOrPaypostCode = '@Model.CrmOrPaypostCode';
+        if (listCrmOrPaypostCode) {
+            $('#CrmOrPaypostCodeView').show();
+        }*@
+
+        var SubjectOfApplication = '@Model.SubjectOfApplication';
+        var listCrmOrPaypostCode = '@Model.AppliesToShop';
+        var listProvinceID = '@Model.AppliesToProvinceFrom';
+
+        if (SubjectOfApplication == 3) {
+            $("#CrmOrPaypostCode").val(listCrmOrPaypostCode);
+            $('#ApplyToShopsView').show();
+        } else if (SubjectOfApplication == 4) {
+            $('#ProvinceID').selectpicker('val', listProvinceID.split(','));
+            $('#ApplyToProvincesView').show();
+            $('#ApplicationObjectValueView').show();
+        } else if (SubjectOfApplication == 5) {
+            $("#CrmOrPaypostCode").val(listCrmOrPaypostCode);
+            $('#ApplyToShopsView').show();
+
+            $('#ProvinceID').selectpicker('val', listProvinceID.split(','));
+            $('#ApplyToProvincesView').show();
+
+            $('#ApplicationObjectValueView').show();
+        }
+
+        $('#CrmOrPaypostCode').tagsinput({
+            maxChars: 20,
+            trimValue: true,
+            confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+        });
+
+        $('#CrmOrPaypostCode').on('beforeItemAdd', function (event) {
+            var CrmOrPaypostcode = event.item;
+            var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "CrmOrPaypostCode", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+            if (isError == true) {
+                event.cancel = true;
+            }
+        });
+
+        $(".bootstrap-tagsinput input").attr("id", "CrmOrPaypostCode_tag");
+
+        $("input[id=CrmOrPaypostCode_tag]").keyup(function () {
+            var value = $(this).val();
+            $(this).val(value.toUpperCase());
+        });
+
+        $("input[id=CrmOrPaypostCode_tag]").bind("paste", function (e) {
+            var source = "";
+
+            if (window.clipboardData !== undefined) {
+                source = window.clipboardData;
+            } else {
+                source = e.originalEvent.clipboardData;
+            }
+
+            var data = source.getData("Text");
+
+            var replaceSpace = data.split(/\s+/);
+
+            $.each(replaceSpace, function (idx, value) {
+                if (value.trim()) {
+                    $('#CrmOrPaypostCode').tagsinput('add', value.toUpperCase());
+                }
+            });
+
+            e.preventDefault();
+        });
+    });
+
+    CheckChangeValue("TransportPostageCode", "Vui lòng nhập Mã bảng cước", "Code", "Y");
+    CheckChangeValue("TransportPostageName", "Vui lòng nhập Tên bảng cước", "Vietnamese", "Y");
+    CheckChangeValue("MainTransportServiceID", "Vui lòng chọn Dịch vụ chính", "", "Y");
+    CheckChangeValue("ProvinceApply", "Vui lòng chọn Tỉnh áp dụng", "", "Y");
+    CheckChangeValue("AreaApply", "Vui lòng chọn Vùng áp dụng", "", "Y");
+    CheckChangeValue("SubjectOfApplication", "Vui lòng chọn Áp dụng cho", "", "Y");
+    CheckChangeValue("ProvinceID", "Vui lòng chọn Nơi xuất phát", "", "Y");
+    CheckChangeValue("CrmOrPaypostCode", "Vui lòng chọn nhập Mã CRM/Paypost", "", "Y");
+
+    $('#SubjectOfApplication').on('change', function () {
+        var value = $(this).val();
+        $('#ApplyToProvinces').selectpicker('deselectAll');
+        $('#ApplicationObjectValue').html('');
+        switch (value) {
+            case "3":
+                $('#ApplyToProvincesView').hide();
+                $('#ApplyToShopsView').show();
+                $('#ApplicationObjectValueView').hide();
+                break;
+            case "4":
+                $('#ApplyToProvincesView').show();
+                $('#ApplyToShopsView').hide();
+                $('#ApplicationObjectValueView').show();
+                break;
+            case "5":
+                $('#ApplyToProvincesView').show();
+                $('#ApplyToShopsView').show();
+                $('#ApplicationObjectValueView').show();
+                break;
+        };
+    });
+
+    $("#ckbEndDate").on('change', function () {
+        var ckbEndDate = $("#ckbEndDate").is(":checked");
+        if (ckbEndDate) {
+            $('#EndDate').prop("disabled", false);
+            var StartDate = $("#StartDate").val();
+            if (StartDate) {
+                $('#EndDate').val(StartDate);
+            }
+        } else {
+            $('#EndDate').val("");
+            $('#EndDate').prop("disabled", true);
+        }
+    });
+
+    $("#StartDate").on('change', function () {
+        $("#errStartDate").text("");
+        var StartDate = $(this).val();
+        if (StartDate) {
+            var EndDate = $("#EndDate").val();
+            if (EndDate) {
+                var isError = compareDate(StartDate, EndDate);
+                if (isError == true) {
+                    $("#StartDate").focus();
+                    $("#errStartDate").text("Ngày bắt đầu không thể lớn hơn ngày kết thúc");
+                }
+            } else {
+                var ckbEndDate = $("#ckbEndDate").is(":checked");
+                if (ckbEndDate) {
+                    $('#EndDate').val(StartDate);
+                }
+            }
+        } else {
+            $(this).focus();
+            $("#errStartDate").text("Vui lòng chọn ngày bắt đầu");
+        }
+    });
+
+    $("#EndDate").on('change', function () {
+        $("#errEndDate").text("");
+        var StartDate = $("#StartDate").val();
+        var EndDate = $(this).val();
+        if (EndDate) {
+            var isError = compareDate(StartDate, EndDate);
+            if (isError == true) {
+                $("#EndDate").focus();
+                $("#errEndDate").text("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu");
+            }
+        } else {
+            $(this).focus();
+            $("#errEndDate").text("Vui lòng chọn ngày kết thúc");
+        }
+    });
+
+    function compareDate(StartDate, EndDate) {
+        var convertStartDate = convertDateTime(StartDate);
+        var convertEndDate = convertDateTime(EndDate);
+        if (convertStartDate > convertEndDate) {
+            return true;
+        }
+        return false;
+    }
+
+    $('#ProvinceID').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        var selectID = $(this).attr('ID');
+        var text = "";
+        $("#" + selectID + " option:selected").each(function () {
+            var $this = $(this);
+            if ($this.length) {
+                text += '<div class="col-xl-3 col-lg-3 col-md-3 pb-2" style="font-size:0.875rem;">' + $this.text() + ' <i class="fa fa-times del text-danger" title="Xoá" onclick="removeThis(' + "'" + $this.val() + "'" + ',this,' + "'" + selectID + "'" + ');"></i> </div>';
+            }
+        });
+        $('#ApplicationObjectValue').html(text);
+    });
+
+    function removeThis(val, This, selectID) {
+        $("#" + selectID + " option[value='" + val + "']").prop("selected", false);
+        $(This).parent().remove();
+        $('#' + selectID).selectpicker('refresh');
+    }
+
+    function btnUpdate(Action) {
+        var isError = false, isMessage = "Giá trị hợp lệ không bao gồm ký tự đặc biệt";
+        var data = {
+            TransportPostageID: @Model.TransportPostageID,
+            TransportPostageCode: $('#TransportPostageCode').val().toUpperCase().trim(),
+            TransportPostageName: $('#TransportPostageName').val().trim(),
+            //TransportPostageType: $('#TransportPostageType').val(),
+            CrmOrPaypostCode: $("#CrmOrPaypostCode").val().toUpperCase(),
+            StartDate: $('#StartDate').val().trim(),
+            ckbEndDate: $("#ckbEndDate").is(":checked"),
+            EndDate: $('#EndDate').val().trim(),
+            MainTransportServiceID: $('#MainTransportServiceID').val(),
+            ExtraTransportServiceID: $('#ExtraTransportServiceID').val().toString(),
+            Area: 1,
+            ProvinceApply: $('#ProvinceApply').val(),
+            AreaApply: $('#AreaApply').val(),
+            SubjectOfApplication: $('#SubjectOfApplication').val(),
+            ProvinceID: $("#ProvinceID").val().toString()
+        }
+
+        isError = CheckNullAndRegexValue(data.TransportPostageCode, "Code", "TransportPostageCode", "Vui lòng nhập Mã bảng cước", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-z), số (0-9) và dấu -", isError);
+        isError = CheckNullAndRegexValue(data.TransportPostageName, "Vietnamese", "TransportPostageName", "Vui lòng nhập Tên bảng cước", isMessage, isError);
+        //isError = CheckNullValue(data.TransportPostageType, "TransportPostageType", "Vui lòng chọn Loại bảng cước", isError);
+        isError = CheckNullValue(data.StartDate, "StartDate", "Vui lòng chọn Ngày bắt đầu", isError);
+
+        if (data.ckbEndDate == true) {
+            isError = CheckNullValue(data.EndDate, "EndDate", "Vui lòng chọn Ngày kết thúc", isError);
+        }
+
+        if (data.StartDate && data.EndDate) {
+            var isDate = compareDate(data.StartDate, data.EndDate);
+            if (isDate == true) {
+                isError = true;
+                CreateCustomSwal("error", "Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
+            }
+        }
+
+        //if (data.TransportPostageType == 1) {
+        //    isError = CheckNullAndRegexValue(data.CrmOrPaypostCode, "ChildCustomerCode", "CrmOrPaypostCode", "Vui lòng nhập Mã CRM/Paypost", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", isError);
+        //} else {
+        //    data.CrmOrPaypostCode = "";
+        //}
+
+        isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn Dịch vụ chính", isError);
+        isError = CheckNullValue(data.ProvinceApply, "ProvinceApply", "Vui lòng chọn Tỉnh áp dùng", isError);
+        isError = CheckNullValue(data.AreaApply, "AreaApply", "Vui lòng chọn Vùng áp dụng", isError);
+        isError = CheckNullValue(data.SubjectOfApplication, "SubjectOfApplication", "Vui lòng chọn Áp dụng cho", isError);
+
+        switch (data.SubjectOfApplication) {
+            case "3":
+                data.AppliesToShop = data.CrmOrPaypostCode;
+                break;
+            case "4":
+                data.AppliesToProvinceFrom = data.ProvinceID;
+                break;
+            case "5":
+                data.AppliesToShop = data.CrmOrPaypostCode;
+                data.AppliesToProvinceFrom = data.ProvinceID;
+                break;
+        };
+
+        if (data.AppliesToShop != undefined) {
+            isError = CheckNullAndRegexValue(data.AppliesToShop, "ChildCustomerCode", "CrmOrPaypostCode", "Vui lòng nhập Mã CRM/Paypost", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", isError);
+        }
+
+        if (data.AppliesToProvinceFrom != undefined) {
+            isError = CheckNullValue(data.AppliesToProvinceFrom, "ProvinceID", "Vui lòng chọn Nơi xuất phát", isError);
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: 'Bạn muốn cập nhật thông tin?',
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditBasicInfoTab", "TransportMainService")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                timer: 2500,
+                                button: false
+                            }).then(function () {
+                                if (Action == "UpdateAndNext") {
+                                    $("#step2").click();
+                                } else {
+                                    $.get('@Url.Action("EditBasicInfoTabView", "TransportMainService")', data, function (htmlString) {
+                                        $('#Content').html(htmlString);
+                                    });
+                                }
+                            });
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,153 @@
+﻿@model EMS.MVC.Backend.Models.PartnerWebhookViewModel
+
+<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Chỉnh sửa thông tin đối tác Webhook</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.PartnerCode)
+            <div class="row mb-2">
+                <h6>Mã PP/CRM&nbsp;<span style="color: red">(*)</span>: @Model.PartnerCode</h6>
+            </div>
+            <div class="row mb-2">
+                <div class="d-flex align-items-center pb-3">
+                    <h6 class="mb-1">Trạng thái <span style="color: red">(*)</span></h6>
+                </div>
+                <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleStatus">
+                    <div class="handle"></div>
+                </button>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Tên đối tác <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="PartnerName" placeholder="Tên đối tác" maxlength="100" value="@Model.PartnerName">
+                    <span class="text-danger" id="errPartnerName"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>Link Webhook <span style="color: red">(*)</span></label>
+                    <input type="text" class="form-control" id="PartnerUrl" placeholder="Link Webhook" value="@Model.PartnerURL">
+                    <span class="text-danger" id="errPartnerUrl"></span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label>API Key</label>
+                    <input type="text" class="form-control" id="PartnerKey" placeholder="API Key" maxlength="100" value="@Model.PartnerKey">
+                    <span class="text-danger" id="errPartnerKey"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12 col-md-12">
+                <div class="row justify-content-between">
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-label="Close">HUỶ BỎ</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="btn-submit">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        if ("@Model.Status" == "Y")
+        {
+            $("#btnToggleStatus").addClass("active");
+            $("#btnToggleStatus").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleStatus").addClass("focus");
+            $("#btnToggleStatus").attr("aria-pressed", false);
+        }
+    });
+
+    CheckChangeValue("PartnerName", "Vui lòng nhập tên đối tác.", "Vietnamese", "Y");
+    CheckChangeValue("PartnerUrl", "Vui lòng nhập link Webhook.", "", "Y");
+
+    //$('.tags_edit').tagsInput({
+    //    'width': '100%',
+    //    'height': '75%',
+    //    'interactive': true,
+    //    'defaultText': 'Th\u{EA}m',
+    //    'removeWithBackspace': true,
+    //    'minChars': 0,
+    //    'maxChars': 50, // if not provided there is no limit
+    //    'placeholderColor': '#666666',
+    //    'onChange': function () {
+    //        checkCode_V2(this.value, '#errPartnerCode', '', false);
+    //    }
+    //});
+
+    //function checkPartnerCode(value, errWhere, isError, isCheckNull) {
+    //    if (value != "" && value != undefined) {
+    //        if (!value.match(/^[a-zA-Z0-9-,]+$/i)) {
+    //            $(errWhere).text("Chỉ được phép nhập chữ cái (a-z), số (0-9), dấu phẩy và dấu -");
+    //            return true;
+    //        }
+    //        else {
+    //            $(errWhere).text('');
+    //            return isError;
+    //        }
+    //    }
+    //    else if (isCheckNull) {
+    //        $(errWhere).text('Trường này không được để trống.');
+    //        return true;
+    //    }
+    //    return isError;
+    //}
+
+    $('#btn-submit').on('click', function () {
+        var isError = false;
+        var data = {
+            ID: $('#ID').val(),
+            PartnerCode: $('#PartnerCode').val(),
+            PartnerName: $('#PartnerName').val().trim(),
+            PartnerUrl: $('#PartnerUrl').val().trim(),
+            PartnerKey: $('#PartnerKey').val().trim(),
+            Status: $("#btnToggleStatus").attr('aria-pressed') == "true" ? "Y" : "N"
+        };
+
+        isError = CheckNullAndRegexValue(data.PartnerCode, "ChildCustomerCode", "PartnerCode", "Vui lòng nhập mã PP/CRM", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-z), số (0-9) và dấu -", isError);
+        isError = CheckNullAndRegexValue(data.PartnerName, "Vietnamese", "PartnerName", "Vui lòng nhập tên đối tác.", "Giá trị hợp lệ không bao gồm ký tự đặc biệt.", isError);
+        isError = CheckNullValue(data.PartnerUrl, "PartnerUrl", "Vui lòng nhập link Webhook", isError);
+
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEdit", "PartnerWebhook")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#modal-common').modal('toggle');
+                    CreateCustomSwal("success", res.Message);
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,99 @@
+﻿@model EMS.MVC.Backend.Models.OrderDetailReportViewModel
+@{
+    ViewBag.Title = "Báo cáo chi tiết sản lượng theo tháng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("OrderReportView", "OrderReport")">Báo cáo sản lượng </a></li>
+                        <li class="breadcrumb-item">Báo cáo chi tiết sản lượng phát sinh</li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span>
+                                MÃ PP/CRM - SĐT: @Model.SearchKey - @if (string.IsNullOrEmpty(Model.Time) == false)
+                                { Write("THÁNG " + @Model.Time); }
+                                else { Write(" NGÀY " + @Model.FromDate + " -- " + @Model.ToDate + " "); }
+                                - NƠI TẠO: @Model.PlaceOfCreationName.ToUpper()
+                            </span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-end">
+                <div class="row">
+                    <div class="mr-3 mb-3">
+                        <button type="button" id="btnExportExcel" class="btn btn-sm btn-dribbble form-control">
+                            <i class="fa fa-file-excel-o mr-2"></i>&nbsp; EXPORT EXCEL
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="tbl-data" class="table-responsive">
+                @{
+                    Html.RenderAction("SearchListOrderDetailReportView", "OrderReport", new { Time = Model.Time, FromDate = Model.FromDate, ToDate = Model.ToDate, PlaceOfCreation = Model.PlaceOfCreation, SearchKey = Model.SearchKey });
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#btnExportExcel").on("click", function () {
+        var errMsg = '', isError = false;
+        var agrs = {
+            Time: '@Model.Time',
+            FromDate: '@Model.FromDate',
+            ToDate: '@Model.ToDate',
+            PlaceOfCreation: '@Model.PlaceOfCreation',
+            PlaceOfCreationName: '@Html.Raw(Model.PlaceOfCreationName)',
+            SearchKey: '@Model.SearchKey',
+        };
+        if (agrs.Time == "") {
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            })
+            return;
+        }
+        var param = String.format("Time={0}&FromDate={1}&ToDate={2}&PlaceOfCreation={3}&PlaceOfCreationName={4}&SearchKey={5}",
+            agrs.Time, agrs.FromDate, agrs.ToDate, agrs.PlaceOfCreation, agrs.PlaceOfCreationName, agrs.SearchKey);
+        window.location.href = '@Url.Action("ExportExcelOrderDetailReport", "OrderReport")?' + param;
+    });
+</script>

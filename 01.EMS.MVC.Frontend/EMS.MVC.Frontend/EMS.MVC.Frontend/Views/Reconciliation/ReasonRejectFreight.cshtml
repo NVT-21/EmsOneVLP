@@ -1,0 +1,100 @@
+﻿@{
+    Layout = null;
+}
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Lý do từ chối đối soát</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Lý do từ chối <span class="text-danger">*</span></label>
+                        <input class="form-control" rows="4" id="ReasonReject" placeholder="Nhập lý do từ chối đối soát" autocomplete="off" tabindex="1">
+                        <span class="text-danger" id="errReasonReject"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" onclick="fnReasonReject()">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    function fnReasonReject() {
+        var isError = false;
+        var ReasonReject = $("#ReasonReject").val().trim();
+        isError = CheckNullValue(ReasonReject, 'ReasonReject', 'Vui lòng nhập lý do từ chối.', isError);
+        if (isError) {
+            return;
+        }
+        var data = @Html.Raw(Json.Encode(ViewBag.arr));
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAgreeTransportFee", "Reconciliation")',
+            data: {
+                arr: data,
+                ReasonReject: ReasonReject
+            },
+            dataType: 'json',
+            success: function (res) {
+                $(".btn-close").click();
+                if (res.Code == "00") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        html: true,
+                        button: false,
+                        timer: 1500
+                    }).then(function () {
+                        setTimeout(function () { $('#SearchCode').change();}, 1200);
+                    });
+
+                } else {
+                    swal({
+                    title: 'Thông báo',
+                    text: res.Message,
+                    buttons: {
+                        confirm: {
+                            text: "Xem chi tiết",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary",
+                            closeModal: true
+                        },
+                        cancel: {
+                            text: "Không",
+                            value: false,
+                            visible: true,
+                            className: "btn btn-outline-dark",
+                            closeModal: true,
+                        }
+                    },
+                }).then((value) => {
+                    if (value) {
+                        $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                            Error: res.Data,
+                            Controller: "IsAgree"
+                        }, function (data) {
+                            $('#modal-ViewModal-html').html(data);
+                            $('#ViewModal').modal('show');
+                        });
+                    } else {
+                        window.location.reload();
+                    }
+                });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+</script>

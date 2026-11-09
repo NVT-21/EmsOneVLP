@@ -1,0 +1,46 @@
+# Gộp với docker-compose.yml hiện có trên server (cùng thư mục với file này).
+#
+# Cách 1 — nhiều file compose:
+#   docker compose -f docker-compose.yml -f docker-compose.transport-worker.stack.yml up -d --build transport-worker
+#
+# Cách 2 — copy khối `transport-worker` dưới `services:` vào file compose chính của bạn.
+#
+# Cấu trúc thư mục gợi ý (context tính từ chỗ đặt docker-compose.yml chính):
+#   /opt/your-app/
+#     docker-compose.yml
+#     docker-compose.transport-worker.stack.yml
+#     EMS.TransportWorkerService/
+
+services:
+  transport-worker:
+    build:
+      context: ./EMS.TransportWorkerService
+      dockerfile: Dockerfile
+    image: ems-transport-worker:latest
+    container_name: ems-transport-worker
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__EMSONE: "${CONNECTION_STRING_EMSONE:-Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle-host)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=EMSONEDB)));User Id=emsone;Password=CHANGE_ME;}"
+      RabbitMQ__HostName: rabbitmq
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UseSsl: "false"
+      RabbitMQ__SslServerName: ""
+      RabbitMQ__VirtualHost: "/"
+      RabbitMQ__AmqpUri: ""
+      RabbitMQ__UserName: ems_user
+      RabbitMQ__Password: Tungkx@123
+      RabbitMQ__QueueName: transport_queue
+      Mongo__ConnectionString: mongodb://admin:ems14052026@mongodb:27017/
+      Mongo__DatabaseName: emsoneloguat
+      Mongo__CollectionName: OrderSendTransport
+      EMS__ApiUrl: "${EMS_API_URL:-http://222.255.250.237:8060/}"
+      EMS__ApiKey: "${EMS_API_KEY:-}"
+      EMS__Authorization: "${EMS_AUTHORIZATION:-}"
+      EMS__TransportKey: "${EMS_TRANSPORT_KEY:-}"
+      SyncGateway__BaseUrl: "${SYNC_GATEWAY_BASE_URL:-}"

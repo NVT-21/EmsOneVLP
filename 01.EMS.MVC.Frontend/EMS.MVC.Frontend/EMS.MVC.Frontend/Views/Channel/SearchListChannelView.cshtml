@@ -1,0 +1,204 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListChannelViewModel>
+
+<table id="SearchListDataTable" class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th>Tên trang</th>
+            <th>Loại trang</th>
+            <th style="width: 300px;">Mô tả</th>
+            <th>Kênh</th>
+            <th>Trạng thái</th>
+            <th>Người tạo</th>
+            <th>Thời gian tạo</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PageName</td>
+                <td>@item.PageCategory</td>
+                <td>@item.PageDescription</td>
+                <td>@item.Channel</td>
+                <td>@item.IsActive</td>
+                <td>@item.CreatedName</td>
+                <td>@item.CreatedDate</td>
+                <td class="text-center">
+                    @if (item.Channel == "Zalo" || item.Channel == "Facebook" || item.Channel == "TiktokShop")
+                    {
+                        if (item.IsActiveCheck == "Y")
+                        {
+                            <a href="#" type="button" class="btn btn-info light" title="Truy cập" onclick="btnDetail('@item.PageID', '@item.Channel')">
+                                <i class="fa fa-link"></i>
+                            </a>
+                        }
+                        if (item.Channel == "Facebook" || item.Channel == "TiktokShop")
+                        {
+                            <a href="#" type="button" class="btn btn-info light" title="Xoá kết nối" onclick="btnDelete('@item.PageID', '@item.Channel')">
+                                <i class="fa fa-unlink"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function btnDetail(PageID, Channel) {
+        switch (Channel) {
+            case "Zalo":
+                RedirectZalo(PageID);
+                break;
+            case "Facebook":
+                RedirectFacebook(PageID);
+                break;
+            case "TiktokShop":
+                RedirectTiktok(PageID);
+                break;
+            default:
+                CreateCustomSwal("error", "Không tồn tại kênh bán hàng");
+                break;
+        };
+    }
+
+    function RedirectZalo(PageID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRedirectZalo", "Channel")',
+            dataType: 'json',
+            loading: true,
+            data: {
+                PageID: PageID
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    window.location.href = '@Url.Action("ZAL_DashboardView", "ZAL_Home", new { area = "Zalo" })';
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+
+    function RedirectFacebook(PageID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRedirectFacebook", "Channel")',
+            dataType: 'json',
+            loading: true,
+            data: {
+                PageID: PageID
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    window.location.href = '@Url.Action("FAB_DashboardView", "FAB_Home", new { area = "Facebook" })';
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+
+    function RedirectTiktok(PageID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRedirectTiktok", "Channel")',
+            dataType: 'json',
+            loading: true,
+            data: {
+                PageID: PageID
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    window.location.href = '@Url.Action("TIK_DashboardView", "TIK_Home", new { area = "Tiktok" })';
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+
+    function btnDelete(PageID, Channel) {
+        switch (Channel) {
+            case "Facebook":
+                Channel = "FB";
+                break;
+            case "TiktokShop":
+                Channel = "TIK";
+                break;
+            default:
+                break;
+        };
+        swal({
+            text: "Bạn chắc chắn muốn xoá liên kết?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JDeleteConnectPage", "Channel")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        PageID: PageID,
+                        Channel: Channel
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        }
+                        else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

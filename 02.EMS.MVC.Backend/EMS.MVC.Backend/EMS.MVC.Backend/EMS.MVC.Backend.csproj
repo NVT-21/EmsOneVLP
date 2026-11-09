@@ -1,0 +1,1118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{30A6F846-22D1-48CD-ACD4-07DCBAE8AA69}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EMS.MVC.Backend</RootNamespace>
+    <AssemblyName>EMS.MVC.Backend</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44352</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>packages\Portable.BouncyCastle.1.8.9\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="CaptchaMvc, Version=2.5.0.0, Culture=neutral, PublicKeyToken=fe46ad421dd3b0e6, processorArchitecture=MSIL">
+      <HintPath>packages\CaptchaMvc.Mvc5.1.5.0\lib\net45-full\CaptchaMvc.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="EMS.Entity, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ems-lib\EMS.Entity\bin\Debug\EMS.Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="EMS.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ems-lib\EMS.Entity\bin\Debug\EMS.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.2.10, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.1.3.2\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.5.5.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.5\lib\net45\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.5.5.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.5\lib\net45\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.5.5.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.5\lib\net45\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.5.5.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.5\lib\net45\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="SRVTextToImage, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\SRVTextToImage.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AuthorizeController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\CollectionPostOfficeController.cs" />
+    <Compile Include="Controllers\CustomerGroupController.cs" />
+    <Compile Include="Controllers\DataFileController.cs" />
+    <Compile Include="Controllers\HandleController.cs" />
+    <Compile Include="Controllers\NotifyControlController.cs" />
+    <Compile Include="Controllers\OrderBatchController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\OrderReportController.cs" />
+    <Compile Include="Controllers\PartnerWebhookController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\PeriodController.cs" />
+    <Compile Include="Controllers\ReconciliationController.cs" />
+    <Compile Include="Controllers\RequestSupportController.cs" />
+    <Compile Include="Controllers\TransportExtraServiceController.cs" />
+    <Compile Include="Controllers\TransportFeeController.cs" />
+    <Compile Include="Controllers\TransportMainServiceController.cs" />
+    <Compile Include="Controllers\TransportServiceController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\ShopGroupPermissionController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\SessionController.cs" />
+    <Compile Include="Controllers\ShopController.cs" />
+    <Compile Include="Controllers\TransportController.cs" />
+    <Compile Include="CrystalReport\DebtNoticesCR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DebtNoticesCR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CrystalReport\FeeDetailEditedAdjJournalEntriesCR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FeeDetailEditedAdjJournalEntriesCR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CrystalReport\FeeEditedAdjJournalEntriesCR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FeeEditedAdjJournalEntriesCR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CrystalReport\PostageRefundCR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PostageRefundCR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CrystalReport\SummaryOfDebtNoticesCR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SummaryOfDebtNoticesCR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataSet\DebtNoticesDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DebtNoticesDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSet\FeeAdjustmentJournalEntriesDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FeeAdjustmentJournalEntriesDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSet\PostageRefundDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PostageRefundDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AddCollectionPostOfficeViewModel.cs" />
+    <Compile Include="Models\AddCustomerGroupViewModel.cs" />
+    <Compile Include="Models\AddFreightChargesViewModel.cs" />
+    <Compile Include="Models\AddLabelPrintViewModel.cs" />
+    <Compile Include="Models\AddPickUpAddressViewModel.cs" />
+    <Compile Include="Models\AddressAndLabelPrintViewModel.cs" />
+    <Compile Include="Models\AddTransportServiceViewModel.cs" />
+    <Compile Include="Models\AddUserViewModel.cs" />
+    <Compile Include="Models\AdjustingJournalEntriesViewModel.cs" />
+    <Compile Include="Models\ApprovedShopViewModel.cs" />
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\ChangePasswordViewModel.cs" />
+    <Compile Include="Models\ChargedModel.cs" />
+    <Compile Include="Models\ChargedViewModel.cs" />
+    <Compile Include="Models\CustomerGroupViewModel.cs" />
+    <Compile Include="Models\DebtNoticesViewModel.cs" />
+    <Compile Include="Models\DetailCustomerGroupViewModel.cs" />
+    <Compile Include="Models\DetailFreightChargesViewModel.cs" />
+    <Compile Include="Models\DetailPeriodViewModel.cs" />
+    <Compile Include="Models\EditBasicInfoTabViewModel.cs" />
+    <Compile Include="Models\ConfigMainFeeDetailViewModel.cs" />
+    <Compile Include="Models\ConfigMainFeeViewModel.cs" />
+    <Compile Include="Models\EditFreightChargesViewModel.cs" />
+    <Compile Include="Models\EditHistoryTabViewModel.cs" />
+    <Compile Include="Models\EditMainFeeTabViewModel.cs" />
+    <Compile Include="Models\EditSurchargeTabViewModel.cs" />
+    <Compile Include="Models\EditTransportServiceViewModel.cs" />
+    <Compile Include="Models\DetailOrderBatchViewModel.cs" />
+    <Compile Include="Models\EMSSignaruteAndImageInformationModel.cs" />
+    <Compile Include="Models\ImageZoomAndSliderViewModel.cs" />
+    <Compile Include="Models\NotifyControlAddModel.cs" />
+    <Compile Include="Models\NotifyControlGetByIDModel.cs" />
+    <Compile Include="Models\NotifyControlSearchListModel.cs" />
+    <Compile Include="Models\NotifyControlUpdateModel.cs" />
+    <Compile Include="Models\PartnerModel.cs" />
+    <Compile Include="Models\PeriodAddModel.cs" />
+    <Compile Include="Models\PeriodDetailModel.cs" />
+    <Compile Include="Models\PeriodDetailViewModel.cs" />
+    <Compile Include="Models\PeriodIndexModel.cs" />
+    <Compile Include="Models\PeriodListModel.cs" />
+    <Compile Include="Models\PeriodListViewModel.cs" />
+    <Compile Include="Models\PeriodRemoveModel.cs" />
+    <Compile Include="Models\PeriodViewModel.cs" />
+    <Compile Include="Models\PostageRefundViewModel.cs" />
+    <Compile Include="Models\ReconciliationCODMoneyDataViewModel.cs" />
+    <Compile Include="Models\RejectShopViewModel.cs" />
+    <Compile Include="Models\RequestSupportSearchHistoryModel.cs" />
+    <Compile Include="Models\RequestSupportSearchProcessModel.cs" />
+    <Compile Include="Models\SearchListFreightChargesViewModel.cs" />
+    <Compile Include="Models\SearchListPeriodViewModel.cs" />
+    <Compile Include="Models\SearchListTransportServiceViewModel.cs" />
+    <Compile Include="Models\ShopModel.cs" />
+    <Compile Include="Models\ShowListErrorMultipleSelectModel.cs" />
+    <Compile Include="Models\ShowListErrorMultipleSelectViewModel.cs" />
+    <Compile Include="Models\SummaryOfDebtNoticesViewModel.cs" />
+    <Compile Include="Models\TransportFeeViewModel.cs" />
+    <Compile Include="Models\CollectionPostOfficeModel.cs" />
+    <Compile Include="Models\CollectionPostOfficeViewModel.cs" />
+    <Compile Include="Models\ConfigureMainServiceChargeViewModel.cs" />
+    <Compile Include="Models\CustomerGroupModel.cs" />
+    <Compile Include="Models\CustomerModel.cs" />
+    <Compile Include="Models\CustomerStickerModel.cs" />
+    <Compile Include="Models\DetailCollectionPostOfficeViewModel.cs" />
+    <Compile Include="Models\DetailEditedItemCodeViewModel.cs" />
+    <Compile Include="Models\DetailRequestSupportViewModel.cs" />
+    <Compile Include="Models\DetailShopViewModel.cs" />
+    <Compile Include="Models\DistrictModel.cs" />
+    <Compile Include="Models\EditUserViewModel.cs" />
+    <Compile Include="Models\ExportExcelMainServiceConfigModel.cs" />
+    <Compile Include="Models\ExtraServiceFeeConfigDetailDataViewModel.cs" />
+    <Compile Include="Models\ExtraServiceFeeConfigViewModel.cs" />
+    <Compile Include="Models\InfoShopViewModel.cs" />
+    <Compile Include="Models\OrderDetailReportViewModel.cs" />
+    <Compile Include="Models\OrderReportViewModel.cs" />
+    <Compile Include="Models\PickUpAddressModel.cs" />
+    <Compile Include="Models\RequestSupportModel.cs" />
+    <Compile Include="Models\SearchOrderDetailReportViewModel.cs" />
+    <Compile Include="Models\SearchOrderReportViewModel.cs" />
+    <Compile Include="Models\SearchListOrderViewModel.cs" />
+    <Compile Include="Models\NotifyListViewModel.cs" />
+    <Compile Include="Models\OrderDetailViewModel.cs" />
+    <Compile Include="Models\OrderViewModel.cs" />
+    <Compile Include="Models\OrderItemModel.cs" />
+    <Compile Include="Models\OrderPrintTypeViewModel.cs" />
+    <Compile Include="Models\OrderPrintViewModel.cs" />
+    <Compile Include="Models\PartnerWebhookViewModel.cs" />
+    <Compile Include="Models\PaymentCODMultipleModel.cs" />
+    <Compile Include="Models\PaymentListCODViewModel.cs" />
+    <Compile Include="Models\ProvinceModel.cs" />
+    <Compile Include="Models\ReconciliationFeePostOfficeReportViewModel.cs" />
+    <Compile Include="Models\ReconciliationFeeReportViewModel.cs" />
+    <Compile Include="Models\SearchListShopViewModel.cs" />
+    <Compile Include="Models\SearchListUserViewModel.cs" />
+    <Compile Include="Models\ShowInfoPickUpAddressViewModel.cs" />
+    <Compile Include="Models\ProcessRequestSupportViewModel.cs" />
+    <Compile Include="Models\ReconciliationCODMoneyViewModel.cs" />
+    <Compile Include="Models\ReconciliationFeeViewModel.cs" />
+    <Compile Include="Models\ReconciliationViewModel.cs" />
+    <Compile Include="Models\RequestSupportGroupModel.cs" />
+    <Compile Include="Models\RequestSupportViewModel.cs" />
+    <Compile Include="Models\SearchListRequestSupportViewModel.cs" />
+    <Compile Include="Models\ShopAddModel.cs" />
+    <Compile Include="Models\AddShopViewModel.cs" />
+    <Compile Include="Models\EmployeeLevelViewModel.cs" />
+    <Compile Include="Models\ShopAddImageModel.cs" />
+    <Compile Include="Models\ShopHistoryViewModel.cs" />
+    <Compile Include="Models\ShopReconciliationViewModel.cs" />
+    <Compile Include="Models\ShowInfoLabelPrintViewModel.cs" />
+    <Compile Include="Models\TemplatePrintViewModel.cs" />
+    <Compile Include="Models\TransportPostageConfirmModel.cs" />
+    <Compile Include="Models\TransportPostageDetailAddModel.cs" />
+    <Compile Include="Models\TransportPostageDetailDataModel.cs" />
+    <Compile Include="Models\TransportPostageDetailEditModel.cs" />
+    <Compile Include="Models\TransportPostageDetailRemoveModel.cs" />
+    <Compile Include="Models\TransportPostageDetailViewModel.cs" />
+    <Compile Include="Models\TransportPostageEditViewModel.cs" />
+    <Compile Include="Models\TransportPostageExtraDetailDataViewModel.cs" />
+    <Compile Include="Models\TransportPostageExtraDetailViewModel.cs" />
+    <Compile Include="Models\TransportPostageExtraServiceAddModel.cs" />
+    <Compile Include="Models\TransportPostageExtraServiceAddViewModel.cs" />
+    <Compile Include="Models\TransportPostageExtraServiceListViewModel.cs" />
+    <Compile Include="Models\TransportPostageHistoryViewModel.cs" />
+    <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\EmployeeProfile.cs" />
+    <Compile Include="Models\TransportServiceEditModel.cs" />
+    <Compile Include="Models\TransportServiceEditViewModel.cs" />
+    <Compile Include="Models\TransportServiceListViewModel.cs" />
+    <Compile Include="Models\TransportServiceViewModel.cs" />
+    <Compile Include="Models\TreeModel.cs" />
+    <Compile Include="Models\UserGroupModel.cs" />
+    <Compile Include="Models\UserViewModel.cs" />
+    <Compile Include="Models\SendMailModel.cs" />
+    <Compile Include="Models\EditShopViewModel.cs" />
+    <Compile Include="Models\ShopGroupPermissionDetailViewModel.cs" />
+    <Compile Include="Models\ShopGroupPermissionListViewModel.cs" />
+    <Compile Include="Models\ShopImagesViewModel.cs" />
+    <Compile Include="Models\ShopIndexViewModel.cs" />
+    <Compile Include="Models\ShopViewModel.cs" />
+    <Compile Include="Models\StatusModel.cs" />
+    <Compile Include="Models\TransportPostageBasicInfoModel.cs" />
+    <Compile Include="Models\TransportPostageCommonModel.cs" />
+    <Compile Include="Models\TransportPostageExtraServiceModel.cs" />
+    <Compile Include="Models\TransportPostageListViewModel.cs" />
+    <Compile Include="Models\TransportPostageMainFeeModel.cs" />
+    <Compile Include="Models\TransportPostageSurchargeModel.cs" />
+    <Compile Include="Models\TransportPostageRangeModel.cs" />
+    <Compile Include="Models\TransportPostageRangeSearchModel.cs" />
+    <Compile Include="Models\TransportPostageRangeSearchViewModel.cs" />
+    <Compile Include="Models\TransportPostageRangeWeightModel.cs" />
+    <Compile Include="Models\TransportPostageWeightModel.cs" />
+    <Compile Include="Models\TransportPostageWeightSearchModel.cs" />
+    <Compile Include="Models\TransportRegionGroupModel.cs" />
+    <Compile Include="Models\TransportRegionGroupViewModel.cs" />
+    <Compile Include="Models\TransportRegionModel.cs" />
+    <Compile Include="Models\TransportRegionViewModel.cs" />
+    <Compile Include="Models\TransportServiceModel.cs" />
+    <Compile Include="Models\UserProfile.cs" />
+    <Compile Include="Models\VNPSignaruteAndImageInformationModel.cs" />
+    <Compile Include="Models\WardModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\CollectionPostOfficeRepository.cs" />
+    <Compile Include="Repository\CustomerGroupRepository.cs" />
+    <Compile Include="Repository\LabelPrintRepository.cs" />
+    <Compile Include="Repository\NotifyControlRepository.cs" />
+    <Compile Include="Repository\OrderBatchRepository.cs" />
+    <Compile Include="Repository\OrderRepository.cs" />
+    <Compile Include="Repository\PartnerRepository.cs" />
+    <Compile Include="Repository\PeriodRepository.cs" />
+    <Compile Include="Repository\PickUpAddressRepository.cs" />
+    <Compile Include="Repository\PWDRepository.cs" />
+    <Compile Include="Repository\ReconciliationRepository.cs" />
+    <Compile Include="Repository\RequestSupportRepository.cs" />
+    <Compile Include="Repository\ShopRepository.cs" />
+    <Compile Include="Repository\TransportFeeRepsitory.cs" />
+    <Compile Include="Repository\TransportPostageDetailRepository.cs" />
+    <Compile Include="Repository\TransportPostageRepository.cs" />
+    <Compile Include="Repository\TransportRegionGroupRepository.cs" />
+    <Compile Include="Repository\TransportRegionRepository.cs" />
+    <Compile Include="Repository\TransportServiceRepository.cs" />
+    <Compile Include="Repository\UserGroupRepository.cs" />
+    <Compile Include="Repository\UserInCollectionPostOfficeRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
+    <Compile Include="XCommon.cs" />
+    <Compile Include="XHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\css\CustomStyle.css" />
+    <Content Include="Assets\css\main\style.css" />
+    <Content Include="Assets\images\image-default.png" />
+    <Content Include="Assets\images\logo-mini.png" />
+    <Content Include="Assets\images\logo.png" />
+    <Content Include="Assets\js\alerts.js" />
+    <Content Include="Assets\js\avgrund.js" />
+    <Content Include="Assets\js\data-table.js" />
+    <Content Include="Assets\js\hoverable-collapse.js" />
+    <Content Include="Assets\js\js.js" />
+    <Content Include="Assets\js\off-canvas.js" />
+    <Content Include="Assets\js\popover.js" />
+    <Content Include="Assets\js\settings.js" />
+    <Content Include="Assets\js\string.js" />
+    <Content Include="Assets\js\template.js" />
+    <Content Include="Assets\js\todolist.js" />
+    <Content Include="Assets\js\tooltips.js" />
+    <Content Include="Assets\vendors\bootstrap-datepicker\bootstrap-datepicker.min.css" />
+    <Content Include="Assets\vendors\bootstrap-datepicker\bootstrap-datepicker.min.js" />
+    <Content Include="Assets\vendors\bootstrap-datetimepicker-master\bootstrap-datetimepicker.min.css" />
+    <Content Include="Assets\vendors\bootstrap-datetimepicker-master\bootstrap-datetimepicker.min.js" />
+    <Content Include="Assets\vendors\bootstrap-multiselect\bootstrap-multiselect.min.css" />
+    <Content Include="Assets\vendors\bootstrap-multiselect\bootstrap-multiselect.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\.gitignore" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\css\bootstrap-select.css" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\css\bootstrap-select.min.css" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\bootstrap-select.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\bootstrap-select.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-am_ET.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-am_ET.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ar_AR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ar_AR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-bg_BG.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-bg_BG.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-cs_CZ.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-cs_CZ.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-da_DK.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-da_DK.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-de_DE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-de_DE.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-en_US.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-en_US.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_CL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_CL.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_ES.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_ES.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-et_EE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-et_EE.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-eu.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-eu.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fa_IR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fa_IR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fi_FI.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fi_FI.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fr_FR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fr_FR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hr_HR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hr_HR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hu_HU.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hu_HU.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-id_ID.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-id_ID.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-it_IT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-it_IT.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ja_JP.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ja_JP.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-kh_KM.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-kh_KM.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ko_KR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ko_KR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lt_LT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lt_LT.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lv_LV.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lv_LV.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nb_NO.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nb_NO.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nl_NL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nl_NL.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pl_PL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pl_PL.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_BR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_BR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_PT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_PT.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ro_RO.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ro_RO.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ru_RU.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ru_RU.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sk_SK.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sk_SK.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sl_SI.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sl_SI.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sr_SP.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sr_SP.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sv_SE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sv_SE.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-th_TH.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-th_TH.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-tr_TR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-tr_TR.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ua_UA.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ua_UA.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-vi_VN.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-vi_VN.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_CN.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_CN.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_TW.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_TW.min.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\ajax\libs\highlight.js\9.15.6\css\github.min.css" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\ajax\libs\highlight.js\9.15.6\js\highlight.pack.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\css\base.css" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\js\base.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\main.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\nav.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\custom_theme\toc.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\css\custom.css" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\playground\3\index.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\playground\index.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\playground\plnkrOpener.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\Gruntfile.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\bootstrap-select.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-am_ET.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ar_AR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-bg_BG.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-cs_CZ.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-da_DK.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-de_DE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-en_US.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-es_CL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-es_ES.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-et_EE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-eu.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-fa_IR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-fi_FI.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-fr_FR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-hr_HR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-hu_HU.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-id_ID.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-it_IT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ja_JP.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-kh_KM.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ko_KR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-lt_LT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-lv_LV.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-nb_NO.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-nl_NL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-pl_PL.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-pt_BR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-pt_PT.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ro_RO.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ru_RU.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-sk_SK.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-sl_SI.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-sr_SP.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-sv_SE.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-th_TH.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-tr_TR.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-ua_UA.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-vi_VN.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-zh_CN.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\i18n\defaults-zh_TW.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\umd-intro.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\umd-outro.js" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\tests\bootstrap3.html" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\tests\bootstrap4.html" />
+    <Content Include="Assets\vendors\bootstrap-tagsinput\bootstrap-tagsinput.css" />
+    <Content Include="Assets\vendors\bootstrap-tagsinput\bootstrap-tagsinput.js" />
+    <Content Include="Assets\vendors\css\vendor.bundle.base.css" />
+    <Content Include="Assets\vendors\datatables.net-bs4\dataTables.bootstrap4.css" />
+    <Content Include="Assets\vendors\datatables.net-bs4\dataTables.bootstrap4.js" />
+    <Content Include="Assets\vendors\datatables.net\buttons.html5.min.js" />
+    <Content Include="Assets\vendors\datatables.net\buttons.print.min.js" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.bootstrap4.css" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.bootstrap4.js" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.buttons.min.js" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.fixedColumns.min.css" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.fixedColumns.min.js" />
+    <Content Include="Assets\vendors\datatables.net\dataTables.select.min.js" />
+    <Content Include="Assets\vendors\datatables.net\jquery.dataTables.js" />
+    <Content Include="Assets\vendors\datatables.net\jszip.min.js" />
+    <Content Include="Assets\vendors\datatables.net\pdfmake.min.js" />
+    <Content Include="Assets\vendors\datatables.net\select.dataTables.min.css" />
+    <Content Include="Assets\vendors\datatables.net\vfs_fonts.js" />
+    <Content Include="Assets\vendors\datetimepicker-master\jquery.datetimepicker.full.min.js" />
+    <Content Include="Assets\vendors\datetimepicker-master\jquery.datetimepicker.min.css" />
+    <Content Include="Assets\vendors\font-awesome\css\font-awesome.min.css" />
+    <Content Include="Assets\vendors\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Assets\vendors\inputmask\jquery.inputmask.bundle.js" />
+    <Content Include="Assets\vendors\jquery-steps\jquery.steps.min.js" />
+    <Content Include="Assets\vendors\jquery-tags-input\jquery.tagsinput.min.css" />
+    <Content Include="Assets\vendors\jquery-tags-input\jquery.tagsinput.min.js" />
+    <Content Include="Assets\vendors\jquery-toast-plugin\jquery.toast.min.css" />
+    <Content Include="Assets\vendors\jquery-toast-plugin\jquery.toast.min.js" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\AUTHORS.txt" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\external\jquery\jquery.js" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_444444_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_555555_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_777620_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_777777_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\index.html" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.js" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.min.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.min.js" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.structure.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.structure.min.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.theme.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\jquery-ui.theme.min.css" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\LICENSE.txt" />
+    <Content Include="Assets\vendors\jquery-validation\jquery.validate.min.js" />
+    <Content Include="Assets\vendors\jstree\.gitignore" />
+    <Content Include="Assets\vendors\jstree\demo\basic\index.html" />
+    <Content Include="Assets\vendors\jstree\dist\jstree.js" />
+    <Content Include="Assets\vendors\jstree\dist\jstree.min.js" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default-dark\32px.png" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default-dark\40px.png" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default-dark\style.css" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default-dark\style.min.css" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default-dark\throbber.gif" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default\32px.png" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default\40px.png" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default\style.css" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default\style.min.css" />
+    <Content Include="Assets\vendors\jstree\dist\themes\default\throbber.gif" />
+    <Content Include="Assets\vendors\jstree\gruntfile.js" />
+    <Content Include="Assets\vendors\jstree\src\intro.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.changed.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.checkbox.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.conditionalselect.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.contextmenu.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.dnd.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.massload.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.search.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.sort.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.state.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.types.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.unique.js" />
+    <Content Include="Assets\vendors\jstree\src\jstree.wholerow.js" />
+    <Content Include="Assets\vendors\jstree\src\misc.js" />
+    <Content Include="Assets\vendors\jstree\src\outro.js" />
+    <Content Include="Assets\vendors\jstree\src\sample.js" />
+    <Content Include="Assets\vendors\jstree\src\themes\default-dark\32px.png" />
+    <Content Include="Assets\vendors\jstree\src\themes\default-dark\40px.png" />
+    <Content Include="Assets\vendors\jstree\src\themes\default-dark\style.css" />
+    <Content Include="Assets\vendors\jstree\src\themes\default-dark\throbber.gif" />
+    <Content Include="Assets\vendors\jstree\src\themes\default\32px.png" />
+    <Content Include="Assets\vendors\jstree\src\themes\default\40px.png" />
+    <Content Include="Assets\vendors\jstree\src\themes\default\style.css" />
+    <Content Include="Assets\vendors\jstree\src\themes\default\throbber.gif" />
+    <Content Include="Assets\vendors\jstree\src\vakata-jstree.js" />
+    <Content Include="Assets\vendors\jstree\test\unit\index.html" />
+    <Content Include="Assets\vendors\jstree\test\unit\libs\qunit.css" />
+    <Content Include="Assets\vendors\jstree\test\unit\libs\qunit.js" />
+    <Content Include="Assets\vendors\jstree\test\unit\test.js" />
+    <Content Include="Assets\vendors\jstree\test\visual\desktop\index.html" />
+    <Content Include="Assets\vendors\jstree\test\visual\mobile\index.html" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\desktop\.png" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\desktop\desktop.png" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\desktop\home.png" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\mobile\.png" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\mobile\home.png" />
+    <Content Include="Assets\vendors\jstree\test\visual\screenshots\mobile\mobile.png" />
+    <Content Include="Assets\vendors\js\jquery.avgrund\jquery.avgrund.min.js" />
+    <Content Include="Assets\vendors\js\sweetalert\sweetalert.min.js" />
+    <Content Include="Assets\vendors\js\vendor.bundle.base.js" />
+    <Content Include="Assets\vendors\mdi\css\materialdesignicons.min.css" />
+    <Content Include="Assets\vendors\mdi\fonts\materialdesignicons-webfont.svg" />
+    <Content Include="Assets\vendors\moment\moment.min.js" />
+    <Content Include="Assets\vendors\select2-bootstrap-theme\select2-bootstrap.min.css" />
+    <Content Include="Assets\vendors\select2\select2.min {TEMP}.css" />
+    <Content Include="Assets\vendors\select2\select2.min.css" />
+    <Content Include="Assets\vendors\select2\select2.min.js" />
+    <Content Include="Assets\vendors\ti-icons\css\themify-icons.css" />
+    <Content Include="Assets\vendors\ti-icons\fonts\themify.svg" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Views\Authorize\" />
+    <Folder Include="Views\Session\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\fonts\Roboto\Roboto-Black.eot" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Black.ttf" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Black.woff" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Black.woff2" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Bold.eot" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Bold.ttf" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Bold.woff" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Bold.woff2" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Light.eot" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Light.ttf" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Light.woff" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Light.woff2" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Medium.eot" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Medium.ttf" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Medium.woff" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Medium.woff2" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Regular.eot" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Regular.ttf" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Regular.woff" />
+    <Content Include="Assets\fonts\Roboto\Roboto-Regular.woff2" />
+    <Content Include="Assets\vendors\js\bootstrap.min.js.map" />
+    <Content Include="Assets\vendors\ti-icons\fonts\themify.eot" />
+    <Content Include="Assets\vendors\ti-icons\fonts\themify.ttf" />
+    <Content Include="Assets\vendors\ti-icons\fonts\themify.woff" />
+    <Content Include="Assets\vendors\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Assets\vendors\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Assets\vendors\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Assets\vendors\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Assets\vendors\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="Assets\css\main\style.css.map" />
+    <Content Include="Assets\vendors\mdi\css\materialdesignicons.min.css.map" />
+    <Content Include="Assets\vendors\mdi\fonts\materialdesignicons-webfont.eot" />
+    <Content Include="Assets\vendors\mdi\fonts\materialdesignicons-webfont.ttf" />
+    <Content Include="Assets\vendors\mdi\fonts\materialdesignicons-webfont.woff" />
+    <Content Include="Assets\vendors\mdi\fonts\materialdesignicons-webfont.woff2" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\.eslintignore" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\.github\FUNDING.yml" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\.github\ISSUE_TEMPLATE.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\.github\move.yml" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\bower.json" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\CHANGELOG.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\composer.json" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\CONTRIBUTING.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\css\bootstrap-select.css.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\bootstrap-select.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\bootstrap-select.min.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-am_ET.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ar_AR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-bg_BG.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-cs_CZ.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-da_DK.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-de_DE.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-en_US.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_CL.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-es_ES.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-et_EE.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-eu.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fa_IR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fi_FI.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-fr_FR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hr_HR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-hu_HU.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-id_ID.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-it_IT.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ja_JP.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-kh_KM.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ko_KR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lt_LT.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-lv_LV.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nb_NO.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-nl_NL.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pl_PL.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_BR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-pt_PT.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ro_RO.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ru_RU.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sk_SK.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sl_SI.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sr_SP.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-sv_SE.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-th_TH.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-tr_TR.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-ua_UA.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-vi_VN.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_CN.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\dist\js\i18n\defaults-zh_TW.js.map" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\examples.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\index.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\methods.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\docs\options.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\docs\mkdocs.yml" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\js\.eslintrc.json" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\less\bootstrap-select.less" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\less\variables.less" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\LICENSE" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\nuget\bootstrap-select.nuspec" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\nuget\MyGet.ps1" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\package-lock.json" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\package.json" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\README.md" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\sass\bootstrap-select.scss" />
+    <Content Include="Assets\vendors\bootstrap-select-1.13.14\sass\variables.scss" />
+    <Content Include="Assets\file\[EMSONE]TailieuHDSD_V1.0.pdf" />
+    <Content Include="Assets\vendors\jquery-ui-1.13.1\package.json" />
+    <Content Include="Assets\vendors\jstree\.github\FUNDING.yml" />
+    <Content Include="Assets\vendors\jstree\.github\workflows\npm-publish.yml" />
+    <Content Include="Assets\vendors\jstree\bower.json" />
+    <Content Include="Assets\vendors\jstree\component.json" />
+    <Content Include="Assets\vendors\jstree\composer.json" />
+    <Content Include="Assets\vendors\jstree\demo\basic\root.json" />
+    <Content Include="Assets\vendors\jstree\demo\README.md" />
+    <Content Include="Assets\vendors\jstree\jstree.jquery.json" />
+    <Content Include="Assets\vendors\jstree\LICENSE-MIT" />
+    <Content Include="Assets\vendors\jstree\package.json" />
+    <Content Include="Assets\vendors\jstree\README.md" />
+    <Content Include="Assets\vendors\jstree\src\themes\base.less" />
+    <Content Include="Assets\vendors\jstree\src\themes\default-dark\style.less" />
+    <Content Include="Assets\vendors\jstree\src\themes\default\style.less" />
+    <Content Include="Assets\vendors\jstree\src\themes\main.less" />
+    <Content Include="Assets\vendors\jstree\src\themes\mixins.less" />
+    <Content Include="Assets\vendors\jstree\src\themes\responsive.less" />
+    <Content Include="DataSet\PostageRefundDS.xsc">
+      <DependentUpon>PostageRefundDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataSet\DebtNoticesDS.xsc">
+      <DependentUpon>DebtNoticesDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="Assets\file\[EMSONE]TailieuHDSD_V2.0.pdf" />
+    <None Include="DataSet\DebtNoticesDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DebtNoticesDS.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSet\DebtNoticesDS.xss">
+      <DependentUpon>DebtNoticesDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataSet\FeeAdjustmentJournalEntriesDS.xsc">
+      <DependentUpon>FeeAdjustmentJournalEntriesDS.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSet\FeeAdjustmentJournalEntriesDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FeeAdjustmentJournalEntriesDS.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSet\FeeAdjustmentJournalEntriesDS.xss">
+      <DependentUpon>FeeAdjustmentJournalEntriesDS.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSet\PostageRefundDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>PostageRefundDS.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSet\PostageRefundDS.xss">
+      <DependentUpon>PostageRefundDS.xsd</DependentUpon>
+    </Content>
+    <None Include="packages.config" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Shop\ShopView.cshtml" />
+    <Content Include="Views\Shared\_MenuLeft.cshtml" />
+    <Content Include="Views\Shop\SearchListShopView.cshtml" />
+    <Content Include="Views\Login\CaptchaImage.cshtml" />
+    <Content Include="Views\ShopGroupPermission\Index.cshtml" />
+    <Content Include="Views\ShopGroupPermission\ListShopGroupPermissionData.cshtml" />
+    <Content Include="Views\Error\InternalServerError.cshtml" />
+    <Content Include="Views\Error\PageNotFound.cshtml" />
+    <Content Include="Views\ShopGroupPermission\AddShopGroupPermissionView.cshtml" />
+    <Content Include="Views\ShopGroupPermission\EditShopGroupPermissionView.cshtml" />
+    <Content Include="Views\Transport\Index.cshtml" />
+    <Content Include="Views\Transport\TransportPostageAdd.cshtml" />
+    <Content Include="Views\Transport\TransportPostageRange.cshtml" />
+    <Content Include="Views\Transport\TransportPostageRangeWeight.cshtml" />
+    <Content Include="Views\Transport\TransportPostageWeight.cshtml" />
+    <Content Include="Views\Transport\TransportRegionAdd.cshtml" />
+    <Content Include="Views\Transport\TransportRegionGroupAdd.cshtml" />
+    <Content Include="Views\Transport\TransportRegionGroupIndex.cshtml" />
+    <Content Include="Views\Transport\TransportRegionIndex.cshtml" />
+    <Content Include="Views\Transport\TransportServiceAdd.cshtml" />
+    <Content Include="Views\Transport\TransportPostageBasicInfoAdd.cshtml" />
+    <Content Include="Views\Transport\TransportPostageBasicInfo.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceRange.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceRangeWeight.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceWeight.cshtml" />
+    <Content Include="Views\Transport\TransportPostageIndex.cshtml" />
+    <Content Include="Views\Transport\TransportPostageList.cshtml" />
+    <Content Include="Views\Transport\TransportPostageMainFee.cshtml" />
+    <Content Include="Views\Transport\1TransportPostageRangeSearch_TEMP.cshtml" />
+    <Content Include="Views\Transport\temp.cshtml" />
+    <Content Include="Views\Transport\TransportPostageRangeAdd.cshtml" />
+    <Content Include="Views\Transport\TransportPostageRangeSearch.cshtml" />
+    <Content Include="Views\Transport\TransportPostageRegionOptionByParentID.cshtml" />
+    <Content Include="Views\Transport\TransportPostageWeightAdd.cshtml" />
+    <Content Include="Views\Transport\TransportPostageWeightSearch.cshtml" />
+    <Content Include="Views\Transport\WeightTEMP.cshtml" />
+    <Content Include="Views\Transport\TransportPostageSurcharge.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraService.cshtml" />
+    <Content Include="Views\Shop\AddShopView.cshtml" />
+    <Content Include="Views\Shop\EditShopView.cshtml" />
+    <Content Include="Views\User\AddUserView.cshtml" />
+    <Content Include="Views\User\ChangePasswordView.cshtml" />
+    <Content Include="Views\User\EditUserView.cshtml" />
+    <Content Include="Views\User\UserView.cshtml" />
+    <Content Include="Views\User\SearchListUserView.cshtml" />
+    <Content Include="Views\Transport\TransportPostageEdit.cshtml" />
+    <Content Include="Views\Transport\TransportPostageDetail.cshtml" />
+    <Content Include="Views\Transport\TransportPostageDetailData.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceIndex.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceList.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceAdd.cshtml" />
+    <Content Include="Views\Transport\ExtraServiceFeeConfigEdit.cshtml" />
+    <Content Include="Views\Transport\ExtraServiceFeeConfigEditData.cshtml" />
+    <Content Include="Views\Order\OrderView.cshtml" />
+    <Content Include="Views\Order\SearchListOrderView.cshtml" />
+    <Content Include="Views\RequestSupport\RequestSupportView.cshtml" />
+    <Content Include="Views\Shop\ApprovedShopView.cshtml" />
+    <Content Include="Views\RequestSupport\SearchListRequestSupportView.cshtml" />
+    <Content Include="Views\RequestSupport\DetailRequestSupportView.cshtml" />
+    <Content Include="Views\RequestSupport\ProcessRequestSupportView.cshtml" />
+    <Content Include="Views\Order\OrderDetailView.cshtml" />
+    <Content Include="Views\Handle\ShowListErrorMultipleSelect.cshtml" />
+    <Content Include="Views\Payment\GetDataPaymentCOD.cshtml" />
+    <Content Include="Views\Payment\PaymentCOD.cshtml" />
+    <Content Include="Views\Reconciliation\CODMoney.cshtml" />
+    <Content Include="Views\Reconciliation\Freight.cshtml" />
+    <Content Include="Views\Reconciliation\GetDataCODMoney.cshtml" />
+    <Content Include="Views\Reconciliation\GetDataFreight.cshtml" />
+    <Content Include="Views\Shop\HistoryByShopID.cshtml" />
+    <Content Include="Views\Transport\TransportPostageExtraServiceDetail.cshtml" />
+    <Content Include="Views\Transport\ExtraServiceFeeConfigDetail.cshtml" />
+    <Content Include="Views\Transport\ExtraServiceFeeConfigDetailData.cshtml" />
+    <Content Include="Views\Transport\TransportPostageHistory.cshtml" />
+    <Content Include="Views\Handle\NotifyListView.cshtml" />
+    <Content Include="Views\Order\OrderPrintView.cshtml" />
+    <Content Include="Views\Order\OrderPrintType.cshtml" />
+    <Content Include="Views\RequestSupport\UnAcceptedStatusView.cshtml" />
+    <Content Include="Views\Shop\InfoShopView.cshtml" />
+    <Content Include="Views\Shop\DocumentView.cshtml" />
+    <Content Include="Views\Shop\AddressAndLabelPrintView.cshtml" />
+    <Content Include="Views\Shop\AddPickUpAddressView.cshtml" />
+    <Content Include="Views\Shop\AddLabelPrintView.cshtml" />
+    <Content Include="Views\Shop\ShowInfoPickUpAddress.cshtml" />
+    <Content Include="Views\Shop\ShowInfoLabelPrint.cshtml" />
+    <Content Include="Views\PartnerWebhook\Index.cshtml" />
+    <Content Include="Views\PartnerWebhook\ListData.cshtml" />
+    <Content Include="Views\PartnerWebhook\Add.cshtml" />
+    <Content Include="Views\PartnerWebhook\Edit.cshtml" />
+    <Content Include="Views\Reconciliation\ReconciliationFeeReport.cshtml" />
+    <Content Include="Views\Reconciliation\DataReconciliationFeeReport.cshtml" />
+    <Content Include="Views\Reconciliation\ReconciliationFeePostOfficeReport.cshtml" />
+    <Content Include="Views\Reconciliation\DataReconciliationFeePostOfficeReport.cshtml" />
+    <Content Include="Views\Shop\DetailShopView.cshtml" />
+    <Content Include="Views\Reconciliation\FeeAdjustingJournalEntries.cshtml" />
+    <Content Include="Views\Reconciliation\DataFeeAdjustingJournalEntries.cshtml" />
+    <Content Include="Views\Reconciliation\FeeDetailEditedItemCode.cshtml" />
+    <Content Include="Views\Reconciliation\DataFeeDetailEditedItemCode.cshtml" />
+    <Content Include="Views\CollectionPostOffice\CollectionPostOfficeView.cshtml" />
+    <Content Include="Views\CollectionPostOffice\DetailCollectionPostOfficeView.cshtml" />
+    <Content Include="Views\CollectionPostOffice\AddCollectionPostOfficeView.cshtml" />
+    <Content Include="Views\OrderReport\OrderDetailReportView.cshtml" />
+    <Content Include="Views\OrderReport\OrderReportView.cshtml" />
+    <Content Include="Views\OrderReport\SearchListOrderDetailReportView.cshtml" />
+    <Content Include="Views\OrderReport\SearchListOrderReportView.cshtml" />
+    <Content Include="Views\TransportFee\TransportFeeView.cshtml" />
+    <Content Include="Views\Transport\Charged.cshtml" />
+    <Content Include="Views\Transport\ChargedIndex.cshtml" />
+    <Content Include="Views\Reconciliation\PostageRefund.cshtml" />
+    <Content Include="Views\Reconciliation\DebtNotices.cshtml" />
+    <Content Include="Views\Reconciliation\DataPostageRefund.cshtml" />
+    <Content Include="Views\Reconciliation\DataDebtNotices.cshtml" />
+    <Content Include="Views\Shop\RejectShopView.cshtml" />
+    <Content Include="Views\TransportService\TransportServiceView.cshtml" />
+    <Content Include="Views\TransportService\SearchListTransportServiceView.cshtml" />
+    <Content Include="Views\TransportService\EditTransportServiceView.cshtml" />
+    <Content Include="Views\TransportMainService\FreightChargesView.cshtml" />
+    <Content Include="Views\TransportMainService\SearchListFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\SearchListFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\FreightChargesView.cshtml" />
+    <Content Include="Views\TransportMainService\AddFreightChargesView.cshtml" />
+    <Content Include="Views\TransportMainService\EditFreightChargesView.cshtml" />
+    <Content Include="Views\TransportMainService\EditBasicInfoTabView.cshtml" />
+    <Content Include="Views\TransportMainService\EditMainFeeTabView.cshtml" />
+    <Content Include="Views\TransportMainService\EditSurchargeTabView.cshtml" />
+    <Content Include="Views\TransportMainService\EditHistoryTabView.cshtml" />
+    <Content Include="Views\TransportMainService\ConfigMainFeeView.cshtml" />
+    <Content Include="Views\TransportMainService\ConfigMainFeeDetailView.cshtml" />
+    <Content Include="Views\TransportExtraService\AddFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\DetailFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\HistoryFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\EditFreightChargesView.cshtml" />
+    <Content Include="Views\TransportExtraService\ConfigMainFeeView.cshtml" />
+    <Content Include="Views\TransportExtraService\ConfigMainFeeDetailView.cshtml" />
+    <Content Include="Views\TransportService\AddTransportServiceView.cshtml" />
+    <Content Include="Views\Reconciliation\DataSummaryOfDebtNotices.cshtml" />
+    <Content Include="Views\Shop\PeriodView.cshtml" />
+    <Content Include="Views\Shop\SearchListPeriodView.cshtml" />
+    <Content Include="Views\Shop\DetailPeriodView.cshtml" />
+    <Content Include="Views\Period\Detail.cshtml" />
+    <Content Include="Views\Period\Index.cshtml" />
+    <Content Include="Views\Period\List.cshtml" />
+    <Content Include="Views\OrderBatch\DetailOrderBatchView.cshtml" />
+    <Content Include="Views\Handle\ImageZoomAndSliderView.cshtml" />
+    <Content Include="Views\NotifyControl\NotifyView.cshtml" />
+    <Content Include="Views\NotifyControl\SearchListNotifyView.cshtml" />
+    <Content Include="Views\NotifyControl\NotifyAddView.cshtml" />
+    <Content Include="Views\NotifyControl\NotifyDetailView.cshtml" />
+    <Content Include="Views\CustomerGroup\CustomerGroupView.cshtml" />
+    <Content Include="Views\CustomerGroup\AddCustomerGroupView.cshtml" />
+    <Content Include="Views\CustomerGroup\DetailCustomerGroupView.cshtml" />
+    <Content Include="Views\NotifyControl\NotifyEditView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CrystalReport\DebtNoticesCR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>DebtNoticesCR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrystalReport\FeeDetailEditedAdjJournalEntriesCR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FeeDetailEditedAdjJournalEntriesCR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrystalReport\FeeEditedAdjJournalEntriesCR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FeeEditedAdjJournalEntriesCR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrystalReport\PostageRefundCR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PostageRefundCR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CrystalReport\SummaryOfDebtNoticesCR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SummaryOfDebtNoticesCR.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>50825</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:50825/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

@@ -1,0 +1,415 @@
+﻿@model EMS.MVC.Backend.Models.EditFreightChargesViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView","TransportExtraService")">Danh sách bảng cước DV cộng thêm</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>@Model.TransportServiceName</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-pills nav-pills-primary" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold active" id="pills-info-tab" data-toggle="pill" href="#pills-info" role="tab" aria-controls="pills-info" aria-selected="true">1. Thông tin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold" id="pills-history-tab" data-toggle="pill" href="#pills-history" role="tab" aria-controls="pills-history" aria-selected="false">2. Lịch sử</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label for="ServiceID">Dịch vụ cộng thêm <span class="text-danger">(*)</span></label>
+                            @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), "--- Chọn ---", new { @class = "select2", @disabled = "disabled" })
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            <label for="PricesOriginal">Ngày bắt đầu <span class="text-danger">(*)</span> </label>
+                            @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @size = "16", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off" } })
+                            <span class="text-danger" id="errStartDate"></span>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                            @if (string.IsNullOrEmpty(Model.EndDate))
+                            {
+                                <div class="form-check mt-0">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" id="ckbEndDate">
+                                        Ngày kết thúc
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off", @disabled = "disabled" } })
+                            }
+                            else
+                            {
+                                <div class="form-check mt-0">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" checked id="ckbEndDate">
+                                        Ngày kết thúc
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Ngày/ Tháng/ Năm Giờ:Phút", @autocomplete = "off" } })
+                            }
+                            <span class="text-danger" id="errEndDate"></span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <label for="">Áp dụng cho</label>
+                            @Html.EditorFor(model => model.CrmOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã CRM/Paypost" } })
+                            <span class="text-danger" id="errCrmOrPaypostCode"></span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <label for="">
+                                Căn cứ tính cước
+                                @if (Model.ChargingConditionsID == 4 || Model.ChargingConditionsID == 5 || Model.ChargingConditionsID == 6)
+                                {
+                                    <a class="text-primary ml-2" href="@Url.Action("ConfigMainFeeView","TransportExtraService", new { TransportPostageID = Model.TransportPostageID})"><i class="fa fa-cog"></i> Cấu hình cước DV cộng thêm</a>
+                                }
+                            </label>
+                            @Html.DropDownListFor(model => model.ChargingConditionsID, new SelectList(Model.ListChargingConditions, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+                            <span class="text-danger" id="errChargingConditionsID"></span>
+                        </div>
+                        @* Dùng cho bưu gửi, số lượng*@
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="VNDView" style="display:@{ if (Model.ChargingConditionsID == 1 || Model.ChargingConditionsID == 2) { Write("block"); } else { Write("none");} };">
+                            <label>Mức cước (VNĐ)</label>
+                            <input class="form-control" id="Value" value="@Model.ChargingConditionsValue" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                            <span class="text-danger" id="errValue"></span>
+                        </div>
+                        @* Dùng cho giá trị*@
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="PercentView" style="display:@{ if (Model.ChargingConditionsID == 3) { Write("block"); } else { Write("none");} };">
+                            <label>Mức cước (%)</label>
+                            <input class="form-control" id="PercentValue" value="@Model.ChargingConditionsValue" placeholder="Nhập giá trị" data-inputmask="'alias': 'percentage'" />
+                            <span class="text-danger" id="errPercentValue"></span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="MinValueView" style="display:@{ if (Model.ChargingConditionsID == 2 || Model.ChargingConditionsID == 3) { Write("block"); } else { Write("none");} };">
+                            <label>Giá trị tối thiểu</label>
+                            <input class="form-control" id="MinValue" value="@Model.ChargingConditionsMinValue" placeholder="Nhập giá trị" data-inputmask="'alias': 'currency'" />
+                            <span class="text-danger" id="errMinValue"></span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2" id="ServicesUsedView" style="display:@{ if ( Model.ChargingConditionsID == 4) { Write("block"); } else { Write("none");} };">
+                            <label for="">Các dịch vụ chính được áp dụng <span class="text-danger"></span></label>
+                            @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), new { @class = "form-control selectpicker w-100", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" @if (Model.VAT.Code == "Y") { Write("checked"); } id="ckbVAT">
+                                    Cước đã bao gồm VAT
+                                    <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2 d-flex justify-content-end">
+                            <button class="btn btn-sm btn-primary" id="btnSubmit">CẬP NHẬT</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                    @{
+                        Html.RenderAction("HistoryFreightChargesView", "TransportExtraService", new { TransportPostageID = Model.TransportPostageID });
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            CreateDateTimePicker("#StartDate, #EndDate");
+
+            var ChargingConditionsID = @Model.ChargingConditionsID;
+            var ServicesUsed = '@Model.ServicesUsed';
+            if (ChargingConditionsID == 4 && ServicesUsed != null) {
+                $('#MainTransportServiceID').selectpicker('val', ServicesUsed.split(','));
+                $('#ServicesUsedView').show();
+            }
+
+            var listCrmOrPaypostCode = '@Model.AppliesToShop';
+            $("#CrmOrPaypostCode").val(listCrmOrPaypostCode);
+
+            $('#CrmOrPaypostCode').tagsinput({
+                maxChars: 20,
+                trimValue: true,
+                confirmKeys: [13, 32], //13 - enter, 32 - space, 44 - comma
+            });
+
+            $('#CrmOrPaypostCode').on('beforeItemAdd', function (event) {
+                var CrmOrPaypostcode = event.item;
+                var isError = CheckRegexValue(CrmOrPaypostcode, "Code", "CrmOrPaypostCode", "Giá trị hợp lệ chỉ bao gồm chữ cái (a-zA-Z), số (0-9) và dấu -", false);
+                if (isError == true) {
+                    event.cancel = true;
+                }
+            });
+
+            $(".bootstrap-tagsinput input").attr("id", "CrmOrPaypostCode_tag");
+
+            $("input[id=CrmOrPaypostCode_tag]").keyup(function () {
+                var value = $(this).val();
+                $(this).val(value.toUpperCase());
+            });
+
+            $("input[id=CrmOrPaypostCode_tag]").bind("paste", function (e) {
+                var source = "";
+
+                if (window.clipboardData !== undefined) {
+                    source = window.clipboardData;
+                } else {
+                    source = e.originalEvent.clipboardData;
+                }
+
+                var data = source.getData("Text");
+
+                var replaceSpace = data.split(/\s+/);
+
+                $.each(replaceSpace, function (idx, value) {
+                    if (value.trim()) {
+                        $('#CrmOrPaypostCode').tagsinput('add', value.toUpperCase());
+                    }
+                });
+
+                e.preventDefault();
+            });
+        });
+
+        CheckChangeValue("Value", "Vui lòng nhập Mức cước (VNĐ)", "", "Y");
+        CheckChangeValue("PercentValue", "Vui lòng nhập Mức cước (%)", "", "Y");
+        CheckChangeValue("MinValue", "Vui lòng nhập Giá trị tối thiểu", "", "Y");
+
+        $("#ckbEndDate").on('change', function () {
+            var ckbEndDate = $("#ckbEndDate").is(":checked");
+            if (ckbEndDate) {
+                $('#EndDate').prop("disabled", false);
+                var StartDate = $("#StartDate").val();
+                if (StartDate) {
+                    $('#EndDate').val(StartDate);
+                }
+            } else {
+                $('#EndDate').val("");
+                $('#EndDate').prop("disabled", true);
+            }
+        });
+
+        $("#StartDate").on('change', function () {
+            $("#errStartDate").text("");
+            var StartDate = $(this).val();
+            if (StartDate) {
+                var EndDate = $("#EndDate").val();
+                if (EndDate) {
+                    var isError = compareDate(StartDate, EndDate);
+                    if (isError == true) {
+                        $("#StartDate").focus();
+                        $("#errStartDate").text("Ngày bắt đầu không thể lớn hơn ngày kết thúc");
+                    }
+                } else {
+                    var ckbEndDate = $("#ckbEndDate").is(":checked");
+                    if (ckbEndDate) {
+                        $('#EndDate').val(StartDate);
+                    }
+                }
+            } else {
+                $(this).focus();
+                $("#errStartDate").text("Vui lòng chọn ngày bắt đầu");
+            }
+        });
+
+        $("#EndDate").on('change', function () {
+            $("#errEndDate").text("");
+            var StartDate = $("#StartDate").val();
+            var EndDate = $(this).val();
+            if (EndDate) {
+                var isError = compareDate(StartDate, EndDate);
+                if (isError == true) {
+                    $("#EndDate").focus();
+                    $("#errEndDate").text("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu");
+                }
+            } else {
+                $(this).focus();
+                $("#errEndDate").text("Vui lòng chọn ngày kết thúc");
+            }
+        });
+
+        function compareDate(StartDate, EndDate) {
+            var convertStartDate = convertDateTime(StartDate);
+            var convertEndDate = convertDateTime(EndDate);
+            if (convertStartDate > convertEndDate) {
+                return true;
+            }
+            return false;
+        }
+
+        $('#ChargingConditionsID').on('change', function () {
+            var val = $(this).val();
+            if (val == 1)//Bưu gửi
+            {
+                $('#VNDView').css('display', 'block');
+                $('#PercentView').css('display', 'none');
+                $('#MinValueView').css('display', 'none');
+                $('#ServicesUsedView').css('display', 'none');
+            }
+            else if (val == 2)//Số lượng
+            {
+                $('#VNDView').css('display', 'block');
+                $('#PercentView').css('display', 'none');
+                $('#MinValueView').css('display', 'block');
+                $('#ServicesUsedView').css('display', 'none');
+            }
+            else if (val == 3)// Giá trị
+            {
+                $('#VNDView').css('display', 'none');
+                $('#PercentView').css('display', 'block');
+                $('#MinValueView').css('display', 'block');
+                $('#ServicesUsedView').css('display', 'none');
+            }
+            else if (val == 4)// Cước chính
+            {
+                $('#VNDView').css('display', 'none');
+                $('#PercentView').css('display', 'none');
+                $('#MinValueView').css('display', 'none');
+                $('#ServicesUsedView').css('display', 'block');
+            }
+            else {
+                $('#VNDView').css('display', 'none');
+                $('#PercentView').css('display', 'none');
+                $('#MinValueView').css('display', 'none');
+                $('#ServicesUsedView').css('display', 'none');
+            }
+        });
+
+        $('#btnSubmit').on('click', function () {
+            var isError = false;
+            var data = {
+                TransportPostageID: @Model.TransportPostageID,
+                VAT: {
+                    Code: $("#ckbVAT").is(":checked") == true ? "Y" : "N"
+                },
+                StartDate: $('#StartDate').val().trim(),
+                EndDate: $('#EndDate').val().trim(),
+                ckbEndDate: $("#ckbEndDate").is(":checked"),
+                ChargingConditionsID: $('#ChargingConditionsID').val(),
+                CrmOrPaypostCode: $("#CrmOrPaypostCode").val().toUpperCase(),
+                SubjectOfApplication: 1, //Doi tuong ap dung la Tat ca
+            }
+            
+            isError = CheckNullValue(data.StartDate, "StartDate", "Vui lòng chọn Ngày bắt đầu", isError);
+
+            if (data.ckbEndDate == true) {
+                isError = CheckNullValue(data.EndDate, "EndDate", "Vui lòng chọn Ngày kết thúc", isError);
+            }
+
+            if (data.StartDate && data.EndDate) {
+                var isDate = compareDate(data.StartDate, data.EndDate);
+                if (isDate == true) {
+                    isError = true;
+                    CreateCustomSwal("error", "Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
+                }
+            }
+
+            if (data.ChargingConditionsID == 1)//Bưu gửi
+            {
+                data.ChargingConditionsValue = NumberReplace($('#Value').val());
+                isError = CheckNullValue(parseInt(data.ChargingConditionsValue), "Value", "Vui lòng nhập Mức cước (VNĐ)", isError);
+            }
+            else if (data.ChargingConditionsID == 2)//Số lượng
+            {
+                data.ChargingConditionsValue = NumberReplace($('#Value').val());
+                data.ChargingConditionsMinValue = NumberReplace($('#MinValue').val());
+                isError = CheckNullValue(parseInt(data.ChargingConditionsValue), "Value", "Vui lòng nhập Mức cước (VNĐ)", isError);
+                isError = CheckNullValue(parseInt(data.ChargingConditionsMinValue), "MinValue", "Vui lòng nhập Giá trị tối thiểu", isError);
+            }
+            else if (data.ChargingConditionsID == 3)//Giá trị
+            {
+                data.ChargingConditionsValue = $('#PercentValue').val();
+                if (data.ChargingConditionsValue.indexOf(',') > 0) {
+                    data.ChargingConditionsValue = data.ChargingConditionsValue.replace(/,/g, '');
+                }
+                data.ChargingConditionsMinValue = NumberReplace($('#MinValue').val());
+                isError = CheckNullValue(parseFloat(data.ChargingConditionsValue), "PercentValue", "Vui lòng nhập Mức cước (%)", isError);
+                isError = CheckNullValue(parseInt(data.ChargingConditionsMinValue), "MinValue", "Vui lòng nhập Giá trị tối thiểu", isError);
+            }
+            else if (data.ChargingConditionsID == 4)//Cước chính
+            {
+                data.ServicesUsed = $('#MainTransportServiceID').val().toString();
+            }
+
+            data.AppliesToShop = data.CrmOrPaypostCode;
+
+            if (data.AppliesToShop) {
+                data.SubjectOfApplication = 3; //Doi tuong ap dung la KH
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn tạo bảng cước?",
+                buttons: {
+                    confirm: {
+                        text: "CÓ",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "KHÔNG",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JEditFreightCharges", "TransportExtraService")',
+                        dataType: 'json',
+                        loading: true,
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("FreightChargesView", "TransportExtraService")')
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+

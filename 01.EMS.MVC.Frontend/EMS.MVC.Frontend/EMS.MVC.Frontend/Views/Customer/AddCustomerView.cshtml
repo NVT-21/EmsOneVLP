@@ -1,0 +1,248 @@
+﻿@model EMS.MVC.Frontend.Models.AddCustomerViewModel
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Thêm khách hàng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            @Html.HiddenFor(m => m.IsReload, new { @id = "mIsReload" })
+            <p class="fs-16 font-w600">Thông tin liên hệ</p>
+            <div id="addr-alert" class="alert alert-danger d-none py-2 px-3">
+                <span id="addr-alert-text">Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.</span>
+                <button id="btn-reanalyze-customer" type="button" class="btn btn-primary ms-2">Phân tích lại</button>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mFullName", @placeholder = "Họ và tên" } })
+                        <span class="text-danger" id="errmFullName"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mMobileNumber", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                        <span class="text-danger" id="errmMobileNumber"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Email</label>
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mEmail", @placeholder = "Email" } })
+                        <span class="text-danger" id="errmEmail"></span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mStreet", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                        <span class="text-danger" id="errmStreet"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @id = "mProvinceID", @onchange = "LoadListWardV2('mProvinceID', 'mWardID')" })
+                        <span class="text-danger" id="errmProvinceID"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Phường/Xã</label>
+                        @Html.DropDownListFor(model => model.WardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2", @id = "mWardID", })
+                        <span class="text-danger" id="errmWardID"></span>
+                    </div>
+                </div>
+            </div>
+            <p class="fs-16 font-w600">Thông tin khác</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Ngày sinh </label>
+                        @Html.EditorFor(model => model.BirthDay, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mBirthDay", @placeholder = "Ngày sinh" } })
+                        <span class="text-danger" id="errmBirthDay"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Mã số thuế</label>
+                        @Html.EditorFor(model => model.TaxCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mTaxCode", @placeholder = "Mã số thuế" } })
+                        <span class="text-danger" id="errmTaxCode"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Kênh</label>
+                        @Html.DropDownListFor(model => model.Channel, new SelectList(Model.ListChannel, "Value", "Text"), "--- Kênh ---", new { @class = "select2", @id = "mChannel" })
+                        <span class="text-danger" id="errmChannel"></span>
+                    </div>
+                </div>
+            </div>
+            <p class="fs-16 font-w600">Thông tin bổ sung</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="mb-1">Nhãn khách hàng</label>
+                        @Html.DropDownListFor(model => model.CustomerStickerID, new SelectList(Model.ListCustomerSticker, "ID", "Name"), new { @id = "mCustomerStickerID", @multiple = "multiple" })
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label class="mb-1">Ghi chú </label>
+                        @Html.EditorFor(model => model.Note, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "mNote", @placeholder = "Ghi chú" } })
+                        <span class="text-danger" id="errmNote"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnAddCustomer">Thêm mới</button>
+        </div>
+    </div>
+</div>
+<script>
+    let manualOverrideCustomer = false;  // Biến kiểm tra khi người dùng thay đổi thủ công
+    let addressChangeCustomer = false;   // Biến kiểm tra khi người dùng thay đổi địa chỉ thủ công
+    let isLoadingCustomer = false;
+    let controllerCustomer = null;
+    OnlyNumber("#mMobileNumber");
+    
+
+    CheckChangeValue("mFullName", "Họ và tên không được trống.", "Vietnamese", "Y");
+    CheckChangeValue("mMobileNumber", "Số điện thoại không hợp lệ", "MobileNumber", "Y");
+    CheckChangeValue("mEmail", "", "Email", "N");
+    CheckChangeValue("mStreet", "Địa chỉ không được để trống.", "", "Y");
+
+    CheckChangeValue("mProvinceID", "Tỉnh/ Thành phố không được để trống", "", "Y");
+
+    CheckChangeValue("mTaxCode", "", "Code", "N");
+
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        $("#mCustomerStickerID").select2({ tags: true, width: "100%"});
+        CreateDatePicker("mBirthDay");
+        $("#mBirthDay").val('');
+        $('#mStreet').on('input', function () {
+            // Nếu người dùng thay đổi Địa chỉ, phân tích lại địa chỉ (tự động hoặc thủ công)
+            if (addressChangeCustomer) {
+                analyzeAddressCustomer($(this).val());  // Phân tích lại Địa chỉ
+            }
+            addressChangeCustomer = true;  // Đánh dấu rằng Địa chỉ đã thay đổi thủ công
+        });
+        $('#btn-reanalyze-customer').on('click', function () {
+            showAlertCustomer(false);
+            analyzeAddressCustomer($('#mStreet').val());  // Yêu cầu phân tích lại
+        })
+    });
+
+    // Hàm xử lý auto-fill địa chỉ
+    const analyzeAddressCustomer = Debounce(async (text) => {
+        if (!text?.trim()) return;
+
+        // Nếu người dùng đã chỉnh tay, không tự động điền
+        //if (manualOverride) return;
+
+        // Hủy request cũ nếu có
+        if (controllerCustomer) controllerCustomer.abort();
+        controllerCustomer = new AbortController();
+
+        try {
+            var Data = {};
+            Data = PWDGetByEMSVMapsSearch(text);
+            var Response = Data.responseJSON;
+            if (Response.Code == "00") {
+                var JSONParse = JSON.parse(Response.Data);
+                FillProvince(JSONParse.ProvinceID, isLoadingCustomer, '#mProvinceID');
+                FillWard(JSONParse.WardID, isLoadingCustomer, '#mWardID');
+            }
+        } catch (error) {
+            console.error('Lỗi khi phân tích địa chỉ', error);
+        }
+    }, 500);
+
+
+    $('#mProvinceID, #mWardID').on('select2:select', function (e) {
+        showAlertCustomer(true, "Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.");
+    });
+    // Hàm xử lý hiển thị cảnh báo khi người dùng thay đổi thủ công
+    function showAlertCustomer(show, message) {
+        const alert = document.getElementById('addr-alert');
+        alert.classList.toggle('d-none', !show);
+        document.getElementById('addr-alert-text').textContent = message || 'Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.';
+    }
+
+    $("#btnAddCustomer").on("click", function () {
+        var IsError = false;
+        var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            FullName: $("#mFullName").val().trim(),
+            MobileNumber: $("#mMobileNumber").val().trim(),
+            Email: $("#mEmail").val().trim(),
+            Street: $("#mStreet").val().trim(),
+            ProvinceID: $("#mProvinceID").val(),
+            WardID: $("#mWardID").val(),
+            BirthDay: $("#mBirthDay").val(),
+            TaxCode: $("#mTaxCode").val().trim(),
+            Channel: $("#mChannel").val().trim(),
+            CustomerStickerID: $("#mCustomerStickerID").val().toString(),
+            CustomerStickerNew: "",
+            Note: $("#mNote").val().trim(),
+            IsReload: $("#mIsReload").val(),
+        };
+
+        IsError = CheckNullAndRegexValue(data.FullName, "Vietnamese", "mFullName", "Họ và tên không được để trống.", Message, IsError);
+
+        IsError = CheckNullAndRegexValue(data.MobileNumber, "MobileNumber", "mMobileNumber", "Số điện không được để trống.", "Số điện thoại không hợp lệ", IsError);
+
+        IsError = CheckRegexValue(data.Email, "Email", "mEmail", "Email không hợp lệ", IsError);
+
+        IsError = CheckNullValue(data.Street, "mStreet", "Địa chỉ không được để trống", IsError);
+
+        IsError = CheckNullValue(data.ProvinceID, "mProvinceID", "Tỉnh/ Thành phố không được để trống", IsError);
+
+
+        IsError = CheckRegexValue(data.TaxCode, "Code", "mTaxCode", "Mã số thuế không hợp lệ", IsError);
+
+        if (IsError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddCustomer", "Customer")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    if (data.IsReload == "Y") {
+                        CreateCustomSwal("success", res.Message);
+                    } else {
+                        $(".btn-close").click();
+                        $("#SearchCustomer").val(data.MobileNumber);
+                        $("#errSearchCustomer").text('');
+                        $("#SearchCustomer").change();
+                    }
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    });
+
+</script>

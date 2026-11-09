@@ -1,0 +1,182 @@
+﻿@model IEnumerable<EMS.MVC.Backend.Models.ReconciliationCODMoneyDataViewModel>
+@{
+    Layout = null;
+    var stt = 1;
+}
+
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr>
+            <th class="align-middle" colspan="6">Tổng dữ liệu</th>
+            <th class="text-right"> @ViewBag.SumCOD.ToString("N0") ₫</th>
+            <th class="align-middle"></th>
+        </tr>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Trạng thái COD</th>
+            <th class="align-middle"> Mã khách hàng </th>
+            <th class="align-middle"> Mã bưu gửi </th>
+            <th class="align-middle"> Ngày tạo đơn </th>
+            <th class="align-middle"> Ngày phát hành </th>
+            <th class="align-middle"> Tiền COD </th>
+            <th class="align-middle"> Mã bảng kê </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.CODTransTypeName</td>
+                    <td class="text-left">
+                        <span>@item.CustomerCode</span>
+                        <br />
+                        <span>@item.CustomerPPCRM</span>
+                    </td>
+                    <td class="text-left">
+                        <span><a style="cursor: pointer; color:#007bff; text-decoration: none;" href="#" onclick="btnDetailShippingCode('@item.EmsBarCode',@item.ShopID)">@item.EmsBarCode</a></span>
+                        <br />
+                        @if (item.OrderID == 0)
+                        {
+                            <span>@item.OrderCode</span>
+                        }
+                        else
+                        {
+                            <span><a style="cursor: pointer; color:#007bff;" onclick="Detail(@item.OrderID, @item.ShopID)">@item.OrderCode</a></span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            if (item.CreatedDateOrder != "")
+                            {
+                                var splitCreatedDate = item.CreatedDateOrder.Split(' ');
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;"></span>
+                                <br />
+                                <span style="line-height: 1.4rem;"></span>
+                            }
+                        }
+                    </td>
+                    <td class="text-center">
+                        @{
+                            if (item.TimeRelease != "")
+                            {
+                                var splitTimeRelease = item.TimeRelease.Split(' ');
+                                <span style="line-height: 1.4rem;">@splitTimeRelease[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitTimeRelease[1]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;"></span>
+                                <br />
+                                <span style="line-height: 1.4rem;"></span>
+                            }
+                        }
+                    </td>
+                    <td class="text-right">@item.CODMoney.ToString("N0")</td>
+                    <td class="text-center">@item.ListCode</td>
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th class="align-middle" colspan="6"></th>
+            <th class="text-right">  </th>
+            <th class="text-middle">  </th>
+        </tr>
+    </tfoot>
+</table>
+<script src="~/Assets/js/tooltips.js"></script>
+<script src="~/Assets/js/popover.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // Total over all pages
+                total = api
+                    .column(6)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Total over this page
+                pageTotal = api
+                    .column(6, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer
+                $(api.column(6).footer()).html(
+                    CurrencyFormatVND(pageTotal)
+                );
+            }
+        });
+        $('#ListDataTableSearch').each(function () {
+            var datatable = $(this);
+            // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            // LENGTH - Inline-Form control
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+    function Detail(OrderID, ShopID) {
+        $.post('@Url.Action("OrderDetailView", "Order")', { OrderID: OrderID, ShopID: ShopID} ,function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function btnDetailShippingCode(ShippingCode, ShopID) {
+        var param = String.format("ShippingCode={0}", btoa(ShippingCode));
+        var link = document.createElement('a');
+        link.target = "_blank";
+        link.href = '@XHelper.Ems247Url@("tra-cuu-buu-gui?")' + param;
+        link.click();
+    }
+</script>

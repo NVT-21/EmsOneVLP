@@ -1,0 +1,259 @@
+﻿@model EMS.MVC.Backend.Models.TransportPostageEditViewModel
+@{
+    ViewBag.Title = "TransportPostageEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /*td {
+        padding: 5px 5px 5px 5px !important;
+    }
+
+    th {
+        padding: 10px 10px !important;
+        font-weight: 500 !important;
+    }*/
+
+    .datepicker-days .table-condensed {
+        margin-bottom: 20px;
+    }
+
+    .filter-option-inner-inner {
+        color: black !important;
+    }
+</style>
+<input type="hidden" id="PostageID" value="@Model.PostageID" />
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView", "TransportMainService")">Danh sách bảng cước chính</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.PostageCode</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-4">
+                <ul class="nav nav-pills nav-pills-primary" id="pills-tab" role="tablist" style="border-bottom: none; padding-bottom:0; cursor: pointer;">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="pill" role="tab" aria-selected="true" id="step1" onclick="GoToStep('step1')">
+                            <b>1. Thông tin cơ bản</b>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="pill" role="tab" aria-selected="false" id="step2" onclick="GoToStep('step2')">
+                            <b>2. Khai báo cước chính</b>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="pill" role="tab" aria-selected="false" id="step3" onclick="GoToStep('step3')">
+                            <b>3. Khai báo phụ phí</b>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="pill" role="tab" aria-selected="false" id="step4" onclick="GoToStep('step4')">
+                            <b>4. Lịch sử</b>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card mt-3">
+                <div class="card-body pt-10px">
+                    <div id="Content">
+                        @{
+                            Html.RenderAction("TransportPostageBasicInfo", "Transport", new { PostageID = Model.PostageID });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function GoToStep(step) {
+        debugger;
+        if (step == "step1") {
+            $.get('@Url.Action("TransportPostageBasicInfo", "Transport")?PostageID=' + model.PostageID, function (htmlString) {
+                $('#Content').html(htmlString);
+            })
+        }
+        else if (step == "step2") {
+            $.get('@Url.Action("TransportPostageMainFee", "Transport")?PostageID=' + model.PostageID + '&PostageCode=' + model.PostageCode, function (htmlString) {
+                $('#Content').html(htmlString);
+            })
+        }
+        else if (step == "step3") {
+            $.get('@Url.Action("TransportPostageSurcharge", "Transport")?PostageID=' + model.PostageID, function (htmlString) {
+                $('#Content').html(htmlString);
+            })
+        }
+        else if (step == "step4") {
+            $.get('@Url.Action("TransportPostageHistory", "Transport")?PostageID=' + model.PostageID, function (htmlString) {
+                $('#Content').html(htmlString);
+            })
+        }
+        else
+        {
+            var htmlString = "<div>Không xác định được bước chuyển tiếp. Vui lòng thử lại hoặc liên hệ quản trị.</div>"
+            $('#Content').html(htmlString);
+        }
+    }
+
+    function Confirm() {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xác nhận?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JTransportPostageConfirm", "Transport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        PostageID: @Model.PostageID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = '@Url.Action("FreightChargesView", "TransportMainService")';
+                            });
+                        }
+                        else if (res.Code == "03") {
+                            swal({
+                                title: 'Thông báo',
+                                text: res.Message + "\n\n Đến nơi khai báo loại phạm vi?",
+                                buttons: {
+                                    confirm: {
+                                        text: "CÓ",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary",
+                                        closeModal: true
+                                    },
+                                    cancel: {
+                                        text: "KHÔNG",
+                                        value: false,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true,
+                                    }
+                                },
+                            }).then((value) => {
+                                if (value) {
+                                    $('#step2').click();
+                                };
+                            });
+                        }
+                        else if (res.Code == "04") {
+                            swal({
+                                title: 'Thông báo',
+                                text: res.Message + "\n\n Đến nơi cấu hình cước dịch vụ chính?",
+                                buttons: {
+                                    confirm: {
+                                        text: "CÓ",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary",
+                                        closeModal: true
+                                    },
+                                    cancel: {
+                                        text: "KHÔNG",
+                                        value: false,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true,
+                                    }
+                                },
+                            }).then((value) => {
+                                if (value) {
+                                    window.location.href = '@Url.Action("TransportPostageDetail", "Transport")?PostageID=@Model.PostageID';
+                                };
+                            });
+                        }
+                        else if (res.Code == "05") {
+                            swal({
+                                title: 'Thông báo',
+                                text: res.Message + "\n\n Đến nơi chỉnh sửa?",
+                                buttons: {
+                                    confirm: {
+                                        text: "CÓ",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary",
+                                        closeModal: true
+                                    },
+                                    cancel: {
+                                        text: "KHÔNG",
+                                        value: false,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true,
+                                    }
+                                },
+                            }).then((value) => {
+                                if (value) {
+                                    $('#step1').click();
+                                };
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+</script>
+
+

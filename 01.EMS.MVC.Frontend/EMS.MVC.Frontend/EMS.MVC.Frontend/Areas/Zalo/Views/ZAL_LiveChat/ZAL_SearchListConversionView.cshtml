@@ -1,0 +1,178 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Zalo.Models.ZAL_SearchListConversionViewModel>
+@*@{
+        var UpdatedDateSearch = "";
+    }*@
+
+@foreach (var item in Model)
+{
+    Html.RenderAction("ZAL_ConversionView", "ZAL_LiveChat", new { model = item, area = "Zalo" });
+}
+<script>
+    function ConversionBoxActive(UserID) {
+        $(".bg-conversion-box").removeClass("active");
+        $("#conversion-" + UserID).addClass("active");
+    }
+
+    function LoadContentConversion(ConversionID, UserID, DisplayName, Avatar) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ZAL_SearchListMessageOfConversionView", "ZAL_LiveChat", new { area = "Zalo" })',
+            dataType: 'html',
+            loading: true,
+            global: false,
+            data: {
+                ConversionID: ConversionID,
+                UserID: UserID,
+                DisplayName: DisplayName,
+                Avatar: Avatar
+            },
+            success: function (data) {
+                ConversionBoxActive(UserID);
+                $("#MessageOfConversion").html(data);
+                $("#NumberOfMessage-" + UserID).text("0");
+                $("#NumberOfMessage-" + UserID).addClass("d-none");
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+
+    @*var OffSet = parseInt($(".ConversionBox").length) + 10;
+    $('#ListConversion').on('scroll', function () {
+        let div = $(this).get(0);
+        if (div.scrollTop + div.clientHeight >= div.scrollHeight) {
+            $.ajax({
+                url: '@Url.Action("SearchListConversion", "Handle", new { area = "" })',
+                type: "POST",
+                dataType: 'json',
+                global: false,
+                data: {
+                    LimitRow: OffSet,
+                    Channel: "ZA"
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        $.each(data, function (index, value) {
+                            var checkDiv = $("#conversion-" + value.UserID).length;
+                            if (checkDiv == 0) {
+                                var html = "";
+                                html += '<a onclick="LoadContentConversion(' + value.ConversionID + ',' + "'" + value.UserID + "'" + ',' + "'" + value.DisplayName + "'" + ',' + "'" + value.Avatar + "'" + ')" class="list-group-item list-group-item-action border-0 ConversionBox" id="conversion-' + value.UserID + '">';
+                                if (value.NumberOfMessage == 0) {
+                                    html += '<span class="badge badge-pill badge-danger float-right" id="NumberOfMessage-' + value.UserID + '" style="display: none;">' + value.NumberOfMessage + '</span>';
+                                } else {
+                                    html += '<span class="badge badge-pill badge-danger float-right" id="NumberOfMessage-' + value.UserID + '" style="display: block;">' + value.NumberOfMessage + '</span>';
+                                }
+                                html += '<div class="d-flex align-items-start">';
+                                html += '<img src="' + value.Avatar + '" class="rounded-circle mr-1" alt="' + value.DisplayName + '" width="40" height="40">';
+                                html += '<div class="flex-grow-1 ml-3">';
+                                html += '<span>' + value.DisplayName + '</span>';
+                                html += '<div class="small text-secondary" style="margin-top: 3px;">';
+                                if (value.UserID == value.SenderID) {
+                                    html += value.MessageText;
+                                } else {
+                                    html += "Bạn: " + value.MessageText;
+                                }
+                                html += '</div>';
+                                $(html).appendTo("#ListConversion");
+                            }
+                        });
+                        OffSet = OffSet + 10;
+                    } else if (res.Code == "408") {
+                        swal({
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        }).then(function () {
+                            window.location.href = '@Url.Action("Logout","Account", new { area = "" })';
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    var UpdatedDate = '@UpdatedDateSearch';
+
+    function LoadListConversion() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SearchListConversion", "Handle", new { area = "" })',
+            dataType: 'json',
+            data: {
+                UpdatedDate: UpdatedDate,
+                Channel: "ZA"
+            },
+            loading: true,
+            global: false,
+            success: function (res) {
+                if (res.Code == 00) {
+                    var data = JSON.parse(res.Data);
+                    for (var i = data.length - 1; i >= 0; i--) {
+                        var value = data[i];
+                        var checkDiv = $("#conversion-" + value.UserID).length;
+                        if (checkDiv > 0) {
+                            $("#conversion-" + value.UserID).remove();
+                        }
+                        var html = "";
+                        html += '<a onclick="LoadContentConversion(' + value.ConversionID + ',' + "'" + value.UserID + "'" + ',' + "'" + value.DisplayName + "'" + ',' + "'" + value.Avatar + "'" + ')" class="list-group-item list-group-item-action border-0 ConversionBox" id="conversion-' + value.UserID + '">';
+                        if (value.NumberOfMessage == 0) {
+                            html += '<span class="badge badge-pill badge-danger float-right" id="NumberOfMessage-' + value.UserID + '" style="display: none;">' + value.NumberOfMessage + '</span>';
+                        } else {
+                            html += '<span class="badge badge-pill badge-danger float-right" id="NumberOfMessage-' + value.UserID + '" style="display: block;">' + value.NumberOfMessage + '</span>';
+                        }
+                        html += '<div class="d-flex align-items-start">';
+                        html += '<img src="' + value.Avatar + '" class="rounded-circle mr-1" alt="' + value.DisplayName + '" width="40" height="40">';
+                        html += '<div class="flex-grow-1 ml-3">';
+                        html += '<span>' + value.DisplayName + '</span>';
+                        html += '<div class="small text-secondary" style="margin-top: 3px;">';
+                        if (value.UserID == value.SenderID) {
+                            html += value.MessageText;
+                        } else {
+                            html += "Bạn: " + value.MessageText;
+                        }
+                        html += '</div>';
+                        $("#ListConversion").prepend(html);
+                    }
+                    UpdatedDate = data[0].UpdatedDate;
+                    ConversionBoxActive(CurrentConversionBox);
+                } else if (res.Code == "408") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    }).then(function () {
+                        window.location.href = '@Url.Action("Logout","Account", new { area = "" })';
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }*@
+
+    //const IntervalLoadListConversion = setInterval(LoadListConversion, 10000);
+    //setInterval(LoadListConversion, 10000);
+</script>

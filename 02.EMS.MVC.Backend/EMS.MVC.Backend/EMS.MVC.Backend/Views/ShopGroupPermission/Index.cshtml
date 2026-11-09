@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "Danh sách nhóm quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="#">QL nhóm quyền CH</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12" style="text-align: end;">
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href = '@Url.Action("AddShopGroupPermissionView","ShopGroupPermission")'">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Thêm mới
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data" class="table-responsive">
+                @{Html.RenderAction("ListShopGroupPermissionData", "ShopGroupPermission");}
+            </div>
+        </div>
+    </div>
+</div>

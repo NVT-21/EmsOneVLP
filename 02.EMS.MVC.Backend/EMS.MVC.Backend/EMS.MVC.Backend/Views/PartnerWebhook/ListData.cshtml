@@ -1,0 +1,172 @@
+﻿@model IEnumerable<EMS.MVC.Backend.Models.PartnerWebhookViewModel>
+@{
+    Layout = null;
+    var stt = 1;
+}
+
+<table id="ListDataTableSearch" class="table table-bordered table-hover">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã PP/CRM </th>
+            <th> Tên đối tác </th>
+            <th> Link Webhook </th>
+            <th> API Key </th>
+            <th> Thời gian tạo </th>
+            <th> Trạng thái </th>
+            <th style="max-width: 110px;"> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">
+                        @{
+                            var splitPartnerCode = item.PartnerCode.Split(',');
+                            for(var i = 0; i < splitPartnerCode.Length; i++)
+                            {
+                                <span style="line-height: 1.4rem;">@splitPartnerCode[i]</span>
+                                <br />
+                            }
+                        }
+                    </td>
+                    <td class="text-left">@item.PartnerName</td>
+                    <td class="text-center"><a target="_blank" href="@item.PartnerURL"> < Xem link Webhook ></a></td>
+                    <td class="text-left">@item.PartnerKey</td>
+                    <td class="text-center">
+                        @{
+                            if (item.CreatedDate != "")
+                            {
+                                var splitCreatedDate = item.CreatedDate.Split(' ');
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[0]</span>
+                                <br />
+                                <span style="line-height: 1.4rem;">@splitCreatedDate[1]</span>
+                            }
+                            else
+                            {
+                                <span style="line-height: 1.4rem;"></span>
+                                <br />
+                                <span style="line-height: 1.4rem;"></span>
+                            }
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.Status == "Y")
+                        {
+                            <b class="text-success">Đang hoạt động</b>
+                        }
+                        else if (item.Status == "N")
+                        {
+                            <b class="text-danger">Ngưng hoạt động</b>
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button onclick="fnEdit(@item.ID)" title="Sửa" class="badge badge-outline-warning">
+                            <i class="fa fa-edit"></i>
+                        </button>
+
+                        <button title="Xoá" type="button" onclick="fnDelete(@item.ID)" class="badge badge-outline-danger">
+                            <i class="fa fa-trash text-danger"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                'sSearch': "",
+                'searchPlaceholder': "Tìm kiếm nhanh",
+                'emptyTable': "Không có dữ liệu",
+                'zeroRecords': "Không có dữ liệu",
+                'sInfo': 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                'infoEmpty': "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                'infoFiltered': "(Tìm kiếm từ _MAX_ bản ghi)",
+                'oPaginate': {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                'lengthMenu': "Hiển thị _MENU_ bản ghi"
+            },
+            'ordering': false,
+            'stateSave': true
+        });
+    });
+    function fnDelete(ID) {
+        swal({
+            text: "Bạn chắc chắn muốn xoá?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+    }).then((value) => {
+        if (value) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JDelete", "PartnerWebhook")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    ID: ID
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        swal({
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: false,
+                            timer: 1500
+                        });
+                        setTimeout(function (res) {
+                            $.get('@Url.Action("ListData", "PartnerWebhook")', function (data) {
+                                $('#tbl-data').html(data);
+                            });
+                        }, 1200);
+                    }
+                    else {
+                        swal({
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+    }
+    function fnEdit(ID) {
+        $.get('@Url.Action("Edit", "PartnerWebhook")', { ID: ID}, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+</script>

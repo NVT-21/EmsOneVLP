@@ -1,0 +1,462 @@
+﻿@model EMS.MVC.Frontend.Models.DetailOrderViewModel
+@using Newtonsoft.Json
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" style="word-break: break-all;">Chi tiết đơn hàng lẻ - @Model.OrderCode</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                @if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between">
+                        <label class="font-w600">Sản phẩm</label>
+                        <label class="text-2">Kho: <label class="font-w600">@Html.DisplayFor(m => m.WareHouseName)</label></label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <div class="table-responsive table-primary">
+                            <table class="table table-responsive-md">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Tên biến thể</th>
+                                        <th>Số lượng</th>
+                                        <th>Giá tiền</th>
+                                        <th>Giảm giá</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>@item.VariantSKU - @item.ProductName</td>
+                                            <td>@item.VariantName</td>
+                                            <td>@item.NumberOfProduct</td>
+                                            <td>@item.Price.ToString("N0") đ</td>
+                                            <td>0 đ</td>
+                                            <td>@item.TotalPrice.ToString("N0") đ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                    <p class="font-w600">Thanh toán</p>
+                    <div class="col-xl-12 col-lg-12 col-md-12 d-flex" style="justify-content: left;">
+                        <label class="text-2 me-1">Ghi chú đơn hàng:</label>
+                        <label class="font-w600 text-break">@Html.Raw(Model.Note)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 d-flex" style="justify-content: left;">
+                        <label class="text-2 me-1">Nội dung: </label>
+                        <label class="font-w600 text-break">@Html.Raw(Model.Message)</label>
+                    </div>
+                    @if (Model.Transport.Code == "Y")
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Hình thức thu gom:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.CollectionType.Name)</label>
+                        </div>
+                    }
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Vận chuyển hàng:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.Transport.Name)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Số lượng sản phẩm:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalProductQuantity)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tổng tiền hàng:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalAmount) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Giảm giá:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalDiscount) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Phí vận chuyển tạm tính: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ProvisionalTransportFee) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Phí vận chuyển thực tế: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ActualTransportFee) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tổng giá trị đơn hàng:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TotalOrderValue) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Nơi tạo đơn:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.PlaceOfCreation)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Loại bưu gửi:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.PostalType)</label>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <p class="font-w600">Thông tin vận chuyển</p>
+                    <div class="col-xl-12 col-lg-12 col-md-12" style="word-break: break-all;">
+                        <label class="text-2">Mã đơn hàng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderCode)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12" style="word-break: break-all;">
+                        <label class="text-2">Tên đơn hàng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderName)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Mã bưu gửi: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ShippingCode)</label>
+                    </div>
+                    @if (Model.Transport.Code == "Y")
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Dịch vụ chính:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.MainTransportService.Name)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 d-flex">
+                            <label class="text-2 me-1">Dịch vụ cộng thêm: </label>
+                            <label class="font-w600">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ExtraTransportService.Name))
+                                    {
+                                        var SplitExtraTransportServiceName = Model.ExtraTransportService.Name.Split(',');
+                                        for (var i = 0; i < SplitExtraTransportServiceName.Length; i++)
+                                        {
+                                            Write(SplitExtraTransportServiceName[i]);
+                                            if (Model.ExtraTransportService.Code.Split(',').Length == SplitExtraTransportServiceName.Length)
+                                            {
+                                                if (Model.ExtraTransportService.Code.Split(',')[i].Trim() == "108")
+                                                {
+                                                    Write(" (Tiền COD: " + Model.TotalCOD + ")");
+                                                }
+                                                else if (Model.ExtraTransportService.Code.Split(',')[i].Trim() == "421")
+                                                {
+                                                    Write(" (Tiền PHU: " + Model.TotalPHU + ")");
+                                                }
+                                            }
+                                            if (i + 1 < SplitExtraTransportServiceName.Length)
+                                            {
+                                                <br />
+                                            }
+                                        }
+                                    }
+                                }
+                            </label>
+                        </div>
+                    }
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Tiền COD thực tế: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ActualTotalCOD) đ</label>
+                    </div>
+                    @if (Model.Channel != "GRA")
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Khối lượng tạm tính: </label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.ProvisionalTransportWeight) gr</label>
+                        </div>
+                    }
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Khối lượng thực tế: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.ActualTransportWeight) gr</label>
+                    </div>
+                    @if (Model.Channel != "GRA")
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Khối lượng quy đổi: </label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.ExchangeTransportWeight) gr</label>
+                        </div>
+                    }
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Số lượng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderQuantity)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Giá trị đơn hàng: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.OrderValue) đ</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Kích thước (dài x rộng x cao): </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.Length) x @Html.DisplayFor(m => m.Width) x @Html.DisplayFor(m => m.Height)</label>
+                    </div>
+                    @if (Model.Channel != "GRA")
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Bưu cục phục vụ: </label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.AcceptancePosCode)</label>
+                        </div>
+                    }
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Người trả cước: </label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.TransportPayer.Name)</label>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.ExpectedDeliveryDate))
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Thời gian dự kiến giao hàng: </label>
+                            <label class="font-w600">@Model.ExpectedDeliveryDate.Split(' ')[0]</label>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.CollectionPostOfficeRecentFullAddress))
+                    {
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Gợi ý bưu cục: </label>
+                            <label class="font-w600">@Model.CollectionPostOfficeRecentFullAddress</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <p class="font-w600">Thông tin người mua</p>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Họ tên:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.Buyer.FullName)</label>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <label class="text-2">Số điện thoại:</label>
+                        <label class="font-w600">@Html.DisplayFor(m => m.Buyer.MobileNumber)</label>
+                    </div>
+                    @*<div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Địa chỉ:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Buyer.FullAddress)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Bưu cục:</label>
+                            <label class="font-w600"></label>
+                        </div>*@
+                </div>
+                @if (Model.Transport.Code == "Y")
+                {
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+                        <p class="font-w600">Thông tin người nhận</p>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Họ tên:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.FullName)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Số điện thoại:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.MobileNumber)</label>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <label class="text-2">Địa chỉ:</label>
+                            <label class="font-w600">@Html.DisplayFor(m => m.Receiver.FullAddress)</label>
+                        </div>
+                        @*<div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Bưu cục:</label>
+                                <label class="font-w600"></label>
+                            </div>*@
+                    </div>
+                }
+
+                @if (Model.ListRequestSupportInfo.Count > 0)
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <p class="font-w600">Yêu cầu sửa thông tin đơn hàng </p>
+                        <div class="table-responsive table-primary">
+                            <table class="table table-responsive-md">
+                                <thead>
+                                    <tr>
+                                        <th>Loại yêu cầu</th>
+                                        <th style="max-width: 300px; white-space: inherit; line-height: 20px;">Thông tin cũ</th>
+                                        <th style="max-width: 300px; white-space: inherit; line-height: 20px;">Thông tin mới</th>
+                                        <th>Ngày tạo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ListRequestSupportInfo)
+                                    {
+                                        <tr>
+                                            <td>@item.RequestSupportType.Name</td>
+                                            @if (item.RequestSupportType.ID == 7)
+                                            {
+                                                <td style="max-width: 300px; white-space: inherit; line-height: 20px;">@Convert.ToInt64(item.OldUpdateInformation).ToString("N0")</td>
+                                                <td style="max-width: 300px; white-space: inherit; line-height: 20px;">@Convert.ToInt64(item.NewUpdateInformation).ToString("N0")</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="max-width: 300px; white-space: inherit; line-height: 20px;">@item.OldUpdateInformation</td>
+                                                <td style="max-width: 300px; white-space: inherit; line-height: 20px;">@item.NewUpdateInformation</td>
+                                            }
+                                            <td>@item.CreatedDate</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <p class="font-w600 mb-0">
+                        Trạng thái đơn hàng: @Html.DisplayFor(m => m.OrderStatus.Name)
+                        @if (Model.OrderStatus.Code == "C")
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Lý do: </label>
+                                <label class="font-w600">@Model.ReasonCancel</label>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Người cập nhật: </label>
+                                <label class="font-w600">@Model.UpdatedName</label>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Thời gian: </label>
+                                <label class="font-w600">@Model.UpdatedDate</label>
+                            </div>
+                        }
+                    </p>
+                </div>
+
+                @if (Model.ListEMSSignaruteAndImageInfo.Count > 0)
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <p class="font-w600">Hình ảnh Báo phát</p>
+                        @foreach (var itemEMS in Model.ListEMSSignaruteAndImageInfo)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Chữ ký báo phát: </label>
+                                @if (string.IsNullOrEmpty(itemEMS.Signature))
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        <img class="img-fluid" width="100" src="@itemEMS.Signature" style="cursor: pointer;" alt="Ảnh chữ ký báo phát" data-ListImage="@JsonConvert.SerializeObject(itemEMS.Signature)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Hình ảnh báo phát: </label>
+                                @if (itemEMS.FileNames.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemEMS.FileNames.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemEMS.FileNames[i]" style="cursor: pointer;" alt="Hình ảnh báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNames)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <p class="font-w600">Hình ảnh Xác thực</p>
+                        @foreach (var itemEMS in Model.ListEMSSignaruteAndImageInfo)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <label class="text-2">Hình ảnh báo phát dịch vụ "Báo phát hình ảnh" (HA): </label>
+                                @if (itemEMS.FileNamesAuth.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemEMS.FileNamesAuth.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemEMS.FileNamesAuth[i]" style="cursor: pointer;" alt="Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNamesAuth)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else if (Model.ListVNPSignaruteAndImageInfo.Count > 0)
+                {
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <p class="font-w600">Hình ảnh Báo phát</p>
+                        @foreach (var itemVNP in Model.ListVNPSignaruteAndImageInfo)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Chữ ký báo phát: </label>
+                                @if (itemVNP.ImagesSignature.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemVNP.ImagesSignature.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesSignature[i]" style="cursor: pointer;" alt="Chữ ký báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesSignature)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát: </label>
+                                @if (itemVNP.ImagesDelivery.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var j = 0; j < itemVNP.ImagesDelivery.Count; j++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesDelivery[j]" style="cursor: pointer;" alt="Hình ảnh báo phát @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesDelivery)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12">
+                        <p class="font-w600">Hình ảnh Xác thực</p>
+                        @foreach (var itemVNP in Model.ListVNPSignaruteAndImageInfo)
+                        {
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA): </label>
+                                @if (itemVNP.Images.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var i = 0; i < itemVNP.Images.Count; i++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.Images[i]" style="cursor: pointer;" alt="Hình ảnh báo phát dịch vụ “Báo phát hình ảnh” (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.Images)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                <label class="text-2">Hình ảnh báo phát cập nhật bổ sung: </label>
+                                @if (itemVNP.ImagesPlus.Count == 0)
+                                {
+                                    <span>Không có dữ liệu</span>
+                                }
+                                else
+                                {
+                                    <div class="">
+                                        @for (var j = 0; j < itemVNP.ImagesPlus.Count; j++)
+                                        {
+                                            <img class="img-fluid" width="100" src="@itemVNP.ImagesPlus[j]" style="cursor: pointer;" alt="Hình ảnh báo phát cập nhật bổ sung @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesPlus)" onerror="ImageError(this)" onclick="ImageZoomAndSlider(this)" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>

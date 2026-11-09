@@ -1,0 +1,125 @@
+﻿@model List<EMS.MVC.Frontend.Models.PrintInventoryOutputTypeViewModel>
+
+<style>
+    @@page {
+        size: A4;
+        margin-left: 2cm;
+    }
+</style>
+@foreach (var item in Model)
+{
+    <div class="page mt-4" style="max-width: 24cm;">
+        <div class="row">
+            <div class="text-center">
+                <h4 class="font-w600">PHIẾU XUẤT KHO</h4>
+            </div>
+            <div class="text-center">
+                Ngày.....tháng.....năm .........
+            </div>
+            <div class="text-center">
+                Số: ............................
+            </div>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-print-6">
+                    <span>- Họ và tên người nhận hàng: @item.Inventory.ReceiverName</span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-print-6">
+                    <span>Địa chỉ (bộ phận):...........................................................</span>
+                </div>
+            </div>
+            <div class="text-start">
+                - Lý do xuất kho:.................................................................................................................................................................................
+            </div>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-print-6">
+                    <span>- Xuất tại kho: @item.Inventory.WareHouse.WareHouseName</span>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-print-6">
+                    <span>Địa điểm: @item.Inventory.WareHouse.FullAddress</span>
+                </div>
+            </div>
+            <div class="mt-2 table-responsive col-print-12">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên, nhãn hiệu, quy cách, phẩm chất vật tư, dụng cụ, sp, hàng hoá</th>
+                            <th>Mã số</th>
+                            <th>ĐVT</th>
+                            <th colspan="2">Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Theo chứng từ</th>
+                            <th>Thực xuất</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        @{
+                            var stt = 1;
+                            foreach (var itemInventoryOutputDetail in item.ListInventoryOutputDetail)
+                            {
+                                <tr>
+                                    <td>@(stt++)</td>
+                                    <td>
+                                        <span style="line-height: 1.2rem;">@itemInventoryOutputDetail.Product.ProductVariant.SKU - @itemInventoryOutputDetail.Product.ProductName</span>
+                                        <br />
+                                        <span style="line-height: 1.2rem;">Mã Pallet: @itemInventoryOutputDetail.Product.ProductVariant.Pallet.PalletCode</span>
+                                        <br />
+                                        <span style="line-height: 1.2rem;">(@itemInventoryOutputDetail.Product.ProductVariant.Options)</span>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end">@itemInventoryOutputDetail.Quantity.ToString("N0")</td>
+                                    <td class="text-end">@itemInventoryOutputDetail.Quantity.ToString("N0")</td>
+                                    <td class="text-end">@itemInventoryOutputDetail.Price.ToString("N0")</td>
+                                    <td class="text-end">@itemInventoryOutputDetail.TotalAmount.ToString("N0")</td>
+                                </tr>
+                            }
+                        }
+                        <tr>
+                            <td></td>
+                            <td class="font-w600 text-center">Cộng</td>
+                            <td class="font-w600 text-center">x</td>
+                            <td class="font-w600 text-center">x</td>
+                            <td class="font-w600 text-center">x</td>
+                            <td class="font-w600 text-center">x</td>
+                            <td class="font-w600 text-center">x</td>
+                            <td class="font-w600 text-end">@item.Inventory.TotalAmount.ToString("N0")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-start">
+                - Tổng số tiền (viết bằng chữ): <span class="text-capitalize">@item.Inventory.TotalAmountByText</span>
+            </div>
+            <div class="text-start">
+                - Số chứng từ gốc kèm theo:.................................................................................................
+            </div>
+            <div class="mt-2 text-center d-flex justify-content-between">
+                <div>
+                    <span class="font-w600">Người lập phiếu</span> <br /> <em>(Ký, họ tên)</em>
+                </div>
+                <div>
+                    <span class="font-w600">Người nhận hàng</span> <br /> <em>(Ký, họ tên)</em>
+                </div>
+                <div>
+                    <span class="font-w600">Thủ kho</span> <br /> <em>(Ký, họ tên)</em>
+                </div>
+                <div>
+                    <span class="font-w600">Kế toán trưởng</span> <br /> <em>(Ký, họ tên)</em>
+                </div>
+                <div>
+                    <span class="font-w600">Giám đốc</span> <br /> <em>(Ký, họ tên)</em>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="pagebreak"></div>
+}

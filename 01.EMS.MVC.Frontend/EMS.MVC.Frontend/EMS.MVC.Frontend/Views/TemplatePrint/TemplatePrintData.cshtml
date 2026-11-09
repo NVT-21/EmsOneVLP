@@ -1,0 +1,435 @@
+﻿@model EMS.MVC.Frontend.Models.TemplatePrintDataViewModel
+@{
+    var SampleBarCode = "iVBORw0KGgoAAAANSUhEUgAAAKcAAAAyCAYAAAA5vcscAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAqwSURBVHhefYsBquVADMPe/S/9dw0VCNeNwCTOaH7/+UsCM3gHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+nb3TTnnG/vLDcgE+4Mddbd7P65TrcPI1vX3/aaeywr1vvwM0O88n7MXgHe8TduF9eaNcBdk+Ht+6mPeN+eWG5AZ9wY6637mb1y3W4eRrfvv6009hhX7fegXc7zCfvx+Ad7BF34355oV0H2D2dvtFNe8b98sJyAz7hxlxv3c3ql+tw8zS+ff1pp7HDvm69Azc7zN/v9/cPnHbzcS7GzAMAAAAASUVORK5CYII=";
+    var SampleQRCode = "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";
+}
+@if (Model.PrintType == "A4")
+{
+    <div class="row">
+        <div class="col-md-6 col-print-6 text-start mb-2">
+            <img class="img-fluid" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 60%;" />
+        </div>
+        <div class="col-md-6 col-print-6 text-end mb-2">
+            <h4 class="font-w600" style="border-bottom: solid #f0ad4e;">Vận đơn điện tử</h4>
+        </div>
+        <div class="col-md-4 col-print-4" style="min-height: 110px;">
+            <img src="@String.Format(" data:image /png;base64,{0}", SampleQRCode)" style="width: 40%; height: auto; border-radius: 0;" />
+        </div>
+        <div class="col-md-4 col-print-4 m-auto">
+            <div style="line-height: 1.4rem;"><b>BƯU GỬI</b></div>
+            <div style="line-height: 1.4rem;">BILL OF CONSIGNMENT</div>
+        </div>
+        <div class="col-md-4 col-print-4 m-auto" style="min-height: 110px;">
+            <div class="m-4">
+                <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: auto; height: auto; border-radius: 0;" />
+            </div>
+        </div>
+        <div class="col-md-12 col-print-12 text-start d-flex justify-content-between">
+            <div>
+                <label class="text-2">Dịch vụ:</label> <label class="font-w600" style="font-size: 20px;"></label>
+            </div>
+            <div>
+                <label class="m-0">Loại vận đơn:</label>
+            </div>
+            <div>
+                <label class="text-2">Nơi gửi:</label> <label class=""></label>
+            </div>
+            <div>
+                <label class="text-2">Nơi nhận:</label> <label class=""></label>
+            </div>
+        </div>
+        <div class="col-md-12 col-print-12">
+            <table class="table table-bordered" style="width: 100%;">
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="max-width: 50%; white-space: inherit; text-align: justify; vertical-align: baseline; border: 1px solid #c9ccd7; ">
+                            <span class="T_1 T_4" style="line-height: 1.4rem; display: block; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Họ và tên người gửi/Sender</b></span>
+                            <span class="T_1 T_5" style="line-height: 1.4rem; display: block; @{ if (Model.SenderAddress == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Địa chỉ/Address</b></span>
+                            <span class="T_1 T_6" style="line-height: 1.4rem; display: block; @{ if (Model.SenderDistrict == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Quận huyện/District</b></span>
+                            <span class="T_1 T_7" style="line-height: 1.4rem; display: block; @{ if (Model.SenderProvince == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Tỉnh/TP/Province</b> </span>
+                            <span class="T_1 T_8" style="line-height: 1.4rem; display: block; @{ if (Model.SenderPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Điện thoại/Phone</b></span>
+                        </td>
+                        <td colspan="2" style="max-width: 50%; white-space: inherit; text-align: justify; vertical-align: baseline; border: 1px solid #c9ccd7;">
+                            <span style="line-height: 1.4rem; display: block; color: black !important; text-decoration: none !important;"><b>Họ và tên người nhận/Receiver</b></span>
+                            <span style="line-height: 1.4rem; display: block; color: black !important; text-decoration: none !important;"><b>Địa chỉ/Address</b> </span>
+                            @*<div class="">*@
+                            <span class="T_2 T_11" style="line-height: 1.4rem; display: block; @{ if (Model.ReceiverDistrict == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Quận huyện/District</b> </span>
+                            <span class="T_2 T_12" style="line-height: 1.4rem; display: block; @{ if (Model.ReceiverProvince == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Tỉnh/TP/Province</b> </span>
+                            <span class="T_2 T_13" style="line-height: 1.4rem; display: block; @{ if (Model.ReceiverPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Điện thoại/Phone</b> </span>
+                            @*</div>*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="max-width: 50%; white-space: inherit; text-align: left; vertical-align: baseline; border: 1px solid #c9ccd7; border-bottom: 1px solid #c9ccd7;">
+                            <span class="T_3 T_14" style="line-height: 1.4rem; display: block; @{ if (Model.OrderCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã đơn hàng</b> </span>
+                            <span style="line-height: 1.4rem; display: block;"><b>Nội dung/Content</b> </span>
+                            <span style="line-height: 1.4rem; display: block;"><b>Ghi chú/Note</b> </span>
+                        </td>
+                        <td style="vertical-align: baseline; white-space: inherit; border: 1px solid #c9ccd7; border-bottom: 1px solid #c9ccd7;">
+                            <span class="T_3 T_17" style="line-height: 1.4rem; display: block; @{ if (Model.Weight == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Tr.lượng/Weight</b> <span class="float-right"></span></span>
+                            <span class="T_3 T_18" style="line-height: 1.4rem; display: block; @{ if (Model.Quantity == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>S.lượng/Quantity</b> <span class="float-right"></span></span>
+                            <span style="line-height: 1.4rem; display: block;"><b>Tiền t.hộ/CoD</b></span>
+                            <span style="line-height: 1.4rem;"><b>Cước thu người nhận</b></span>
+                        </td>
+                        <td style="text-align: center; vertical-align: baseline; border: 1px solid #c9ccd7; border-bottom: 1px solid #c9ccd7;">
+                            <span style="line-height: 1.4rem;"><b>Ngày giờ gửi/Date</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Họ tên, chữ ký người gửi</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Signature of sender</b></span>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Ngày giờ phát/Date, time</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Họ tên nhân viên phát</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Name, of P.O Deliverer</b></span>
+                            <br />
+                            <br />
+                            <br />
+                        </td>
+                        <td style="text-align: center; vertical-align: baseline; border: 1px solid #c9ccd7; border-bottom: 1px solid #c9ccd7;">
+                            <span style="line-height: 1.4rem;"><b>Dấu ngày BC chấp nhận</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Date, stamp of accepting P.O</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Tên nhân viên chấp nhận</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"></span>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Họ tên chữ ký người nhận</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"><b>Signature of receiver</b></span>
+                            <br />
+                            <br />
+                            <br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" colspan="4">
+                            <span style="line-height: 1.4rem;"><b>Lưu ý:</b> Quý khách hàng cần đọc kỹ thông tin tiền thu hộ trước khi thực hiện thanh toán & ký nhận sản phẩm.</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else if (Model.PrintType == "A6")
+{
+    <table class="table table-bordered" style="width: 12cm; height: 13.5cm;">
+        <thead>
+            <tr>
+                <td class="p-0" colspan="2">
+                    <div class="row">
+                        <div class="col-md-6 p-1 col-print-6">
+                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                        </div>
+                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                            <span style="line-height: 1.1rem;"><b>Bưu cục:</b></span>
+                            <br />
+                            <span style="line-height: 1.1rem;"><b>Ngày gửi</b></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="max-width: 50%; white-space: inherit; text-align: justify; vertical-align: middle;">
+                    <span class="T_21 T_101" style="line-height: 1.4rem; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Họ tên</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_21 T_102" style="line-height: 1.4rem; @{ if (Model.SenderPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>SĐT</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_21 T_103" style="line-height: 1.4rem; @{ if (Model.SenderAddress == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Địa chỉ</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td style="white-space: inherit; text-align: justify; vertical-align: middle;">
+                    <span style="line-height: 1.4rem;"><b>Họ tên</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_22 T_104" style="line-height: 1.4rem; @{ if (Model.ReceiverAddress == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Địa chỉ</b></span>
+                </td>
+                <td style="vertical-align: baseline;">
+                    <span style="line-height: 1.4rem; display: block;"><b>Tiền thu hộ</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: baseline;">
+                    <span class="T_22 T_25" style="line-height: 1.4rem; display: block; @{ if (Model.ReceiverPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>ĐT người nhận</b></span>
+                </td>
+                <td style="vertical-align: baseline;">
+                    <span style="line-height: 1.4rem; display: block;"><b>Cước thu người nhận</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td style="white-space: inherit; text-align: justify; vertical-align: baseline;">
+                    <span class="T_23 T_27" style="line-height: 1.4rem; display: block; @{ if (Model.Message == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Nội dung hàng</b></span>
+                </td>
+                <td style="vertical-align: baseline;">
+                    <span style="line-height: 1.4rem; display: block;"><b>Khối lượng</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <span class="T_105 T_107" style="line-height: 1.4rem; display: block; @{ if (Model.TransportMainServiceName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Tên dịch vụ chính</b></span> <span class="ms-1 me-1">-</span>
+                        <span class="T_105 T_106" style="line-height: 1.4rem; display: block; @{ if (Model.TransportMainServiceCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã dịch vụ chính</b></span>
+                    </div>
+                    <div class="">
+                        <span class="T_105 T_108" style="line-height: 1.4rem; display: block; @{ if (Model.TransportExtraServiceCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã dịch vụ cộng thêm</b></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="max-width: 50%; white-space: inherit; text-align: justify; vertical-align: baseline;">
+                    <span class="T_23 T_29" style="line-height: 1.4rem; display: block; @{ if (Model.Note == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Ghi chú </b></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center pt-1">
+                    <img src="@String.Format("data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    <span style="line-height: 1.4rem; display: block;"><b>In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b></span>
+                </td>
+            </tr>
+        </thead>
+    </table>
+}
+else if (Model.PrintType == "B1")
+{
+    <table class="table" style="min-width: 7cm; max-width: 10cm;">
+        <thead>
+            <tr>
+                <td colspan="2" class="text-center p-1" style="border-left: 1px #c9ccd7 solid; border-right: 1px #c9ccd7 solid; border-top: 1px #c9ccd7 solid">
+                    <span class="T_31 T_40" style="line-height: 1.4rem; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Tên người gửi</b></span>
+                    -
+                    <span style="line-height: 1.4rem;"><b>Tên dịch vụ vận chuyển chính</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="vertical-align: baseline;border-left: 1px #c9ccd7 solid;border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.4rem; display: block;"><b>Ngày gửi</b></span>
+                    <span style="line-height: 1.4rem; display: block;"><b>Bưu cục</b></span>
+                    <span class="T_33 T_43" style="line-height: 1.4rem; display: block; @{ if (Model.OrderCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã đơn hàng</b></span>
+                </td>
+                <td class="text-center" width="50%" style="border-right: 1px #c9ccd7 solid;">
+                    <img src="@String.Format("data:image /png;base64,{0}", SampleBarCode)" style="width: 100%; height: auto; border-radius: 0;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" style="white-space: inherit; text-align: justify; vertical-align: baseline;border-left: 1px #c9ccd7 solid;border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.4rem; display: block;"><b>Người nhận</b></span>
+                    <span class="T_32 T_45" style="line-height: 1.4rem; display: block; @{ if (Model.ReceiverPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>ĐT người nhận</b> </span>
+                    <span style="line-height: 1.4rem;display: block;"><b>Địa chỉ</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-0" colspan="2">
+                    <div class="row" style="margin: 0;">
+                        <div class="col-md-6 col-print-6 p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;border-left: 1px #c9ccd7 solid;word-break: break-word;">
+                            <span style="line-height: 1.4rem; display: block;"><b>Cước thu người nhận</b></span>
+                            <span style="line-height: 1.4rem; display: block;"><b>Nội dung hàng</b></span>
+                        </div>
+                        <div class="col-md-6 col-print-6 p-1" style="white-space: initial; text-align: center; vertical-align: middle; word-break: break-word;border-right: 1px #c9ccd7 solid;">
+                            <span style="line-height: 1.4rem;"><b>COD</b></span>
+                            <br />
+                            <span style="line-height: 1.4rem;"></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" style="white-space: inherit; text-align: justify; vertical-align: baseline;border-left: 1px #c9ccd7 solid;border-right: 1px #c9ccd7 solid;border-bottom: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.4rem;"><b>Ghi chú </b></span>
+                </td>
+            </tr>
+        </thead>
+    </table>
+}
+else if (Model.PrintType == "B2")
+{
+    <table class="table table-bordered table_custom" style="width:11cm;min-height: 12.5cm;">
+        <thead>
+            <tr>
+                <td class="p-0" colspan="2">
+                    <div class="row">
+                        <div class="col-md-6 p-1 col-print-6">
+                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                        </div>
+                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                            <span style="line-height: 1.1rem; display: block;"><b>Bưu cục</b></span>
+                            <span style="line-height: 1.1rem; display: block;"><b>Ngày gửi</b></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1" height="60">
+                    <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                    <span class="T_34 T_51" style="line-height: 1.1rem; display: block; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Người gửi</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Người nhận</b></span>
+                    <br />
+                </td>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; word-break: break-word;">
+                    <span style="line-height: 1.1rem;"><b>Tiền thu hộ</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span class="T_35 T_53" style="line-height: 1.1rem; @{ if (Model.ReceiverPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>ĐT người nhận</b></span>
+                    <br />
+                </td>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Cước thu người nhận</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Nội dung hàng</b></span>
+                    <br />
+                </td>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Khối lượng</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1">
+                    <span><b>DỊCH VỤ VẬN CHUYỂN CHÍNH</b></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" height="60" style="white-space: inherit; text-align: justify; vertical-align: baseline;">
+                    <span style="line-height: 1.1rem;"><b>Ghi chú </b></span>
+                    <br />
+                    <span style="line-height: 1.1rem;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1">
+                    <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="p-1 text-center">
+                    <span style="line-height: 1.1rem;"><b>In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b></span>
+                </td>
+            </tr>
+        </thead>
+    </table>
+}
+else if (Model.PrintType == "Label")
+{
+    <table class="table table-bordered table_custom" style="width:11cm;min-height: 12.5cm;">
+        <thead>
+            <tr>
+                <td class="p-0" colspan="2">
+                    <div class="row">
+                        <div class="col-md-6 p-1 col-print-6">
+                            <img class="size-logo" src="~/Assets/images/logo/logo_ems_vietnam.png" style="width: 90%; border-radius: 0;margin-left: 10px; margin-top: 5px;" />
+                        </div>
+                        <div class="col-md-6 p-1 col-print-6" style="white-space:initial;">
+                            <span style="line-height: 1.1rem; display: block;"><b>Bưu cục</b></span>
+                            <span style="line-height: 1.1rem; display: block;"><b>Ngày gửi</b></span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1" height="60">
+                    <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" style="white-space: initial; text-align: left; vertical-align: middle;">
+                    <span class="T_37 T_109" style="line-height: 1.1rem; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Họ tên</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_37 T_110" style="line-height: 1.1rem; @{ if (Model.SenderPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>SĐT</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_37 T_111" style="line-height: 1.1rem; @{ if (Model.SenderAddress == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Địa chỉ</b></span>
+                    @*<span class="T_37 T_58" style="line-height: 1.1rem; display: block; @{ if (Model.SenderName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Người gửi</b></span>*@
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Họ tên</b></span> <span class="ms-1 me-1">-</span>
+                    <span class="T_38 T_112" style="line-height: 1.4rem; @{ if (Model.ReceiverAddress == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } } "><b>Địa chỉ</b></span>
+                </td>
+
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Tiền thu hộ</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span class="T_38 T_60" style="line-height: 1.1rem; @{ if (Model.ReceiverPhone == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>ĐT người nhận</b></span>
+                    <br />
+                </td>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Cước thu người nhận</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span class="T_39 T_62" style="line-height: 1.1rem; @{ if (Model.Message == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Nội dung hàng</b></span>
+                    <br />
+                </td>
+                <td class="p-1" style="white-space: initial; text-align: left; vertical-align: middle; border-right: 1px #c9ccd7 solid;">
+                    <span style="line-height: 1.1rem;"><b>Khối lượng</b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1">
+                    <div class="d-flex justify-content-center">
+                        <span class="T_113 T_115" style="line-height: 1.1rem; display: block; @{ if (Model.TransportMainServiceName == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Tên dịch vụ chính</b></span> <span class="ms-1 me-1">-</span>
+                        <span class="T_113 T_114" style="line-height: 1.1rem; display: block; @{ if (Model.TransportMainServiceCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã dịch vụ chính</b></span>
+                    </div>
+                    <div class="">
+                        <span class="T_113 T_116" style="line-height: 1.1rem; display: block; @{ if (Model.TransportExtraServiceCode == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Mã dịch vụ cộng thêm</b></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="p-1" colspan="2" height="60" style="white-space: inherit; text-align: justify; vertical-align: baseline;">
+                    <span class="T_39 T_64" style="line-height: 1.1rem; @{ if (Model.Note == "Y") { Write(""); } else { Write("text-decoration: line-through; color: red;"); } }"><b>Ghi chú </b></span>
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center p-1">
+                    <img src="@String.Format(" data:image /png;base64,{0}", SampleBarCode)" style="width: 60%; height: 35px; border-radius: 0;margin-bottom: 5px;" />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="p-1 text-center">
+                    <span style="line-height: 1.1rem;"><b>In: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</b></span>
+                </td>
+            </tr>
+        </thead>
+    </table>
+}

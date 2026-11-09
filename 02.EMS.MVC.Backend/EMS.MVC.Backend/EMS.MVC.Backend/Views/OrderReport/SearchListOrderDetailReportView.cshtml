@@ -1,0 +1,91 @@
+﻿@model EMS.MVC.Backend.Models.SearchOrderDetailReportViewModel
+@{
+    Layout = null;
+    var stt = 1;
+}
+
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr>
+            <th class="align-middle" colspan="3">Tổng dữ liệu</th>
+            @if (Model != null)
+            {
+                <th class="text-right"> @Model.SumTempTransportFee.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumTransportFee.ToString("N0") ₫</th>
+                <th class="text-right"> @Model.SumCODMoney.ToString("N0") ₫</th>
+            }
+            else
+            {
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+                <th class="text-right"> 0 ₫</th>
+            }
+            <th class="text-left"> </th>
+            <th class="text-left"> </th>
+        </tr>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Mã bưu gửi </th>
+            <th class="align-middle"> Ngày tạo đơn </th>
+            <th class="align-middle"> Cước tạm tính </th>
+            <th class="align-middle"> Cước thực tế </th>
+            <th class="align-middle"> Tiền COD </th>
+            <th class="align-middle"> Nơi tạo đơn </th>
+            <th class="align-middle"> Trạng thái </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.Data)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-left">@item.ItemCode</td>
+                    <td class="text-center">@item.OrderCreatedDate</td>
+                    <td class="text-right">@item.TempTransportFee.ToString("N0")</td>
+                    <td class="text-right">@item.TransportFee.ToString("N0")</td>
+                    <td class="text-right">@item.CODMoney.ToString("N0")</td>
+                    <td class="text-left">@item.PlaceOfOrderCreation</td>
+                    <td class="text-left">@item.StatusName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+        });
+        $('#ListDataTableSearch').each(function () {
+            var datatable = $(this);
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+</script>

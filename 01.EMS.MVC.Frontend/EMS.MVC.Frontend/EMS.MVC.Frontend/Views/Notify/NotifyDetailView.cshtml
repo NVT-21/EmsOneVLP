@@ -1,0 +1,42 @@
+﻿@model EMS.MVC.Frontend.Models.NotifyListViewModel
+@if (Model != null)
+{
+    <div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.NotifyName</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                        <label class="form-label fw-bold">Mô tả</label>
+                        <textarea class="form-control" rows="8" id="NotifyContent" placeholder="Mô tả" maxlength="250" readonly>@Model.NotifyContent</textarea>
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthNotifyContent">@Model.NotifyContent.Length</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.NotifyRedirectUrl))
+                {
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                            <strong><a href="@Model.NotifyRedirectUrl" target="_blank"><i class="fa fa-link"></i>&nbsp; Truy cập khuyến mãi</a></strong>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer" style="justify-content: flex-start;">
+                <span class="fw-bold">Thời gian: </span>&nbsp;@Model.CreatedDate
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-red">Không tìm thấy dữ liệu</p>
+}
+<script>
+    ShowInputLength("NotifyContent", "ShowLengthNotifyContent", 250);
+</script>

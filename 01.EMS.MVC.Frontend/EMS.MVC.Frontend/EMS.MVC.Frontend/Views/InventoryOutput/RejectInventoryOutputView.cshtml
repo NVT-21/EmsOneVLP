@@ -1,0 +1,94 @@
+﻿@model EMS.MVC.Frontend.Models.RejectInventoryOutputViewModel
+@Html.HiddenFor(m => m.InventoryOutputID)
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Lý do từ chối</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-12">
+                    @Html.TextAreaFor(model => model.Reason, new { @class = "form-control", @placeholder = "Vui lòng nhập lý do", @maxlength = "250", @rows = "3" })
+                    <div class="text-end">
+                        <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">0</span>/250</span>
+                    </div>
+                    <span class="text-danger" id="errReason"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    CheckChangeValue("Reason", "Vui lòng nhập lý do", "", "Y");
+    ShowInputLength("Reason", "ShowLengthNote", 250);
+    $("#btnSubmit").on('click', function () {
+        var IsError = false;
+        var data = {
+            InventoryOutputID: $("#InventoryOutputID").val(),
+            Reason: $('#Reason').val().trim()
+        };
+
+        IsError = CheckNullValue(data.Reason, "Reason", "Vui lòng nhập lý do", IsError);
+
+        if (IsError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn từ chối phiếu xuất kho?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRejectInventoryOutput", "InventoryOutput")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message, '@Url.Action("InventoryOutputView", "InventoryOutput")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,155 @@
+﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="col-3">
+                                <label class="mb-1">Thời gian</label>
+                                <div class="mb-3">
+                                    <div class="datepicker-form">
+                                        <input type="text" class="form-control input-daterange-datepicker" id="AllDate">
+                                        <input type="hidden" id="FromDate" value="@Model.FromDate" />
+                                        <input type="hidden" id="ToDate" value="@Model.ToDate" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end align-items-end">
+                        <div class="mb-3 d-flex">
+                            <div class="dropdown me-2">
+                                <button class="btn btn-upload" type="button" id="btnExportExcel">
+                                    <i class="icon-down fs-18"></i>
+                                    Xuất file Excel
+                                </button>
+                            </div>
+                            <div class="dropdown ">
+                                <button class="btn btn-upload" id="btnExportPDF">
+                                    <i class="icon-down fs-18"></i> Xuất file PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div id="tbl-data" class="table-primary table-responsive">
+                @{
+                    Html.RenderAction("DataFeeAdjustingJournalEntriesView", "Reconciliation", new { FromDate = Model.FromDate, ToDate = Model.ToDate });
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+        CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+        $('#AllDate').on('change', function () {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1]
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+
+            $.get('@Url.Action("DataFeeAdjustingJournalEntriesView", "Reconciliation")', req, function (data) {
+                $('#tbl-data').html(data);
+            });
+        });
+        $("#btnExportExcel").on("click", function () {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("ExcelDataFeeAdjustingJournalEntries", "Reconciliation")?FromDate=" + req.FromDate + "&ToDate=" + req.ToDate;
+        });
+        $("#btnExportPDF").on("click", function () {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("PDFDataFeeAdjustingJournalEntries", "Reconciliation")?FromDate=" + req.FromDate + "&ToDate=" + req.ToDate;
+        });
+    </script>
+}

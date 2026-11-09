@@ -1,0 +1,65 @@
+﻿@model IEnumerable<EMS.MVC.Backend.Models.ReconciliationFeeReportViewModel>
+@{
+    Layout = null;
+    var stt = 1;
+}
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Mã bưu cục </th>
+            <th class="align-middle"> Tổng đơn </th>
+            <th class="align-middle"> Tổng khối lượng </th>
+            <th class="align-middle"> Tổng cước chính </th>
+            <th class="align-middle"> Loại bưu gửi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center"><span style="color:#248afd; cursor: pointer;" onclick="FeeReportPostOfficeView(@item.PostOffice)">@item.PostOffice</span></td>
+                    <td class="text-center">@item.TotalOrder.ToString("N0")</td>
+                    <td class="text-center">@item.TotalWeight.ToString("N0")</td>
+                    <td class="text-right">@item.TotalFee.ToString("N0")</td>
+                    <td class="text-center">@item.TypeItemName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false
+        });
+    });
+    function FeeReportPostOfficeView(PostOffice) {
+        var FromDate = $('#FromDate').val().trim();
+        var ToDate = $('#ToDate').val().trim();
+        window.location.href = '@Url.Action("ReconciliationFeePostOfficeReport", "Reconciliation")?PostOffice=' + PostOffice + '&FromDate=' + FromDate + '&ToDate=' + ToDate;
+    }
+</script>

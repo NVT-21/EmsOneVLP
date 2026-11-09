@@ -1,0 +1,162 @@
+﻿@model EMS.MVC.Frontend.Models.CODMoneyReportViewModel
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-3">
+                                <label class="mb-1">Thời gian</label>
+                                <div class="mb-3">
+                                    <div class="datepicker-form">
+                                        <input type="text" class="form-control input-daterange-datepicker" id="AllDate">
+                                        <input type="hidden" id="FromDate" value="@Model.FromDate" />
+                                        <input type="hidden" id="ToDate" value="@Model.ToDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <label class="mb-1">Trạng thái COD</label>
+                                <div class="mb-3">
+                                    @Html.DropDownListFor(model => model.CODTransType, new SelectList(Model.ListCODTransType, "Value", "Text"), "Tất cả", new { @class = "select2" })
+                                </div>
+                            </div>
+                            <div class="col-4">
+
+                            </div>
+                            <div class="col-2 d-flex justify-content-end align-items-end">
+                                <div class="mb-3 d-flex">
+                                    <div class="dropdown ">
+                                        <button class="btn btn-upload" type="button" id="btnExportExcel">
+                                            <i class="icon-down fs-18"></i>
+                                            Xuất file
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body ">
+            <div class="table-primary table-responsive">
+                @{
+                    Html.RenderAction("DataCODMoneyReportView", "Report");
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+
+        $(document).ready(function () {
+            CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+            $('select.select2').select2(AttributeSelect2);
+        });
+        $('#AllDate,#CODTransType').on('change', function () {
+            LoadData();
+        });
+        function LoadData() {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+                CODTransType: Number($("#CODTransType").val())
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JDataCODMoneyReport", "Report")',
+                dataType: 'json',
+                loading: true,
+                data: {
+                    model: req
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        //console.log(data);
+                        $.post('@Url.Action("DataTableCODMoneyReportView", "Report")', { model: data }, function (data) {
+                            $('#Table').html(data);
+                        });
+                        $.post('@Url.Action("DataChartCODMoneyReportView", "Report")', { model: data }, function (data) {
+                            $('#Chart').html(data);
+                        });
+                    } else {
+                        $.post('@Url.Action("DataTableCODMoneyReportView", "Report")', function (data) {
+                            $('#Table').html(data);
+                        });
+                        $('#Chart').html("Không có dữ liệu");
+                    }
+                }
+            });
+        }
+        $("#btnExportExcel").on("click", function () {
+            var errMsg = '', isError = false;
+            var req = {
+                FromDate: $("#AllDate").val().split(" - ")[0],
+                ToDate: $("#AllDate").val().split(" - ")[1],
+                CODTransType: Number($("#CODTransType").val())
+            };
+            if (req.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (req.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(req.FromDate, req.ToDate);
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                CreateCustomSwal("error", errMsg);
+                return;
+            }
+            window.location.href = "@Url.Action("ExcelCODMoneyReport", "Report")?FromDate=" + req.FromDate + "&ToDate=" + req.ToDate + "&CODTransType" + req.CODTransType;
+        });
+    </script>
+}

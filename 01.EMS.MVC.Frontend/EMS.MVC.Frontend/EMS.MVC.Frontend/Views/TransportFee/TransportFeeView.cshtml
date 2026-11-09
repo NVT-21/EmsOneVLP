@@ -1,0 +1,200 @@
+﻿@model EMS.MVC.Frontend.Models.TransportFeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label class="form-label">Dịch vụ chuyển chính <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), "-- Chọn --", new { @class = "select2" })
+                    <span class="text-danger" id="errMainTransportServiceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label class="form-label">Dịch vụ vận chuyển cộng thêm </label>
+                    @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                    <span class="text-danger" id="errExtraTransportServiceID"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label"> Nơi xuất phát <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.FromProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2" })
+                    <span class="text-danger" id="errFromProvinceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label">Tỉnh/Thành phố nơi đến <span class="text-danger">*</span> </label>
+                    @Html.DropDownListFor(model => model.ToProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('ToProvinceID', 'ToWardID')" })
+                    <span class="text-danger" id="errToProvinceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label">Phường/Xã nơi đến </label>
+                    @Html.DropDownListFor(model => model.ToWardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errToWardID"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Khối lượng <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Khối lượng", @maxlength = "9", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                        <span class="props">gr</span>
+                    </div>
+                    <span class="text-danger" id="errWeight"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Chiều dài </label>
+                        @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Dài", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                        <span class="props">cm</span>
+                    </div>
+                    <span class="text-danger" id="errLength"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Chiều rộng </label>
+                        @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Rộng", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                        <span class="props">cm</span>
+                    </div>
+                    <span class="text-danger" id="errWidth"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Chiều cao </label>
+                        @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Cao", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                        <span class="props">cm</span>
+                    </div>
+                    <span class="text-danger" id="errHeight"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-4 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Số lượng </label>
+                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số lượng sản phẩm", @maxlength = "3", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                        <span class="text-danger" id="errQuantity"></span>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Giá trị đơn hàng</label>
+                        @Html.EditorFor(model => model.OrderValue, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Giá trị đơn hàng", @maxlength = "11", @data_inputmask = "'alias': 'currency'" } })
+                        <span class="props">đ</span>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Tiền COD</label>
+                        @Html.EditorFor(model => model.TotalCOD, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tiền COD", @maxlength = "10", @data_inputmask = "'alias': 'currency'" } })
+                        <span class="props">đ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="font-w500">Cước dịch vụ chính</span>
+                    <span class="font-w600" id="MainFee">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="font-w500">Cước dịch vụ cộng thêm</span>
+                    <span class="font-w600" id="ExtraFee">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="font-w500">Phụ phí</span>
+                    <span class="font-w600" id="Surcharge">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="font-w500">Tổng cộng</span>
+                    <span class="font-w600" id="TotalAmount">0 đ</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="float-end">
+                <button type="button" class="btn btn-primary d-flex align-items-center ms-3" id="btnSubmit">Tính cước</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#ExtraTransportServiceID").selectpicker("refresh");
+            $(".content-body").css("min-height", "765px");
+        });
+        CheckChangeValue("MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", "", "Y");
+
+        CheckChangeValue("FromProvinceID", "Nơi xuất phát không được để trống", "", "Y");
+
+        CheckChangeValue("ToProvinceID", "Tỉnh/Thành phố nơi đến không được để trống", "", "Y");
+
+        CheckChangeValue("Weight", "Trọng lượng không được để trống", "Number", "Y");
+
+        $("#btnSubmit").on("click", function () {
+            var isError = false;
+            var data = {
+                MainTransportServiceID: $("#MainTransportServiceID").val(),
+                ExtraTransportServiceID: $("#ExtraTransportServiceID").val().toString(),
+                FromProvinceID: $("#FromProvinceID").val(),
+                ToProvinceID: $("#ToProvinceID").val(),
+                ToWardID: $("#ToWardID").val(),
+                Weight: NumberReplace($('#Weight').val()),
+                Length: $("#Length").val(),
+                Width: $("#Width").val(),
+                Height: $("#Height").val(),
+                Quantity: NumberReplace($('#Quantity').val()),
+                OrderValue: NumberReplace($('#OrderValue').val()),
+                TotalCOD: NumberReplace($('#TotalCOD').val()),
+            };
+
+            isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", isError);
+
+            isError = CheckNullValue(data.FromProvinceID, "FromProvinceID", "Nơi xuất phát không được để trống", isError);
+
+            isError = CheckNullValue(data.ToProvinceID, "ToProvinceID", "Tỉnh/Thành phố nơi đến không được để trống", isError);
+
+            isError = CheckNullAndRegexValue(data.Weight, "Number", "Weight", "Vui lòng nhập trọng lượng", "Chỉ được nhập số", isError);
+
+            if (isError == true) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("JTransportFee", "TransportFee")',
+                dataType: 'json',
+                loading: true,
+                data: data,
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        $("#MainFee").text(NumberFormat(data.MainFee) + " đ");
+                        $("#ExtraFee").text(NumberFormat(data.ExtraFee) + " đ");
+                        $("#Surcharge").text(NumberFormat(data.Surcharge) + " đ");
+                        $("#TotalAmount").text(NumberFormat(data.TotalAmount) + " đ");
+                    } else {
+                        CreateCustomSwal("error", res.Message);
+                    }
+                }
+            });
+        });
+
+        $('#MainTransportServiceID, #ExtraTransportServiceID, #Weight, #Length, #Width, #Height, #Quantity, #TotalCOD, #OrderValue, #FromProvinceID, #ToProvinceID, #ToWardID').on('change', function () {
+            $("#MainFee").text(0 + " đ");
+            $("#ExtraFee").text(0 + " đ");
+            $("#Surcharge").text(0 + " đ");
+            $("#TotalAmount").text(0 + " đ");
+        });
+    </script>
+}

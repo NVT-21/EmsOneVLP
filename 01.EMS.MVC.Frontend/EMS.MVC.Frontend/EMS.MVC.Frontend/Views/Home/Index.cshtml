@@ -1,0 +1,2096 @@
+﻿@model EMS.MVC.Frontend.Models.HomeViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --ems-blue: #005bac;
+        --ems-blue-dark: #004681;
+        --ems-blue-deep: #003b6f;
+        --ems-blue-light: #eaf4fc;
+
+        --ems-orange: #f58220;
+        --ems-orange-dark: #dc6e10;
+        --ems-orange-light: #fff2e7;
+
+        --ems-success: #16a34a;
+        --ems-success-light: #ecfdf3;
+
+        --ems-danger: #dc2626;
+        --ems-danger-light: #fef2f2;
+
+        --ems-info: #0284c7;
+        --ems-info-light: #f0f9ff;
+
+        --ems-page-background: #f4f7fb;
+        --ems-card-background: #ffffff;
+
+        --ems-text-primary: #172033;
+        --ems-text-secondary: #64748b;
+        --ems-border: #e2e8f0;
+        --ems-border-light: #edf2f7;
+
+        --ems-shadow-small:
+            0 3px 12px rgba(15, 23, 42, 0.05);
+
+        --ems-shadow-medium:
+            0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    /* =========================================================
+       DASHBOARD
+       ========================================================= */
+
+    .ems-dashboard {
+        min-height: calc(100vh - 70px);
+        padding: 22px;
+        background:
+            radial-gradient(
+                circle at 100% 0,
+                rgba(0, 91, 172, 0.06),
+                transparent 30%
+            ),
+            var(--ems-page-background);
+    }
+
+    .ems-dashboard * {
+        box-sizing: border-box;
+    }
+
+    /* =========================================================
+       WELCOME
+       ========================================================= */
+
+    .ems-welcome {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 130px;
+        margin-bottom: 18px;
+        padding: 25px 28px;
+        overflow: hidden;
+        color: #ffffff;
+        background:
+            linear-gradient(
+                115deg,
+                var(--ems-blue-deep) 0%,
+                var(--ems-blue) 60%,
+                #0876ca 100%
+            );
+        border-radius: 16px;
+        box-shadow: var(--ems-shadow-medium);
+    }
+
+    .ems-welcome::before {
+        position: absolute;
+        top: -100px;
+        right: -20px;
+        width: 260px;
+        height: 260px;
+        content: "";
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+    }
+
+    .ems-welcome::after {
+        position: absolute;
+        right: 170px;
+        bottom: -150px;
+        width: 260px;
+        height: 260px;
+        content: "";
+        background: rgba(245, 130, 32, 0.22);
+        border-radius: 50%;
+    }
+
+    .ems-welcome-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .ems-welcome-label {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
+
+    .ems-welcome-title {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #ffffff;
+    }
+
+    .ems-welcome-description {
+        margin: 8px 0 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.82);
+    }
+
+    .ems-welcome-badge {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        min-width: 225px;
+        padding: 14px 17px;
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+    }
+
+    .ems-welcome-badge-icon {
+        display: flex;
+        flex: 0 0 44px;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        color: #ffffff;
+        background: var(--ems-orange);
+        border-radius: 11px;
+    }
+
+    .ems-welcome-badge-label {
+        margin-bottom: 3px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .ems-welcome-badge-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    /* =========================================================
+       CARD
+       ========================================================= */
+
+    .ems-card {
+        margin-bottom: 18px;
+        overflow: visible;
+        background: var(--ems-card-background);
+        border: 1px solid var(--ems-border);
+        border-radius: 14px;
+        box-shadow: var(--ems-shadow-small);
+    }
+
+    .ems-card-header {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+        padding: 16px 20px;
+        background: #ffffff;
+        border-bottom: 1px solid var(--ems-border-light);
+        border-radius: 14px 14px 0 0;
+    }
+
+    .ems-card-title-group {
+        display: flex;
+        gap: 11px;
+        align-items: center;
+    }
+
+    .ems-card-icon {
+        display: flex;
+        flex: 0 0 38px;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-radius: 10px;
+    }
+
+    .ems-card-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 650;
+        line-height: 1.35;
+        color: var(--ems-text-primary);
+    }
+
+    .ems-card-subtitle {
+        margin: 3px 0 0;
+        font-size: 12px;
+        color: var(--ems-text-secondary);
+    }
+
+    .ems-card-body {
+        position: relative;
+        min-height: 100px;
+        padding: 20px;
+    }
+
+    /* =========================================================
+       FILTER
+       ========================================================= */
+
+    .ems-filter-card {
+        position: relative;
+        z-index: 10;
+    }
+
+    .ems-filter-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 17px 20px 10px;
+    }
+
+    .ems-filter-heading {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .ems-filter-heading-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        color: var(--ems-orange);
+        background: var(--ems-orange-light);
+        border-radius: 9px;
+    }
+
+    .ems-filter-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+        color: var(--ems-text-primary);
+    }
+
+    .ems-filter-description {
+        margin: 3px 0 0;
+        font-size: 12px;
+        color: var(--ems-text-secondary);
+    }
+
+    .ems-active-period {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        padding: 7px 11px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-radius: 20px;
+    }
+
+    .ems-filter-body {
+        padding: 9px 20px 20px;
+    }
+
+    .ems-filter-grid {
+        display: grid;
+        grid-template-columns:
+            minmax(280px, 1.4fr)
+            minmax(190px, 0.7fr)
+            minmax(245px, 1fr)
+            auto;
+        gap: 14px;
+        align-items: end;
+    }
+
+    .ems-filter-field {
+        min-width: 0;
+    }
+
+    .ems-filter-field label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .ems-filter-field label i {
+        margin-right: 5px;
+        color: var(--ems-blue);
+    }
+
+    .ems-filter-field .form-control,
+    .ems-filter-field .bootstrap-select > .dropdown-toggle {
+        min-height: 42px;
+        font-size: 13px;
+        color: #334155;
+        background: #ffffff;
+        border: 1px solid #dce4ed;
+        border-radius: 9px;
+        box-shadow: none;
+    }
+
+    .ems-filter-field .form-control:focus,
+    .ems-filter-field .bootstrap-select > .dropdown-toggle:focus {
+        border-color: var(--ems-blue);
+        box-shadow:
+            0 0 0 3px rgba(0, 91, 172, 0.1);
+    }
+
+    .ems-filter-field .bootstrap-select {
+        width: 100% !important;
+    }
+
+    .ems-filter-field .bootstrap-select .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-right: 12px;
+    }
+
+    .ems-filter-field .bootstrap-select .filter-option {
+        display: flex;
+        align-items: center;
+    }
+
+    .ems-filter-field .bootstrap-select .dropdown-menu {
+        z-index: 99999 !important;
+        max-width: 100%;
+        border: 1px solid var(--ems-border);
+        border-radius: 10px;
+        box-shadow: var(--ems-shadow-medium);
+    }
+
+    .ems-filter-field .bootstrap-select .dropdown-menu.inner {
+        max-height: 300px !important;
+    }
+
+    .ems-filter-field .bootstrap-select .dropdown-item {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .ems-filter-field .bootstrap-select .bs-searchbox {
+        padding: 8px;
+    }
+
+    .ems-filter-field .bootstrap-select .bs-searchbox input {
+        min-height: 38px;
+        font-size: 13px;
+        border-radius: 7px;
+    }
+
+    .ems-filter-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn-ems {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 9px;
+        transition: all 0.18s ease;
+    }
+
+    .btn-ems-primary {
+        color: #ffffff;
+        background: var(--ems-orange);
+        border: 1px solid var(--ems-orange);
+    }
+
+    .btn-ems-primary:hover,
+    .btn-ems-primary:focus {
+        color: #ffffff;
+        background: var(--ems-orange-dark);
+        border-color: var(--ems-orange-dark);
+        box-shadow:
+            0 5px 14px rgba(245, 130, 32, 0.23);
+    }
+
+    .btn-ems-primary:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .btn-ems-outline {
+        color: var(--ems-text-secondary);
+        background: #ffffff;
+        border: 1px solid #d9e2ec;
+    }
+
+    .btn-ems-outline:hover,
+    .btn-ems-outline:focus {
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-color: var(--ems-blue);
+    }
+
+    /* =========================================================
+       OVERVIEW
+       ========================================================= */
+
+    .ems-overview-section {
+        margin-bottom: 18px;
+    }
+
+    .ems-section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .ems-section-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 650;
+        color: var(--ems-text-primary);
+    }
+
+    .ems-section-description {
+        margin: 3px 0 0;
+        font-size: 12px;
+        color: var(--ems-text-secondary);
+    }
+
+    .ems-overview-container {
+        min-height: 110px;
+    }
+
+    #OverView .card {
+        height: 100%;
+        margin-bottom: 14px;
+        border: 1px solid var(--ems-border);
+        border-radius: 12px;
+        box-shadow: var(--ems-shadow-small);
+        transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease;
+    }
+
+    #OverView .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ems-shadow-medium);
+    }
+
+    #OverView .card-body {
+        padding: 16px 17px;
+    }
+
+    #OverView h4,
+    #OverView h5,
+    #OverView h6 {
+        color: var(--ems-text-primary);
+    }
+
+    /* =========================================================
+       CHART
+       ========================================================= */
+
+    .ems-chart-legend {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .ems-chart-legend li {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ems-text-secondary);
+    }
+
+    .ems-legend-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .ems-legend-success {
+        background: var(--ems-success);
+    }
+
+    .ems-legend-danger {
+        background: var(--ems-danger);
+    }
+
+    .ems-chart-body {
+        min-height: 390px;
+        padding: 18px 20px 10px;
+    }
+
+    #DeliveryTransport {
+        min-height: 350px;
+    }
+
+    /* =========================================================
+       LOWER DATA
+       ========================================================= */
+
+    .ems-data-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .ems-data-grid .ems-card {
+        margin-bottom: 0;
+    }
+
+    .ems-data-full {
+        grid-column: 1 / -1;
+    }
+
+    #Cashflow,
+    #Product,
+    #Customer {
+        min-height: 250px;
+    }
+
+    /* =========================================================
+       LOADING
+       ========================================================= */
+
+    .ems-section-loading {
+        position: relative;
+        min-height: 180px !important;
+    }
+
+    .ems-section-loading::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 32px;
+        height: 32px;
+        content: "";
+        border: 3px solid rgba(0, 91, 172, 0.15);
+        border-top-color: var(--ems-blue);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        animation: emsSpin 0.75s linear infinite;
+    }
+
+    @@keyframes emsSpin {
+        to {
+            transform:
+                translate(-50%, -50%)
+                rotate(360deg);
+        }
+    }
+
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+
+    .ems-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 220px;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .ems-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 14px;
+        font-size: 27px;
+        color: var(--ems-blue);
+        background: var(--ems-blue-light);
+        border-radius: 18px;
+    }
+
+    .ems-empty-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+        color: var(--ems-text-primary);
+    }
+
+    .ems-empty-description {
+        max-width: 420px;
+        margin: 7px auto 0;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ems-text-secondary);
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @@media (max-width: 1199px) {
+        .ems-filter-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+        .ems-filter-actions {
+            justify-content: flex-end;
+        }
+    }
+
+    @@media (max-width: 991px) {
+        .ems-dashboard {
+            padding: 16px;
+        }
+
+        .ems-welcome {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 22px;
+        }
+
+        .ems-welcome-badge {
+            width: 100%;
+            margin-top: 18px;
+        }
+
+        .ems-data-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ems-data-full {
+            grid-column: auto;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .ems-dashboard {
+            padding: 12px;
+        }
+
+        .ems-welcome {
+            min-height: auto;
+            border-radius: 13px;
+        }
+
+        .ems-welcome-title {
+            font-size: 21px;
+        }
+
+        .ems-filter-header {
+            gap: 10px;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .ems-filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ems-filter-actions {
+            width: 100%;
+        }
+
+        .ems-filter-actions .btn-ems {
+            flex: 1;
+        }
+
+        .ems-card-header {
+            gap: 12px;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .ems-chart-legend {
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ems-chart-body {
+            min-height: 310px;
+            padding: 12px;
+        }
+
+        #DeliveryTransport {
+            min-height: 280px;
+        }
+    }
+</style>
+
+<div class="ems-dashboard">
+
+    <!-- =====================================================
+         WELCOME
+         ===================================================== -->
+
+    <section class="ems-welcome">
+
+        <div class="ems-welcome-content">
+
+            <div class="ems-welcome-label">
+                <i class="fa fa-line-chart"></i>
+                EMS ONE Dashboard
+            </div>
+
+            <h1 class="ems-welcome-title">
+                Xin chào, @Model.Fullname
+            </h1>
+
+            <p class="ems-welcome-description">
+                Theo dõi hoạt động đơn hàng, giao nhận và hiệu quả
+                kinh doanh trên toàn hệ thống EMS.
+            </p>
+
+        </div>
+
+        <div class="ems-welcome-badge">
+
+            <div class="ems-welcome-badge-icon">
+                <i class="fa fa-truck"></i>
+            </div>
+
+            <div>
+                <div class="ems-welcome-badge-label">
+                    HỆ THỐNG ĐIỀU HÀNH
+                </div>
+
+                <div class="ems-welcome-badge-value">
+                    Nhanh chóng · Chính xác · An toàn
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         FILTER
+         ===================================================== -->
+
+    <section class="ems-card ems-filter-card">
+
+        <div class="ems-filter-header">
+
+            <div class="ems-filter-heading">
+
+                <div class="ems-filter-heading-icon">
+                    <i class="fa fa-filter"></i>
+                </div>
+
+                <div>
+                    <h2 class="ems-filter-title">
+                        Bộ lọc dữ liệu
+                    </h2>
+
+                    <p class="ems-filter-description">
+                        Chọn khách hàng và khoảng thời gian cần theo dõi
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="ems-active-period">
+                <i class="fa fa-calendar"></i>
+
+                <span id="activePeriodText">
+                    7 ngày qua
+                </span>
+            </div>
+
+        </div>
+
+        <div class="ems-filter-body">
+
+            <div class="ems-filter-grid">
+
+                <!-- MÃ KHÁCH HÀNG -->
+
+                <div class="ems-filter-field">
+
+                    <label for="CrmOrPaypostCode">
+                        <i class="fa fa-user-circle"></i>
+                        Mã khách hàng / Paypost
+                    </label>
+
+                    @Html.DropDownListFor(
+                        model => model.CrmOrPaypostCode,
+                        new SelectList(
+                            Model.ListCrmOrPaypostCode,
+                            "CrmOrPaypostCode",
+                            "MobileAndCrmOrPaypostCode"
+                        ),
+                        new
+                        {
+                            @class = "selectpicker form-control form-control-sm",
+                            @data_live_search = "true",
+                            @data_actions_box = "true",
+                            @data_dropup_auto = "false",
+                            @data_size = "8",
+                            @data_selected_text_format = "count",
+                            @multiple = "true"
+                        }
+                    )
+
+                </div>
+
+                <!-- THỜI GIAN -->
+
+                <div class="ems-filter-field">
+
+                    <label for="typeDate">
+                        <i class="fa fa-clock-o"></i>
+                        Khoảng thời gian
+                    </label>
+
+                    <select class="form-control"
+                            id="typeDate">
+
+                        <option value="1">
+                            Hôm nay
+                        </option>
+
+                        <option value="2" selected>
+                            7 ngày qua
+                        </option>
+
+                        <option value="3">
+                            31 ngày qua
+                        </option>
+
+                        <option value="4">
+                            Tuỳ chỉnh
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- CHỌN NGÀY -->
+
+                <div class="ems-filter-field"
+                     id="datepickerOptions"
+                     style="display: none;">
+
+                    <label for="AllDate">
+                        <i class="fa fa-calendar-check-o"></i>
+                        Từ ngày - đến ngày
+                    </label>
+
+                    <div class="datepicker-form">
+
+                        <input type="text"
+                               class="form-control input-daterange-datepicker"
+                               id="AllDate"
+                               autocomplete="off"
+                               placeholder="Chọn khoảng thời gian" />
+
+                        <input type="hidden"
+                               id="FromDate"
+                               value="@Model.FromDate" />
+
+                        <input type="hidden"
+                               id="ToDate"
+                               value="@Model.ToDate" />
+
+                    </div>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <div class="ems-filter-actions">
+
+                    <button type="button"
+                            class="btn btn-ems btn-ems-outline"
+                            id="btnResetFilter">
+
+                        <i class="fa fa-refresh"></i>
+                        Đặt lại
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-ems btn-ems-primary"
+                            id="btnApplyFilter">
+
+                        <i class="fa fa-search"></i>
+                        Áp dụng
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         OVERVIEW
+         ===================================================== -->
+
+    <section class="ems-overview-section">
+
+        <div class="ems-section-heading">
+
+            <div>
+                <h2 class="ems-section-title">
+                    Tổng quan vận hành
+                </h2>
+
+                <p class="ems-section-description">
+                    Các chỉ số quan trọng trong kỳ báo cáo
+                </p>
+            </div>
+
+        </div>
+
+        <div class="ems-overview-container"
+             id="OverView">
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         DELIVERY CHART
+         ===================================================== -->
+
+    <section class="ems-card">
+
+        <div class="ems-card-header">
+
+            <div class="ems-card-title-group">
+
+                <div class="ems-card-icon">
+                    <i class="fa fa-area-chart"></i>
+                </div>
+
+                <div>
+                    <h2 class="ems-card-title">
+                        Xu hướng giao hàng
+                    </h2>
+
+                    <p class="ems-card-subtitle">
+                        Thống kê kết quả giao hàng theo thời gian
+                    </p>
+                </div>
+
+            </div>
+
+            <ul class="ems-chart-legend">
+
+                <li>
+                    <span class="ems-legend-dot ems-legend-success"></span>
+                    Giao hàng thành công
+                </li>
+
+                <li>
+                    <span class="ems-legend-dot ems-legend-danger"></span>
+                    Giao hàng thất bại
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="ems-chart-body"
+             id="DeliveryTransport">
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         LOWER DATA
+         ===================================================== -->
+
+    <section class="ems-data-grid">
+
+        <!-- DÒNG TIỀN -->
+
+        <div class="ems-card">
+
+            <div class="ems-card-header">
+
+                <div class="ems-card-title-group">
+
+                    <div class="ems-card-icon"
+                         style="
+                            color: var(--ems-success);
+                            background: var(--ems-success-light);
+                         ">
+
+                        <i class="fa fa-money"></i>
+
+                    </div>
+
+                    <div>
+                        <h2 class="ems-card-title">
+                            Dòng tiền
+                        </h2>
+
+                        <p class="ems-card-subtitle">
+                            Doanh thu và giá trị COD trong kỳ
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="ems-card-body"
+                 id="Cashflow">
+            </div>
+
+        </div>
+
+        <!-- SẢN PHẨM -->
+
+        <div class="ems-card">
+
+            <div class="ems-card-header">
+
+                <div class="ems-card-title-group">
+
+                    <div class="ems-card-icon"
+                         style="
+                            color: var(--ems-orange);
+                            background: var(--ems-orange-light);
+                         ">
+
+                        <i class="fa fa-cube"></i>
+
+                    </div>
+
+                    <div>
+                        <h2 class="ems-card-title">
+                            Sản phẩm và dịch vụ
+                        </h2>
+
+                        <p class="ems-card-subtitle">
+                            Cơ cấu sử dụng dịch vụ EMS
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="ems-card-body"
+                 id="Product">
+            </div>
+
+        </div>
+
+        <!-- KHÁCH HÀNG -->
+
+        <div class="ems-card ems-data-full">
+
+            <div class="ems-card-header">
+
+                <div class="ems-card-title-group">
+
+                    <div class="ems-card-icon"
+                         style="
+                            color: var(--ems-info);
+                            background: var(--ems-info-light);
+                         ">
+
+                        <i class="fa fa-users"></i>
+
+                    </div>
+
+                    <div>
+                        <h2 class="ems-card-title">
+                            Thông tin khách hàng
+                        </h2>
+
+                        <p class="ems-card-subtitle">
+                            Tổng hợp hoạt động theo khách hàng được lựa chọn
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="ems-card-body"
+                 id="Customer">
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+@section scripts
+{
+    <!-- =====================================================
+         ZOHO SALESIQ
+         ===================================================== -->
+
+    <script type="text/javascript" id="zsiqchat">
+
+        var $zoho = $zoho || {};
+
+        $zoho.salesiq = $zoho.salesiq || {
+            widgetcode: "c7fc65ddffa57e67478db95c20d6ad9bc979bbd62a36bb273ba4c3c22c7f1d50",
+            values: {},
+            ready: function () { }
+        };
+
+        var d = document;
+        var s = d.createElement("script");
+        var t = d.getElementsByTagName("script")[0];
+
+        s.type = "text/javascript";
+        s.id = "zsiqscript";
+        s.defer = true;
+        s.src = "https://salesiq.zoho.com/widget";
+
+        t.parentNode.insertBefore(s, t);
+
+        $zoho.salesiq.ready = function () {
+
+            $zoho.salesiq.visitor.name('@Model.Fullname');
+            $zoho.salesiq.visitor.email('@Model.Email');
+            $zoho.salesiq.visitor.contactnumber('@Model.MobileNumber');
+
+        };
+
+    </script>
+
+    <!-- =====================================================
+         DASHBOARD
+         ===================================================== -->
+
+    <script>
+
+        $(document).ready(function () {
+
+            initializeCustomerSelect();
+
+            initializeDateRange();
+
+            bindDashboardEvents();
+
+            updateActivePeriodText();
+
+            loadDashboardData();
+
+        });
+
+        /* =====================================================
+           KHỞI TẠO DROPDOWN KHÁCH HÀNG
+           ===================================================== */
+
+        function initializeCustomerSelect() {
+
+            var customerSelect =
+                $("#CrmOrPaypostCode");
+
+            if (customerSelect.length === 0) {
+                return;
+            }
+
+            /*
+             * Giữ nguyên các option được MVC render từ
+             * Model.ListCrmOrPaypostCode.
+             *
+             * Không gọi destroy vì destroy có thể làm mất
+             * giao diện selectpicker hoặc trạng thái selected.
+             */
+
+            if ($.fn.selectpicker) {
+
+                customerSelect.selectpicker(
+                    "refresh"
+                );
+
+            }
+
+        }
+
+        /* =====================================================
+           KHỞI TẠO DATE RANGE
+           ===================================================== */
+
+        function initializeDateRange() {
+
+            if (typeof CreateDateRangePickerHome !==
+                "function") {
+
+                return;
+
+            }
+
+            var fromDate =
+                $("#FromDate").val();
+
+            var toDate =
+                $("#ToDate").val();
+
+            if (!fromDate || !toDate) {
+
+                var currentFromDate =
+                    new Date();
+
+                var currentToDate =
+                    new Date();
+
+                currentFromDate.setDate(
+                    currentFromDate.getDate() - 6
+                );
+
+                fromDate =
+                    FormatDate(currentFromDate);
+
+                toDate =
+                    FormatDate(currentToDate);
+
+            }
+
+            CreateDateRangePickerHome(
+                "AllDate",
+                fromDate,
+                toDate
+            );
+
+            toggleCustomDate();
+
+        }
+
+        /* =====================================================
+           SỰ KIỆN
+           ===================================================== */
+
+        function bindDashboardEvents() {
+
+            $("#typeDate").on(
+                "change",
+                function () {
+
+                    toggleCustomDate();
+
+                    updateActivePeriodText();
+
+                }
+            );
+
+            $("#btnApplyFilter").on(
+                "click",
+                function () {
+
+                    loadDashboardData();
+
+                }
+            );
+
+            $("#btnResetFilter").on(
+                "click",
+                function () {
+
+                    resetDashboardFilter();
+
+                }
+            );
+
+        }
+
+        /* =====================================================
+           ẨN/HIỆN NGÀY TÙY CHỈNH
+           ===================================================== */
+
+        function toggleCustomDate() {
+
+            var typeDate =
+                $("#typeDate").val();
+
+            if (typeDate === "4") {
+
+                $("#datepickerOptions").show();
+
+                var allDate =
+                    $("#AllDate").val();
+
+                if (!allDate) {
+
+                    var fromDate =
+                        new Date();
+
+                    var toDate =
+                        new Date();
+
+                    fromDate.setDate(
+                        fromDate.getDate() - 6
+                    );
+
+                    CreateDateRangePickerHome(
+                        "AllDate",
+                        FormatDate(fromDate),
+                        FormatDate(toDate)
+                    );
+
+                }
+
+            } else {
+
+                $("#datepickerOptions").hide();
+
+            }
+
+        }
+
+        /* =====================================================
+           LẤY DANH SÁCH MÃ KHÁCH HÀNG
+           ===================================================== */
+
+        function getSelectedCustomerCodes() {
+
+            var customerSelect =
+                $("#CrmOrPaypostCode");
+
+            var selectedValues =
+                customerSelect.val();
+
+            if (!selectedValues ||
+                selectedValues.length === 0) {
+
+                var defaultCustomerCode =
+                    "@Model.CrmOrPaypostCode";
+
+                if (defaultCustomerCode) {
+
+                    if ($.fn.selectpicker) {
+
+                        customerSelect.selectpicker(
+                            "val",
+                            defaultCustomerCode
+                        );
+
+                        customerSelect.selectpicker(
+                            "refresh"
+                        );
+
+                    } else {
+
+                        customerSelect.val(
+                            defaultCustomerCode
+                        );
+
+                    }
+
+                    selectedValues =
+                        customerSelect.val();
+
+                }
+
+            }
+
+            if (!selectedValues) {
+                selectedValues = [];
+            }
+
+            return selectedValues;
+
+        }
+
+        /* =====================================================
+           LẤY KHOẢNG NGÀY
+           ===================================================== */
+
+        function getDashboardDateRange() {
+
+            var typeDate =
+                $("#typeDate").val();
+
+            var fromDate =
+                new Date();
+
+            var toDate =
+                new Date();
+
+            var fromDateText = "";
+            var toDateText = "";
+
+            switch (typeDate) {
+
+                case "1":
+
+                    fromDateText =
+                        FormatDate(fromDate);
+
+                    toDateText =
+                        FormatDate(toDate);
+
+                    break;
+
+                case "2":
+
+                    fromDate.setDate(
+                        fromDate.getDate() - 6
+                    );
+
+                    fromDateText =
+                        FormatDate(fromDate);
+
+                    toDateText =
+                        FormatDate(toDate);
+
+                    break;
+
+                case "3":
+
+                    fromDate.setDate(
+                        fromDate.getDate() - 30
+                    );
+
+                    fromDateText =
+                        FormatDate(fromDate);
+
+                    toDateText =
+                        FormatDate(toDate);
+
+                    break;
+
+                case "4":
+
+                    var dateRangeValue =
+                        $("#AllDate").val();
+
+                    if (!dateRangeValue ||
+                        dateRangeValue.indexOf(" - ") === -1) {
+
+                        showAlertMessage(
+                            "Vui lòng chọn khoảng thời gian cần thống kê."
+                        );
+
+                        return null;
+
+                    }
+
+                    var dateParts =
+                        dateRangeValue.split(" - ");
+
+                    fromDateText =
+                        dateParts[0];
+
+                    toDateText =
+                        dateParts[1];
+
+                    if (typeof getDateDiff ===
+                        "function") {
+
+                        var dateDifference =
+                            getDateDiff(
+                                fromDateText,
+                                toDateText
+                            );
+
+                        if (dateDifference > 31) {
+
+                            showAlertMessage(
+                                "Vui lòng chọn thời gian lọc dữ liệu trong vòng một tháng."
+                            );
+
+                            return null;
+
+                        }
+
+                    }
+
+                    break;
+
+                default:
+
+                    fromDate.setDate(
+                        fromDate.getDate() - 6
+                    );
+
+                    fromDateText =
+                        FormatDate(fromDate);
+
+                    toDateText =
+                        FormatDate(toDate);
+
+                    break;
+
+            }
+
+            return {
+                FromDate: fromDateText,
+                ToDate: toDateText
+            };
+
+        }
+
+        /* =====================================================
+           LOAD TOÀN BỘ DASHBOARD
+           ===================================================== */
+
+        function loadDashboardData() {
+
+            var dateRange =
+                getDashboardDateRange();
+
+            if (dateRange === null) {
+                return;
+            }
+
+            var customerCodes =
+                getSelectedCustomerCodes();
+
+            var request = {
+                PPCRMCode: customerCodes,
+                FromDate: dateRange.FromDate,
+                ToDate: dateRange.ToDate
+            };
+
+            setDashboardLoading(true);
+
+            $.ajax({
+
+                type: "POST",
+
+                url:
+                    '@Url.Action("JStatisticalData", "Home")',
+
+                dataType: "json",
+
+                data: {
+                    model: request
+                },
+
+                success: function (response) {
+
+                    if (!response ||
+                        response.Code !== "00") {
+
+                        setDashboardLoading(false);
+
+                        showDashboardError(
+                            "Không thể tải dữ liệu tổng quan."
+                        );
+
+                        return;
+
+                    }
+
+                    var dashboardData;
+
+                    try {
+
+                        dashboardData =
+                            JSON.parse(response.Data);
+
+                    } catch (error) {
+
+                        setDashboardLoading(false);
+
+                        showDashboardError(
+                            "Dữ liệu trả về không đúng định dạng."
+                        );
+
+                        return;
+
+                    }
+
+                    updateActivePeriodText(
+                        dateRange.FromDate,
+                        dateRange.ToDate
+                    );
+
+                    loadDashboardPartials(
+                        dashboardData
+                    );
+
+                },
+
+                error: function () {
+
+                    setDashboardLoading(false);
+
+                    showDashboardError(
+                        "Có lỗi xảy ra khi kết nối tới hệ thống."
+                    );
+
+                }
+
+            });
+
+        }
+
+        /* =====================================================
+           LOAD CÁC PARTIAL VIEW
+           ===================================================== */
+
+        function loadDashboardPartials(data) {
+
+            var requests = [];
+
+            requests.push(
+
+                loadPartialView(
+
+                    '@Url.Action("OverView", "Home")',
+
+                    {
+                        totalTurnover:
+                            data.TotalTurnover,
+
+                        model:
+                            data.Order
+                    },
+
+                    "#OverView",
+
+                    "Chưa có dữ liệu tổng quan trong khoảng thời gian đã chọn."
+
+                )
+
+            );
+
+            requests.push(
+
+                loadPartialView(
+
+                    '@Url.Action("DeliveryTransportView", "Home")',
+
+                    {
+                        model:
+                            data.DeliveryTransport
+                    },
+
+                    "#DeliveryTransport",
+
+                    "Chưa có dữ liệu giao hàng trong khoảng thời gian đã chọn."
+
+                )
+
+            );
+
+            requests.push(
+
+                loadPartialView(
+
+                    '@Url.Action("CashflowView", "Home")',
+
+                    {
+                        model:
+                            data.Cashflow
+                    },
+
+                    "#Cashflow",
+
+                    "Chưa có dữ liệu dòng tiền trong khoảng thời gian đã chọn."
+
+                )
+
+            );
+
+            requests.push(
+
+                loadPartialView(
+
+                    '@Url.Action("ProductView", "Home")',
+
+                    {
+                        model:
+                            data.Product
+                    },
+
+                    "#Product",
+
+                    "Chưa có dữ liệu sản phẩm hoặc dịch vụ."
+
+                )
+
+            );
+
+            requests.push(
+
+                loadPartialView(
+
+                    '@Url.Action("CustomerView", "Home")',
+
+                    {
+                        model:
+                            data.Customer
+                    },
+
+                    "#Customer",
+
+                    "Chưa có dữ liệu khách hàng trong khoảng thời gian đã chọn."
+
+                )
+
+            );
+
+            $.when
+                .apply($, requests)
+                .always(function () {
+
+                    setDashboardLoading(false);
+
+                });
+
+        }
+
+        /* =====================================================
+           LOAD MỘT PARTIAL VIEW
+           ===================================================== */
+
+        function loadPartialView(
+            url,
+            requestData,
+            targetSelector,
+            emptyMessage
+        ) {
+
+            return $.ajax({
+
+                type: "POST",
+
+                url: url,
+
+                data: requestData,
+
+                success: function (html) {
+
+                    if (html &&
+                        $.trim(html).length > 0) {
+
+                        $(targetSelector).html(html);
+
+                    } else {
+
+                        renderEmptyState(
+                            targetSelector,
+                            emptyMessage
+                        );
+
+                    }
+
+                },
+
+                error: function () {
+
+                    renderEmptyState(
+                        targetSelector,
+                        "Không thể tải dữ liệu tại khu vực này."
+                    );
+
+                }
+
+            });
+
+        }
+
+        /* =====================================================
+           LOADING
+           ===================================================== */
+
+        function setDashboardLoading(
+            isLoading
+        ) {
+
+            var selectors = [
+                "#OverView",
+                "#DeliveryTransport",
+                "#Cashflow",
+                "#Product",
+                "#Customer"
+            ];
+
+            $.each(
+                selectors,
+                function (index, selector) {
+
+                    if (isLoading) {
+
+                        $(selector)
+                            .empty()
+                            .addClass(
+                                "ems-section-loading"
+                            );
+
+                    } else {
+
+                        $(selector)
+                            .removeClass(
+                                "ems-section-loading"
+                            );
+
+                    }
+
+                }
+            );
+
+            if (isLoading) {
+
+                $("#btnApplyFilter")
+                    .prop("disabled", true)
+                    .html(
+                        '<i class="fa fa-spinner fa-spin"></i> Đang tải'
+                    );
+
+            } else {
+
+                $("#btnApplyFilter")
+                    .prop("disabled", false)
+                    .html(
+                        '<i class="fa fa-search"></i> Áp dụng'
+                    );
+
+            }
+
+        }
+
+        /* =====================================================
+           EMPTY STATE
+           ===================================================== */
+
+        function renderEmptyState(
+            targetSelector,
+            message
+        ) {
+
+            var html = "";
+
+            html +=
+                '<div class="ems-empty-state">';
+
+            html +=
+                '<div class="ems-empty-icon">';
+
+            html +=
+                '<i class="fa fa-inbox"></i>';
+
+            html +=
+                '</div>';
+
+            html +=
+                '<h3 class="ems-empty-title">';
+
+            html +=
+                'Chưa có dữ liệu';
+
+            html +=
+                '</h3>';
+
+            html +=
+                '<p class="ems-empty-description">';
+
+            html +=
+                message;
+
+            html +=
+                '</p>';
+
+            html +=
+                '</div>';
+
+            $(targetSelector).html(html);
+
+        }
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        function showDashboardError(
+            message
+        ) {
+
+            renderEmptyState(
+                "#OverView",
+                message
+            );
+
+            renderEmptyState(
+                "#DeliveryTransport",
+                message
+            );
+
+            renderEmptyState(
+                "#Cashflow",
+                message
+            );
+
+            renderEmptyState(
+                "#Product",
+                message
+            );
+
+            renderEmptyState(
+                "#Customer",
+                message
+            );
+
+        }
+
+        function showAlertMessage(
+            message
+        ) {
+
+            if (typeof CreateCustomSwal ===
+                "function") {
+
+                CreateCustomSwal(
+                    "error",
+                    message
+                );
+
+            } else {
+
+                alert(message);
+
+            }
+
+        }
+
+        /* =====================================================
+           KỲ DỮ LIỆU HIỆN TẠI
+           ===================================================== */
+
+        function updateActivePeriodText(
+            fromDate,
+            toDate
+        ) {
+
+            var typeDate =
+                $("#typeDate").val();
+
+            var text = "";
+
+            switch (typeDate) {
+
+                case "1":
+
+                    text = "Hôm nay";
+
+                    break;
+
+                case "2":
+
+                    text = "7 ngày qua";
+
+                    break;
+
+                case "3":
+
+                    text = "31 ngày qua";
+
+                    break;
+
+                case "4":
+
+                    if (fromDate &&
+                        toDate) {
+
+                        text =
+                            fromDate +
+                            " - " +
+                            toDate;
+
+                    } else {
+
+                        text =
+                            "Khoảng thời gian tuỳ chỉnh";
+
+                    }
+
+                    break;
+
+                default:
+
+                    text = "7 ngày qua";
+
+                    break;
+
+            }
+
+            $("#activePeriodText").text(text);
+
+        }
+
+        /* =====================================================
+           RESET FILTER
+           ===================================================== */
+
+        function resetDashboardFilter() {
+
+            $("#typeDate").val("2");
+
+            var customerSelect =
+                $("#CrmOrPaypostCode");
+
+            var defaultCustomerCode =
+                "@Model.CrmOrPaypostCode";
+
+            if ($.fn.selectpicker) {
+
+                customerSelect.selectpicker(
+                    "val",
+                    defaultCustomerCode
+                );
+
+                customerSelect.selectpicker(
+                    "refresh"
+                );
+
+            } else {
+
+                customerSelect.val(
+                    defaultCustomerCode
+                );
+
+            }
+
+            var fromDate =
+                new Date();
+
+            var toDate =
+                new Date();
+
+            fromDate.setDate(
+                fromDate.getDate() - 6
+            );
+
+            CreateDateRangePickerHome(
+                "AllDate",
+                FormatDate(fromDate),
+                FormatDate(toDate)
+            );
+
+            $("#datepickerOptions").hide();
+
+            updateActivePeriodText();
+
+            loadDashboardData();
+
+        }
+
+    </script>
+}

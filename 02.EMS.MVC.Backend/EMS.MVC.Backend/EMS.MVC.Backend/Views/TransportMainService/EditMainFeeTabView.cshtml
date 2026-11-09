@@ -1,0 +1,106 @@
+﻿@model EMS.MVC.Backend.Models.EditMainFeeTabViewModel
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+        <div class="form-check w-auto">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="MainFee_VAT" @{ if (Model.MainFeeVAT == "Y") { Write("checked"); } }>
+                Cước đã bao gồm VAT
+                <i class="input-helper"></i>
+            </label>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <label class="form-label">Loại phạm vi <span class="text-danger">(*)</span></label>
+            @Html.DropDownListFor(model => model.MainFeeRange, new SelectList(Model.ListRange, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+            <span class="text-danger" id="errMainFeeRange"></span>
+        </div>
+    </div>
+    @if (Model.MainFeeRange != 0)
+    {
+        <div class="col-auto">
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <a class="form-control border-0 text-primary" href="@Url.Action("ConfigMainFeeView", "TransportMainService", new { TransportPostageID = Model.TransportPostageID })" >
+                    <i class="fa fa-cog"></i> Cấu hình cước dịch vụ chính
+                </a>
+            </div>
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-between">
+        @if (Model.Status == "U" || Model.Status == "E")//U:Chưa xác nhận, E:Đã hết hạn
+        {
+            <button class="btn btn-sm btn-success" onclick="btnConfirm()">XÁC NHẬN</button>
+            <button class="btn btn-sm btn-primary" onclick="btnUpdate('UpdateAndNext')">CẬP NHẬT VÀ TIẾP THEO</button>
+            <button class="btn btn-sm btn-primary" onclick="btnUpdate('Update')">CẬP NHẬT</button>
+        }
+        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('step3').click()">TIẾP THEO</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+    });
+
+    CheckChangeValue("MainFeeRange", "Vui lòng chọn Loại phạm vi", "", "Y");
+
+    function btnUpdate(Action) {
+        var isError = false;
+        var data = {
+            TransportPostageID: @Model.TransportPostageID,
+            MainFeeRange: $('#MainFeeRange').val(),
+            MainFeeVAT: $("#MainFee_VAT").is(":checked") == true ? "Y" : "N",
+        };
+
+        isError = CheckNullValue(data.MainFeeRange, "MainFeeRange", "Vui lòng chọn Loại phạm vi", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEditMainFeeTab", "TransportMainService")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        timer: 2500,
+                        button: false
+                    }).then(function () {
+                        if (Action == "UpdateAndNext") {
+                            $("#step3").click();
+                        } else {
+                            $("#step2").click();
+                        }
+                    });
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>

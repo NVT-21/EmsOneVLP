@@ -1,0 +1,69 @@
+﻿@model List<EMS.MVC.Frontend.Models.ReconciliationListFeeViewModel>
+<table id="SearchListDataTable" class="table table-responsive-xl">
+    <thead>
+        <tr>
+            <th>Loại bưu gửi</th>
+            <th>Mã bưu gửi</th>
+            <th>Mã đơn hàng</th>
+            <th>Mã BC trả</th>
+            <th>Ngày tạo đơn</th>
+            <th>Ngày phát hành</th>
+            <th>Cước tạm tính</th>
+            <th>Cước thực tế</th>
+            <th>Cước chênh lệch</th>
+            <th>Cước DV</th>
+            <th>Cước chính</th>
+            <th>Cước điều chỉnh</th>
+            <th>Cước thu hộ</th>
+            <th>Số tiền thu hộ</th>
+            <th>Khối lượng <br> tạm tính (gr)</th>
+            <th>Khối lượng <br> thực tế (gr)</th>
+            <th>DVCT</th>
+            <th>DV đặc biệt</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var DifferenceFee = @item.TransportFee - @item.TempTransportFee;
+            <tr>
+                <td style="min-width: 140px;">@item.TypeItemName</td>
+                <td><span class="text-secondary"><a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(item.EmsBarCode), ShopID = EMS.Library.Security.EncodeBase64(XHelper.Session.EmployeeProfile.ShopInformation.ID.ToString()) })" target="_blank">@item.EmsBarCode</a></span></td>
+                <td><a href="#" class="ShowDetailOrderView" data-OrderID="@item.OrderID" data-ShopID="@XHelper.Session.EmployeeProfile.ShopInformation.ID">@item.OrderCode</a></td>
+                <td><span class="text-secondary">@item.ReceiveProvice</span></td>
+                <td>
+                    @item.CreatedDateOrder
+                </td>
+                <td>
+                    @item.TimeRelease
+                </td>
+                <td>@item.TempTransportFee.ToString("N0")</td>
+                <td>@item.TransportFee.ToString("N0")</td>
+                <td>@DifferenceFee.ToString("N0")</td>
+                <td>@item.ServiceFee.ToString("N0")</td>
+                <td>@item.MainFee.ToString("N0")</td>
+                <td>@item.ReducedRates.ToString("N0")</td>
+                <td>@item.TransportFeePublic.ToString("N0")</td>
+                <td>@item.FeePublic.ToString("N0")</td>
+                <td>@item.ProvisionalVolume.ToString("N0")</td>
+                <td>@item.ChargeableVolume.ToString("N0")</td>
+                <td>@item.AdditionService</td>
+                <td>@item.SpecialService</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    $(".ShowDetailOrderView").on("click", function (event) {
+        event.preventDefault();
+        $.post('@Url.Action("DetailOrderView", "Order")', {
+            OrderID: $(this).attr("data-OrderID"), ShopID: $(this).attr("data-ShopID")
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+</script>

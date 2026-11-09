@@ -1,0 +1,57 @@
+﻿@{
+    Layout = null;
+}
+<div style="min-width: 220px;">
+    <select class="select2 form-control" id="selPageID" onchange="fnChangePageConnect()">
+        @if (ViewBag.ListPageConnect.Count > 0)
+        {
+            foreach (var item in ViewBag.ListPageConnect)
+            {
+                if (item.Value == ViewBag.PageID)
+                {
+                    <option value="@item.Value" selected>@item.Text</option>
+                }
+                else
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+        }
+    </select>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+        });
+    });
+    function fnChangePageConnect() {
+        var PageID = $("#selPageID").val();
+        RedirectTiktok(PageID);
+    }
+    function RedirectTiktok(PageID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRedirectTiktok", "Channel", new { area = "" })',
+            dataType: 'json',
+            loading: true,
+            data: {
+                PageID: PageID
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    window.location.href = '@Url.Action("TIK_DashboardView", "TIK_Home", new { area = "Tiktok" })';
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                CreateCustomSwal("error", err.Message);
+                return;
+            }
+        });
+    }
+</script>

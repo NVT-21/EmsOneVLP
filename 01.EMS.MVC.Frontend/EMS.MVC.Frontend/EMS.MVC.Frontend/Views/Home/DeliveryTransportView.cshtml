@@ -1,0 +1,191 @@
+﻿@model List<EMS.MVC.Frontend.Models.StatisticalDeliveryTransportViewModel>
+<div class="card-body">
+    <canvas id="lineChart"></canvas>
+</div>
+<script>
+    var dataDeliveryTransport = @Html.Raw(Json.Encode(Model));
+    var lable_D_G = dataDeliveryTransport[0].StatusName_G;
+    var lable_D_F = dataDeliveryTransport[0].StatusName_F;
+    var arrLable_D = [];
+    var arrData_D_G = [];
+    var arrData_D_F = [];
+    var arrData_D_COD_G = [];
+    var arrData_D_COD_F = [];
+    for (var i = 0; i < dataDeliveryTransport.length; i++) {
+        arrLable_D.push(dataDeliveryTransport[i].CreatedDate);
+        arrData_D_G.push(dataDeliveryTransport[i].TotalOrder_G);
+        arrData_D_F.push(dataDeliveryTransport[i].TotalOrder_F);
+        arrData_D_COD_G.push(dataDeliveryTransport[i].TotalCOD_G);
+        arrData_D_COD_F.push(dataDeliveryTransport[i].TotalCOD_F);
+    }
+    DrawLineChart("lineChart", lable_D_G, lable_D_F, arrLable_D, arrData_D_G, arrData_D_F);
+    function DrawLineChart(divID, lable_D_G, lable_D_F, arrLable_D, arrData_D_G, arrData_D_F) {
+        var num = arrData_D_G.length;
+        window.chartColors = {
+            red: "rgb(255, 59, 48)",
+            orange: "rgb(255, 159, 64)",
+            yellow: "rgb(255, 205, 86)",
+            green: "rgb(52, 199, 89)",
+            blue: "rgb(54, 162, 235)",
+            purple: "rgb(153, 102, 255)",
+            grey: "rgb(231,233,237)",
+        };
+        var customTooltips = function (tooltip) {
+            var checkIndex = 0;
+            var tooltipEl = document.getElementById("chartjs-tooltip");
+
+            if (!tooltipEl) {
+                tooltipEl = document.createElement("div");
+                tooltipEl.id = "chartjs-tooltip";
+                tooltipEl.innerHTML = "<table></table>";
+                document.body.appendChild(tooltipEl);
+            }
+
+            if (tooltip.opacity === 0) {
+                tooltipEl.style.opacity = 0;
+                return;
+            }
+
+            tooltipEl.classList.remove("above", "below", "no-transform");
+            if (tooltip.yAlign) {
+                tooltipEl.classList.add(tooltip.yAlign);
+            } else {
+                tooltipEl.classList.add("no-transform");
+            }
+
+            function getBody(bodyItem) {
+                return bodyItem.lines;
+            }
+
+            if (tooltip.body) {
+                var titleLines = tooltip.title || [];
+                var bodyLines = tooltip.body.map(getBody);
+
+                var innerHtml = "<thead>";
+
+                titleLines.forEach(function (title) {
+                    innerHtml += "<tr><th>" + title + "</th></tr>";
+                    checkIndex = arrLable_D.indexOf(title.toString());
+                });
+                innerHtml += "</thead><tbody>";
+                
+                bodyLines.forEach(function (body, i) {
+                    var arr_COD;
+                    if (i === 0) {
+                        arr_COD = (NumberFormat(arrData_D_COD_G[checkIndex])).toString().replaceAll(',', '.');
+                    } else {
+                        arr_COD = (NumberFormat(arrData_D_COD_F[checkIndex])).toString().replaceAll(',', '.');
+                    }
+                    var colors = tooltip.labelColors[i];
+                    var style = "background:" + colors.backgroundColor;
+                    style += "; border-color:" + colors.borderColor;
+                    style += "; border-width: 2px";
+                    style += "; border-radius: 20px";
+                    style += "; font-family: Inter,sans-serif";
+                    var span =
+                        '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+                    innerHtml += "<tr><td>" + span + body + " đơn - " + arr_COD + "đ COD</td></tr>";
+                });
+                innerHtml += "</tbody>";
+
+                var tableRoot = tooltipEl.querySelector("table");
+                tableRoot.innerHTML = innerHtml;
+            }
+
+            var position = this._chart.canvas.getBoundingClientRect();
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = position.left + tooltip.caretX + "px";
+            tooltipEl.style.top = position.top + tooltip.caretY + "px";
+            tooltipEl.style.fontFamily = "Inter";
+            tooltipEl.style.fontSize = tooltip.fontSize;
+            tooltipEl.style.fontStyle = tooltip._fontStyle;
+            tooltipEl.style.padding = "12px 24px";
+        };
+
+        let draw = Chart.controllers.line.__super__.draw;
+        const lineChart = document
+            .getElementById(divID)
+            .getContext("2d");
+
+        lineChart.height = 100;
+
+        new Chart(lineChart, {
+            type: "line",
+            data: {
+                defaultFontFamily: "Poppins",
+                labels: arrLable_D,
+                datasets: [
+                    {
+                        label: lable_D_G,
+                        data: arrData_D_G,
+                        borderColor: window.chartColors.green,
+                        pointBackgroundColor: window.chartColors.green,
+                        borderWidth: "2",
+                        backgroundColor: "transparent",
+                    },
+                    {
+                        label: lable_D_F,
+                        data: arrData_D_F,
+                        borderColor: window.chartColors.red,
+                        pointBackgroundColor: window.chartColors.red,
+                        borderWidth: "2",
+                        backgroundColor: "transparent",
+                    },
+                ],
+            },
+            options: {
+                legend: false,
+                elements: {
+                    line: {
+                        tension: 0,
+                    },
+                },
+                scales: {
+                    yAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true,
+                                min: 0,
+                                stepSize: 20,
+                                padding: 10,
+                                callback: function (val, index) {
+                                    return Math.round(val) + ' đơn';
+                                },
+                            },
+                            gridLines: {
+                                drawTicks: false,
+                            },
+                        },
+                    ],
+                    xAxes: [
+                        {
+                            ticks: {
+                                padding: 5,
+                                callback: function (val, index) {
+                                    if (num <= 7) {
+                                        return val;
+                                    } else if (num <= 14) {
+                                        return index % 2 === 0 ? val : '';
+                                    } else if (num <= 21) {
+                                        return index % 3 === 0 ? val : '';
+                                    } else if (num <= 31){
+                                        return index % 7 === 0 ? val : '';
+                                    }
+                                },
+                            },
+                            gridLines: {
+                                drawTicks: false,
+                            },
+                        },
+                    ],
+                },
+                tooltips: {
+                    enabled: false,
+                    mode: "index",
+                    position: "nearest",
+                    custom: customTooltips
+                },
+            },
+        });
+    }
+</script>

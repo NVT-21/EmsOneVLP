@@ -1,0 +1,267 @@
+﻿@model EMS.MVC.Backend.Models.OrderReportViewModel
+@{
+    ViewBag.Title = "Báo cáo sản lượng theo tháng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("OrderReportView", "OrderReport")">Báo cáo sản lượng </a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 mb-2">
+                    <div class="input-group">&nbsp;</div>
+                    <input type="checkbox" name="cbFilter" id="cbFilter" onchange="checkboxHideShowDiv()" />
+                    <label for="cbFilter">&nbsp;Chọn theo tháng</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2" id="divDate">
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Từ</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="FromDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.FromDate" />
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Đến</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="ToDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.ToDate">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3" id="divMonthYear">
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Thời gian</span>
+                        </div>
+                        @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Tháng/ Năm" } })
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    @Html.EditorFor(model => model.SearchKey, new { htmlAttributes = new { @type = "text", @class = "form-control form-control-sm", @placeholder = "Mã PP/CRM hoặc SĐT cửa hàng" } })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.PlaceOfCreation, new SelectList(Model.ListPlaceOfCreation, "Value", "Text"), "Nơi tạo", new { @class = "form-control select2" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    @Html.DropDownListFor(model => model.PartnerID, new SelectList(Model.ListPartner, "ID", "PartnerName"), "Đối tác", new { @class = "form-control select2" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    <button type="button" id="btnExportExcel" class="btn btn-sm btn-dribbble form-control">
+                        <i class="fa fa-file-excel-o mr-2"></i>&nbsp; EXPORT EXCEL
+                    </button>
+                </div>
+            </div>
+            <div id="tbl-data" class="table-responsive">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        document.getElementById('divDate').style.display = 'block';
+        document.getElementById('divMonthYear').style.display = 'none';
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            language: {
+                noResults: function () {
+                    return 'Không tìm thấy dữ liệu.';
+                },
+            },
+        });
+
+        CreateDatePicker("#FromDate, #ToDate");
+
+        $.fn.datepicker.dates['vi'] = {
+            days: ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
+            daysShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            daysMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+            months: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+            monthsShort: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+            today: "Today",
+            clear: "Clear",
+            format: "mm/dd/yyyy",
+            titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
+            weekStart: 0
+        };
+
+        $("#Time").datepicker({
+            autoclose: true,
+            format: "mm/yyyy",
+            startView: "months",
+            minViewMode: "months",
+            language: "vi",
+            startDate: new Date('@(DateTime.Now.Year - 3)', '@(DateTime.Now.Month - 1)', '@DateTime.Now.Day', 0, 0, 0, 0),
+            endDate: new Date('@DateTime.Now.Year', '@(DateTime.Now.Month - 1)', '@DateTime.Now.Day', 0, 0, 0, 0),
+        });
+    });
+
+    function checkboxHideShowDiv() {
+        checkBox = $('#cbFilter').is(':checked');
+        if (checkBox) {
+            document.getElementById('divDate').style.display = 'none';
+            document.getElementById('divMonthYear').style.display = 'block';
+        } else {
+            document.getElementById('divDate').style.display = 'block';
+            document.getElementById('divMonthYear').style.display = 'none';
+        }
+    }
+
+    $('#btnSearch').on('click', function () {
+        var errMsg = '', isError = false;
+        var time = "";
+        var fromDate = "";
+        var toDate = "";
+        checkBox = $('#cbFilter').is(':checked');
+        if (checkBox) {
+            time = $('#Time').val().trim();
+            fromDate = "";
+            toDate = "";
+        } else {
+            time = "";
+            fromDate = $('#FromDate').val().trim();
+            toDate = $('#ToDate').val().trim();
+        }
+        var agrs = {
+            Time: time,
+            FromDate: fromDate,
+            ToDate: toDate,
+            PlaceOfCreation: $('#PlaceOfCreation').val(),
+            PartnerID: $('#PartnerID').val(),
+            SearchKey: $('#SearchKey').val().trim()
+        };
+        if (checkBox) {
+            if (agrs.Time == "") {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+        } else {
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+
+            })
+            return;
+        }
+        $.get('@Url.Action("SearchListOrderReportView", "OrderReport")', agrs, function (htmlString) {
+            $('#tbl-data').html(htmlString);
+        });
+    });
+
+    $("#btnExportExcel").on("click", function () {
+        var errMsg = '', isError = false;
+        var time = "";
+        var fromDate = "";
+        var toDate = "";
+        checkBox = $('#cbFilter').is(':checked');
+        if (checkBox) {
+            time = $('#Time').val().trim();
+            fromDate = "";
+            toDate = "";
+        } else {
+            time = "";
+            fromDate = $('#FromDate').val().trim();
+            toDate = $('#ToDate').val().trim();
+        }
+        var agrs = {
+            Time: time,
+            FromDate: fromDate,
+            ToDate: toDate,
+            PlaceOfCreation: $('#PlaceOfCreation').val(),
+            PlaceOfCreationName: $('#PlaceOfCreation').val() == "" ? "" : $("#PlaceOfCreation option:selected").text(),
+            PartnerID: $('#PartnerID').val(),
+            PartnerName: $('#PartnerID').val() == "" ? "" : $("#PartnerID option:selected").text(),
+            SearchKey: $('#SearchKey').val().trim(),
+        };
+        if (checkBox) {
+            if (agrs.Time == "") {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+        } else {
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            })
+            return;
+        }
+        var param = String.format("Time={0}&FromDate={1}&ToDate={2}&PlaceOfCreation={3}&PlaceOfCreationName={4}&PartnerID={5}&PartnerName={6}&SearchKey={7}",
+            agrs.Time, agrs.FromDate, agrs.ToDate, agrs.PlaceOfCreation, agrs.PlaceOfCreationName, agrs.PartnerID, agrs.PartnerName, agrs.SearchKey);
+        window.location.href = '@Url.Action("ExportExcelOrderReport", "OrderReport")?' + param;
+    });
+</script>

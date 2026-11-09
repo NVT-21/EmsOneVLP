@@ -1,0 +1,252 @@
+﻿@model List<EMS.MVC.Frontend.Models.EditDetailInventoryAdjustDetailModel> 
+@{
+    Layout = null;
+}
+
+<tr>
+    <td class="vertical-top text-center">
+        <select class="select2 form-control" id="ProductVariantID" style="width:100%!important;">
+            <option value="0" data-Item="0|0" disabled selected> --- Chọn sản phẩm --- </option>
+            @foreach (var item in ViewBag.ProductVariantList)
+            {
+                <option value="@item.ID" data-Item="@item.NumberOfInventory|@item.NumberOfDifferent">@item.Name</option>
+            }
+        </select>
+        <div class="error-message col-12 pt-1" id="errProductVariantID"></div>
+    </td>
+    <td class="text-center">
+        <p id="WarehouseQuantity">0</p>
+    </td>
+    @if (ViewBag.StockTakeID != 0)
+    {
+        <td class="text-center">
+            <p id="StockTakeQuantity">0</p>
+        </td>
+    }
+    <td>
+        <input type="text" class="form-control text-center" data-inputmask="'alias': 'Number'" id="QuantityAdjustment" value="0" placeholder="Nhập số lượng chỉnh sửa">
+        <label class="error-message pt-1" id="errQuantityAdjustment"></label>
+    </td>
+    <td class="text-center">
+        <p id="QuantityAfterAdjustment">0</p>
+    </td>
+    <td class="text-center">
+        <button id="btnAddDetail" title="Thêm" class="btn btn-info light">
+            <i class="fa fa-plus-circle"></i>
+        </button>
+        
+    </td>
+</tr>
+@if (ViewBag.StockTakeID != 0)
+{
+    foreach (var item in Model)
+    {
+        <tr id="tr_@item.ID">
+            <td class="vertical-top text-center">
+                @item.ProductVariant.ProductName ( @item.ProductVariant.Options)
+            </td>
+            <td class="text-center WarehouseQuantity">
+                <p>@item.WarehouseQuantity.ToString("N0")</p>
+            </td>
+            <td class="text-center">
+                <p>@item.StockTakeQuantity.ToString("N0")</p>
+            </td>
+            <td class="text-center">
+                <input type="text" class="form-control QuantityAdjustment" data-inputmask="'alias': 'Number'" id="QuantityAdjustment_@item.ID" value="@item.QuantityAdjustment" disabled placeholder="Nhập số lượng chỉnh sửa">
+                <label class="error-message pt-1" id="errQuantityAdjustment_@item.ID"></label>
+            </td>
+            <td class="text-center QuantityAfterAdjustment">
+                <p>@item.QuantityAfterAdjustment.ToString("N0")</p>
+            </td>
+            <td class="text-center">
+                <button onclick="funcSetupEditDetail(@item.ID)" name="btnEditDetail" title="Sửa" class="btn btn-info light">
+                    <i class="icon-edit"></i>
+                </button>
+
+                <button onclick="funcRemoveDetail(@item.ID)" name="btnRemoveDetail" title="Xoá" class="btn btn-info light">
+                    <i class="icon-trash"></i>
+                </button>
+
+                <button onclick="funcCancelEditDetail()" style="display: none;" id="CancelEdit_@item.ID" title="Huỷ" class="btn btn-info light">
+                    <i class="fa fa-times"></i>
+                </button>
+
+                <button onclick="funcEditDetail(@item.ID)" style="display: none;" id="EditConfirmation_@item.ID" title="Xác nhận" class="btn btn-info light">
+                    <i class="fa fa-check"></i>
+                </button>
+                
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="6">
+            <b>Tổng: @Model.Count sản phẩm</b>
+        </td>
+    </tr>
+}
+else
+{
+    foreach (var item in Model)
+    {
+        <tr id="tr_@item.ID">
+            <td class="vertical-top text-center">
+                @item.ProductVariant.ProductName ( @item.ProductVariant.Options)
+            </td>
+            <td class="text-center WarehouseQuantity">
+                <p>@item.WarehouseQuantity.ToString("N0")</p>
+            </td>
+            <td class="text-center">
+                <input type="text" class="form-control QuantityAdjustment" data-inputmask="'alias': 'Number'" id="QuantityAdjustment_@item.ID" value="@item.QuantityAdjustment" disabled placeholder="Nhập số lượng chỉnh sửa">
+                <label class="error-message pt-1" id="errQuantityAdjustment_@item.ID"></label>
+            </td>
+            <td class="text-center QuantityAfterAdjustment">
+                <p>@item.QuantityAfterAdjustment.ToString("N0")</p>
+            </td>
+            <td>
+                <div class="row justify-content-center">
+                    <button onclick="funcSetupEditDetail(@item.ID)" name="btnEditDetail" title="Sửa" class="btn btn-info light">
+                        <i class="icon-edit"></i>
+                    </button>
+                    <button onclick="funcRemoveDetail(@item.ID)" name="btnRemoveDetail" title="Xoá" class="btn btn-info light">
+                        <i class="icon-trash"></i>
+                    </button>
+                </div>
+                <div class="row justify-content-center">
+                    <button onclick="funcCancelEditDetail()" style="display: none;" id="CancelEdit_@item.ID" title="Huỷ" class="btn btn-info light">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    <button onclick="funcEditDetail(@item.ID)" style="display: none;" id="EditConfirmation_@item.ID" title="Xác nhận" class="btn btn-info light">
+                        <i class="fa fa-check"></i>
+                    </button>
+                </div>          
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="5">
+            <b>Tổng: @Model.Count sản phẩm</b>
+        </td>
+    </tr>
+}
+
+<script>
+    //disable option ProductVariant
+    $(document).ready(function () {
+        var model = @Html.Raw(Json.Encode(Model));
+        for (var i = 0; i < model.length; i++) {
+            $('#ProductImportID').find('option value="' + model[i].ProductVariantID + '"').prop('disabled', true);
+        }
+    });
+
+    $('#ProductVariantID').on('change', function () {
+        $('#errProductVariantID').text('');
+        $('#errQuantityAdjustment').text('');
+        let data = $('#ProductVariantID').find(':selected').attr('data-Item');
+        let NumberOfInventory = Number(data.split('|')[0]);
+        let NumberOfDifferent = Number(data.split('|')[1]);
+        $('#WarehouseQuantity').text(NumberFormat(NumberOfInventory));
+        $('#StockTakeQuantity').text(NumberFormat(NumberOfDifferent));
+        $('#QuantityAdjustment').val(NumberOfDifferent);
+        $('#QuantityAfterAdjustment').text(NumberFormat(NumberOfInventory + NumberOfDifferent));
+    });
+
+    $('#QuantityAdjustment').on('keyup', function () {
+        let WarehouseQuantity = $('#WarehouseQuantity').text().replaceAll(',', '');
+        let QuantityAdjustment = $('#QuantityAdjustment').val().replaceAll(',', '');
+        let QuantityAfterAdjustment = Number(WarehouseQuantity) + Number(QuantityAdjustment);
+        $('#QuantityAfterAdjustment').text(NumberFormat(QuantityAfterAdjustment));
+    });
+
+
+    $('.QuantityAdjustment').on('keyup', function () {
+        let tr = $(this).parent().parent();
+        let WarehouseQuantity = $(tr).find('.WarehouseQuantity').text().replaceAll(',', '');
+        let QuantityAdjustment = $(tr).find('.QuantityAdjustment').val().replaceAll(',', '');
+        let QuantityAfterAdjustment = Number(WarehouseQuantity) + Number(QuantityAdjustment);
+        $(tr).find('.QuantityAfterAdjustment').text(NumberFormat(QuantityAfterAdjustment));
+    });
+
+    $("#btnAddDetail").on("click", function () {
+        let InventoryID = @ViewBag.InventoryID;
+        let isError = false;
+        let isFocus = "";
+        $('#errProductVariantID').text('');
+        $('#errQuantityAdjustment').text('');
+        let agrs = {
+            InventoryID: InventoryID,
+            ProductVariantID: $('#ProductVariantID').val(),
+            Quantity: $('#QuantityAdjustment').val().replaceAll(',', '')
+        };
+
+        if (agrs.Quantity == "" || agrs.Quantity == "0") {
+            $('#errQuantityAdjustment').text('Số lượng điều chỉnh phải khác 0.');
+            isError = true;
+            isFocus = "#QuantityAdjustment";
+        }
+        else if (isNaN(agrs.Quantity)) {
+            $('#errQuantityAdjustment').text('Số lượng điều chỉnh không xác định.');
+            isError = true;
+            isFocus = "#QuantityAdjustment";
+        }
+
+        if (agrs.ProductVariantID == "0" || agrs.ProductVariantID == null) {
+            $('#errProductVariantID').text('Chọn sản phẩm điều chỉnh.');
+            isError = true;
+            isFocus = "#ProductVariantID";
+        }
+        if (isError) {
+            if (isFocus == "#ProductVariantID") {
+                $('#ProductVariantID').select2('open');
+            }
+            else {
+                $(isFocus).focus();
+            }
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JAddDetail", "InventoryAdjust")',
+            dataType: 'json',
+            loading: true,
+            data: agrs,
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#ProductVariantID').val('0');
+                    $('#ProductVariantID').trigger('change');
+                    $('#QuantityAdjustment').val('0');
+                    $('#WarehouseQuantity').text('0');
+                    $('#StockTakeQuantity').text('0');
+                    $('#QuantityAfterAdjustment').text('0');
+
+                    $.get('@Url.Action("DetailByInventoryID", "InventoryAdjust")', { InventoryID: @ViewBag.InventoryID, StockTakeID: @ViewBag.StockTakeID }, function (data) {
+                        $('#Products').html(data);
+                        $('#RequestConfirm').show();
+                    });
+                } else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+
+</script>

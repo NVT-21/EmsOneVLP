@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "AddEmployee";
+    Layout = null;
+}
+
+<div class="modal-dialog modal-700" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Thêm dịch vụ vận chuyển</h4>
+            <button type="button" class="close" id="Modal_close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="exampleInputUsername1">Mã dịch vụ<span style="color: red"> (*)</span></label>
+                <input type="text" class="form-control" id="Code" placeholder="Mã dịch vụ" onkeyup="checkCode(this.value, '#errCode', '')" maxlength="10" autocomplete="off">
+                <label class="error-message" id="errCode"></label>
+            </div>
+            <div class="form-group">
+                <label for="Name">Tên dịch vụ<span style="color: red"> (*)</span></label>
+                <input type="text" class="form-control" id="Name" placeholder="Tên dịch vụ" autocomplete="off" onkeyup="checkVietnamese(this.value, '#errName', '')" maxlength="255">
+                <label class="error-message" id="errName"></label>
+            </div>
+            <div class="form-group">
+                <label for="ServiceGroupID">Nhóm dịch vụ<span style="color: red"> (*)</span></label>
+                <select class="form-control text-dark" id="ServiceGroupID">
+                    <option value="">--- Chọn ---</option>
+                    @foreach (var item in ViewBag.TransportServiceGroup)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <label class="error-message" id="errServiceGroupID"></label>
+            </div>
+            <div class="form-group" id="SpecialServiceView" style="display:none;">
+                <input type="checkbox" id="SpecialService">
+                <label>Dịch vụ đặc biệt</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="form-check form-check-flat form-check-primary float-right">
+                <button type="button" class="btn btn-sm btn-primary" id="btn-submit">Xác nhận</button>
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-label="Close">Huỷ bỏ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $('#ServiceGroupID').on('change', function () {
+        var ID = $(this).attr('ID');
+        funcRequired(ID);
+        if ($('#ServiceGroupID').val() == "1")//Dịch vụ chính
+        {
+            $('#SpecialServiceView').css('display', 'block');
+        }
+        else
+        {
+            $('#SpecialServiceView').css('display', 'none');
+        }
+    });
+
+
+    $('#btn-submit').on('click', function () {
+        let isError = false;
+        let agrs = {
+            Code: $('#Code').val(),
+            Name: $('#Name').val().trim(),
+            ParentID: $('#ServiceGroupID').val(),
+            SpecialService: {
+                Code: getCheckboxValue('SpecialService'),
+            }
+        };
+
+        isError = checkCode(agrs.Code, '#errCode', isError);
+        isError = checkVietnamese(agrs.Name, '#errName', isError);
+        isError = funcRequired('ServiceGroupID', isError);
+
+        if (isError) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportServiceAdd", "Transport")',
+            data: { data: agrs},
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        html: true,
+                        button: false,
+                        timer: 2000
+                    }).then(function () {
+                        $('#Modal_close').click();
+                        $.get('@Url.Action("TransportServiceList", "Transport")?ServiceGroupID=' + agrs.ParentID, function (htmlString) {
+                            $('#Data').html(htmlString);
+                        })
+                    });
+                } else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

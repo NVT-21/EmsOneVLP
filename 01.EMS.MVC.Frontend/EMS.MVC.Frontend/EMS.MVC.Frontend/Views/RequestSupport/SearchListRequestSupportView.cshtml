@@ -1,0 +1,39 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListRequestSupportViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md">
+    <thead>
+        <tr>
+            <th hidden></th>
+            <th>Mã yêu cầu</th>
+            <th>Mã bưu gửi</th>
+            <th>Nhóm yêu cầu</th>
+            <th>Loại yêu cầu</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Ngày cập nhật</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.EShippingCode || @item.Code</td>
+                <td>
+                    <a href="@Url.Action("DetailRequestSupportView","RequestSupport", new { SearchKey = EMS.Library.Security.EncodeBase64(item.ID.ToString()) })" target="_blank">@item.Code</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("DetailShippingView", "Handle", new { ShippingCode = EMS.Library.Security.EncodeBase64(item.EShippingCode), ShopID = EMS.Library.Security.EncodeBase64(XHelper.Session.EmployeeProfile.ShopInformation.ID.ToString()) })" target="_blank">@item.EShippingCode</a>
+                </td>
+                <td>@item.RequestGroup</td>
+                <td>@item.RequestType</td>
+                <td>@item.Status.Name</td>
+                <td>@item.CreatedDate</td>
+                <td>@item.UpdatedDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

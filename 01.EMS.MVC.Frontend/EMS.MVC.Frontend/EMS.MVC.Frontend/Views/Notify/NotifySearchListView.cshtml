@@ -1,0 +1,79 @@
+﻿@model List<EMS.MVC.Frontend.Models.NotifyListViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="align-middle">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">Thông báo</th>
+            <th>Loại thông báo</th>
+            <th class="text-center">Thời gian gửi</th>
+            <th class="text-center">Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="row-item">
+                <td>
+                    @if (item.IsCheck == "N")
+                    {
+                        <div class="form-check custom-checkbox ">
+                            <input type="checkbox" class="form-check-input" id="SelectData" value="@item.ID">
+                            <label class="form-check-label" for="checkbox1"></label>
+                        </div>
+                    }
+                </td>
+                <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                    <b class="c-pointer" onclick="NotifyClick('@item.NotifyName.Split(' ')[item.NotifyName.Split(' ').Length - 1]', @item.ID, '@item.IsCheck', '@item.NotifyType')">@item.NotifyName</b><br />
+                    <small class="text-muted text-3">@item.NotifyContent</small><br />
+                </td>
+                <td>@item.NotifyTypeName</td>
+                <td class="text-center">@item.CreatedDate</td>
+                <td class="text-center">
+                    @if (item.IsCheck == "Y")
+                    {
+                        <div class="badge badge-outline-success">Đã đọc</div>
+                    }
+                    else
+                    {
+                        <div class="badge badge-outline-danger">Chưa đọc</div>
+                    }
+                </td>
+                <td>
+                    <button type="button" class="btn btn-trash light mb-0 mt-0" onclick="btnRemoveNotify(@item.ID,'@item.IsCheck')">
+                        <i class="icon-trash fs-18"></i>
+                    </button>
+                    <button type="button" class="btn btn-view light mb-0 mt-0"
+                            onclick="
+                            @{
+                                if(item.NotifyType == "ORDER_STATUS"){
+                                    Write("NotifyClick('" + item.NotifyName.Split(' ')[item.NotifyName.Split(' ').Length - 1] + "'," + item.ID + ",'"  + item.IsCheck + "','"  + item.NotifyType + "')");
+                                }
+                                else if (item.NotifyType == "EMS")
+                                {
+                                    Write("NotifyViewDetail(" + item.ID + ",'" + item.IsCheck + "')");
+                                }
+                            }
+                            ">
+                        <i class="icon-eye fs-20"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+</script>
+

@@ -1,0 +1,1941 @@
+﻿@model EMS.MVC.Frontend.Models.InfoShippingViewModel
+@using Newtonsoft.Json
+<!-- Thêm CDN của Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    :root {
+        --ems-navy: #0b3866;
+        --ems-blue: #1768b3;
+        --ems-blue-dark: #0b4c86;
+        --ems-blue-soft: #eef5fc;
+        --ems-blue-line: #d7e6f4;
+        --ems-orange: #ef7d22;
+        --ems-orange-dark: #cf6712;
+        --ems-orange-soft: #fef2e7;
+        --ems-surface: #ffffff;
+        --ems-page: #f3f6fb;
+        --ems-text: #1f2937;
+        --ems-muted: #64748b;
+        --ems-border: #e4e9f1;
+        --ems-success: #15803d;
+        --ems-danger: #dc2626;
+        --ems-info: #2563eb;
+        --ems-warning: #d97706;
+        --ems-created: #6b7280;
+        --ems-shadow: 0 6px 18px rgba(11, 56, 102, .08);
+        --ems-shadow-hover: 0 12px 28px rgba(11, 56, 102, .13);
+    }
+
+    .ems-tracking {
+        font-family: inherit;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 12px;
+        border-radius: 16px;
+        background:
+            linear-gradient(180deg, rgba(23, 104, 179, .04), rgba(23, 104, 179, 0) 200px),
+            var(--ems-page);
+    }
+
+    .ems-tracking *,
+    .ems-tracking *::before,
+    .ems-tracking *::after {
+        box-sizing: border-box;
+    }
+
+    /* Bố cục 2 cột luôn chiếm trọn chiều rộng khả dụng */
+    .ems-main-column,
+    .ems-history-column,
+    .ems-main-column .row,
+    .ems-main-column [class*="col-"] {
+        min-width: 0;
+    }
+
+    /* ===== Card chung ===== */
+    .shipping-card {
+        position: relative;
+        overflow: visible;
+        border: 1px solid var(--ems-border);
+        border-radius: 14px;
+        background: var(--ems-surface);
+        box-shadow: var(--ems-shadow);
+        margin-bottom: 8px;
+        width: 100%;
+        transition: box-shadow .15s ease;
+    }
+
+        .shipping-card:hover {
+            box-shadow: var(--ems-shadow-hover);
+        }
+
+        .shipping-card.shipping-card-hero {
+            border-top: 4px solid var(--ems-orange);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 65%, #fff8f2 100%);
+        }
+
+        .shipping-card .card-body {
+            min-width: 0;
+            padding: 12px 14px;
+            width: 100%;
+        }
+
+        .shipping-card h6 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 32px;
+            font-size: .8rem;
+            font-weight: 800;
+            letter-spacing: .3px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--ems-blue-line);
+            color: var(--ems-navy);
+            text-transform: uppercase;
+        }
+
+            .shipping-card h6 > i:first-child {
+                width: 26px;
+                height: 26px;
+                flex: 0 0 26px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                background: var(--ems-orange-soft);
+                color: var(--ems-orange-dark);
+                font-size: .9em;
+            }
+
+        .shipping-card label {
+            font-size: .68rem;
+            color: var(--ems-muted);
+            margin-bottom: .2rem;
+            display: inline-block;
+        }
+
+        .shipping-card span, .shipping-card p {
+            font-size: .72rem;
+            font-weight: 500;
+            color: var(--ems-text);
+            line-height: 1.35;
+        }
+
+    /* ===== Mã bưu gửi ===== */
+    .ems-code-row {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        min-width: 0;
+        padding: 7px 8px;
+        border: 1px dashed var(--ems-blue-line);
+        border-radius: 10px;
+        background: rgba(238, 245, 252, .65);
+    }
+
+        .ems-code-row label {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+    .ems-code-hint {
+        max-width: 100%;
+        font-size: .62rem;
+        color: var(--ems-muted);
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .clickable-shipping-code {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        padding: 5px 10px;
+        margin: 0;
+        border-radius: 8px;
+        border: 1.5px dashed var(--ems-blue);
+        background: #fff;
+        color: var(--ems-blue) !important;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+        font-size: .76rem !important;
+        letter-spacing: .3px;
+        line-height: 1.3;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        cursor: pointer;
+        text-decoration: none !important;
+        transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+    }
+
+        .clickable-shipping-code:hover {
+            background: var(--ems-orange);
+            border-color: var(--ems-orange);
+            color: #fff !important;
+        }
+
+        .clickable-shipping-code:focus {
+            outline: 2px solid var(--ems-orange);
+            outline-offset: 2px;
+        }
+
+        .clickable-shipping-code i {
+            font-size: .72em;
+        }
+
+    /* ===== Tổng quan bưu gửi: lấp đầy chiều rộng bằng auto-fit ===== */
+    .ems-stat-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .ems-stat {
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        min-height: 58px;
+        padding: 9px 10px;
+        border-radius: 11px;
+        background: linear-gradient(180deg, #fff 0%, #f9fcff 100%);
+        border: 1px solid var(--ems-blue-line);
+        transition: border-color .15s ease, background-color .15s ease;
+    }
+
+        .ems-stat:hover {
+            border-color: #bfd7ef;
+            background: var(--ems-blue-soft);
+        }
+
+    .ems-stat-full {
+        grid-column: 1 / -1;
+    }
+
+    .ems-stat-icon {
+        flex: 0 0 30px;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ems-blue-soft);
+        color: var(--ems-blue);
+        font-size: 12px;
+    }
+
+    .ems-stat-body {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ems-stat-label {
+        font-size: .64rem;
+        font-weight: 600;
+        color: var(--ems-muted);
+        white-space: normal;
+    }
+
+    .ems-stat-value {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--ems-text);
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        cursor: default;
+    }
+
+    .ems-copy-field {
+        cursor: copy;
+    }
+
+        .ems-copy-field:hover {
+            color: var(--ems-blue);
+        }
+
+    /* ===== Người gửi / người nhận ===== */
+    .ems-person-card-sender,
+    .ems-person-card-receiver {
+        height: 100%;
+    }
+
+    .ems-person-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    .ems-person-avatar {
+        flex: 0 0 26px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 12px;
+    }
+
+    .ems-person-card-sender .ems-person-avatar {
+        background: linear-gradient(135deg, var(--ems-blue) 0%, var(--ems-navy) 100%);
+    }
+
+    .ems-person-card-receiver .ems-person-avatar {
+        background: linear-gradient(135deg, var(--ems-orange) 0%, var(--ems-orange-dark) 100%);
+    }
+
+    .ems-person-field {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+        padding: 6px 0;
+        border-bottom: 1px dashed var(--ems-blue-line);
+    }
+
+        .ems-person-field:last-child {
+            border-bottom: none;
+        }
+
+        .ems-person-field .ems-person-field-main {
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            gap: 7px;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .ems-person-field .ems-person-field-main i {
+            color: var(--ems-blue);
+            font-size: .75em;
+            flex: 0 0 auto;
+            margin-top: .2em;
+        }
+
+        .ems-person-field .ems-person-field-main > div {
+            flex: 1 1 0;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .ems-person-field label {
+            margin: 0;
+            white-space: normal;
+            color: var(--ems-muted);
+            font-weight: 600;
+        }
+
+            .ems-person-field label::after {
+                content: ":";
+                margin-right: 2px;
+            }
+
+        .ems-person-field span {
+            display: inline;
+            max-width: 100%;
+            color: var(--ems-text);
+            line-height: 1.45;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+    .copy-btn {
+        flex: 0 0 auto;
+        border: 1px solid var(--ems-blue-line);
+        background: var(--ems-blue-soft);
+        color: var(--ems-blue);
+        font-size: .68rem;
+        cursor: pointer;
+        margin-left: 2px;
+        padding: 4px 7px;
+        border-radius: 6px;
+        transition: background-color .15s ease, color .15s ease;
+    }
+
+        .copy-btn:hover {
+            background: var(--ems-orange);
+            border-color: var(--ems-orange);
+            color: #fff;
+        }
+
+    /* ===== Hình ảnh báo phát & xác thực ===== */
+    .ems-media-row {
+        display: flex;
+        flex-wrap: wrap;
+        min-width: 0;
+        margin-bottom: 8px;
+        border: 1px solid var(--ems-blue-line);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        .ems-media-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .ems-media-col {
+        flex: 1 1 210px;
+        min-width: 170px;
+        overflow: hidden;
+        padding: 9px 11px;
+        border-right: 1px solid var(--ems-blue-line);
+        background: #fbfdff;
+    }
+
+        .ems-media-col:last-child {
+            border-right: none;
+        }
+
+        .ems-media-col label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: .66rem;
+            font-weight: 700;
+            color: var(--ems-navy);
+        }
+
+    .ems-image-label {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ems-image-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 21px;
+        height: 19px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: var(--ems-blue-soft);
+        color: var(--ems-blue) !important;
+        font-size: .6rem !important;
+        font-weight: 800 !important;
+        line-height: 1;
+    }
+
+    .ems-media-empty {
+        font-size: .7rem;
+        color: #9aa7bb;
+        font-style: italic;
+    }
+
+    .ems-download-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 7px;
+        padding: 3px 10px;
+        border: 1px solid var(--ems-blue);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--ems-blue);
+        font-size: .62rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color .15s ease, color .15s ease;
+    }
+
+        .ems-download-all-btn:hover {
+            background: var(--ems-blue);
+            color: #fff;
+        }
+
+        .ems-download-all-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+    .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+    }
+
+        .image-gallery img {
+            width: 58px;
+            height: 58px;
+            max-width: 100%;
+            object-fit: cover;
+            border-radius: 7px;
+            border: 1px solid var(--ems-border);
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+            .image-gallery img:hover {
+                transform: scale(1.08);
+                box-shadow: 0 6px 16px rgba(11, 56, 102, .18);
+            }
+
+    /* ===== Bảng "Thông tin phát" ===== */
+    .ems-table-wrap {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--ems-border);
+        overflow: auto;
+    }
+
+    .ems-delivery-wrap {
+        max-height: min(52vh, 520px);
+        border: 1px solid var(--ems-blue-line);
+        border-radius: 12px;
+        background: #fff;
+        scrollbar-width: thin;
+        scrollbar-color: #9dbbd8 #eef4fa;
+    }
+
+        .ems-delivery-wrap::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .ems-delivery-wrap::-webkit-scrollbar-thumb {
+            background: #9dbbd8;
+            border-radius: 999px;
+        }
+
+    .table-shipping {
+        width: 100%;
+        margin-bottom: 0;
+        font-size: .7rem;
+    }
+
+        .table-shipping th {
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(180deg, var(--ems-blue) 0%, var(--ems-navy) 100%);
+            padding: .6rem .65rem;
+            white-space: nowrap;
+        }
+
+        .table-shipping td {
+            padding: .55rem .65rem;
+            min-width: 120px;
+            max-width: 360px;
+            vertical-align: top;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .table-shipping tbody tr {
+            border-bottom: 1px solid var(--ems-border);
+        }
+
+            .table-shipping tbody tr:nth-child(even) {
+                background-color: #f8fafc;
+            }
+
+            .table-shipping tbody tr:hover {
+                background-color: var(--ems-blue-soft);
+            }
+
+    .ems-delivery-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+
+        .ems-delivery-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            border-bottom: 3px solid var(--ems-orange);
+            font-size: .66rem;
+            line-height: 1.25;
+        }
+
+            .ems-delivery-table thead th i {
+                margin-right: 6px;
+                color: #ffd1b5;
+            }
+
+        .ems-delivery-table th:nth-child(1) { width: 13%; }
+        .ems-delivery-table th:nth-child(2) { width: 13%; }
+        .ems-delivery-table th:nth-child(3) { width: 20%; }
+        .ems-delivery-table th:nth-child(4) { width: 15%; }
+        .ems-delivery-table th:nth-child(5) { width: 20%; }
+        .ems-delivery-table th:nth-child(6) { width: 19%; }
+
+        .ems-delivery-table tbody td {
+            background: #fff;
+            line-height: 1.42;
+        }
+
+            .ems-delivery-table tbody tr:nth-child(even) td {
+                background: #f8fbff;
+            }
+
+            .ems-delivery-table tbody tr:hover td {
+                background: #eef7ff;
+            }
+
+            .ems-delivery-table tbody td:nth-child(1),
+            .ems-delivery-table tbody td:nth-child(2) {
+                color: var(--ems-navy);
+                font-weight: 700;
+            }
+
+            .ems-delivery-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+    .no-wrap {
+        white-space: nowrap;
+    }
+
+    /* ===== Lịch sử trạng thái - timeline ===== */
+    .ems-timeline-sticky .shipping-card {
+        overflow: hidden;
+        border-top: 4px solid var(--ems-blue);
+    }
+
+        .ems-timeline-sticky .shipping-card h6 {
+            margin: -12px -14px 10px;
+            padding: 11px 14px 9px;
+            border-bottom: 3px solid var(--ems-orange);
+            background: linear-gradient(135deg, var(--ems-blue) 0%, var(--ems-navy) 100%);
+            color: #fff;
+        }
+
+            .ems-timeline-sticky .shipping-card h6 > i:first-child {
+                background: rgba(255, 255, 255, .15);
+                color: #ffb27f;
+            }
+
+        .ems-timeline-sticky .ems-section-toggle {
+            border-color: rgba(255, 255, 255, .3);
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+    .timeline {
+        position: relative;
+        min-width: 0;
+        margin-left: 0;
+        padding: 4px 3px 4px 34px;
+        max-height: 280px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 6px;
+            bottom: 6px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--ems-orange) 0%, var(--ems-blue-line) 20%, var(--ems-blue-line) 100%);
+        }
+
+    .timeline-item {
+        position: relative;
+        min-width: 0;
+        margin-bottom: 9px;
+        padding: 8px 9px;
+        border: 1px solid var(--ems-border);
+        border-radius: 10px;
+        background: #fff;
+    }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item.is-current {
+            border-color: #f7c5a5;
+            background: linear-gradient(135deg, #fff 0%, #fff7f1 100%);
+            box-shadow: 0 4px 14px rgba(239, 125, 34, .12);
+        }
+
+    .timeline-icon {
+        position: absolute;
+        left: -31px;
+        top: 8px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #cfd9e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #9aa7bb;
+        box-shadow: 0 0 0 3px #fff;
+    }
+
+        .timeline-icon.status-success { border-color: var(--ems-success); color: var(--ems-success); }
+        .timeline-icon.status-failed { border-color: var(--ems-danger); color: var(--ems-danger); }
+        .timeline-icon.status-in-progress { border-color: var(--ems-info); color: var(--ems-info); }
+        .timeline-icon.status-pending { border-color: var(--ems-warning); color: var(--ems-warning); }
+        .timeline-icon.status-created { border-color: var(--ems-created); color: var(--ems-created); }
+
+    .timeline-content,
+    .timeline-status,
+    .timeline-note,
+    .timeline-pos {
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .timeline-content {
+        font-size: .75rem;
+        color: var(--ems-text);
+        line-height: 1.4;
+        padding-top: 2px;
+    }
+
+    .timeline-time {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px 8px;
+        font-weight: 700;
+        color: var(--ems-navy);
+        margin-bottom: .15rem;
+    }
+
+    .timeline-badge-current {
+        font-size: .6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        color: #fff;
+        background: var(--ems-orange);
+        padding: 1px 7px;
+        border-radius: 999px;
+    }
+
+    .timeline-status {
+        color: var(--ems-navy);
+        line-height: 1.5;
+    }
+
+    .timeline-note {
+        font-style: italic;
+        color: #52709c;
+        font-weight: normal;
+    }
+
+    .timeline-pos {
+        color: #52709c;
+        font-weight: normal;
+    }
+
+    .status-success { color: var(--ems-success) !important; }
+    .status-failed { color: var(--ems-danger) !important; }
+    .status-in-progress { color: var(--ems-info) !important; }
+    .status-pending { color: var(--ems-warning) !important; }
+    .status-created { color: var(--ems-created) !important; }
+
+    /* ===== Trạng thái rỗng ===== */
+    .ems-empty-state {
+        text-align: center;
+        padding: 46px 20px;
+        color: var(--ems-muted);
+    }
+
+        .ems-empty-state i {
+            font-size: 34px;
+            color: var(--ems-blue);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .ems-empty-state p {
+            font-size: .85rem !important;
+            font-weight: 600 !important;
+            color: #445572 !important;
+        }
+
+    /* ===== Toast ===== */
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, var(--ems-navy) 0%, var(--ems-blue) 100%);
+        color: #fff;
+        padding: 11px 18px;
+        border-radius: 10px;
+        box-shadow: 0 12px 26px rgba(11, 56, 102, .3);
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity .25s ease, transform .25s ease;
+        z-index: 1000;
+        font-size: .82rem;
+    }
+
+        .toast i {
+            color: var(--ems-orange);
+            margin-right: 8px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    /* ===== Thu gọn / mở rộng từng khối ===== */
+    .ems-section-heading {
+        cursor: default;
+    }
+
+    .ems-section-toggle {
+        flex: 0 0 auto;
+        width: 29px;
+        height: 27px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        padding: 0;
+        border: 1px solid var(--ems-blue-line);
+        border-radius: 7px;
+        background: var(--ems-blue-soft);
+        color: var(--ems-blue);
+        cursor: pointer;
+        transition: all .15s ease;
+    }
+
+        .ems-section-toggle:hover {
+            border-color: var(--ems-blue);
+            background: #e2eefb;
+        }
+
+        .ems-section-toggle i {
+            color: inherit !important;
+            transition: transform .2s ease;
+        }
+
+    .ems-collapsible.is-collapsed .ems-section-toggle i {
+        transform: rotate(-90deg);
+    }
+
+    .ems-section-content {
+        display: block;
+    }
+
+    .ems-collapsible.is-collapsed .ems-section-content {
+        display: none;
+    }
+
+    .ems-collapsible.is-collapsed .card-body > h6 {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom-color: transparent;
+    }
+
+    /* ===== Mở khung chi tiết ra gần hết màn hình khi hiển thị trong modal ===== */
+    .modal-dialog:has(.ems-tracking),
+    .modal-dialog.ems-detail-modal-dialog {
+        width: 98vw !important;
+        max-width: 98vw !important;
+        margin: .75rem auto !important;
+    }
+
+        .modal-dialog:has(.ems-tracking) .modal-content,
+        .modal-dialog.ems-detail-modal-dialog .modal-content {
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+    /* ===== Cột lịch sử trạng thái dính (sticky) trên desktop ===== */
+    .ems-timeline-sticky {
+        width: 100%;
+    }
+
+    @@media (min-width: 992px) {
+        .ems-history-column {
+            align-self: flex-start;
+        }
+
+        .ems-timeline-sticky {
+            position: sticky;
+            top: 10px;
+            z-index: 5;
+        }
+
+            .ems-timeline-sticky .shipping-card {
+                margin-bottom: 0;
+            }
+
+            .ems-timeline-sticky .timeline {
+                max-height: calc(100vh - 170px);
+                max-height: calc(100dvh - 170px);
+                min-height: 300px;
+            }
+    }
+
+    @@media (max-width: 991px) {
+        .ems-timeline-sticky {
+            position: static;
+        }
+
+        .modal-dialog:has(.ems-tracking),
+        .modal-dialog.ems-detail-modal-dialog {
+            width: calc(100vw - 12px) !important;
+            max-width: calc(100vw - 12px) !important;
+            margin: 6px auto !important;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .ems-tracking {
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .shipping-card .card-body {
+            padding: 10px;
+        }
+
+        .ems-person-field {
+            align-items: flex-start;
+        }
+
+        /* Bảng "Thông tin phát" chuyển thành danh sách thẻ trên di động */
+        .ems-delivery-wrap {
+            max-height: none;
+            overflow: visible;
+            border: 0;
+            background: transparent;
+        }
+
+        .ems-delivery-table,
+        .ems-delivery-table tbody,
+        .ems-delivery-table tr,
+        .ems-delivery-table td {
+            display: block;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .ems-delivery-table {
+            min-width: 0;
+            background: transparent;
+        }
+
+        .ems-delivery-table thead {
+            display: none;
+        }
+
+        .ems-delivery-table tbody {
+            display: grid;
+            gap: 10px;
+        }
+
+        .ems-delivery-table tbody tr {
+            overflow: hidden;
+            border: 1px solid var(--ems-blue-line);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 14px rgba(11, 56, 102, .06);
+        }
+
+        .ems-delivery-table tbody td,
+        .ems-delivery-table tbody tr:nth-child(even) td,
+        .ems-delivery-table tbody tr:hover td {
+            display: grid;
+            grid-template-columns: minmax(92px, 35%) minmax(0, 65%);
+            gap: 8px;
+            align-items: start;
+            padding: 8px 10px;
+            border-bottom: 1px dashed var(--ems-border);
+            background: #fff;
+        }
+
+            .ems-delivery-table tbody td::before {
+                content: attr(data-label);
+                color: var(--ems-muted);
+                font-size: .63rem;
+                font-weight: 800;
+                line-height: 1.35;
+            }
+
+            .ems-delivery-table tbody td:last-child {
+                border-bottom: 0;
+            }
+    }
+</style>
+<script>
+    async function copyToClipboard(text, successMessage, btn) {
+        if (text === null || text === undefined || String(text).trim() === '') {
+            showToast('Không có dữ liệu để sao chép!');
+            return;
+        }
+
+        var value = String(text).trim();
+        var originalHtml = btn ? btn.innerHTML : null;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(value);
+            } else {
+                var textarea = document.createElement('textarea');
+                textarea.value = value;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                textarea.style.pointerEvents = 'none';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                var copied = document.execCommand('copy');
+                textarea.remove();
+                if (!copied) {
+                    throw new Error('Không thể sao chép bằng phương thức dự phòng');
+                }
+            }
+
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                setTimeout(function () { btn.innerHTML = originalHtml; }, 1200);
+            }
+            showToast(successMessage || 'Đã sao chép!');
+        } catch (err) {
+            console.error('Lỗi sao chép:', err);
+            showToast('Lỗi khi sao chép!');
+        }
+    }
+
+    function showToast(message) {
+        let toast = document.querySelector('.toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = '<i class="fa-solid fa-circle-check"></i><span></span>';
+        toast.querySelector('span').textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    // Ghi nhớ toàn bộ ảnh của mục (gallery) đang được mở xem phóng to,
+    // để nút "Tải tất cả" trong khung zoom (ImageZoomModal, nằm ở DetailShippingView.cshtml)
+    // biết cần tải những ảnh nào.
+    function setCurrentZoomGallery(imgEl) {
+        var gallery = imgEl.closest('.image-gallery');
+        var imgs = gallery ? gallery.querySelectorAll('img') : [imgEl];
+        window.__emsCurrentGalleryImages = Array.prototype.map.call(imgs, function (im) { return im.src; });
+    }
+
+    // Tải toàn bộ ảnh của gallery đang mở trong khung zoom (được gọi từ nút
+    // trong #image-controls). Dùng chung hàm downloadSingleImage bên dưới.
+    async function downloadCurrentZoomGallery(btn) {
+        var list = window.__emsCurrentGalleryImages || [];
+        if (!list.length) {
+            showToast('Không có ảnh để tải!');
+            return;
+        }
+
+        var originalHtml = btn ? btn.innerHTML : null;
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        }
+
+        try {
+            for (var i = 0; i < list.length; i++) {
+                await downloadSingleImage(list[i], i + 1);
+                if (i < list.length - 1) {
+                    await new Promise(function (resolve) { setTimeout(resolve, 300); });
+                }
+            }
+            showToast('Đã tải ' + list.length + ' ảnh!');
+        } catch (err) {
+            console.error('Lỗi khi tải ảnh:', err);
+            showToast('Lỗi khi tải ảnh, vui lòng thử lại!');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+    }
+
+    // Tải toàn bộ ảnh trong 1 mục (Chữ ký / Hình ảnh báo phát / Ảnh HA / Ảnh bổ sung).
+    // Nút được đặt ngay trước khối .image-gallery nên lấy ảnh từ nextElementSibling.
+    // Mỗi ảnh được tải về thành 1 file riêng (không nén zip).
+    async function downloadAllImagesInColumn(btn) {
+        var gallery = btn.nextElementSibling;
+        if (!gallery) { return; }
+        var imgs = gallery.querySelectorAll('img');
+        if (!imgs.length) { return; }
+
+        var originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
+
+        try {
+            for (var i = 0; i < imgs.length; i++) {
+                await downloadSingleImage(imgs[i].src, i + 1);
+                // Giãn cách nhẹ giữa các lần tải để trình duyệt không chặn tải nhiều file cùng lúc
+                if (i < imgs.length - 1) {
+                    await new Promise(function (resolve) { setTimeout(resolve, 300); });
+                }
+            }
+            showToast('Đã tải ' + imgs.length + (imgs.length > 1 ? ' ảnh!' : ' ảnh!'));
+        } catch (err) {
+            console.error('Lỗi khi tải ảnh:', err);
+            showToast('Lỗi khi tải ảnh, vui lòng thử lại!');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+
+    async function downloadSingleImage(src, index) {
+        var ext = (src.split('.').pop() || 'jpg').split('?')[0];
+        var fileName = 'anh-bao-phat' + (index ? '-' + index : '') + '.' + ext;
+
+        try {
+            // Cách 1: fetch ảnh về dạng blob rồi tải - cho tên file chính xác,
+            // nhưng chỉ hoạt động nếu ảnh cùng domain hoặc server ảnh có bật CORS.
+            var res = await fetch(src);
+            if (!res.ok) { throw new Error('HTTP ' + res.status); }
+            var blob = await res.blob();
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.warn('Không thể fetch ảnh (có thể do CORS khác domain), chuyển sang tải trực tiếp:', err);
+            // Cách 2 (dự phòng): tải thẳng bằng thẻ <a href="..." download>, không qua fetch
+            // nên không bị chặn bởi CORS. Một số trình duyệt có thể mở ảnh ở tab mới thay vì
+            // tải về ngay nếu ảnh khác domain và server không hỗ trợ, nhưng sẽ không báo lỗi.
+            var a2 = document.createElement('a');
+            a2.href = src;
+            a2.download = fileName;
+            a2.target = '_blank';
+            a2.rel = 'noopener';
+            document.body.appendChild(a2);
+            a2.click();
+            a2.remove();
+        }
+    }
+
+    function ImageError(img) {
+        let retries = parseInt(img.getAttribute('data-retries'));
+        if (retries < 3) {
+            img.setAttribute('data-retries', retries + 1);
+            setTimeout(() => { img.src = img.src; }, 1000);
+        } else {
+            img.src = '/images/fallback.png';
+            img.alt = 'Hình ảnh không tải được';
+        }
+    }
+    function lookupShippingCode(shippingCode, shopID) {
+        if (!shippingCode || !shopID) {
+            showToast('Thiếu mã bưu gửi hoặc ShopID!');
+            return;
+        }
+        showToast('Đang tra cứu mã bưu gửi: ' + shippingCode);
+
+        const url = '/tra-cuu-buu-gui?ShippingCode=' + encodeURIComponent(shippingCode) +
+            '&ShopID=' + encodeURIComponent(shopID);
+
+        // Mở tab mới
+        window.open(url, '_blank');
+    }
+
+    // ===== Xử lý click 1 lần (tra cứu) / click đúp (sao chép) cho mã bưu gửi =====
+    // Trình duyệt luôn phát sinh sự kiện click trước cả khi người dùng double-click
+    // (thứ tự: click -> click -> dblclick). Vì vậy ta phải trì hoãn hành động của
+    // click đơn bằng setTimeout; nếu dblclick xảy ra trong khoảng chờ đó, ta hủy
+    // timer để click đơn không kích hoạt tra cứu nữa.
+    var __emsShippingCodeClickTimer = null;
+    var EMS_CLICK_DELAY_MS = 250;
+
+    function handleShippingCodeClick(event, el, shippingCode, shopID, code) {
+        event.preventDefault();
+        if (__emsShippingCodeClickTimer) {
+            // Đây là click thứ 2 liên tiếp -> để ondblclick xử lý, không làm gì thêm
+            return;
+        }
+        __emsShippingCodeClickTimer = setTimeout(function () {
+            __emsShippingCodeClickTimer = null;
+            lookupShippingCode(shippingCode, shopID);
+        }, EMS_CLICK_DELAY_MS);
+    }
+
+    function handleShippingCodeDblClick(event, el, code) {
+        event.preventDefault();
+        if (__emsShippingCodeClickTimer) {
+            clearTimeout(__emsShippingCodeClickTimer);
+            __emsShippingCodeClickTimer = null;
+        }
+        copyToClipboard(code, 'Đã sao chép mã bưu gửi!', null);
+    }
+
+
+
+
+    function normalizeEmsText(value) {
+        return (value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function initializeEmsCollapsibleCards() {
+        var cards = document.querySelectorAll('.ems-collapsible');
+        Array.prototype.forEach.call(cards, function (card) {
+            if (card.getAttribute('data-collapse-ready') === 'true') {
+                return;
+            }
+
+            var body = card.querySelector('.card-body');
+            if (!body) { return; }
+
+            var heading = body.querySelector('h6');
+            if (!heading) { return; }
+
+            var content = document.createElement('div');
+            content.className = 'ems-section-content';
+
+            while (heading.nextSibling) {
+                content.appendChild(heading.nextSibling);
+            }
+            body.appendChild(content);
+
+            heading.classList.add('ems-section-heading');
+
+            var toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'ems-section-toggle';
+            toggle.setAttribute('aria-label', 'Thu gọn hoặc mở rộng');
+            toggle.setAttribute('title', 'Thu gọn hoặc mở rộng');
+            toggle.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            toggle.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                card.classList.toggle('is-collapsed');
+                updateCollapseAllButton();
+            });
+            heading.appendChild(toggle);
+
+            if (card.getAttribute('data-collapsed') === 'true') {
+                card.classList.add('is-collapsed');
+            }
+
+            card.setAttribute('data-collapse-ready', 'true');
+        });
+
+        updateCollapseAllButton();
+    }
+
+    function updateCollapseAllButton(btn) {
+        var button = btn || document.getElementById('emsToggleAllSections');
+        if (!button) { return; }
+
+        var cards = Array.prototype.slice.call(document.querySelectorAll('.ems-collapsible'));
+        var allCollapsed = cards.length > 0 && cards.every(function (card) {
+            return card.classList.contains('is-collapsed');
+        });
+
+        button.innerHTML = allCollapsed
+            ? '<i class="fa-solid fa-angles-down"></i> Mở tất cả'
+            : '<i class="fa-solid fa-angles-up"></i> Thu gọn';
+    }
+
+    function initializeEmsCopyFields() {
+        var fields = document.querySelectorAll('.ems-copy-field[data-copy-label]');
+        Array.prototype.forEach.call(fields, function (field) {
+            if (field.getAttribute('data-copy-ready') === 'true') { return; }
+            field.setAttribute('title', 'Nhấn để sao chép');
+            field.setAttribute('tabindex', '0');
+            field.setAttribute('role', 'button');
+
+            var doCopy = function () {
+                var label = field.getAttribute('data-copy-label') || 'thông tin';
+                copyToClipboard(normalizeEmsText(field.textContent), 'Đã sao chép ' + label.toLowerCase() + '!');
+            };
+
+            field.addEventListener('click', doCopy);
+            field.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    doCopy();
+                }
+            });
+            field.setAttribute('data-copy-ready', 'true');
+        });
+    }
+
+    // Gắn class mở rộng cho modal chứa màn hình tra cứu.
+    // Cách này hỗ trợ cả trường hợp trình duyệt chưa hỗ trợ CSS :has().
+    function applyEmsWideLayout() {
+        var roots = document.querySelectorAll('.ems-tracking');
+        for (var i = 0; i < roots.length; i++) {
+            var dialog = roots[i].closest('.modal-dialog');
+            if (dialog) {
+                dialog.classList.add('ems-detail-modal-dialog');
+            }
+        }
+    }
+
+    function initializeEmsShippingView() {
+        applyEmsWideLayout();
+        initializeEmsCollapsibleCards();
+        initializeEmsCopyFields();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeEmsShippingView);
+    } else {
+        setTimeout(initializeEmsShippingView, 0);
+    }
+
+</script>
+
+@if(Model != null)
+{
+    <div class="row g-2 gy-0 ems-tracking">
+        <div class="col-12 col-lg-8 ems-main-column">
+            <div class="row g-2 gy-0">
+                <!-- Thông tin bưu gửi -->
+                <div class="col-12">
+                    <div class="shipping-card shipping-card-hero">
+                        <div class="card-body">
+                            <h6><i class="fa-solid fa-box-open"></i>Thông tin bưu gửi <span class="ems-code-hint" style="margin-left:auto;text-transform:none;font-weight:500;">Nhấn vào giá trị để sao chép</span></h6>
+                            <div class="row">
+                                <div class="col-12 mb-0">
+                                    <div class="ems-code-row">
+                                        <label><i class="fa-solid fa-barcode"></i>Mã bưu gửi:</label>
+                                        @if(!string.IsNullOrEmpty(Model.ShippingCode))
+                                        {
+                                            var shippingCodes = Model.ShippingCode.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                            for(int i = 0; i < shippingCodes.Length; i++)
+                                            {
+                                                var code = shippingCodes[i].Trim();
+                                                var itemHash = Model.ListShippingCode[i];
+                                                <span class="clickable-shipping-code"
+                                                      onclick="handleShippingCodeClick(event, this, '@Html.Raw(HttpUtility.JavaScriptStringEncode(itemHash))', '@Html.Raw(HttpUtility.JavaScriptStringEncode(ViewBag.ShopID))', '@Html.Raw(HttpUtility.JavaScriptStringEncode(code))')"
+                                                      ondblclick="handleShippingCodeDblClick(event, this, '@Html.Raw(HttpUtility.JavaScriptStringEncode(code))')"
+                                                      onkeypress="if(event.key === 'Enter') lookupShippingCode('@Html.Raw(HttpUtility.JavaScriptStringEncode(itemHash))', '@Html.Raw(HttpUtility.JavaScriptStringEncode(ViewBag.ShopID))')"
+                                                      role="button"
+                                                      tabindex="0"
+                                                      aria-label="Nhấn 1 lần để tra cứu, nhấn đúp để sao chép mã bưu gửi @Html.Raw(HttpUtility.JavaScriptStringEncode(code))">
+                                                    <i class="fa-solid fa-magnifying-glass"></i>@code
+                                                </span>
+                                            }
+                                            <span class="ems-code-hint">Nhấn 1 lần để tra cứu, nhấn đúp để sao chép</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Không có mã bưu gửi</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="ems-stat-grid">
+                                <div class="ems-stat">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Mã đơn hàng</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Mã đơn hàng" title="@Model.OrderCode">@Html.DisplayFor(m => m.OrderCode)</span>
+                                    </div>
+                                </div>
+                                <div class="ems-stat">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-clock"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Thời gian tạo</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Thời gian tạo" title="@Model.CreatedDate">@Html.DisplayFor(m => m.CreatedDate)</span>
+                                    </div>
+                                </div>
+                                <div class="ems-stat">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-weight-hanging"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Khối lượng thực tế</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Khối lượng thực tế" title="@(Model.TransportWeight) gr">@Html.DisplayFor(m => m.TransportWeight) gr</span>
+                                    </div>
+                                </div>
+                                <div class="ems-stat">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-balance-scale"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Khối lượng quy đổi</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Khối lượng quy đổi" title="@(Model.ExchangeTransportWeight) gr">@Html.DisplayFor(m => m.ExchangeTransportWeight) gr</span>
+                                    </div>
+                                </div>
+                                <div class="ems-stat">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-ruler"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Kích thước (D x R x C)</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Kích thước" title="@(Model.Length) x @(Model.Width) x @(Model.Height)">@Html.DisplayFor(m => m.Length) x @Html.DisplayFor(m => m.Width) x @Html.DisplayFor(m => m.Height)</span>
+                                    </div>
+                                </div>
+                                <div class="ems-stat ems-stat-full">
+                                    <div class="ems-stat-icon"><i class="fa-solid fa-truck"></i></div>
+                                    <div class="ems-stat-body">
+                                        <span class="ems-stat-label">Dịch vụ</span>
+                                        <span class="ems-stat-value ems-copy-field" data-copy-label="Dịch vụ">
+                                            @Html.DisplayFor(m => m.MainTransportService.Name)
+                                            @{
+                                                if(Model.ExtraTransportService != null && !string.IsNullOrEmpty(Model.ExtraTransportService.Name))
+                                                {
+                                                    var names = Model.ExtraTransportService.Name.Split(',');
+                                                    var codes = string.IsNullOrEmpty(Model.ExtraTransportService.Code) ? new string[0] : Model.ExtraTransportService.Code.Split(',');
+                                                    var extraServiceText = new List<string>();
+                                                    for(var i = 0; i < names.Length; i++)
+                                                    {
+                                                        var name = names[i].Trim();
+                                                        var code = (i < codes.Length) ? codes[i].Trim() : "";
+                                                        var info = name;
+                                                        decimal cod, phu;
+                                                        if(code == "COD" && decimal.TryParse(Model.TotalCOD, out cod))
+                                                        {
+                                                            info += " (Tiền COD: " + cod.ToString("N0") + ")";
+                                                        }
+                                                        else if(code == "PHU" && decimal.TryParse(Model.TotalPHU, out phu))
+                                                        {
+                                                            info += " (Tiền PHU: " + phu.ToString("N0") + ")";
+                                                        }
+                                                        extraServiceText.Add(info);
+                                                    }
+                                                    if(extraServiceText.Count > 0)
+                                                    {
+                                                        <text>, @string.Join(", ", extraServiceText)</text>
+                                                    }
+                                                }
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Người gửi -->
+                <div class="col-md-6 col-12">
+                    <div class="shipping-card ems-person-card-sender ems-collapsible">
+                        <div class="card-body">
+                            <h6 class="ems-person-head">
+                                <span class="ems-person-avatar"><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                                Người gửi
+                            </h6>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-user"></i>
+                                    <div>
+                                        <label>Họ tên</label>
+                                        <span class="ems-copy-field" data-copy-label="Người gửi">@Html.DisplayFor(m => m.Sender.FullName)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Sender.FullName))')" aria-label="Sao chép họ tên người gửi"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <div>
+                                        <label>Số điện thoại</label>
+                                        <span class="ems-copy-field" data-copy-label="SĐT người gửi">@Html.DisplayFor(m => m.Sender.MobileNumber)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Sender.MobileNumber))')" aria-label="Sao chép số điện thoại người gửi"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-map-marker"></i>
+                                    <div>
+                                        <label>Địa chỉ</label>
+                                        <span class="ems-copy-field" data-copy-label="Địa chỉ người gửi">@Html.DisplayFor(m => m.Sender.FullAddress)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Sender.FullAddress))')" aria-label="Sao chép địa chỉ người gửi"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-building"></i>
+                                    <div>
+                                        <label>Bưu cục</label>
+                                        <span class="ems-copy-field" data-copy-label="Bưu cục gửi">
+                                            @if(!string.IsNullOrEmpty(Model.PosCodeAccept) && !string.IsNullOrEmpty(Model.PosNameAccept))
+                                            {
+                                                var posText = Model.PosCodeAccept + ": " + Model.PosNameAccept + (string.IsNullOrEmpty(Model.PosTelAccept) ? "" : " (" + Model.PosTelAccept + ")");
+                                                @(posText)
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                                @if(!string.IsNullOrEmpty(Model.PosCodeAccept) && !string.IsNullOrEmpty(Model.PosNameAccept))
+                                {
+                                    var posTextBtn = Model.PosCodeAccept + ": " + Model.PosNameAccept + (string.IsNullOrEmpty(Model.PosTelAccept) ? "" : " (" + Model.PosTelAccept + ")");
+                                    <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(posTextBtn))')" aria-label="Sao chép thông tin bưu cục gửi"><i class="fa-solid fa-copy"></i></button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Người nhận -->
+                <div class="col-md-6 col-12">
+                    <div class="shipping-card ems-person-card-receiver ems-collapsible">
+                        <div class="card-body">
+                            <h6 class="ems-person-head">
+                                <span class="ems-person-avatar"><i class="fa-solid fa-house"></i></span>
+                                Người nhận
+                            </h6>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-user"></i>
+                                    <div>
+                                        <label>Họ tên</label>
+                                        <span class="ems-copy-field" data-copy-label="Người nhận">@Html.DisplayFor(m => m.Receiver.FullName)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Receiver.FullName))')" aria-label="Sao chép họ tên người nhận"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <div>
+                                        <label>Số điện thoại</label>
+                                        <span class="ems-copy-field" data-copy-label="SĐT người nhận">@Html.DisplayFor(m => m.Receiver.MobileNumber)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Receiver.MobileNumber))')" aria-label="Sao chép số điện thoại người nhận"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-map-marker"></i>
+                                    <div>
+                                        <label>Địa chỉ</label>
+                                        <span class="ems-copy-field" data-copy-label="Địa chỉ người nhận">@Html.DisplayFor(m => m.Receiver.FullAddress)</span>
+                                    </div>
+                                </div>
+                                <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Receiver.FullAddress))')" aria-label="Sao chép địa chỉ người nhận"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                            <div class="ems-person-field">
+                                <div class="ems-person-field-main">
+                                    <i class="fa-solid fa-building"></i>
+                                    <div>
+                                        <label>Bưu cục</label>
+                                        <span class="ems-copy-field" data-copy-label="Bưu cục phát">
+                                            @if(!string.IsNullOrEmpty(Model.PosCodeDelivery) && !string.IsNullOrEmpty(Model.PosNameDelivery))
+                                            {
+                                                var posText = Model.PosCodeDelivery + ": " + Model.PosNameDelivery + (string.IsNullOrEmpty(Model.PosTelDelivery) ? "" : " (" + Model.PosTelDelivery + ")");
+                                                @(posText)
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                                @if(!string.IsNullOrEmpty(Model.PosCodeDelivery) && !string.IsNullOrEmpty(Model.PosNameDelivery))
+                                {
+                                    var posTextBtn2 = Model.PosCodeDelivery + ": " + Model.PosNameDelivery + (string.IsNullOrEmpty(Model.PosTelDelivery) ? "" : " (" + Model.PosTelDelivery + ")");
+                                    <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(posTextBtn2))')" aria-label="Sao chép thông tin bưu cục phát"><i class="fa-solid fa-copy"></i></button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thông tin phát -->
+                @if(Model.ListSearchHistoryDelivery != null && Model.ListSearchHistoryDelivery.Count > 0)
+                {
+                    <div class="col-12">
+                        <div class="shipping-card ems-collapsible">
+                            <div class="card-body">
+                                <h6><i class="fa-solid fa-truck-ramp-box"></i>Thông tin phát</h6>
+                                <div class="ems-table-wrap ems-delivery-wrap">
+                                    <table class="table table-shipping ems-delivery-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fa-solid fa-calendar-days"></i>Ngày phát</th>
+                                                <th><i class="fa-solid fa-check"></i>Ngày nhập</th>
+                                                <th><i class="fa-solid fa-building"></i>Bưu cục phát</th>
+                                                <th><i class="fa-solid fa-user"></i>Trạng thái</th>
+                                                <th><i class="fa-solid fa-user"></i>Người nhận/Lý do</th>
+                                                <th><i class="fa-solid fa-note-sticky"></i>Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach(var itemDelivery in Model.ListSearchHistoryDelivery)
+                                            {
+                                                <tr>
+                                                    <td data-label="Ngày phát">@(itemDelivery.DeliveryDate ?? "")</td>
+                                                    <td data-label="Ngày nhập">@(itemDelivery.InputDate ?? "")</td>
+                                                    <td data-label="Bưu cục phát">@(itemDelivery.PostOffice ?? "")</td>
+                                                    <td data-label="Trạng thái">@(itemDelivery.PostmanName ?? "")</td>
+                                                    <td data-label="Người nhận/Lý do">
+                                                        @if(itemDelivery.DeliveryReturn == 0 && itemDelivery.IsDeliverable == 0)
+                                                        {
+                                                            @(itemDelivery.ReasonDeliveryFailure ?? "")
+                                                        }
+                                                        else
+                                                        {
+                                                            @(itemDelivery.RealReciverName ?? "")
+                                                        }
+                                                    </td>
+                                                    <td data-label="Ghi chú">@(itemDelivery.DeliveryNote ?? "")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Hình ảnh báo phát & xác thực (EMS) -->
+                @if(Model.ListEMSSignaruteAndImageInfo != null && Model.ListEMSSignaruteAndImageInfo.Count > 0)
+                {
+                    <div class="col-12">
+                        <div class="shipping-card ems-collapsible">
+                            <div class="card-body">
+                                <h6><i class="fa-solid fa-images"></i>Hình ảnh báo phát &amp; xác thực</h6>
+                                @foreach(var itemEMS in Model.ListEMSSignaruteAndImageInfo)
+                                {
+                                    <div class="ems-media-row">
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Chữ ký báo phát <span class="ems-image-count">@(string.IsNullOrEmpty(itemEMS.Signature) ? 0 : 1)</span></label>
+                                            @if(string.IsNullOrEmpty(itemEMS.Signature))
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    <img src="@Url.Content(itemEMS.Signature)" alt="Ảnh chữ ký báo phát" data-ListImage="@JsonConvert.SerializeObject(itemEMS.Signature)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Hình ảnh báo phát <span class="ems-image-count">@(itemEMS.FileNames == null ? 0 : itemEMS.FileNames.Count)</span></label>
+                                            @if(itemEMS.FileNames == null || itemEMS.FileNames.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var i = 0; i < itemEMS.FileNames.Count; i++)
+                                                    {
+                                                        <img src="@Url.Content(itemEMS.FileNames[i])" alt="Hình ảnh báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNames)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Ảnh dịch vụ "Báo phát hình ảnh" (HA) <span class="ems-image-count">@(itemEMS.FileNamesAuth == null ? 0 : itemEMS.FileNamesAuth.Count)</span></label>
+                                            @if(itemEMS.FileNamesAuth == null || itemEMS.FileNamesAuth.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var i = 0; i < itemEMS.FileNamesAuth.Count; i++)
+                                                    {
+                                                        <img src="@Url.Content(itemEMS.FileNamesAuth[i])" alt="Hình ảnh báo phát dịch vụ (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.FileNamesAuth)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Ảnh bổ sung <span class="ems-image-count">@(itemEMS.ImagesPlus == null ? 0 : itemEMS.ImagesPlus.Count)</span></label>
+                                            @if(itemEMS.ImagesPlus == null || itemEMS.ImagesPlus.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var j = 0; j < itemEMS.ImagesPlus.Count; j++)
+                                                    {
+                                                        <img src="@Url.Content(itemEMS.ImagesPlus[j])" alt="Hình ảnh báo phát bổ sung @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemEMS.ImagesPlus)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Hình ảnh báo phát & xác thực (VNP) -->
+                @if(Model.ListVNPSignaruteAndImageInfo != null && Model.ListVNPSignaruteAndImageInfo.Count > 0)
+                {
+                    <div class="col-12">
+                        <div class="shipping-card ems-collapsible">
+                            <div class="card-body">
+                                <h6><i class="fa-solid fa-images"></i>Hình ảnh báo phát &amp; xác thực</h6>
+                                @foreach(var itemVNP in Model.ListVNPSignaruteAndImageInfo)
+                                {
+                                    <div class="ems-media-row">
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Chữ ký báo phát <span class="ems-image-count">@(itemVNP.ImagesSignature == null ? 0 : itemVNP.ImagesSignature.Count)</span></label>
+                                            @if(itemVNP.ImagesSignature == null || itemVNP.ImagesSignature.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var i = 0; i < itemVNP.ImagesSignature.Count; i++)
+                                                    {
+                                                        <img src="@Url.Content(itemVNP.ImagesSignature[i])" alt="Chữ ký báo phát @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesSignature)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Hình ảnh báo phát <span class="ems-image-count">@(itemVNP.ImagesDelivery == null ? 0 : itemVNP.ImagesDelivery.Count)</span></label>
+                                            @if(itemVNP.ImagesDelivery == null || itemVNP.ImagesDelivery.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var j = 0; j < itemVNP.ImagesDelivery.Count; j++)
+                                                    {
+                                                        <img src="@Url.Content(itemVNP.ImagesDelivery[j])" alt="Hình ảnh báo phát @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesDelivery)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Ảnh dịch vụ "Báo phát hình ảnh" (HA) <span class="ems-image-count">@(itemVNP.Images == null ? 0 : itemVNP.Images.Count)</span></label>
+                                            @if(itemVNP.Images == null || itemVNP.Images.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var i = 0; i < itemVNP.Images.Count; i++)
+                                                    {
+                                                        <img src="@Url.Content(itemVNP.Images[i])" alt="Hình ảnh báo phát dịch vụ (HA) @(i+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.Images)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ems-media-col">
+                                            <label class="ems-image-label">Ảnh bổ sung <span class="ems-image-count">@(itemVNP.ImagesPlus == null ? 0 : itemVNP.ImagesPlus.Count)</span></label>
+                                            @if(itemVNP.ImagesPlus == null || itemVNP.ImagesPlus.Count == 0)
+                                            {
+                                                <span class="ems-media-empty">Không có dữ liệu</span>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="ems-download-all-btn" onclick="downloadAllImagesInColumn(this)">
+                                                    <i class="fa-solid fa-download"></i> Tải tất cả
+                                                </button>
+                                                <div class="image-gallery">
+                                                    @for(var j = 0; j < itemVNP.ImagesPlus.Count; j++)
+                                                    {
+                                                        <img src="@Url.Content(itemVNP.ImagesPlus[j])" alt="Hình ảnh báo phát bổ sung @(j+1)" data-ListImage="@JsonConvert.SerializeObject(itemVNP.ImagesPlus)" onclick="ImageZoomAndSlider(this); setCurrentZoomGallery(this);" data-retries="0" loading="lazy" />
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Cập nhật thông tin -->
+                @if(Model.ListUpdateInformation != null && Model.ListUpdateInformation.Count > 0)
+                {
+                    <div class="col-12">
+                        <div class="shipping-card ems-collapsible" data-collapsed="true">
+                            <div class="card-body">
+                                <h6><i class="fa-solid fa-rotate"></i>Cập nhật thông tin</h6>
+                                <div class="ems-table-wrap">
+                                    <table class="table table-shipping mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fa-solid fa-edit"></i>Loại yêu cầu</th>
+                                                <th><i class="fa-solid fa-history"></i>Thông tin cũ</th>
+                                                <th><i class="fa-solid fa-history"></i>Thông tin mới</th>
+                                                <th><i class="fa-solid fa-calendar-days"></i>Ngày tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach(var item in Model.ListUpdateInformation)
+                                            {
+                                                <tr>
+                                                    <td>@(item.RequestSupportType != null ? item.RequestSupportType.Name : "")</td>
+                                                    @if(item.RequestSupportType != null && item.RequestSupportType.ID == 7)
+                                                    {
+                                                        <td>@(item.OldUpdateInformation != null ? Convert.ToInt64(item.OldUpdateInformation).ToString("N0") : "")</td>
+                                                        <td>@(item.NewUpdateInformation != null ? Convert.ToInt64(item.NewUpdateInformation).ToString("N0") : "")</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@(item.OldUpdateInformation ?? "")</td>
+                                                        <td>@(item.NewUpdateInformation ?? "")</td>
+                                                    }
+                                                    <td>@(item.CreatedDate ?? "")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4 ems-history-column">
+            <div class="ems-timeline-sticky">
+                        <!-- Lịch sử trạng thái -->
+                        @if(Model.ListSearchHistory != null && Model.ListSearchHistory.Count > 0)
+                        {
+                                <div class="shipping-card ems-collapsible">
+                                    <div class="card-body">
+                                        <h6><i class="fa-solid fa-route"></i>Lịch sử trạng thái</h6>
+                                        <div class="timeline">
+                                            @{
+                                                int deliveryHistoryIndex = 0;
+                                            }
+                                            @foreach(var item in Model.ListSearchHistory)
+                
+                                            {
+                                                var time = string.IsNullOrEmpty(item.StatusTimePartner) ? item.CreatedDate : item.StatusTimePartner;
+                                                var statusClass = "";
+                                                var statusIcon = "fa-circle-dot";
+                                                var isSuccess = !string.IsNullOrEmpty(item.StatusName) && item.StatusName.ToLower().Contains("phát thành công");
+                                                var isFailed = !string.IsNullOrEmpty(item.StatusName) && item.StatusName.ToLower().Contains("phát không thành công");
+                                                var isInProgress = !string.IsNullOrEmpty(item.StatusName) &&
+                                                                  (item.StatusName.ToLower().Contains("đang phát") ||
+                                                                   item.StatusName.ToLower().Contains("đang vận chuyển") ||
+                                                                   item.StatusName.ToLower().Contains("xác nhận đến"));
+                                                var isPending = !string.IsNullOrEmpty(item.StatusName) && item.StatusName.ToLower().Contains("chờ lấy hàng");
+                                                var isCreated = !string.IsNullOrEmpty(item.StatusName) && item.StatusName.ToLower().Contains("đã tạo");
+                                                if(isSuccess)
+                                                {
+                                                    statusClass = "status-success";
+                                                    statusIcon = "fa-circle-check";
+                                                }
+                                                else if(isFailed)
+                                                {
+                                                    statusClass = "status-failed";
+                                                    statusIcon = "fa-circle-xmark";
+                                                }
+                                                else if(isInProgress)
+                                                {
+                                                    statusClass = "status-in-progress";
+                                                    statusIcon = "fa-truck-fast";
+                                                }
+                                                else if(isPending)
+                                                {
+                                                    statusClass = "status-pending";
+                                                    statusIcon = "fa-clock";
+                                                }
+                                                else if(isCreated)
+                                                {
+                                                    statusClass = "status-created";
+                                                    statusIcon = "fa-file-circle-plus";
+                                                }
+                                                var isCurrentStatus = deliveryHistoryIndex == 0;
+                                                <div class="timeline-item @(isCurrentStatus ? "is-current" : "")">
+                                                    <div class="timeline-icon @statusClass"><i class="fa-solid @statusIcon"></i></div>
+                                                    <div class="timeline-content">
+                                                        <div class="timeline-time">
+                                                            @time
+                                                            @if(isCurrentStatus)
+                                                            {
+                                                                <span class="timeline-badge-current">Mới nhất</span>
+                                                            }
+                                                        </div>
+                                                        <div class="timeline-status fw-semibold @statusClass">
+                                                            <span>@item.StatusName</span>
+                
+                                                            @if(!string.IsNullOrEmpty(item.StatusNote) && item.StatusNote != item.StatusName)
+                                                            {
+                                                                <span class="timeline-note"> - @item.StatusNote</span>
+                                                            }
+                                                            @if(!string.IsNullOrEmpty(item.PosCode) && !string.IsNullOrEmpty(item.PosName))
+                                                            {
+                                                                var posText = item.PosCode + ": " + item.PosName +
+                                                                              (string.IsNullOrEmpty(item.PosTel) ? "" : " (" + item.PosTel + ")") +
+                                                                              (string.IsNullOrEmpty(item.PosAddress) ? "" : ", " + item.PosAddress);
+                                                                <span class="timeline-pos">
+                                                                    - @posText
+                                                                    <button class="copy-btn" onclick="copyToClipboard('@Html.Raw(HttpUtility.JavaScriptStringEncode(posText))', this)" aria-label="Sao chép thông tin bưu cục">
+                                                                        <i class="fa-solid fa-copy"></i>
+                
+                                                                    </button>
+                                                                </span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                deliveryHistoryIndex++;
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                        }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-12">
+        <div class="shipping-card">
+            <div class="card-body ems-empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <p class="text-danger">Dữ liệu không tồn tại.</p>
+            </div>
+        </div>
+    </div>
+}

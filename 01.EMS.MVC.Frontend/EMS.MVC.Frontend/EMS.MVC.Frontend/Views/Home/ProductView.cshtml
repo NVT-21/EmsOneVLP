@@ -1,0 +1,105 @@
+﻿@model EMS.MVC.Frontend.Models.StatisticalProductViewModel
+@{
+    var sttSelling = 1;
+    var sttRefund = 1;
+}
+<div class="card-header border-0  flex-wrap">
+    <h4 class="fs-16 font-w600 mb-0">TOP SẢN PHẨM</h4>
+    <div class="d-flex">
+        <div class="card-action dash-tabs mt-3 mt-sm-0">
+            <ul class="nav nav-tabs" role="tablist" id="TabProduct">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#SellingProduct" role="tab" onclick="LastTabProduct('1')">Bán chạy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#RefundProduct" role="tab" onclick="LastTabProduct('2')">Hoàn cao</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="card-body py-0">
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="SellingProduct">
+            <div class="table-primary table-dashboard">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng bán</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var itemSelling in Model.ProductSelling)
+                        {
+                            <tr>
+                                <td class="text-center">@(sttSelling++)</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-3 mt-2">
+                                            @if (itemSelling.ProductImage != null && itemSelling.ProductImage != "")
+                                            {
+                                                <img src="@(XHelper.URLImage + "Assets/Images/" + itemSelling.ProductImage)">
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Assets/images/default/2.png">
+                                            }
+                                        </div>
+                                        <div class="col-9"> @itemSelling.ProductName <br /> @itemSelling.ProductCode</div>
+                                    </div>
+                                </td>
+                                <td class="text-center">@itemSelling.TotalProduct</td>
+                                <td class="text-end">@itemSelling.TotalCOD.ToString("N0").Replace(",", ".")đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade " id="RefundProduct">
+            <div class="table-primary table-dashboard">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng bán</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var itemRefund in Model.ProductRefund)
+                        {
+                            <tr>
+                                <td class="text-center">@(sttRefund++)</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-3 mt-2">
+                                            @if (itemRefund.ProductImage != null && itemRefund.ProductImage != "")
+                                            {
+                                                <img src="@(XHelper.URLImage + "Assets/Images/" + itemRefund.ProductImage)">
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Assets/images/default/2.png">
+                                            }
+                                        </div>
+                                        <div class="col-9"> @itemRefund.ProductName <br /> @itemRefund.ProductCode</div>
+                                    </div>
+                                </td>
+                                <td class="text-center">@itemRefund.TotalProduct</td>
+                                <td class="text-end">@itemRefund.TotalCOD.ToString("N0").Replace(",", ".")đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>

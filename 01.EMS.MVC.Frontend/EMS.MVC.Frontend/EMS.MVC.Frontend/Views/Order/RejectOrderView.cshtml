@@ -1,0 +1,105 @@
+﻿@model EMS.MVC.Frontend.Models.RejectOrderViewModel
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Từ chối đơn hàng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-md-12 mb-2">
+                    <label class="mb-1">Nguyên nhân <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @type = "text", @class = "form-control", @id = "M_Reason", @placeholder = "Nhập nguyên nhân từ chối" } })
+                    <span class="text-danger" id="errM_Reason"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnRejectOrder">Xác nhận</button>
+        </div>
+    </div>
+</div>
+<script>
+    CheckChangeValue("M_Reason", "Vui lòng nhập nguyên nhân từ chối", "", "Y");
+
+    $("#btnRejectOrder").on("click", function () {
+        var isError = false;
+        var data = {
+            ListOrderStringfy: '@Html.Raw(Model.ListOrderStringfy)',
+            Reason: $('#M_Reason').val().trim()
+        };
+
+        isError = CheckNullValue(data.Reason, "M_Reason", "Vui lòng nhập nguyên nhân từ chối", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JRejectOrder", "Order")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    CreateCustomSwal("success", res.Message);
+                }else
+                if (res.Code == "10")
+                {
+                    $(".btn-close").click();
+                    swal({
+                        title: 'Thông báo',
+                        text: res.Message,
+                        buttons: {
+                            confirm: {
+                                text: "Xem chi tiết",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary",
+                                closeModal: true
+                            },
+                            cancel: {
+                                text: "Đóng",
+                                value: false,
+                                visible: true,
+                                className: "btn btn-danger",
+                                closeModal: true,
+                            }
+                        },
+                    }).then((value) => {
+                        if (value) {
+                            $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                Error: res.Data,
+                                Controller: "Order"
+                            }, function (data) {
+                                $('#modal-ViewModal-html').html(data);
+                                $('#ViewModal').modal('show');
+                            });
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }
+                else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    })
+</script>

@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = null;
+}
+
+<div class="modal-dialog modal-700" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Thêm vùng tính cước</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="exampleInputUsername1">Mã vùng<span style="color: red"> (*)</span></label>
+                <input type="text" class="form-control" id="Code" placeholder="Mã nhóm vùng" onchange="checkCode(this.value,'#errCode','')" oninput="this.value = this.value.toUpperCase()" onkeypress="RemoveErrorMessage(this)" autocomplete="off">
+                <label class="error-message" id="errCode"></label>
+            </div>
+            <div class="form-group">
+                <label for="Name">Tên vùng<span style="color: red"> (*)</span></label>
+                <input type="text" class="form-control" id="Name" placeholder="Tên nhóm vùng" autocomplete="off">
+                <label class="error-message" id="errName"></label>
+            </div>
+            <div class="form-group">
+                <label for="ProvincesID">Phạm vi<span style="color: red"> (*)</span></label>
+                <select id="ProvincesID" class="selectpicker form-control w-100" data-width="auto" data-dropup-auto="false" data-size="8" data-live-search="true" data-selected-text-format="count" data-actions-box="true" multiple>
+                    @if (ViewBag.ProvincesList != null)
+                    {
+                        foreach (var item in ViewBag.ProvincesList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <label class="error-message" id="errProvincesID"></label>
+            </div>
+            <div class="form-group">
+                <label for="ServiceGroupID">Nhóm dịch vụ<span style="color: red"> (*)</span></label>
+                <select class="form-control text-dark" id="RegionGroupID">
+                    <option value="">--- Chọn ---</option>
+                    @foreach (var item in ViewBag.TransportRegionGroupList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <label class="error-message" id="errRegionGroupID"></label>
+            </div>
+            <div class="form-group">
+                <label for="Description">Miêu tả</label>
+                <textarea class="form-control" rows="4" id="Description"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-12">
+                <button type="button" class="btn btn-sm btn-primary pull-right" id="btn-submit">Xác nhận</button>
+                <button type="button" class="btn btn-sm btn-danger pull-left" data-dismiss="modal" aria-label="Close">Huỷ bỏ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#ProvincesID').selectpicker();
+    });
+    //kiểm tra gàn buộc không được rỗng
+    $('#Code, #Name').on('keyup', function () {
+            var ID = $(this).attr('ID');
+            funcRequired(ID);
+    });
+    $('#RegionGroupID, #ProvincesID').on('change', function () {
+        var ID = $(this).attr('ID');
+        funcRequired(ID);
+    });
+
+    $('#btn-submit').on('click', function () {
+        let isError = false;
+        let agrs = {
+            Code: $('#Code').val().trim(),
+            Name: $('#Name').val().trim(),
+            ParentID: $('#RegionGroupID').val(),
+            ProvincesID: $('#ProvincesID').val().toString(),
+            Description: $('#Description').val()
+        };
+        debugger;
+        isError = funcRequired('Code', isError);
+        isError = funcRequired('Name', isError);
+        isError = funcRequired('RegionGroupID', isError);
+        isError = funcRequired('ProvincesID', isError);
+
+        if (agrs.Code != "") {
+            var check = c_AZ09(agrs.Code);
+            if (check == 1) {
+                $('#errCode').text("Chỉ được phép nhập chữ cái (a-z), số (0-9)");
+                isError = true;
+            }
+        }
+        if (isError) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportRegionAdd", "Transport")',
+            data: { data: agrs},
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        html: true,
+                        button: false
+                    });
+                    setTimeout(function () { location.reload(); }, 1200);
+                } else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>
+

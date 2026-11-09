@@ -1,0 +1,318 @@
+﻿@model List<EMS.MVC.Backend.Models.TransportServiceListViewModel>
+
+<table id="dataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã dịch vụ </th>
+            <th> Tên dịch vụ </th>
+            <th> Dịch vụ đặc biệt </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count > 0)
+        {
+            var i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.Code</td>
+                    <td>@item.Name</td>
+                    <td>@item.SpecialService.Name</td>
+                    <td>
+                        <button onclick="Edit(@item.ID)" title="Sửa" data-toggle="tooltip" data-placement="left" class="badge badge-outline-danger">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        @if (item.IsLock == "N")
+                        {
+                            <button type="button" data-toggle="tooltip" data-placement="left" title="Khóa" onclick="Lock('@item.ID', '@item.Name')" class="badge badge-outline-primary">
+                                <i class="fa fa-unlock"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" data-toggle="tooltip" data-placement="left" title="Mở khóa" onclick="Unlock('@item.ID', '@item.Name')" class="badge badge-outline-danger">
+                                <i class="fa fa-lock"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">Không có dữ liệu</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    function IsLock(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn khóa tài khoản này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("isLock", "Employee")',
+                    data: {
+                        ID: ID,
+                        IsLock: "Y"
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false
+                            });
+                            setTimeout(function () { location.reload(); }, 1200);
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Close"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function UnLock(ID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn mở khóa tài khoản này?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("isLock", "Employee")',
+                    data: {
+                        ID: ID,
+                        IsLock: "N"
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false
+                            });
+                            setTimeout(function () { location.reload(); }, 1200);
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Close"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function Reset(ID, UserName) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn đặt lại mật khẩu?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ResetPassword", "Employee")',
+                    data: {
+                        ID,
+                        UserName
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false
+                            });
+                            setTimeout(function () { location.reload(); }, 1200);
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Close"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function Edit(ID) {
+        var ID = parseInt(ID);
+        $.get('@Url.Action("TransportServiceEdit", "Transport")', { ServiceID: ID }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            aLengthMenu: [
+                [10, 15, -1],
+                [10, 15, "Tất cả"]
+            ],
+            info: true,
+            searching: true,
+            ordering: false,
+            paging: true,
+            iDisplayLength: 10,
+            bLengthChange: true,
+            language: {
+                sSearch: "Tìm kiếm",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ dòng',
+                oPaginate: {
+                    sFirst: 'Trang đầu',
+                    sPrevious: 'Trang trước',
+                    sNext: 'Trang sau',
+                    sLast: 'Trang cuối'
+                },
+                emptyTable: "Không có dữ liệu",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 dòng",
+                zeroRecords: "Không tìm thấy dòng phù hợp",
+                infoFiltered: "(tìm kiếm từ _MAX_ dòng)",
+                loadingRecords: "Đang tải...",
+                processing: "Đang xử lý...",
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            }
+        });
+        $('#dataTable').each(function () {
+            var datatable = $(this);
+            // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            // LENGTH - Inline-Form control
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+</script>

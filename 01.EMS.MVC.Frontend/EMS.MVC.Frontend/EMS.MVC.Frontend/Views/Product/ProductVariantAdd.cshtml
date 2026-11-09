@@ -1,0 +1,289 @@
+﻿@model EMS.MVC.Frontend.Models.ProductVariantAddViewModel
+@{
+    Layout = null;
+}
+<div class="card" id="2">
+    <div class="card-body">
+        <h5 class="card-title">Thêm mới biến thể</h5>
+        <div class="row">
+            <div class="col-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">SKU<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="VariantSKU" placeholder="SKU" autocomplete="off">
+                            <span class="error-message text-danger" id="errVariantSKU"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Barcode</label>
+                            <input type="text" class="form-control" id="VariantBarcode" placeholder="Barcode" autocomplete="off">
+                            <span class="error-message text-danger" id="errVariantBarcode"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Giá bán</label>
+                            <input type="text" class="form-control" id="VariantPrice" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)" placeholder="Giá bán" maxlength="14" autocomplete="off">
+                            <span class="props">d</span>
+                        </div>
+                        <span class="text-danger" id="errPrice"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Khối lượng <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="Khối lượng" id="VariantWeight" data-inputmask="'alias': 'PositiveNumber'" maxlength="6" autocomplete="off">
+                            <span class="props">gr</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="update-img">
+                    <img id="VariantImage" src="~/Assets/images/default/2.png" width="148">
+                    <button class="btn btn-outline-secondary mt-3 font-w600" id="btnUpdateImage">Cập nhật ảnh</button>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Kích thước (Dài x Rộng x Cao)</label>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3 custom-props">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="VariantLength" placeholder="Nhập chiều dài" autocomplete="off" maxlength="3">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3 custom-props">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="VariantWidth" placeholder="Nhập chiều rộng" autocomplete="off" maxlength="3">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3 custom-props">
+                            <input type="text" class="form-control" data-inputmask="'alias': 'PositiveNumber'" id="VariantHeight" placeholder="Nhập chiều cao" autocomplete="off" maxlength="3">
+                            <span class="props">cm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="fs-18 font-w600">Thuộc tính</p>
+            @if (Model.ProductOptions != null)
+            {
+                foreach (var item in Model.ProductOptions)
+                {
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <label class="form-label">@item.Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="OptionValue" placeholder="Tên thuộc tính" onkeypress="RemoveErrorMessage(this)" maxlength="50" autocomplete="off">
+                            <span class="error-message text-danger" name="errOption"></span>
+                        </div>
+                    </div>
+                    <div class="col-8"></div>
+                }
+            }
+        </div>
+    </div>
+    <div class="card-footer d-sm-flex justify-content-end align-items-center">
+        <button type="button" class="btn btn-primary" id="ProductVariantAdd_Submit">Thêm</button>
+    </div>
+</div>
+<script>
+    (function ($) {
+        'use strict';
+        $(":input").inputmask();
+
+    })(jQuery);
+    var model = @Html.Raw(Json.Encode(Model));
+    CheckChangeValue("VariantSKU", "", "SKU", "N");
+    CheckChangeValue("VariantBarcode", "", "BARCODE", "N");
+    $('#ProductVariantAdd_Submit').on('click', function () {
+        var isError = false, isValid = true;
+        var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        let Length = $('#VariantLength').val().replaceAll(',', '');
+        let Width = $('#VariantWidth').val().replaceAll(',', '');
+        let Height = $('#VariantHeight').val().replaceAll(',', '');
+        let Options = "";
+        let agrs = {
+            ProductID: model.ProductID,
+            Price: Number($('#VariantPrice').val().replaceAll(",", "")),
+            SKU: $('#VariantSKU').val().trim(),
+            Barcode: $('#VariantBarcode').val().trim(),
+            Avatar: $('#VariantImage').data('filename'),
+            Length: Length,
+            Width: Width,
+            Height: Height,
+            Weight: $('#VariantWeight').val().replaceAll(',', ''),
+        };
+
+        if (agrs.SKU != "") {
+            isValid = Validate("SKU", agrs.SKU);
+            if (isValid == false) {
+                $("#errVariantSKU").text(msgIsValid);
+                $("#VariantSKU").focus();
+                isError = true;
+            } else {
+                $("#errVariantSKU").text("");
+            }
+        }
+
+        if (agrs.Barcode != "") {
+            isValid = Validate("BARCODE", agrs.Barcode);
+            if (isValid == false) {
+                $("#errVariantBarcode").text(msgIsValid);
+                $("#VariantBarcode").focus();
+                isError = true;
+            } else {
+                $("#errVariantBarcode").text("");
+            }
+        }
+
+        let listOption = document.getElementsByName('OptionValue');
+
+        if (listOption.length == 1 && model.ProductOptions.length == 1) {
+            agrs.OptionName1 = model.ProductOptions[0].Name;
+            agrs.OptionValue1 = $(listOption[0]).val().trim();
+            Options = agrs.OptionValue1;
+            if (agrs.OptionValue1 == "") {
+                $(listOption[0]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue1)) {
+                $(listOption[0]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+        }
+        else if (listOption.length == 2 && model.ProductOptions.length == 2) {
+            agrs.OptionName1 = model.ProductOptions[0].Name;
+            agrs.OptionName2 = model.ProductOptions[1].Name;
+            agrs.OptionValue1 = $(listOption[0]).val().trim();
+            agrs.OptionValue2 = $(listOption[1]).val().trim();
+            Options = agrs.OptionValue1 + " / " + agrs.OptionValue2;
+            if (agrs.OptionValue1 == "") {
+                $(listOption[0]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue1)) {
+                $(listOption[0]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+            if (agrs.OptionValue2 == "") {
+                $(listOption[1]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue2)) {
+                $(listOption[1]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+        }
+        else if (listOption.length == 3 && model.ProductOptions.length == 3) {
+            agrs.OptionName1 = model.ProductOptions[0].Name;
+            agrs.OptionName2 = model.ProductOptions[1].Name;
+            agrs.OptionName3 = model.ProductOptions[2].Name;
+            agrs.OptionValue1 = $(listOption[0]).val().trim();
+            agrs.OptionValue2 = $(listOption[1]).val().trim();
+            agrs.OptionValue3 = $(listOption[2]).val().trim();
+            Options = agrs.OptionValue1 + " / " + agrs.OptionValue2 + " / " + agrs.OptionValue3;
+            if (agrs.OptionValue1 == "") {
+                $(listOption[0]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue1)) {
+                $(listOption[0]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+            if (agrs.OptionValue2 == "") {
+                $(listOption[1]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue2)) {
+                $(listOption[1]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+            if (agrs.OptionValue3 == "") {
+                $(listOption[2]).parent().find('[name=errOption]').text('Trường này không được để trống.');
+                isError = true;
+            }
+            else if (!Validate("Note", agrs.OptionValue3)) {
+                $(listOption[2]).parent().find('[name=errOption]').text('Không được phép nhập ký tự đặt biệt.');
+                isError = true;
+            }
+        }
+        agrs.Options = Options;
+
+        if (isError) {
+            return;
+        };
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn thêm biến thể?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JProductVariantAdd", "Product")',
+                    data: agrs,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            var resData = JSON.parse(res.Data);
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1000
+                            }).then(
+                                function () {
+                                    $.get('@Url.Action("ProductVariantDataByProductID", "Product")?ProductID=' + model.ProductID + '&VariantID=' + resData.VariantID, function (data) {
+                                        $('#variants').html(data);
+                                    });
+                                    window.location.href = '@Url.Action("ProductVariantIndex", "Product")?ProductID=' + model.ProductID + '&VariantID=' + resData.VariantID ;
+                                }
+                            );
+
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        CreateCustomSwal("error", err.Message);
+                        return;
+                    }
+                });
+            }
+        });
+    });
+    //cập nhật ảnh
+    $('#btnUpdateImage').on('click', function () {
+    var ProductID = $('#ProductID').val();
+        $.post('@Url.Action("ImagesView", "Product")', { ProductID: ProductID, Page : "Variant" }, function (data) {
+            $('#modal-ViewModal-html').html('<div class="ImagesView">' + data + '</div>');
+            $('#ViewModal').modal('show');
+        });
+    });
+    function RemoveErrorMessage(This) {
+        $(This).parent().find('.error-message').text("");
+    }
+</script>

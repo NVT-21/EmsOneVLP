@@ -1,0 +1,32 @@
+﻿@model List<EMS.MVC.Backend.Models.EditHistoryTabViewModel>
+
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle"> Thời gian </th>
+            <th class="align-middle"> Thao tác </th>
+            <th class="align-middle"> Người thực hiện </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.CreatedDate
+                </td>
+                <td class="text-left">
+                    @item.Name
+                </td>
+                <td>
+                    @item.CreatedName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

@@ -1,0 +1,51 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-basis">
+                <div class="card-left boder-left">
+                    @{
+                        Html.RenderAction("TreeView", "Shop");
+                    }
+                </div>
+                <div class="card-right" id="showData">
+                    @{
+                        Html.RenderAction("ListEmployeeData", "Employee", new { ShopID = ViewBag.ShopID });
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function LoadEmployeeListData(ShopID) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ListEmployeeData", "Employee")',
+            data: {
+                ShopID: ShopID
+            },
+            dataType: 'html',
+            success: function (data) {
+                $("#showData").empty();
+                $("#showData").append(data);
+                $("#Name_Store").text($("#Name_" + ShopID).text());
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Error',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>
+

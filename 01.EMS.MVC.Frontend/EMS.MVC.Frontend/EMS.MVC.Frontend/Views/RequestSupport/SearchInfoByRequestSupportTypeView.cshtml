@@ -1,0 +1,115 @@
+﻿@model EMS.MVC.Frontend.Models.SearchInfoByRequestSupportTypeViewModel
+
+@if (Model.RequestSupportType == "6")
+{
+    //Sửa thông tin lấy hàng
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                @Html.EditorFor(model => model.Sender.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id= "SenderStreet", @placeholder = "Địa chỉ", @maxlength = "500" } })
+                <span class="text-danger" id="errSenderStreet"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Tỉnh/ Thành phố <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Sender.Province.ID, new SelectList(Model.Sender.ListProvince, "ID", "Name"), "-- Tỉnh/ thành phố --", new { @class = "select2", @id="SenderProvinceID", @onchange = "LoadListDistrict('SenderProvinceID', 'SenderDistrictID', 'SenderWardID')" })
+                <span class="text-danger" id="errSenderProvinceID"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Quận/ Huyện <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Sender.District.ID, new SelectList(Model.Sender.ListDistrict, "ID", "Name"), "-- Quận/ Huyện --", new { @class = "select2", @id = "SenderDistrictID", @onchange = "LoadListWard('SenderDistrictID', 'SenderWardID')" })
+                <span class="text-danger" id="errSenderDistrictID"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Phường/ Xã <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Sender.Ward.ID, new SelectList(Model.Sender.ListWard, "ID", "Name"), "-- Phường/ Xã --", new { @class = "select2", @id = "SenderWardID" })
+                <span class="text-danger" id="errSenderWardID"></span>
+            </div>
+        </div>
+    </div>
+}
+else if (Model.RequestSupportType == "7")
+{
+    //Sửa tiền đơn hàng (tiền COD)
+    <div class="col-md-12">
+        <div class="mb-3">
+            <label class="mb-1">Tiền thu hộ (COD) - cần thay đổi <span class="text-danger">*</span></label>
+            @Html.EditorFor(model => model.TotalCOD, new { htmlAttributes = new { @type = "text", @class = "form-control", @id="MainTotalCOD", @placeholder = "Tiền thu hộ (COD)", @maxlength = "10", @data_inputmask = "'alias': 'currency'" } })
+            <span class="text-danger" id="errMainTotalCOD"></span>
+        </div>
+    </div>
+}
+else if (Model.RequestSupportType == "8")
+{
+    //Sửa số điện thoại giao hàng
+    <div class="col-md-12">
+        <div class="mb-3">
+            <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+            @Html.EditorFor(model => model.Receiver.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @id= "ReceiverMobileNumber", @placeholder = "Số điện thoại", @maxlength = "11" } })
+            <span class="text-danger" id="errReceiverMobileNumber"></span>
+        </div>
+    </div>
+}
+else if (Model.RequestSupportType == "9")
+{
+    //Sửa địa chỉ giao hàng(có thể thu phí hoặc không)
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                @Html.EditorFor(model => model.Receiver.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @id= "ReceiverStreet", @placeholder = "Địa chỉ", @maxlength = "500" } })
+                <span class="text-danger" id="errReceiverStreet"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Tỉnh/ Thành phố <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Receiver.Province.ID, new SelectList(Model.Receiver.ListProvince, "ID", "Name"), "-- Tỉnh/ thành phố --", new { @class = "select2", @id= "ReceiverProvinceID", @onchange = "LoadListDistrict('ReceiverProvinceID', 'ReceiverDistrictID', 'ReceiverWardID')" })
+                <span class="text-danger" id="errReceiverProvinceID"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Quận/ Huyện <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Receiver.District.ID, new SelectList(Model.Receiver.ListDistrict, "ID", "Name"), "-- Quận/ Huyện --", new { @class = "select2", @id = "ReceiverDistrictID", @onchange = "LoadListWard('ReceiverDistrictID', 'ReceiverWardID')" })
+                <span class="text-danger" id="errReceiverDistrictID"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="mb-1">Phường/ Xã <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Receiver.Ward.ID, new SelectList(Model.Receiver.ListWard, "ID", "Name"), "-- Phường/ Xã --", new { @class = "select2", @id = "ReceiverWardID" })
+                <span class="text-danger" id="errReceiverWardID"></span>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2(AttributeSelect2);
+        $(":input").inputmask();
+    });
+
+    VNPMapsAutocomplete("SenderStreet", "SenderProvinceID", "SenderDistrictID", "SenderWardID");
+    CheckChangeValue("SenderStreet", "Vui lòng nhập địa chỉ", "", "Y");
+    CheckChangeValue("SenderProvinceID", "Vui lòng chọn Tỉnh/ thành phố", "", "Y");
+    CheckChangeValue("SenderDistrictID", "Vui lòng chọn Quận/ huyện", "", "Y");
+    CheckChangeValue("SenderWardID", "Vui lòng chọn Phường/ xã", "", "Y");
+
+    OnlyNumber("#ReceiverMobileNumber");
+    CheckChangeValue("ReceiverMobileNumber", "Số điện thoại không hợp lệ", "MobileNumber", "Y");
+
+    CheckChangeValue("MainTotalCOD", "Vui lòng nhập tiền thu hộ (COD)", "Number", "Y");
+
+    VNPMapsAutocomplete("ReceiverStreet", "ReceiverProvinceID", "ReceiverDistrictID", "ReceiverWardID");
+    CheckChangeValue("ReceiverStreet", "Vui lòng nhập địa chỉ", "", "Y");
+    CheckChangeValue("ReceiverProvinceID", "Vui lòng chọn Tỉnh/ thành phố", "", "Y");
+    CheckChangeValue("ReceiverDistrictID", "Vui lòng chọn Quận/ huyện", "", "Y");
+    CheckChangeValue("ReceiverWardID", "Vui lòng chọn Phường/ xã", "", "Y");
+</script>

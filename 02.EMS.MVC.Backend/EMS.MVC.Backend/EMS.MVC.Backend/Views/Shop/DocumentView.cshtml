@@ -1,0 +1,93 @@
+﻿<div class="form-group row">
+    <div class="col">
+        <label>Tải tài liệu </label>
+
+        <input id="UploadImageFile" name="UploadImageFile" type="file" class="file-upload-default" accept="image/*" multiple="multiple" />
+        <div class="row list-image">
+            <button class="btn btn-sm btn-link btn-fw border-dark" style="border-style:dashed;margin-left:20px;" type="button" id="btnImage">
+                <i class="fa fa-image" style="font-size:40px;"></i><i class="fa fa-level-up" style="font-size:20px;"></i><br />
+                Thêm tài liệu
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#UploadImageFile').on('change', function (e) {
+        var files = e.target.files;
+        var listImage = document.getElementsByName("ImageProduct");
+        var count = files.length + listImage.length;
+        if (count > 10) {
+            swal({
+                title: 'Thông báo',
+                text: 'Chỉ được upload tối đa 10 ảnh.',
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            });
+            return;
+        }
+
+        if (files.length > 0) {
+            var data = new FormData();
+            for (var x = 0; x < files.length; x++) {
+                data.append("file" + x, files[x]);
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UploadImage", "DataFile")',
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (res) {
+                    if (res.Code == '00') {
+                        debugger;
+                        var list = JSON.parse(res.Data);
+                        for (var i = 0; i < list.length; i++) {
+                            var ImgHtml = '<div class="form-remove">'
+                                + '<button class="btn btn-sm btn-danger btn-icon btn-remove" onclick="removeImage(this)" style="width: 15px; height: 15px; position: absolute; right: 3px; top: 3px;">&times;</button >'
+                                + '<img class="img-thumbnail" name="ImageProduct" width="100" height="100" data-value="' + list[i].FileName + '" src="@XHelper.pathImages' + list[i].FileName + '" /></div > '
+                            //$('.list-image').append(ImgHtml);
+                            $('#btnImage').before(ImgHtml);
+                        }
+                        $('#UploadImageFile').val("");
+                    }
+                    else {
+                        swal({
+                            title: 'Thông báo',
+                            text: res.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    swal({
+                        title: 'Lỗi kết nối',
+                        text: 'Vui lòng kiểm tra lại kết nối mạng',
+                        icon: 'error',
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    $('#btnImage').on('click', function () {
+        $('#UploadImageFile').click();
+    });
+</script>

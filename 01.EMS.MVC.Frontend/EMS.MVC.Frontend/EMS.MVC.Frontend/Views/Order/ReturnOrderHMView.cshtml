@@ -1,0 +1,404 @@
+﻿@model EMS.MVC.Frontend.Models.WalkInOrderViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="robots" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <title>EMSOne</title>
+    <link rel="shortcut icon" type="image/png" href="~/favicon.png" />
+    @Styles.Render("~/bundles/css")
+    @Styles.Render("~/bundles/fonts")
+    <script src="~/Assets/js/global.min.js"></script>
+    <script src="~/Assets/js/MyJS.js?n=@XHelper.JavaScriptVersion"></script>
+</head>
+<body>
+    <!-- AJAX LOADER -->
+    <div id="ajax_loader" style="background-color: rgba(0, 0, 0, 0.5); z-index: 99999999; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; display: none;" class="">
+        <div id="ajax_loader_contend" style="position: fixed; left: 50%; top: 50%; color:white"><img src="~/Assets/images/default/loading.gif" style="width:30px; height:30px" /></div>
+    </div>
+
+    <div class="content-body-small">
+        <div id="header-no-pd" class="header-no-pd">
+            <div class="header-content">
+                <nav class="navbar navbar-expand">
+                    <div class="collapse navbar-collapse justify-content-between">
+                        <div class="header-left">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/Assets/images/logo/logo-full.svg" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <div class="nav-item">
+                                
+                                <a href="/dang-nhap" class="btn btn-secondary ms-3">
+                                    <i class="ti-back-left"></i> Đăng nhập
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="container-fluid d-flex justify-content-center">
+            @if(Model != null)
+            {
+                <div class="row justify-content-center">
+                    <div class="col-xs-12 col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="page-title">
+                                    <div class="title_left text-success">
+                                        <h3><i class="icon-icon03"></i> Đổi trả hàng hóa H&M</h3>
+
+                                        <div id="result" class="mb-3">
+                                            <div class="item-code text-black">
+
+                                            </div>
+                                            <div class="order-code text-black">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @if(@Model.ReturnCount == 3)
+                                    {
+                                        <span class="text-danger alert-link">Bạn đã hết số lần tạo đơn đổi trả</span>
+                                    }
+                                    <label class="mb-1">Số lần tạo đơn đổi trả: <span class="text-black alert-link">@Model.ReturnCount </span></label>
+                                    <label class="mb-1">Các mã đổi trả: <span class="text-black alert-link">@Model.ReturnShippingCodes </span></label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Mã đơn hàng <span class="text-danger">*</span></label>
+                                        @Html.EditorFor(model => model.OrderCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã đơn hàng", @disabled = "disabled" } })
+                                        <span class="text-danger" id="errOrderCode"></span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                                        @Html.EditorFor(model => model.Sender.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên" } })
+                                        <span class="text-danger" id="errSender_FullName"></span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                                        @Html.EditorFor(model => model.Sender.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                                        <span class="text-danger" id="errSender_MobileNumber"></span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                                        @Html.EditorFor(model => model.Sender.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                                        <span class="text-danger" id="errSender_Street"></span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                        @Html.DropDownListFor(model => model.Sender.Province.ID, new SelectList(Model.Sender.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('Sender_Province_ID', 'Sender_Ward_ID')" })
+                                        <span class="text-danger" id="errSender_Province_ID"></span>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                                        <label class="mb-1">Phường/Xã <span class="text-danger">*</span></label>
+                                        @Html.DropDownListFor(model => model.Sender.Ward.ID, new SelectList(Model.Sender.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                                        <span class="text-danger" id="errSender_Ward_ID"></span>
+                                    </div>
+
+                                    @Html.HiddenFor(model => model.Sender.FullAddress)
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                        <label class="mb-1">Ghi chú đơn hàng</label>
+                                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @placeholder = "Nhập ghi chú đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                        <label class="mb-1">Nội dung đơn hàng</label>
+                                        @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @placeholder = "Nhập nội dung đơn hàng. Tối đa 250 ký tự", @maxlength = "250", @rows = "2" })
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                                        <label class="mb-1">Hình thức thu gom <span class="text-danger">*</span></label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                @Html.RadioButtonFor(m => m.CollectionType.ID, 1, new { @class = "form-check-input", @checked = "checked" })
+                                                <label class="form-check-label" for="13">
+                                                    Thu gom tận nơi
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                @Html.RadioButtonFor(m => m.CollectionType.ID, 2, new { @class = "form-check-input" })
+                                                <label class="form-check-label " for="23">
+                                                    Gửi hàng tại bưu cục
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <span class="text-danger alert-link">Nếu Quý Khách hàng đã chọn ‘Thu gom tận nơi’ thì không thể đem ra bưu cục gửi trực tiếp.</span>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="row mb-2">
+                                    <div class="col-xl-12 col-lg-12 col-md-12">
+                                        <button type="button" class="btn btn-primary" id="btnAddOrderType2" onclick="btnAddOrder(2)">Tạo bưu gửi</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+        <div class="row justify-content-center">
+            <div class="col-lg-12" style="width:900px">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="text-danger"> Đơn hàng này không tồn tại</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            }
+
+        </div>
+    </div>
+    <div class="footer-no-mg">
+        <div class="footer-content">
+            @RenderPage("~/Views/Shared/_Footer.cshtml")
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/js")
+    <script>
+        var TotalMoney = 0, TotalOrderValue = 0, TransportFee = 0, ExpectedDeliveryDate = "", ReceiverInfo = null;
+        CheckChangeValue("Quantity", "Vui lòng nhập số lượng sản phẩm", "Number", "Y");
+        CheckChangeValue("OrderValue", "", "Number", "N");
+
+        CheckChangeValue("OrderCode", "", "SpecialCharButNotVietnamese", "N");
+
+
+
+        OnlyNumber("#Receiver_MobileNumber, #Sender_Receiver_MobileNumber");
+
+        CheckChangeValue("Sender_FullName", "Vui lòng nhập Họ và tên người gửi.", "", "Y");
+        CheckChangeValue("Sender_MobileNumber", "Vui lòng nhập Số điện thoại người gửi.", "MobileNumber", "Y");
+        CheckChangeValue("Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+        CheckChangeValue("Sender_Ward_ID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+
+        $(document).ready(function () {
+            $('select.select2').select2(AttributeSelect2);
+            $('#Sender_FullName').focus();
+            $("#ExtraTransportServiceID").selectpicker("refresh");
+            $("#footer").addClass("d-none");
+            $(".content-body").css("min-height", "");
+            $("input[name='CollectionType.ID']").change();
+        });
+
+
+        $("input").on("focus", function () {
+            $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", true);
+        });
+
+        $("input").on("focusout", function () {
+            $("#btnAddOrderType1, #btnAddOrderType2").attr("disabled", false);
+        });
+
+
+        function btnAddOrder(AddType) {
+            var isError = false;
+            var Message = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+
+            if (isError == true) {
+                return;
+            }
+            var IsNewAddress = "N";
+            if ($('#New_Address_Check').is(':checked')) {
+                IsNewAddress = "Y"
+            }
+
+            var data = {
+                Sender: {
+                    PickUpAddressID: 1,
+                    FullName: $("#Sender_FullName").val().trim() + " - KH H&M",
+                    MobileNumber: $('#Sender_MobileNumber').val().trim(),
+                    Province: {
+                        ID: $("#Sender_Province_ID").val()
+                    },
+                    Ward: {
+                        ID: $("#Sender_Ward_ID").val()
+                    },
+                    Street: $("#Sender_Street").val().trim(),
+                    FullAddress: ConvertAddress($('#Sender_Street').val().trim(), $('#Sender_Ward_ID').val() == "" ? "" : $("#Sender_Ward_ID option:selected").text(), $("#Sender_Province_ID option:selected").text()),
+
+                },
+                IsUpdateReceiver: "N",
+                //ListInventoryOutput: ListInventoryOutput,
+                IsTransport: "Y",
+                OrderCode: $('#OrderCode').val().trim(),
+                CollectionType: {
+                    ID: $("input[name='CollectionType.ID']:checked").val()
+                },
+                MainTransportServiceID: $("#MainTransportServiceID").val(),
+                TransportFee: TransportFee,
+                Note: $('#Note').val().replaceAll("\n", "<br />"),
+                Message: $('#Message').val().replaceAll("\n", "<br />"),
+                Channel: "WEB",
+                TotalMoney: TotalMoney,
+                TotalDiscount: 0,
+                TotalOrderValue: TotalOrderValue,
+                AddType: AddType,
+                OrderStatus: AddType == 3 ? "D" : null,
+                TransportPayer: $("input[name='TransportPayer']:checked").val(),
+                RequestOrderID: 0,
+                IsRequestOrder: "N",
+            };
+
+            if (data.AddType == 1 || data.AddType == 2) {
+                
+                // Sửa thêm vào để bỏ qua khi lấy theo địa dư hành chính mới
+
+                isError = CheckNullValue(data.Sender.PickUpAddressID, "PickUpAddressID", "Vui lòng chọn địa chỉ lấy hàng.", isError);
+                isError = CheckNullValue(data.Sender.FullName, "Sender_FullName", "Vui lòng nhập Họ và tên.", isError);
+                isError = CheckNullAndRegexValue(data.Sender.MobileNumber, "MobileNumber", "Sender_MobileNumber", "Vui lòng nhập điện thoại.", "Số điện thoại không hợp lệ", isError);
+                isError = CheckNullValue(data.Sender.Province.ID, "Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", isError);
+
+                isError = CheckNullValue(data.Sender.Ward.ID, "Sender_Ward_ID", "Vui lòng chọn Quận/ Huyện.", isError);
+                isError = CheckNullValue(data.Sender.Street, "Sender_Street", "Vui lòng nhập địa chỉ.", isError);
+
+             
+
+            } else {
+                isError = false;
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            var MessageNotify = "";
+            var MessageSuccess = "";
+            switch (AddType) {
+                case 1:
+                    MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                    MessageSuccess = "Tạo đơn hàng thành công";
+                    break;
+                case 2:
+                    MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng và gửi vận chuyển?";
+                    MessageSuccess = "Tạo đơn hàng và gửi vận chuyển thành công";
+                    break;
+                case 3:
+                    MessageNotify = "Bạn chắc chắn muốn lưu nháp đơn hàng?";
+                    MessageSuccess = "Lưu nháp thành công";
+                    break;
+                default:
+                    MessageNotify = "Bạn chắc chắn muốn tạo đơn hàng?";
+                    MessageSuccess = "Tạo đơn hàng thành công";
+                    break;
+            };
+
+            swal({
+                title: 'Thông báo',
+                text: MessageNotify,
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddReturnOrderHM", "Order")',
+                        dataType: 'json',
+                        loading: true,
+                        data: data,
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                var ShippingCode = JSON.parse(res.Data).ShippingCode;
+                                var OrderCode = JSON.parse(res.Data).OrderCode;
+                                                                var htmlSuccess =
+                                    '<strong style="font-size:28px;">' + ShippingCode + '</strong>' +
+                                    '<br/><br/>' +
+
+                                    '<strong>Tuyệt vời! Chúc mừng bạn đã tạo thành công đơn hàng.</strong>' +
+                                    '<br/><br/>' +
+
+                                    'Vui lòng ghi mã <strong>' + ShippingCode + '</strong> lên bưu gửi' +
+                                    '<br/>' +
+                                    'và lưu lại để tra cứu hành trình.' +
+                                    '<br/>' +
+
+                                    'Chúng tôi sẽ liên hệ thu gom trong vòng 48h tới,' +
+                                    '<br/><br/>' +
+
+                                    'Quý khách vui lòng hoàn thiện bưu gửi và lưu ý cuộc gọi đến từ tổng đài/nhân viên thu gom.' +
+                                    '<br/>' +
+
+                                    '<strong>H&amp;M</strong> sẽ chi trả chi phí chuyển phát đơn hàng này.' +
+                                    '<br/><br/>' +
+
+                                    'Bạn có thể tra cứu hành trình đơn hàng ' +
+                                    '<a href="https://ems.com.vn/tra-cuu/tra-cuu-buu-gui?code=' + ShippingCode + '" target="_blank">tại đây</a>.' +
+                                    '<br/>' +
+
+                                    'Liên hệ Hotline <strong><i>1900545433</i></strong> nếu cần hỗ trợ.' +
+                                    '<br/>' +
+                                    'Trân trọng cảm ơn!';
+                                CreateCustomSwal("success-no-reload", htmlSuccess);
+                                $("#result .item-code").html("<span>Mã bưu gửi: <b>" + ShippingCode + "</b></span>");
+                                $("#result .order-code").html("<span>Mã đơn hàng: <b>" + OrderCode + "</b></span>");
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-primary"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+
+        $(document).ajaxStart(function () {
+            $('#ajax_loader').show();
+        });
+
+        $(document).ajaxStop(function () {
+            $('#ajax_loader').hide();
+        });
+    </script>
+
+</body>
+</html>

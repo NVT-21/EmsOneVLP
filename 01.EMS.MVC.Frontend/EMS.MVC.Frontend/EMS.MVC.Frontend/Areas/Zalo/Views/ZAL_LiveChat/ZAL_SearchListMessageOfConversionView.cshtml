@@ -1,0 +1,385 @@
+﻿@model EMS.MVC.Frontend.Areas.Zalo.Models.ZAL_SearchListMessageOfConversionViewModel
+@using Newtonsoft.Json
+@{
+    Layout = null;
+    DateTime dt = DateTime.Now;
+    var dtFormat = dt.ToString("dd/MM/yyyy");
+    var OfficialAccountAvatar = XHelper.Session.ZaloProfile.PageAvatar;
+    var OfficialAccountName = XHelper.Session.ZaloProfile.PageName;
+    var CreatedDateSearch = "";
+    //var CreatedDateTemp = "";
+}
+
+@Html.HiddenFor(m => m.ConversionID)
+@Html.HiddenFor(m => m.UserID)
+
+<div class="py-2 border-bottom d-none d-lg-block">
+    <div class="d-flex align-items-center py-1">
+        <div class="position-relative">
+            <img src="@Model.UserAvatar" class="rounded-circle mr-1" alt="@Model.UserName" width="40" height="40">
+        </div>
+        <div class="flex-grow-1 pl-3">
+            <strong class="ms-1">@Model.UserName</strong>
+            <div class="text-muted small ms-1"><em>Vừa truy cập</em></div>
+        </div>
+        @*<div>
+                <button class="btn btn-lock"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone feather-lg"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></button>
+                <button class="btn btn-lock"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video feather-lg"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></button>
+                <button class="btn btn-lock"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal feather-lg"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+            </div>*@
+    </div>
+</div>
+<input type="hidden" id="LastTimeMessage-@Model.UserID"/>
+<div class="position-relative" style="height: 700px;">
+    <div class="chat-messages-zalo p-4 CustomScrollBar" id="ContentMessage" @*style="scroll-behavior: smooth;"*@>
+        @{
+            Html.RenderAction("ZAL_MessageOfConversionView", "ZAL_LiveChat", new { model = Model.ListMessage, area = "Zalo" });
+        }
+    </div>
+</div>
+
+<div class="flex-grow-0 py-3 px-4 border-top">
+    <div class="input-group">
+        <input type="text" class="form-control" id="MessageContent" placeholder="Type your message">
+        <button class="btn btn-primary" id="btnSend" onclick="btnSend()">Send</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //$('#ContentMessage').scrollTop($('#ContentMessage')[0].scrollHeight);
+        //var objDiv = document.getElementById("ContentMessage");
+        //objDiv.scrollTop = objDiv.scrollHeight;
+        //clearInterval(IntervalLoadListConversion);
+    });
+
+    var input = document.getElementById("MessageContent");
+    // Execute a function when the user releases a key on the keyboard
+    input.addEventListener("keyup", function (event) {
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            document.getElementById("btnSend").click();
+        }
+    });
+
+    $(document).keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13') {
+            document.getElementById("btnSend").click();
+        }
+    });
+
+    function btnSend() {
+        if ($("#MessageContent").val() == "") {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ZAL_JSendMessage", "ZAL_LiveChat", new { area = "Zalo" })',
+            dataType: 'json',
+            data: {
+                recipient: {
+                    user_id: $("#UserID").val()
+                },
+                message: {
+                    text: $("#MessageContent").val()
+                }
+            },
+            loading: true,
+            global: false,
+            beforeSend: function () {
+                $("#btnSend").attr("disabled", true);
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    $("#MessageContent").val('');
+                    $("#btnSend").attr("disabled", false);
+                    $('#ContentMessage').scrollTop($('#ContentMessage')[0].scrollHeight);
+                } else if (res.Code == "-216") {
+                    $.ajax({
+                        url: '@Url.Action("JRedirectZalo", "Channel", new { area = ""})',
+                        type: "POST",
+                        dataType: 'json',
+                        global: false,
+                        data: {
+                            PageID: '@XHelper.Session.ZaloProfile.PageID'
+                        },
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                swal({
+                                    title: "Thông báo",
+                                    text: "Gửi tin nhắn thất bại, vui lòng thử lại.",
+                                    button: {
+                                        text: "Đóng"
+                                    }
+                                }).then(function () {
+                                    $("#btnSend").attr("disabled", false);
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    console.log(res);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }
+
+    var TimeForLoadDetailConversion = "";
+
+    var CreatedDate = '@CreatedDateSearch';
+
+    @*function MessageOfConversion() {
+         $.ajax({
+             type: 'POST',
+             url: '@Url.Action("SearchListConversion", "Handle", new { area = "" })',
+             dataType: 'json',
+             data: {
+                 ConversionID: $("#ConversionID").val(),
+                 Channel: "ZA",
+                 CreatedDate: CreatedDate
+             },
+             loading: true,
+             global: false,
+             success: function (res) {
+                if (res.Code == "00") {
+                    var checkDataNew = 0;
+                    var data = JSON.parse(res.Data);
+                    $.each(data, function (index, value) {
+                        var checkDiv = $("#content-" + value.MessageID).length;
+                        if (checkDiv == 0) {
+                            $(".MessageBoxTemp").remove();
+                            $(".IsStatusMessage").html("");
+                            var html = '';
+                            if (value.CreatedDate.split(' ')[0] != TimeForLoadDetailConversion) {
+                                html += '<div class="chat-date">';
+                                html += '<div class="start line"></div>';
+                                if ('@dtFormat' == value.CreatedDate.split(' ')[0]) {
+                                    html += '<span> Hôm nay - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                } else {
+                                    html += '<span>' + value.CreatedDate.split(' ')[0] + ' - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                }
+                                html += '<div class="flx">';
+                                html += '<div class="end line"></div>';
+                                html += '</div>';
+                                html += '</div>';
+                                TimeForLoadDetailConversion = value.CreatedDate.split(' ')[0];
+                            }
+
+                            if (value.FromWhom == 0) {
+                                html += '<div class="chat-message-left pb-4 MessageBox" id="content-' + value.MessageID + '">';
+                            } else {
+                                html += '<div class="chat-message-right pb-4 MessageBox" id="content-' + value.MessageID + '">';
+                            }
+
+                            html += '<div>';
+                            html += '<img src="' + value.Avatar + '" class="rounded-circle mr-1" alt="' + value.DisplayName + '" width="40" height="40">';
+                            html += '<div class="text-muted small text-nowrap mt-2">' + value.CreatedDate.split(' ')[1] + '</div>';
+                            html += '</div>';
+
+                            if (value.MessageType == "TEXT") {
+                                if (value.FromWhom == 0) {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3 ml-3" style="background-color: #fff;">';
+                                } else {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3 ml-3" style="background-color: #e5efff;">';
+                                }
+                            } else {
+                                html += '<div class="flex-shrink-1 rounded py-2 px-3 ml-3">';
+                            }
+
+                            html += '<div class="font-weight-bold mb-1">' + value.DisplayName + '</div>';
+                            html += '<div class="row">';
+                            html += '<div class="col-md-12">';
+                            if (value.MessageType == "TEXT") {
+                                html += value.MessageText;
+                            } else if (value.MessageType == "STICKER") {
+                                html += '<img src="' + value.LinkURL + '"/>';
+                            } else if (value.MessageType == "IMAGE") {
+                                html += '<img src="' + value.Thumbnail + '"/>';
+                            }
+                            html += '</div>';
+                            if (index == data.length - 1 && value.FromWhom == 1) {
+                                $(".IsStatusMessage").html("");
+                                html += '<div class="col-md-12 text-right text-secondary text-small IsStatusMessage">';
+                                if (value.Status.Code == "N") {
+                                    html += value.Status.Name;
+                                } else if (value.Status.Code == "R") {
+                                    html += '<i class="fa fa-check"></i> ' + value.Status.Name;
+                                } else if (value.Status.Code == "S") {
+                                    html += '<img class="vertical-mid" src="../../Assets/images/icon_double_check.png" width="16" /> ' + value.Status.Name;
+                                }
+                                html += '</div>';
+                            }
+
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                            $(html).appendTo("#ContentMessage");
+                            checkDataNew++;
+                        } else {
+                            if (index == data.length - 1 && value.FromWhom == 1) {
+                                $(".IsStatusMessage").html("");
+                                if (value.Status.Code == "N") {
+                                    $(".IsStatusMessage").append(value.Status.Name);
+                                } else if (value.Status.Code == "R") {
+                                    $(".IsStatusMessage").append('<i class="fa fa-check"></i> ' + value.Status.Name);
+                                } else if (value.Status.Code == "S") {
+                                    $(".IsStatusMessage").append('<img class="vertical-mid" src="../../Assets/images/icon_double_check.png" width="16" /> ' + value.Status.Name);
+                                }
+                            }
+                        }
+                    });
+                    if (checkDataNew > 0) {
+                        var objDiv = document.getElementById("ContentMessage");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                        CreatedDate = data[data.length - 1].CreatedDate;
+                    }
+                }else if (res.Code == "408") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    }).then(function () {
+                        window.location.href = '@Url.Action("Logout","Account", new { area = "" })';
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                    }
+                });
+                return;
+            }
+        });
+    }*@
+
+    var OffSet = parseInt($(".MessageBox").length) + 10;;
+    $('#ContentMessage').on('scroll', function () {
+        var div = document.getElementById("ContentMessage");
+        if (div.scrollTop == 0) {
+            $.ajax({
+                url: '@Url.Action("MessageOfConversion", "Handle", new { area = "" })',
+                type: "POST",
+                dataType: 'json',
+                global: false,
+                data: {
+                    ConversionID: $("#ConversionID").val(),
+                    Channel: "ZA",
+                    LimitRow: OffSet,
+                },
+                success: function (res) {
+                    if (res.Code == "00") {
+                        var data = JSON.parse(res.Data);
+                        var time = "";
+                        $.each(data, function (index, value) {
+                            var checkDiv = $("#content-" + value.MessageID).length;
+                            if (checkDiv == 0) {
+                                var html = '';
+                                if (value.CreatedDate.split(' ')[0] != time) {
+                                    html += '<div class="chat-date">';
+                                    html += '<div class="start line"></div>';
+                                    if ('@dtFormat' == value.CreatedDate.split(' ')[0]) {
+                                        html += '<span> Hôm nay - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                    } else {
+                                        html += '<span>' + value.CreatedDate.split(' ')[0] + ' - ' + value.CreatedDate.split(' ')[1] + '</span>';
+                                    }
+                                    html += '<div class="flx">';
+                                    html += '<div class="end line"></div>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    time = value.CreatedDate.split(' ')[0];
+                                }
+
+                                if (value.FromWhom == 0) {
+                                    html += '<div class="chat-message-left mb-2 MessageBox" id="content-' + value.MessageID + '">';
+                                } else {
+                                    html += '<div class="chat-message-right mb-2 MessageBox" id="content-' + value.MessageID + '">';
+                                }
+                                html += '<div>';
+                                html += '<img src="' + value.Avatar + '" class="rounded-circle mr-1" alt="' + value.DisplayName + '" width="40" height="40">';
+                                //html += '<div class="text-muted small text-nowrap mt-2">' + value.CreatedDate.split(' ')[1] + '</div>';
+                                html += '</div>';
+
+                                if (value.FromWhom == 0) {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3" style="background-color: #fff; margin-left: 15px;">';
+                                } else {
+                                    html += '<div class="flex-shrink-1 rounded py-2 px-3" style="background-color: #e5efff; margin-right: 15px;">';
+                                }
+
+                                //html += '<div class="font-weight-bold mb-1">' + value.DisplayName + '</div>';
+                                html += '<div class="row">';
+                                html += '<div class="col-md-12">';
+                                if (value.MessageType == "TEXT") {
+                                    html += value.MessageText;
+                                } else if (value.MessageType == "STICKER") {
+                                    html += '<img src="' + value.LinkURL + '"/>';
+                                } else if (value.MessageType == "IMAGE") {
+                                    html += '<img src="' + value.Thumbnail + '"/>';
+                                }
+                                html += '<div class="d-flex justify-content-between">';
+                                html += '<div class="text-muted small me-1">' + value.CreatedDate.split(' ')[1] + '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                html += '</div>';
+                                $("#ContentMessage").scrollTop(250);
+                                $("#ContentMessage").prepend(html);
+                            }
+                        });
+                        OffSet = OffSet + 10;
+                    } else if (res.Code == "408") {
+                        swal({
+                            title: "Thông báo",
+                            text: res.Message,
+                            button: {
+                                text: "Đóng"
+                            }
+                        }).then(function () {
+                            window.location.href = '@Url.Action("Logout","Account", new { area = "" })';
+                        });
+                    }
+                }
+            });
+        }
+    });
+    //setInterval(function () {
+    //    var promise = new Promise(function (resolve, reject) {
+    //        resolve('success');
+    //    });
+
+    //    promise.then(function (data) {
+    //        LoadListConversion();
+    //    }, function (error) {
+    //        console.log('Promise rejected.');
+    //        console.log(error.message);
+    //    }).then(function (data) {
+    //        MessageOfConversion();
+    //    }, function (error) {
+    //        console.log('Promise rejected.');
+    //        console.log(error.message);
+    //    });
+    //}, 10000);
+    //setInterval(MessageOfConversion, 10000);
+</script>

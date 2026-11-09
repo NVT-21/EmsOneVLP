@@ -1,0 +1,175 @@
+﻿@model EMS.MVC.Backend.Models.SearchOrderReportViewModel
+@{
+    Layout = null;
+    var stt = 1;
+}
+
+<table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr>
+            <th class="align-middle" colspan="7">Tổng dữ liệu</th>
+            @if (Model != null)
+            {
+                <th class="text-right"> @Model.SumOrderMonthQuantity.ToString("N0")</th>
+                <th class="text-right"> @Model.SumOrderMonthTurnover.ToString("N0") ₫</th>
+            }
+            else
+            {
+                <th class="text-right"> 0</th>
+                <th class="text-right"> 0 ₫</th>
+            }
+        </tr>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle" style="max-width: 260px;"> Tên cửa hàng </th>
+            <th class="align-middle"> Mã PP/CRM </th>
+            <th class="align-middle"> Số điện thoại </th>
+            <th class="align-middle"> Ngày tạo tài khoản </th>
+            <th class="align-middle"> Đơn vị </th>
+            <th class="align-middle"> Đối tác </th>
+            <th class="align-middle"> Sản lượng phát sinh </th>
+            <th class="align-middle"> Doanh thu phát sinh </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.Data)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-left" style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;">@item.StoreName</td>
+                    <td class="text-left">@item.CustomerCode</td>
+                    <td class="text-left">@item.MobileNumber</td>
+                    <td class="text-center">
+                        @item.ConfirmDate
+                    </td>
+                    <td class="text-left">@item.AreaName</td>
+                    <td class="text-left">@item.PartnerName</td>
+                    <td class="text-right">
+                        @if (item.OrderMonthQuantity > 0)
+                        {
+                            <span style="color:#248afd; cursor: pointer; font-weight: 700;" onclick="fnViewDetail('@item.CustomerCode','@item.MobileNumber')">@item.OrderMonthQuantity.ToString("N0")</span>
+                        }
+                        else
+                        {
+                            @item.OrderMonthQuantity.ToString("N0")
+                        }
+                    </td>
+                    <td class="text-right">@item.OrderMonthTurnover.ToString("N0")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false,
+        });
+        $('#ListDataTableSearch').each(function () {
+            var datatable = $(this);
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+    function fnViewDetail(CustomerCode, MobileNumber) {
+        var errMsg = '', isError = false;
+        var SearchKey = "";
+        var fromDate = "";
+        var toDate = "";
+        if (CustomerCode != "") {
+            SearchKey = CustomerCode;
+        } else {
+            SearchKey = MobileNumber;
+        }
+        checkBox = $('#cbFilter').is(':checked');
+        if (checkBox) {
+            time = $('#Time').val().trim();
+            fromDate = "";
+            toDate = "";
+        } else {
+            time = "";
+            fromDate = $('#FromDate').val().trim();
+            toDate = $('#ToDate').val().trim();
+        }
+        var agrs = {
+            Time: time,
+            FromDate: fromDate,
+            ToDate: toDate,
+            PlaceOfCreation: $('#PlaceOfCreation').val(),
+            PlaceOfCreationName: $('#PlaceOfCreation').val() == "" ? "" : $("#PlaceOfCreation option:selected").text(),
+            SearchKey: SearchKey
+        };
+
+        if (checkBox) {
+            if (agrs.Time == "") {
+                errMsg = 'Vui lòng chọn thời gian.';
+                isError = true;
+            }
+        } else {
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 31) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+                isError = true;
+            }
+        }
+
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+
+            })
+            return;
+        }
+        var param = String.format("Time={0}&FromDate={1}&ToDate={2}&PlaceOfCreation={3}&SearchKey={4}",
+            agrs.Time, agrs.FromDate, agrs.ToDate, agrs.PlaceOfCreation, agrs.SearchKey);
+        window.location.href = '@Url.Action("OrderDetailReportView", "OrderReport")?SearchDetail=' + btoa(param) + '&PlaceOfCreationName=' + agrs.PlaceOfCreationName;
+    }
+</script>

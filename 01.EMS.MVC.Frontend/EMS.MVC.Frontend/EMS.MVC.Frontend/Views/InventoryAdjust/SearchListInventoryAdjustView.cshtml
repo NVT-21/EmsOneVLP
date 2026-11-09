@@ -1,0 +1,91 @@
+﻿@model List<EMS.MVC.Frontend.Models.InventoryAdjustListViewModel>
+<table class="table table-responsive-md" id="tableListInventoryAdjust">
+    <thead>
+        <tr>            
+            <th>Mã phiếu điều chỉnh</th>
+            <th>Kho hàng</th>
+            <th>Mã phiếu kiểm</th>
+            <th>Người điều chỉnh</th>
+            <th>Người xác nhận</th>
+            <th>Trạng thái</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>                    
+                    <td><span class=" ">@item.Code</span></td>
+                    <td><span class=" ">@item.Warehouse.Name</span></td>
+                    <td>@item.StockTake.Code</td>
+                    <td>
+                        <span style="line-height: 1.4rem;">@item.CreaterName</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.ImplementationDate.Split(' ')[0]</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.ImplementationDate.Split(' ')[1]</span>
+                    </td>
+                    <td>
+                        @if (item.Status.Code == "R" || item.Status.Code == "C" || item.Status.Code == "F")
+                        {
+                            <span style="line-height: 1.4rem;">@item.UpdaterName</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.UpdatedDate.Split(' ')[0]</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.UpdatedDate.Split(' ')[1]</span>
+                        }
+                    </td>
+                    <td>@item.Status.Name</td>
+                    <td class="text-center">
+                        @* Tạo mới, chờ xác nhận *@
+                        @if (item.Status.Code == "N" || item.Status.Code == "W")
+                        {
+                            <button type="button" class="btn btn-info light" title="Sửa thông tin" onclick="btnEditView(@item.ID)">
+                                <i class="icon-edit fs-18"></i>
+                            </button>
+                            <button type="button" class="btn btn-info light" title="Sửa chi tiết" onclick="btnEditDetailView(@item.ID)">
+                                <i class="fa fa-edit fs-18"></i>
+                            </button>
+                            <button type="button" class="btn btn-info light" title="Xác nhận" onclick="btnDetailView(@item.ID)">
+                                <i class="fa fa-check fs-18"></i>
+                            </button>
+                        }
+                        @* Chờ xác nhận *@
+                        <!--@if (item.Status.Code == "W")
+                        {
+                            <button type="button" class="btn btn-info light" title="Xác nhận" onclick="btnDetailView(@item.ID)">
+                                <i class="fa fa-check fs-18"></i>
+                            </button>
+                        }-->
+                        @* Từ chối, Huỷ, Hoàn thành *@
+                        @if (item.Status.Code == "R" || item.Status.Code == "C" || item.Status.Code == "F")
+                        {
+                            <button type="button" class="btn btn-info light" title="Xem chi tiết" onclick="btnDetailView(@item.ID)">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        MyCreateDataTable("tableListInventoryAdjust");
+    });
+
+    function btnEditView(ID) {
+        window.location.href = '@Url.Action("EditInventoryAdjustView", "InventoryAdjust")?ID=' + ID;
+    }
+    function btnEditDetailView(ID) {
+        window.location.href = '@Url.Action("EditDetailInventoryAdjustView", "InventoryAdjust")?ID=' + ID;
+    }
+    function btnDetailView(ID) {
+        window.location.href = '@Url.Action("DetailInventoryAdjustView", "InventoryAdjust")?ID=' + ID;
+    }
+</script>

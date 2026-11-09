@@ -1,0 +1,71 @@
+﻿@model EMS.MVC.Frontend.Models.AdjustingJournalEntriesViewModel
+@{
+    var stt = 1;
+}
+<table id="SearchListDataTable" class="table table-responsive-xl">
+    <thead>
+        <tr>
+            <th class="text-center" colspan="5"> Tổng dữ liệu</th>
+            @if (Model != null)
+            {
+                <th class="text-end"> @Model.SumProvisionalVolume.ToString("N0")</th>
+                <th class="text-end"> @Model.SumChargeableVolume.ToString("N0")</th>
+                <th class="text-end"> @Model.SumMainFee.ToString("N0") ₫</th>
+                <th class="text-end"> @Model.SumServiceFee.ToString("N0") ₫</th>
+                <th class="text-end"> @Model.SumTransportFeePublic.ToString("N0") ₫</th>
+                <th class="text-end"> @Model.SumFeePublic.ToString("N0") ₫</th>
+            }
+            else
+            {
+                <th class="text-end"> 0</th>
+                <th class="text-end"> 0</th>
+                <th class="text-end"> 0 ₫</th>
+                <th class="text-end"> 0 ₫</th>
+                <th class="text-end"> 0 ₫</th>
+                <th class="text-end"> 0 ₫</th>
+            }
+            <th class="text-center"></th>
+        </tr>
+        <tr>
+            <th class="text-center"> STT </th>
+            <th class="text-center"> ID Điều chỉnh </th>
+            <th class="text-center"> Ngày điều chỉnh </th>
+            <th class="text-center"> Mã bưu gửi </th>
+            <th class="text-center"> Ngày phát hành</th>
+            <th class="text-center"> KL</th>
+            <th class="text-center"> KL Quy đổi</th>
+            <th class="text-center"> Cước chính</th>
+            <th class="text-center"> Cước DV</th>
+            <th class="text-center"> Cước COD</th>
+            <th class="text-center"> Tiền thu hộ</th>
+            <th class="text-center"> Lý do</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.ListItem)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.AdjustingID</td>
+                    <td class="text-center">@item.AdjustingDate</td>
+                    <td class="text-center">@item.ItemCode</td>
+                    <td class="text-center">@item.TimeRelease</td>
+                    <td class="text-center">@item.ProvisionalVolume</td>
+                    <td class="text-center">@item.ChargeableVolume</td>
+                    <td class="text-end">@item.MainFee.ToString("N0")</td>
+                    <td class="text-end">@item.ServiceFee.ToString("N0")</td>
+                    <td class="text-end">@item.TransportFeePublic.ToString("N0")</td>
+                    <td class="text-end">@item.FeePublic.ToString("N0")</td>
+                    <td class="text-start">@item.Reason</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

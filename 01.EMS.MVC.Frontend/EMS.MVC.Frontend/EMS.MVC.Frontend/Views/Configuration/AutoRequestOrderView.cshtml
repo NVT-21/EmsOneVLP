@@ -1,0 +1,288 @@
+﻿@model EMS.MVC.Frontend.Models.AutoRequestOrderViewModel
+@{
+    ViewBag.Title = "AutoRequestOrderView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<string> lstTimeDivisionTemp = new List<string>();
+}
+
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h5>Hình thức chia yêu cầu</h5>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.AutoDivision, "N", new { @class = "form-check-input" })
+                            <label class="form-check-label">Chia thủ công</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.AutoDivision, "Y", new { @class = "form-check-input" })
+                            <label class="form-check-label"> Chia tự động</label>
+                        </div>
+                        <br />
+                        <span class="text-danger" id="errAutoDivision"></span>
+                    </div>
+                </div>
+                <div class="row mb-3" id="ShowAutoDivision" style="display: @{if (Model.AutoDivision == "N") { Write("none"); } else { Write("block"); }};">
+                    <div class="divider"></div>
+                    <h5>Thời gian chia yêu cầu hàng ngày</h5>
+                    @if (Model.TimeDivision != "")
+                    {
+                        var splitTimeDivision = Model.TimeDivision.Split(',');
+                        for (var i = 0; i < splitTimeDivision.Length; i++)
+                        {
+                            lstTimeDivisionTemp.Add(splitTimeDivision[i]);
+                        }
+                    }
+                    <div class="d-flex">
+                        <div class="form-check custom-checkbox me-5">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" name="TimeDivision" value="0800" @{ if (lstTimeDivisionTemp.Exists(m => m == "0800")) { Write("checked"); } } /> 8h
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check custom-checkbox me-5">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" name="TimeDivision" value="1000" @{ if (lstTimeDivisionTemp.Exists(m => m == "1000")) { Write("checked"); } } /> 10h
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check custom-checkbox me-5">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" name="TimeDivision" value="1330" @{ if (lstTimeDivisionTemp.Exists(m => m == "1330")) { Write("checked"); } } /> 13h30
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check custom-checkbox me-5">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" name="TimeDivision" value="1530" @{ if (lstTimeDivisionTemp.Exists(m => m == "1530")) { Write("checked"); } } /> 15h30
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <span class="text-danger" id="errTimeDivision"></span>
+                    </div>
+                    <div class="divider"></div>
+                    <h5>Đối tượng chia yêu cầu</h5>
+                    <div class="d-flex">
+                        <div class="form-check custom-checkbox me-5">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" id="EmployeeReadyDivision" @{ if (Model.EmployeeReadyDivision == "Y") { Write("checked"); } } /> Chỉ chia yêu cầu cho NV sẵn sàng nhận yêu cầu
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <h5>Thời gian chia lại yêu cầu khi không xử lý</h5>
+                    <div class="mb-3">
+                        <div class="form-check form-check-inline me-5">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.DateProcessRequestOrder, "1", new { @class = "form-check-input" }) 1 ngày
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline me-5">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.DateProcessRequestOrder, "2", new { @class = "form-check-input" }) 2 ngày
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline me-5">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.DateProcessRequestOrder, "3", new { @class = "form-check-input" }) 3 ngày
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline me-5">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.DateProcessRequestOrder, "4", new { @class = "form-check-input" }) 4 ngày
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.DateProcessRequestOrder, "5", new { @class = "form-check-input" }) 5 ngày
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <br />
+                        <span class="text-danger" id="errDateProcessRequestOrder"></span>
+                    </div>
+                    <div class="divider"></div>
+                    <h5>Tiêu chí chia yêu cầu</h5>
+                    <div class="mb-3">
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.Criteria, "1", new { @class = "form-check-input" }) Chia đều
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                @Html.RadioButtonFor(m => m.Criteria, "2", new { @class = "form-check-input" }) Ưu tiên NV đã xử lý KH
+                                <i class="input-helper"></i>
+                            </label>
+                        </div>
+                        <br />
+                        <span class="text-danger" id="errCriteria"></span>
+                    </div>
+                    <div class="divider"></div>
+                    <h5>Nhóm quyền nhận yêu cầu</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.EmployeeGroupPermissionID, new SelectList(Model.ListGroupPermission, "ID", "GroupPermissionName"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @multiple = "true" })
+                            <span class="text-danger" id="errEmployeeGroupPermissionID"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-sm-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-primary" id="btnUpdate">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#EmployeeGroupPermissionID").selectpicker("refresh");
+        $('select.select2').select2(AttributeSelect2);
+        $('#EmployeeGroupPermissionID').selectpicker();
+    });
+
+    $('input[name="AutoDivision"]').on('change', function (e) {
+        var value = this.value;
+        if (value == "Y") {
+            $("#ShowAutoDivision").css("display", "block");
+        } else {
+            $("#ShowAutoDivision").css("display", "none");
+        }
+    });
+    $("#DateProcessRequestOrder").click(function () {
+        if ($('#DateProcessRequestOrder').is(':checked')) {
+            $('#errDateProcessRequestOrder').text("");
+        } else {
+            $('#errDateProcessRequestOrder').text("Vui lòng chọn số ngày quá hạn xử lý.");
+            $('#Criteria').focus();
+            return;
+        }
+    });
+    $('input[name="TimeDivision"]').on('change', function (e) {
+        var arrValue1 = [];
+        $.each($("input[name='TimeDivision']:checked"), function () {
+            arrValue1.push($(this).val());
+        });
+        if (arrValue1.length > 0) {
+            $("#errTimeDivision").text("");
+        } else {
+            $("#errTimeDivision").text("Vui lòng chọn thời gian.");
+        }
+    });
+    $("#Criteria").click(function () {
+        if ($('#Criteria').is(':checked')) {
+            $('#errCriteria').text("");
+        } else {
+            $('#errCriteria').text("Vui lòng chọn tiêu chí chia yêu cầu đặt hàng.");
+            $('#Criteria').focus();
+            return;
+        }
+    });
+    $('#EmployeeGroupPermissionID').on('change', function () {
+        if ($('#EmployeeGroupPermissionID').val().toString()) {
+            $('#errEmployeeGroupPermissionID').text("");
+        } else {
+            $('#errEmployeeGroupPermissionID').text("Vui lòng chọn nhóm quyền.");
+            $('#EmployeeGroupPermissionID').focus();
+            return;
+        }
+    });
+    $("#btnUpdate").on("click", function () {
+        var IsError = false;
+        var arrTimeDivision = [];
+        $.each($("input[name='TimeDivision']:checked"), function () {
+            arrTimeDivision.push($(this).val());
+        });
+        var data = {
+            AutoDivision: $("input[name='AutoDivision']:checked").val(),
+            TimeDivision: arrTimeDivision.join(","),
+            EmployeeReadyDivision: $('#EmployeeReadyDivision').is(':checked') == true ? "Y" : "N",
+            EmployeeGroupPermissionID: $("#EmployeeGroupPermissionID").val().toString(),
+            DateProcessRequestOrder: $("input[name='DateProcessRequestOrder']:checked").val(),
+            Criteria: $("input[name='Criteria']:checked").val(),
+        }
+        IsError = CheckNullValue(data.Criteria, "Criteria", "Vui lòng chọn tiêu chí chia yêu cầu đặt hàng.", IsError);
+        IsError = CheckNullValue(data.DateProcessRequestOrder, "DateProcessRequestOrder", "Vui lòng chọn số ngày quá hạn xử lý.", IsError);
+        IsError = CheckNullValue(data.TimeDivision, "TimeDivision", "Vui lòng chọn thời gian.", IsError);
+        IsError = CheckNullValue(data.EmployeeGroupPermissionID, "EmployeeGroupPermissionID", "Vui lòng chọn nhóm quyền.", IsError);
+
+        if (IsError == true) {
+            return;
+        }
+              swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn thay đổi?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AutoRequestOrder", "Configuration")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+
+    });
+</script>

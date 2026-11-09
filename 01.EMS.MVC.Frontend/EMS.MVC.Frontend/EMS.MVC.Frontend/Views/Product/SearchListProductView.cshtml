@@ -1,0 +1,170 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListProductViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="align-middle">
+                <div class="form-check custom-checkbox">
+                    <input type="checkbox" class="form-check-input" id="SelectAll">
+                    <label class="form-check-label" for="checkAll"></label>
+                </div>
+            </th>
+            <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">Tên sản phẩm</th>
+            <th>Mã sản phẩm</th>
+            <th>Tồn kho</th>
+            <th>Số biến thể</th>
+            <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">Nhóm sản phẩm</th>
+            <th>Thời gian cập nhật</th>
+            <th>Người cập nhật</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div class="form-check custom-checkbox ">
+                        <input type="checkbox" class="form-check-input" id="SelectData" value="@item.ProductID">
+                        <label class="form-check-label" for="checkbox1"></label>
+                    </div>
+                </td>
+                <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                    <img class="img-fluid" src="@item.Avatar" @*src="/Assets/images/default/avatar.jpg"*@ alt="Ảnh đại diện" />
+                    @item.ProductName
+                </td>
+                <td>@item.ProductCode</td>
+                <td>@item.NumberOfProduct.ToString("N0")</td>
+                <td>@item.NumberOfVariant biến thể</td>
+                <td style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;">@item.ProductGroupName</td>
+                <td>@item.CreatedDate</td>
+                <td>@item.CreatedBy</td>
+                <td>
+                    <button type="button" onclick="window.location.href = '@Url.Action("EditProductView", "Product" , new { ProductID= item.ProductID })'" class="btn btn-info light ">
+                        <i class="icon-edit fs-18"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button type="button" id="btnHidden" hidden></button>
+<button type="button" id="btnAddProductToGroupHidden" hidden></button>
+<button type="button" id="btnRemoveProductToGroupHidden" hidden></button>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    $("#SelectAll").on("click", function (e) {
+        MySelectAllDataTable(this, "SearchListDataTable", 0);
+    });
+
+    $('#btnAddProductToGroupHidden').on('click', function () {
+        var table = $('#SearchListDataTable').DataTable();
+        var arr = [];
+        table.$('input:checked').each(function () {
+            arr.push(parseInt($(this).val()));
+        });
+
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm");
+            return;
+        };
+
+        $.post('@Url.Action("AddProductToGroupView", "Product")', {
+            ListProductID: arr.toString(),
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+
+    $('#btnRemoveProductToGroupHidden').on('click', function () {
+        var table = $('#SearchListDataTable').DataTable();
+        var arr = [];
+        table.$('input:checked').each(function () {
+            arr.push(parseInt($(this).val()));
+        });
+
+        if (arr.length == 0) {
+            CreateCustomSwal("error", "Vui lòng chọn sản phẩm");
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có muốn bỏ sản phẩm khỏi nhóm?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAddProductToGroup", "Product")',
+                    data: {
+                        ListProductID: arr.toString(),
+                        ProductGroupID: 0
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else if (res.Code == "99") {
+                            CreateCustomSwal("error", res.Message);
+                        } else {
+                            swal({
+                                title: 'Thông báo',
+                                text: res.Message,
+                                buttons: {
+                                    confirm: {
+                                        text: "Xem chi tiết",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-primary",
+                                        closeModal: true
+                                    },
+                                    cancel: {
+                                        text: "Đóng",
+                                        value: false,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true,
+                                    }
+                                },
+                            }).then((value) => {
+                                if (value) {
+                                    $.post('@Url.Action("ShowListErrorMultipleSelect", "Handle")', {
+                                        Error: res.Data,
+                                        Controller: "Product"
+                                    }, function (data) {
+                                        $('#modal-ViewModal-html').html(data);
+                                        $('#ViewModal').modal('show');
+                                    });
+                                } else {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                arr = [];
+            }
+        });
+    });
+</script>

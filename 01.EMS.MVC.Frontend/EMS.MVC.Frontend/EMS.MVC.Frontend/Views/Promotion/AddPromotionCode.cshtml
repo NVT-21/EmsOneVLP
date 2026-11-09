@@ -1,0 +1,747 @@
+﻿@model EMS.MVC.Frontend.Models.AddPromotionCodeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="fs-16 font-w600">Mã giảm giá</h5>
+                        <p class="text-3 text-italic">Khách hàng sẽ nhập mã này khi thực hiện thanh toán</p>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Nhập mã giảm giá hoặc chọn mã ngâu nhiên" id="PromotionCode" onchange="RemoveErrorMessage(this);">
+                            <button class="btn btn-secondary" type="button">Tạo mã ngẫu nhiên</button>
+                        </div>
+                        <span class="error-message" id="errPromotionCode"></span>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Loại khuyến mãi</label>
+                            <select class="select2 form-control" id="PromotionTypeOption">
+                                @foreach (var item in ViewBag.ListPromotionCodeType)
+                                {
+                                    if (item.Value == "1")
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value" title="a">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="Promotion-Type-1" style="display: block">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Mức giảm</label>
+                            <input type="text" class="form-control" id="Reduction-Type-1" onchange="removeErrorMsg()" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)" placeholder="Mức giảm">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="Promotion-Type-2-1" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Mức giảm</label>
+                            <input type="text" class="form-control" id="Reduction-Type-2" onchange="removeErrorMsg()" placeholder="Mức giảm" maxlength="2">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="Promotion-Type-2-2" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <input type="checkbox" class="form-check-input" id="CheckMaxReduction">
+                            <label class="form-check-label" for="CheckMaxReduction">
+                                Giá cao nhất
+                            </label>
+                            <input type="text" class="form-control" id="MaxReduction" onchange="removeErrorMsg()" disabled="disabled" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="Promotion-Type-3" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Đối với mức phí vận chuyển nhỏ hơn hoặc bằng</label>
+                            <input type="text" class="form-control" id="Reduction-Type-3" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="Promotion-Type-4" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">Mức đồng giá</label>
+                            <input type="text" class="form-control" id="Reduction-Type-4" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <!-- Apply For Option-->
+                    <div class="col-md-3" id="PTO-Type-1">
+                        <div class="mb-3">
+                            <label class="form-label">Áp dụng cho</label>
+                            <select class="select2 form-control" id="ApplyForOption-Type-12">
+                                @foreach (var item in ViewBag.ListPromotionCodeApplyForOption)
+                                {
+                                    if (item.Value == "1")
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="PTO-Type-3" style="display: none">
+                        <div class="mb-3">
+                            <label class="form-label">Áp dụng cho</label>
+                            @Html.DropDownListFor(model => model.ProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/Thành phố ---", new { @class = "select2", @id = "ApplyForOption-Type-3-3" })
+                        </div>
+                    </div>
+                    <!-- Trị giá đơn hàng từ -->
+                    <div class="col-md-3" id="AFO-Type-2" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoChild-Type-2" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                            <span class="props">đ</span>
+                        </div>
+                    </div>
+                    <!-- Nhóm sản phẩm -->
+                    <div class="col-md-3" id="AFO-Type-3-1" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            @Html.DropDownListFor(model => model.ProductGroupID, new SelectList(Model.ListProductGroup, "ID", "Name"), "--- Chọn ---", new { @class = "select2", @id = "AfoChild-Type-3" })
+                        </div>
+                    </div>
+                    <!-- Sản phẩm -->
+                    <div class="col-md-3" id="AFO-Type-4-1" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            <select class="select2 form-control" id="AfoChild-Type-4">
+                                <option value="0" disabled selected>Chọn sản phẩm</option>
+                                @if (ViewBag.ListProduct != null)
+                                {
+                                    foreach (var item in ViewBag.ListProduct)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Nhóm khách hàng -->
+                    <div class="col-md-3" id="AFO-Type-5" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            @Html.DropDownListFor(model => model.CustomerGroupID, new SelectList(Model.ListCustomerGroup, "ID", "Name"), "--- Chọn ---", new { @class = "select2", @id = "AfoChild-Type-5" })
+                        </div>
+                    </div>
+                    <!-- Khách hàng -->
+                    <div class="col-md-3" id="AFO-Type-6" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            @Html.DropDownListFor(model => model.CustomerID, new SelectList(Model.ListCustomer, "ID", "Email"), "--- Chọn ---", new { @class = "select2", @id = "AfoChild-Type-6" })
+                        </div>
+                    </div>
+                    <!-- Biến thể -->
+                    <div class="col-md-3" id="AFO-Type-7-1" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            <select class="select2 form-control" id="AfoChild-Type-7" onchange="reload_dataAC_Type('Type-7')" multiple>
+                                @if (ViewBag.ListProductVariant != null)
+                                {
+                                    foreach (var item in ViewBag.ListProductVariant)
+                                    {
+                                        <option value="@item.Value" @*onclick="selectedItem('@item.Value','@item.Text')"*@>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-9"></div>
+                    <div class="list-group col-md-3" id="data-AC-Type-7" style=" padding-left: calc(var(--bs-gutter-x)/2);"></div>
+                </div>
+                <!-- Nhóm sản phẩm -->
+                <div class="mb-3 row">
+                    <div class="col-md-3" id="AFO-Type-3-4" style="display: none">
+                        <div class="form-group">
+                            <div class="form-check" style="padding-top: 40px">
+                                <label class="">
+                                    <input type="radio" name="checkScope-Type-3" checked value="Y" id="ScopeOfUse-Type-3">
+                                    Một lần trên một đơn hàng
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-3-5" style="display: none">
+                        <div class="form-check" style="padding-top: 40px">
+                            <label class="">
+                                <input type="radio" name="checkScope-Type-3" value="N">
+                                Cho từng mặt hàng trong giỏ hàng
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-3-2" style="display: none">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <select class="select2 form-control" id="AfoCoditionsApply-Type-3">
+                                <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                <option value="2">Tổng giá trị sản phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-3-3" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoCaValue-Type-3" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                        </div>
+                    </div>
+                </div>
+                <!-- Sản phẩm -->
+                <div class="mb-3 row">
+                    <div class="col-md-3" id="AFO-Type-4-4" style="display: none">
+                        <div class="form-group">
+                            <div class="form-check" style="padding-top: 40px">
+                                <label class="">
+                                    <input type="radio" name="checkScope-Type-4" checked value="Y" id="ScopeOfUse-Type-4">
+                                    Một lần trên một đơn hàng
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-5" style="display: none">
+                        <div class="form-check" style="padding-top: 40px">
+                            <label class="">
+                                <input type="radio" name="checkScope-Type-4" value="N">
+                                Cho từng mặt hàng trong giỏ hàng
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-2" style="display: none">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <select class="select2 form-control" id="AfoCoditionsApply-Type-4">
+                                <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                <option value="2">Tổng giá trị sản phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-3" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoCaValue-Type-4" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                        </div>
+                    </div>
+                </div>
+                <!-- Biến thể -->
+                <div class="mb-3 row">
+                    <div class="col-md-3" id="AFO-Type-7-4" style="display: none">
+                        <div class="form-group">
+                            <div class="form-check" style="padding-top: 40px">
+                                <label class="">
+                                    <input type="radio" name="checkScope-Type-7" checked value="Y" id="ScopeOfUse-Type-7">
+                                    Một lần trên một đơn hàng
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-7-5" style="display: none">
+                        <div class="form-check" style="padding-top: 40px">
+                            <label class="">
+                                <input type="radio" name="checkScope-Type-7" value="N">
+                                Cho từng mặt hàng trong giỏ hàng
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-7-2" style="display: none">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <select class="select2 form-control" id="AfoCoditionsApply-Type-7">
+                                <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                <option value="2">Tổng giá trị sản phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-7-3" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoCaValue-Type-7" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 row" id="PTO-Type-4" style="display: none">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Áp dụng cho</label>
+                            <select class="select2 form-control" id="ApplyForOption-Type-4">
+                                <option value="1">Nhóm sản phẩm</option>
+                                <option value="2">Sản phẩm</option>
+                                <option value="3">Biến thể</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Nhóm sản phẩm -->
+                    <div class="col-md-3" id="AFO-Type-4-3-1" style="display: block">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            <select class="select2 form-control" id="AfoChild-Type-3-4">
+                                <option value="0" disabled selected>Chọn nhóm sản phẩm</option>
+                                @if (ViewBag.ListProductGroup != null)
+                                {
+                                    foreach (var item in ViewBag.ListProductGroup)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-3-2" style="display: block">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <select class="select2 form-control" id="AfoCoditionsApply-Type-3-4">
+                                <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                <option value="2">Tổng giá trị sản phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-3-3" style="display: block">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoCaValue-Type-3-4" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                        </div>
+                    </div>
+                    <!-- Sản phẩm -->
+                    <div class="col-md-3" id="AFO-Type-4-1" style="display: none">
+                        <div class="mb-3">
+                            <label>&nbsp;</label>
+                            <select class="select2 form-control" id="AfoChild-Type-4">
+                                <option value="0" disabled selected>Chọn sản phẩm</option>
+                                @if (ViewBag.ListProduct != null)
+                                {
+                                    foreach (var item in ViewBag.ListProduct)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-4-2" style="display: none">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <select class="select2 form-control" id="AfoCoditionsApply-Type-4-4">
+                                <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                <option value="2">Tổng giá trị sản phẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="AFO-Type-4-4-3" style="display: none">
+                        <div class="mb-3 custom-props">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="text" class="form-control" id="AfoCaValue-Type-4-4" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                        </div>
+                    </div>
+                    <!-- Biến thể -->
+                    <div class="mb-3 row">
+                        <div class="col-md-3" id="AFO-Type-4-5-1" style="display: none">
+                            <div class="mb-3">
+                                <label>&nbsp;</label>
+                                <select class="select2 form-control" id="AfoChild-Type-4-5" onchange="reload_dataAC_Type('Type-7')" multiple>
+                                    <option value="0">--- Chọn ---</option>
+                                    @if (ViewBag.ListProductVariant != null)
+                                    {
+                                        foreach (var item in ViewBag.ListProductVariant)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9"></div>
+                        <div class="list-group col-md-3" id="data-AC-Type-7" style=" padding-left: calc(var(--bs-gutter-x)/2);"></div>
+                        <div class="col-md-3" id="AFO-Type-7-5" style="display: none">
+                            <div class="form-check" style="padding-top: 40px">
+                                <label class="">
+                                    <input type="radio" name="checkScope-Type-7" value="N">
+                                    Cho từng mặt hàng trong giỏ hàng
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="AFO-Type-4-5-2" style="display: none">
+                            <div class="form-group">
+                                <label class="form-label">&nbsp;</label>
+                                <select class="select2 form-control" id="AfoCoditionsApply-Type-4-5">
+                                    <option value="1" selected>Số lượng sản phẩm áp dụng</option>
+                                    <option value="2">Tổng giá trị sản phẩm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="AFO-Type-4-5-3" style="display: none">
+                            <div class="mb-3 custom-props">
+                                <label class="form-label">&nbsp;</label>
+                                <input type="text" class="form-control" id="AfoCaValue-Type-4-5" onchange="removeErrorMsg()" name="currency-field" data-inputmask="'alias': 'currency'" onkeydown="return NoNegativeNumbers(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check custom-checkbox ms-1">
+                        <input type="checkbox" class="form-check-input" id="AllowUse">
+                        <label class="form-check-label" for="AllowUse">
+                            Cho phép sử dụng chung với chương trình khuyến
+                            mãi
+                        </label>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <h5 class="mb-3 fs-16 font-w600">Số lần sử dụng</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="form-check custom-checkbox ms-1">
+                                <input type="checkbox" class="form-check-input" id="cbNumberOfUse" checked>
+                                <label class="form-check-label" for="cbNumberOfUse">
+                                    Giới hạn số lần sử dụng của khuyến
+                                    mãi
+                                </label>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control NoNegativeNumbers" placeholder="Nhập giới hạn số lần sử dụng" id="NumberOfUse" style="display: block;" data-inputmask="'alias': 'currency'" onchange="RemoveErrorMessage(this)">
+                        <span class="error-message" id="errNumberOfUse"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="form-check custom-checkbox ms-1">
+                                <input type="checkbox" class="form-check-input" id="cbNumberOfCustomerUse" checked>
+                                <label class="form-check-label" for="cbNumberOfCustomerUse">
+                                    Giới hạn số lần sử dụng của mỗi khách
+                                    hàng
+                                </label>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control NoNegativeNumbers pt2" placeholder="Nhập giới hạn số lần sử dụng của mỗi khách" id="NumberOfCustomerUse" style="display: block" data-inputmask="'alias': 'currency'" onchange="RemoveErrorMessage(this)">
+                        <span class="error-message" id="errNumberOfCustomerUse"></span>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="mb-3">
+                            <h5 class=" fs-16 font-w600">Thời gian sử dụng</h5>
+                            <div class="datepicker-form">
+                                <div class="datepicker-form">
+                                    <input type="text" class="form-control input-daterange-datepicker" id="AllDate">
+                                    <input type="hidden" id="FromDate" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                    <input type="hidden" id="ToDate" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                </div>
+                            </div>
+                        </div>
+                        <span class="error-message" id="errEndDate"></span>
+                        <div class="form-check custom-checkbox ms-1">
+                            <input type="checkbox" class="form-check-input" id="CheckEndDate">
+                            <label class="form-check-label" for="CheckEndDate">Không bao giờ hết hạn</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <h5 class=" fs-16 font-w600">Đối tượng áp dụng</h5>
+                            <select class="select2 form-control" id="SubjectsOfApplication">
+                                @if (ViewBag.ListCustomerGroup != null)
+                                {
+                                    foreach (var item in ViewBag.ListCustomerGroup)
+                                    {
+                                        if (item.Value == "1")
+                                        {
+                                            <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-sm-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-outline-dark">Hủy bỏ</button>
+                <button type="button" class="btn btn-primary">Thêm mới</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            CreateDateRangePicker("AllDate", $("#FromDate").val(), $("#ToDate").val());
+        })
+
+        function reload_dataAC_Type(TypeName) {
+            var selectID = "#AfoChild-" + TypeName;
+            var data = $(selectID).val();
+
+            if (data != "") {
+                $.post('@Url.Action("PromotionProductVariant", "Promotion", new { })', { list: data, selectID: selectID }, function (htmlString) {
+                    $('#data-AC-' + TypeName).html(htmlString);
+                })
+
+                //$(selectID).val("");
+            }
+            else {
+                $('#data-AC-' + TypeName).html("");
+            }
+        };
+
+        $('#CheckEndDate').on('click', function () {
+            let CheckEndDate = document.getElementById("CheckEndDate").checked;
+            if (CheckEndDate == false) {
+                $("#AllDate").attr('disabled', false);
+            }
+            else {
+                $("#AllDate").attr('disabled', true);
+                //$("#AllDate").val('');
+            }
+        });
+
+        //ApplyForOption
+        $('#ApplyForOption-Type-4').on('change', function () {
+            let ApplyForOption = $('#ApplyForOption-Type-4').val();
+            if (ApplyForOption == 1) {
+                $('#AFO-Type-4-3-1').show();
+                $('#AFO-Type-4-3-2').show();
+                $('#AFO-Type-4-3-3').show();
+                $('#AFO-Type-4-4-1').hide();
+                $('#AFO-Type-4-4-2').hide();
+                $('#AFO-Type-4-4-3').hide();
+                $('#AFO-Type-4-5-1').hide();
+                $('#AFO-Type-4-5-2').hide();
+                $('#AFO-Type-4-5-3').hide();
+            } else if (ApplyForOption == 2) {
+                $('#AFO-Type-4-3-1').hide();
+                $('#AFO-Type-4-3-2').hide();
+                $('#AFO-Type-4-3-3').hide();
+                $('#AFO-Type-4-4-1').show();
+                $('#AFO-Type-4-4-2').show();
+                $('#AFO-Type-4-4-3').show();
+                $('#AFO-Type-4-5-1').hide();
+                $('#AFO-Type-4-5-2').hide();
+                $('#AFO-Type-4-5-3').hide();
+            } else {
+                $('#AFO-Type-4-3-1').hide();
+                $('#AFO-Type-4-3-2').hide();
+                $('#AFO-Type-4-3-3').hide();
+                $('#AFO-Type-4-4-1').hide();
+                $('#AFO-Type-4-4-2').hide();
+                $('#AFO-Type-4-4-3').hide();
+                $('#AFO-Type-4-5-1').show();
+                $('#AFO-Type-4-5-2').show();
+                $('#AFO-Type-4-5-3').show();
+            }
+        });
+
+
+        $('#ApplyForOption-Type-12').on('change', function () {
+            let ApplyForOption = $('#ApplyForOption-Type-12').val();
+            if (ApplyForOption == 1) {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else if (ApplyForOption == 2) {
+                $('#AFO-Type-2').show();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else if (ApplyForOption == 3) {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').show();
+                $('#AFO-Type-3-2').show();
+                $('#AFO-Type-3-3').show();
+                $('#AFO-Type-3-4').show();
+                $('#AFO-Type-3-5').show();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else if (ApplyForOption == 4) {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').show();
+                $('#AFO-Type-4-2').show();
+                $('#AFO-Type-4-3').show();
+                $('#AFO-Type-4-4').show();
+                $('#AFO-Type-4-5').show();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else if (ApplyForOption == 5) {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').show();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else if (ApplyForOption == 6) {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').show();
+                $('#AFO-Type-7-1').hide();
+                $('#AFO-Type-7-2').hide();
+                $('#AFO-Type-7-3').hide();
+                $('#AFO-Type-7-4').hide();
+                $('#AFO-Type-7-5').hide();
+            } else {
+                $('#AFO-Type-2').hide();
+                $('#AFO-Type-3-1').hide();
+                $('#AFO-Type-3-2').hide();
+                $('#AFO-Type-3-3').hide();
+                $('#AFO-Type-3-4').hide();
+                $('#AFO-Type-3-5').hide();
+                $('#AFO-Type-4-1').hide();
+                $('#AFO-Type-4-2').hide();
+                $('#AFO-Type-4-3').hide();
+                $('#AFO-Type-4-4').hide();
+                $('#AFO-Type-4-5').hide();
+                $('#AFO-Type-5').hide();
+                $('#AFO-Type-6').hide();
+                $('#AFO-Type-7-1').show();
+                $('#AFO-Type-7-2').show();
+                $('#AFO-Type-7-3').show();
+                $('#AFO-Type-7-4').show();
+                $('#AFO-Type-7-5').show();
+            }
+        });
+
+        //Promotion Type
+        $('#PromotionTypeOption').on('change', function () {
+            let PromotionTypeOption = $('#PromotionTypeOption').val();
+            if (PromotionTypeOption == 1) {
+                $("#Promotion-Type-1").show();
+                $("#Promotion-Type-2-1").hide();
+                $("#Promotion-Type-2-2").hide();
+                $("#Promotion-Type-3").hide();
+                $("#Promotion-Type-4").hide();
+                $("#PTO-Type-12").show();
+                $("#PTO-Type-1").show();
+                $("#PTO-Type-3").hide();
+                $("#PTO-Type-4").hide();
+            } else if (PromotionTypeOption == 2) {
+                $("#Promotion-Type-1").hide();
+                $("#Promotion-Type-2-1").show();
+                $("#Promotion-Type-2-2").show();
+                $("#Promotion-Type-3").hide();
+                $("#Promotion-Type-4").hide();
+                $("#PTO-Type-12").show();
+                $("#PTO-Type-1").show();
+                $("#PTO-Type-3").hide();
+                $("#PTO-Type-4").hide();
+            } else if (PromotionTypeOption == 3) {
+                $("#Promotion-Type-1").hide();
+                $("#Promotion-Type-2-1").hide();
+                $("#Promotion-Type-2-2").hide();
+                $("#Promotion-Type-3").show();
+                $("#Promotion-Type-4").hide();
+                $("#PTO-Type-12").hide();
+                $("#PTO-Type-1").hide();
+                $("#PTO-Type-3").show();
+                $("#PTO-Type-4").hide();
+            } else {
+                $("#Promotion-Type-1").hide();
+                $("#Promotion-Type-2-1").hide();
+                $("#Promotion-Type-2-2").hide();
+                $("#Promotion-Type-3").hide();
+                $("#Promotion-Type-4").show();
+                $("#PTO-Type-12").hide();
+                $("#PTO-Type-1").hide();
+                $("#PTO-Type-3").hide();
+                $("#PTO-Type-4").show();
+            }
+        });
+        $('#CheckMaxReduction').on('click', function () {
+            let CheckMaxReduction = document.getElementById("CheckMaxReduction").checked;
+            if (CheckMaxReduction == false) {
+                $("#MaxReduction").attr('disabled', true);
+            }
+            else {
+                $("#MaxReduction").attr('disabled', false);
+            }
+        });
+    </script>
+}

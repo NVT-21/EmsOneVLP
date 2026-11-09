@@ -1,0 +1,132 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListConversationStickerViewModel>
+<table id="ListDataTableCStickerOfC" class="table table-responsive-md">
+    <thead>
+        <tr class="table-info">
+            <th class="text-start" style="width:60px;"></th>
+            <th class="text-start">Thẻ hội thoại</th>
+        </tr>
+    </thead>
+    <tbody id="context-menu-test">
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-start" style="width: 60px;">
+                        @if (item.IsChoose == "Y")
+                        {
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" class="form-check-input" id="SelectData" value="@item.StickerID" data-StickerColor ="@item.StickerColor" data-StickerName="@item.StickerName" checked>
+                                <label class="form-check-label" for="checkbox1"></label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-check custom-checkbox ">
+                                <input type="checkbox" class="form-check-input" id="SelectData" value="@item.StickerID" data-StickerColor ="@item.StickerColor" data-StickerName="@item.StickerName">
+                                <label class="form-check-label" for="checkbox1"></label>
+                            </div>
+                        }
+                    </td>
+                    <td class="text-start">
+                        <div class="badge badge-outline-secondary m-1" style="color: @item.StickerColor; border-color: @item.StickerColor">@item.StickerName</div>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("ListDataTableCStickerOfC");
+    });
+    function btnUpdateCStickerOfC() {
+        var table = $('#ListDataTableCStickerOfC').DataTable();
+        var arr = [];
+        var obj = {};
+        table.$('input:checkbox').each(function () {
+            obj = {};
+            if ($(this).is(':checked')) {
+                obj = {
+                    StickerID: parseInt($(this).val()),
+                    StickerName: $(this).attr("data-StickerName"),
+                    StickerColor: $(this).attr("data-StickerColor"),
+                    IsChoose: "Y"
+                }
+            } else {
+              obj = {
+                StickerID: parseInt($(this).val()),
+                IsChoose: "N",
+              }
+            }
+            arr.push(obj);
+        });
+        var count = 0;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].IsChoose == "Y") {
+                count++;
+            }
+        }
+
+        if (count > 3) {
+            LoadDataConversationSticker();
+            CreateCustomSwal("error", "Vui lòng chọn ít hơn 3 thẻ hội thoại.");
+            return;
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_UpdateStickerOfConversation", "FAB_LiveChat", new { area = "Facebook" })',
+            data: {
+                ConversationID: $("#ConversionID").val(),
+                ListItem: arr
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                    setTimeout(function () {
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i].IsChoose == "Y") {
+                                var divConversionID = document.getElementById("iSticker_" + $("#ConversionID").val() + "_" + arr[i].StickerID);
+                                if (!divConversionID) {
+                                    $("#iSticker_" + $("#ConversionID").val()).append(
+                                        `<div id="iSticker_` + $("#ConversionID").val() + "_" + arr[i].StickerID + `"
+                                              class="badge badge-outline-secondary m-1"
+                                              style="color:`+ arr[i].StickerColor + `; border-color:` + arr[i].StickerColor +`">` +
+                                              arr[i].StickerName +
+                                        `</div>`);
+                                }
+                                var divUserID = document.getElementById("iSticker_" + $("#UserID").val() + "_" + arr[i].StickerID);
+                                if (!divUserID) {
+                                    $("#iSticker_" + $("#UserID").val()).append(
+                                        `<div id="iSticker_` + $("#UserID").val() + "_" + arr[i].StickerID + `"
+                                              class="badge badge-outline-secondary m-1"
+                                              style="color:`+ arr[i].StickerColor + `; border-color:` + arr[i].StickerColor + `">` +
+                                        arr[i].StickerName +
+                                        `</div>`);
+                                }
+                            } else {
+                                var divConversionID = document.getElementById("iSticker_" + $("#ConversionID").val() + "_" + arr[i].StickerID);
+                                if (divConversionID) {
+                                    $("#" + "iSticker_" + $("#ConversionID").val() + "_" + arr[i].StickerID).remove();
+                                }
+                                var divUserID = document.getElementById("iSticker_" + $("#UserID").val() + "_" + arr[i].StickerID);
+                                if (divUserID) {
+                                    $("#" + "iSticker_" + $("#UserID").val() + "_" + arr[i].StickerID).remove();
+                                }
+                            }
+                        }
+                        LoadDataConversationSticker();
+                    });
+                } else if (res.Code == "99") {
+                    CreateCustomSwal("error", res.Message);
+                }
+            }
+        });
+    }
+</script>

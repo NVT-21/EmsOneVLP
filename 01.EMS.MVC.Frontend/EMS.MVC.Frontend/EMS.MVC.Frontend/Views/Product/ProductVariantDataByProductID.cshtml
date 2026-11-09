@@ -1,0 +1,27 @@
+﻿@model EMS.MVC.Frontend.Models.ProductVariantDataByProductIDViewModel
+@{
+    Layout = null;
+}
+<table class="table ">
+    <thead>
+        <tr>
+            <th>Biến thể</th>
+            <th></th>
+            <th>Giá</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model.Variants)
+            {
+                <tr>
+                    <td class="text-left">
+                        <img style="width:50px;height:50px;" src="@XHelper.pathImages@item.Avatar">
+                    </td>
+                    <td class="text-left"><a class="text-primary" href="@Url.Action("ProductVariantIndex", "Product", new { ProductID = Model.ProductID ,VariantID = item.ID })">@item.Options</a></td>
+                    <td class="text-right">@item.Price.ToString("N0")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

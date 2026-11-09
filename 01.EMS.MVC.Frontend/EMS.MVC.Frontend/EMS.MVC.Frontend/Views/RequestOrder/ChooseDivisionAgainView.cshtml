@@ -1,0 +1,181 @@
+﻿
+<div class="modal-dialog  modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Chia lại yêu cầu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">Gán yêu cầu cho nhóm nhân viên</label>
+                        <select id="GroupPermissionID" multiple class="default-select form-control  mb-3 selectpicker" data-live-search="true" data-selected-text-format="count" data-actions-box="true">
+                            @if (ViewBag.ListEmployeeGroup.Count > 0)
+                            {
+                                foreach (var item in ViewBag.ListEmployeeGroup)
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger" id="errGroupPermissionID"></span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">Danh sách nhân viên</label>
+                        <div id="showListEmployee"></div>
+                        <span class="text-danger" id="errEmployeeID"></span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#GroupPermissionID').selectpicker();
+        $('#GroupPermissionID').selectpicker('selectAll');
+
+        loadEmployee();
+    })
+
+    function loadEmployee() {
+        var GroupPermissionID = $('#GroupPermissionID').val().join(',');
+        if (GroupPermissionID != "") {
+            $('#checkGroupPermission').css('display', 'block');
+            $.ajax({
+                type: 'POST',
+                global: false,
+                url: '@Url.Action("GetListEmployeeByEmployeeGroupID", "RequestOrder")',
+                data: {
+                    strEmployeeGroupID: GroupPermissionID
+                },
+                dataType: 'html',
+                success: function (data) {
+                    $('#showListEmployee').html(data);
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            });
+        } else {
+            $('#showListEmployee').empty();
+            $('#checkGroupPermission').css('display', 'none');
+        }
+    }
+    $('#GroupPermissionID').on('change', function () {
+        loadEmployee();
+    });
+
+    $("#btnSubmit").on('click', function () {
+        var isError = false;
+        var data = {};
+        var arrRequestOrderID = @Html.Raw(Json.Encode(ViewBag.ListRequestOrderID));
+        var arrEmployeeID = $('#GroupPermissionID').val() != "" ? $('#EmployeeID').val() : "";
+        data.GroupPermissionID = $('#GroupPermissionID').val();
+        data.arrRequestOrderID = arrRequestOrderID;
+        data.arrEmployeeID = arrEmployeeID;
+
+        if (data.GroupPermissionID == "") {
+            $("#errGroupPermissionID").text("Vui lòng chọn nhóm nhân viên.");
+            $("#GroupPermissionID").focus();
+            isError = true;
+        }
+
+        if (data.arrEmployeeID == "") {
+            $("#errEmployeeID").text("Vui lòng chọn nhân viên.");
+            $("#EmployeeID").focus();
+            isError = true;
+        }
+
+        if (isError == true) {
+            return;
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn lưu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value){
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChooseDivisionAgainView", "RequestOrder")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = "@Url.Action("DivisionAgainView", "RequestOrder")";
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    });
+</script>

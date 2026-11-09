@@ -1,0 +1,130 @@
+﻿@model List<EMS.MVC.Frontend.Models.OrderedProductViewModel>
+@{
+    Layout = null;
+}
+@if (Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        var Key = item.ProductID.ToString() + "-" + item.VariantID.ToString();
+        <tr name="row-item" id="tr_@Key">
+            <td>
+                <img src="@XHelper.pathImages@item.VariantImage" alt="">
+                <div name="OrderedProduct" style="display:none;" data-key="@Key" data-ProductID="@item.ProductID" data-VariantID="@item.VariantID" data-SKU="@item.SKU" data-Weight="@item.Weight" data-ProductName="@item.ProductName"></div>
+                <span>@item.ProductName</span>
+            </td>
+            <td>
+                <span>@item.VariantName</span>
+            </td>
+            <td class="text-center" style="vertical-align: middle;">
+                @*<input type="text" class="form-control w-auto OnlyNumber" name="NumberOfProduct" id="NumberOfProduct_@Key" value="@item.NumberOfProduct" onkeydown="return NoNegativeNumbers(event)" onkeyup="FuncUpdateIntoMoney('@Key')" onchange="checkProductNumber('@Key')" style="max-width: 150px;" />*@
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button class=" btn quantity-arrow-minus" onclick="minus(this,'@Key')" style="border: 1px solid #e5e6eb; border-radius: 0 !important;"> - </button>
+                    </div>
+                    <input type="text" class="form-control text-center w-auto OnlyNumber" name="NumberOfProduct" id="NumberOfProduct_@Key" value="@item.NumberOfProduct" onkeydown="return NoNegativeNumbers(event)" onkeyup="FuncUpdateIntoMoney('@Key')" onchange="checkProductNumber('@Key')" data-id="@item.NumberOfProduct" style="min-width: 100px; max-width: 100px; vertical-align: middle;" im-insert="true" />
+                    <div class="input-group-prepend">
+                        <button class="btn quantity-arrow-plus" onclick="plus(this,'@Key')" style="border: 1px solid #e5e6eb; border-radius: 0 !important;"> + </button>
+                    </div>
+                </div>
+                <span class="text-danger mt-2" id="errNumberOfProduct_@Key"></span>
+            </td>
+            <td name="Price" data-value="@item.Price">
+                @item.Price.ToString("N0") ₫
+            </td>
+            <td name="IntoMoney" data-value="@(item.Price * item.NumberOfProduct)">
+                @{
+                    var totalPrice = item.Price * item.NumberOfProduct;
+                    Write(totalPrice.ToString("N0") + " ₫");
+                }
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-trash light" onclick="FuncDeleteOrderedProduct(this)" title="Xoá sản phẩm">
+                    <i class="icon-trash"></i>
+                </button>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr id="HideOutOfStock">
+        <td colspan="10">
+            <span>Sản phẩm yêu cầu hết hàng</span>
+        </td>
+    </tr>
+}
+<script src="~/Assets/js/select2.js"></script>
+<script>
+    $(document).ready(function () {
+        //checkOrderedProducts();
+        $("#showTableOrderedProduct").css("display", "block");
+    });
+
+    $(".OnlyNumber").on("keypress keyup blur", function (event) {
+        $(this).val($(this).val().replace(/[^\d].+/, ""));
+        if ((event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+    });
+
+    function FuncDeleteOrderedProduct(this1) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn có chắc chắn muốn xoá sản phẩm này?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $(this1).parents("tr").remove();
+                var RowItem = document.getElementsByName('row-item');
+                if (RowItem.length == 0) {
+                    $("#OrderedProducts").css("display", "none");
+                }
+            }
+        });
+    }
+    function checkProductNumber(Key) {
+        var NumberOfProduct = $("#NumberOfProduct_" + Key).val();
+        if (NumberOfProduct == "" || parseInt(NumberOfProduct) == 0) {
+            $("#errNumberOfProduct_" + Key).text("Vui lòng nhập số lượng sản phẩm.");
+        } else {
+            $("#errNumberOfProduct_" + Key).text("");
+        }
+    }
+    function minus(ctl, key) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 1 : $input.val();
+        var count = parseInt(value) - 1;
+        count = count <= 0 ? 1 : count;
+        $input.val(count);
+        $input.change();
+        FuncUpdateIntoMoney(key);
+        return false;
+    };
+
+    function plus(ctl, key) {
+        var $input = $(ctl).parent().parent().find('input');
+        var value = $input.val() == "" ? 0 : $input.val();
+        var count = parseInt(value) + 1;
+        $input.val(count);
+        $input.change();
+        FuncUpdateIntoMoney(key);
+        return false;
+    };
+</script>
+

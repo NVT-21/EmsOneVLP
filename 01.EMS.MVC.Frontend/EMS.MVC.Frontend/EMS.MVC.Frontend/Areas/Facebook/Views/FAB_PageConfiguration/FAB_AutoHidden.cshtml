@@ -1,0 +1,443 @@
+﻿@{
+    ViewBag.Title = "FAB_AutoHidden";
+    var IsHiddenComment = ViewBag.itemHidden.IsHiddenComment;
+    var IsEmail = ViewBag.itemHidden.IsEmail;
+    var IsPhoneNumber = ViewBag.itemHidden.IsPhoneNumber;
+    var IsText = ViewBag.itemHidden.IsText;
+    int available = ViewBag.itemHidden.AvailableDate;
+}
+<div class="card card-basis">
+    <div class="card-left boder-left">
+        <ul>
+            <li>
+                <div class="d-flex justify-content-center py-1 mb-2">
+                    <div class="position-relative">
+                        <img src="@XHelper.Session.FacebookProfile.PageAvatar" class="rounded-circle mr-1 me-3" width="52" height="52">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center py-1">
+                    <div class="flex-grow-1 pl-2">
+                        <b>Trang:</b>&nbsp;@XHelper.Session.FacebookProfile.PageName
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="card-right">
+        <div class="card-body">
+            <p class="fs-16 font-w600">Ẩn bình luận</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" id="idHidden" value="@ViewBag.itemHidden.IDHidden" />
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ml-3">
+                            <h6 class="mb-1">Tự động ẩn bình luận</h6>
+                            <small class="text-muted mb-0"><i class="ti-notepad me-1"></i>Nếu bật hệ thống sẽ tự động ẩn các bình luận của trang bạn.</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleHidden" onclick="btnHiddenClick(1,'btnToggleHidden')">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ml-3">
+                            <h6 class="mb-1">Email</h6>
+                            <small class="text-muted mb-0"><i class="ti-notepad me-1"></i>Nếu bật hệ thống sẽ tự động ẩn các bình luận có chứa Email của trang bạn.</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleEmail" onclick="btnHiddenClick(2,'btnToggleEmail')">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ml-3">
+                            <h6 class="mb-1">Số điện thoại</h6>
+                            <small class="text-muted mb-0"><i class="ti-notepad me-1"></i>Nếu bật hệ thống sẽ tự động ẩn các bình luận có chứa số điện thoại của trang bạn.</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px" data-toggle="button" autocomplete="off" id="btnToggleMobileNumber" onclick="btnHiddenClick(2,'btnToggleMobileNumber')">
+                            <div class="handle"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="ml-3">
+                            <h6 class="mb-1">Ký tự áp dụng</h6>
+                            <small class="text-muted mb-0"><i class="ti-notepad me-1"></i>Nếu bật hệ thống sẽ tự động ẩn các bình luận có chứa từ khoá của trang bạn.</small>
+                        </div>
+                        <button type="button" class="btn btn-toggle ml-auto px-1 py-1 mdi-24px mt-4" data-toggle="button" autocomplete="off" id="btnToggleText" onclick="btnHiddenClick(2,'btnToggleText')">
+                            <div class="handle"></div>
+                        </button>
+                        <div class="ml-3">
+                            <input type="text" class="form-control mt-2" id="isText" placeholder="Ký tự áp dụng" value="@ViewBag.itemHidden.TextInComment">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end pb-3">
+                        <div class="ml-4">
+                            <small id="errTextInComment" class="text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between pb-3">
+                        <div class="col col-md-8">
+                            <label><i class="fa fa-clock-o">&nbsp;Thời gian hiện bình luận&nbsp;<span class="text-danger">(*)</span></i></label>
+                        </div>
+                        <div class="col col-md-4">
+                            @switch (available)
+                            {
+                                case 1:
+                                    <div class="filters">
+                                        <div class="rs-select2--dark rs-select2--md m-l-6 rs-select2--border" style="width: 100%;">
+                                            <select id="selAvailableDate" class="js-select2 select2" name="property">
+                                                @if (ViewBag.ListAvailableDate != null)
+                                                {
+                                                    foreach (var item in ViewBag.ListAvailableDate)
+                                                    {
+                                                        <option value="@item.Value"
+                                                                @{ if (@item.Value == "1") { Write("selected"); } else { Write(""); } }>
+                                                            @item.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
+                                    </div>
+                                    break;
+                                case 5:
+                                    <div class="filters">
+                                        <div class="rs-select2--dark rs-select2--md m-l-6 rs-select2--border" style="width: 100%;">
+                                            <select id="selAvailableDate" class="js-select2 select2" name="property">
+                                                @if (ViewBag.ListAvailableDate != null)
+                                                {
+                                                    foreach (var item in ViewBag.ListAvailableDate)
+                                                    {
+                                                        <option value="@item.Value"
+                                                                @{ if (@item.Value == "2") { Write("selected"); } else { Write(""); } }>
+                                                            @item.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
+                                    </div>
+                                    break;
+                                case 10:
+                                    <div class="filters">
+                                        <div class="rs-select2--dark rs-select2--md m-l-6 rs-select2--border" style="width: 100%;">
+                                            <select id="selAvailableDate" class="js-select2 select2" name="property">
+                                                @if (ViewBag.ListAvailableDate != null)
+                                                {
+                                                    foreach (var item in ViewBag.ListAvailableDate)
+                                                    {
+                                                        <option value="@item.Value"
+                                                                @{ if (@item.Value == "3") { Write("selected"); } else { Write(""); } }>
+                                                            @item.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
+                                    </div>
+                                    break;
+                                case 15:
+                                    <div class="filters">
+                                        <div class="rs-select2--dark rs-select2--md m-l-6 rs-select2--border" style="width: 100%;">
+                                            <select id="selAvailableDate" class="js-select2 select2" name="property">
+                                                @if (ViewBag.ListAvailableDate != null)
+                                                {
+                                                    foreach (var item in ViewBag.ListAvailableDate)
+                                                    {
+                                                        <option value="@item.Value"
+                                                                @{ if (@item.Value == "4") { Write("selected"); } else { Write(""); } }>
+                                                            @item.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
+                                    </div>
+                                    break;
+                                default:
+                                    <div class="filters">
+                                        <div class="rs-select2--dark rs-select2--md m-l-6 rs-select2--border" style="width: 100%;">
+                                            <select id="selAvailableDate" class="js-select2 select2" name="property">
+                                                @if (ViewBag.ListAvailableDate != null)
+                                                {
+                                                    foreach (var item in ViewBag.ListAvailableDate)
+                                                    {
+                                                        <option value="@item.Value"
+                                                                @{ if (@item.Value == "0") { Write("selected"); } else { Write(""); } }>
+                                                            @item.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                            <div class="dropDownSelect2"></div>
+                                        </div>
+                                    </div>
+                                    break;
+                            }
+                            <small id="errselAvailableDate" class="text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" class="btn btn-primary" id="btn-save-hidden" onclick="btnSaveHiddenClick()">Cập nhật</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            minimumResultsForSearch: 20,
+        });
+        // Hidden
+        if (@IsHiddenComment == 1)
+        {
+            $("#btnToggleHidden").addClass("active");
+            $("#btnToggleHidden").attr("aria-pressed", true);
+
+            document.getElementById("btnToggleEmail").disabled = true;
+            document.getElementById("btnToggleMobileNumber").disabled = true;
+            document.getElementById("btnToggleText").disabled = true;
+            document.getElementById("isText").disabled = true;
+
+            $("#btnToggleEmail").removeClass("active");
+            $("#btnToggleEmail").removeAttr("aria-pressed");
+            $("#btnToggleMobileNumber").removeClass("active");
+            $("#btnToggleMobileNumber").removeAttr("aria-pressed");
+            $("#btnToggleText").removeClass("active");
+            $("#btnToggleText").removeAttr("aria-pressed");
+
+            $("#btnToggleEmail").addClass("focus");
+            $("#btnToggleEmail").attr("aria-pressed", false);
+
+            $("#btnToggleMobileNumber").addClass("focus");
+            $("#btnToggleMobileNumber").attr("aria-pressed", false);
+
+            $("#btnToggleText").addClass("focus");
+            $("#btnToggleText").attr("aria-pressed", false);
+        }
+        else
+        {
+            $("#btnToggleHidden").addClass("focus");
+            $("#btnToggleHidden").attr("aria-pressed", false);
+
+            document.getElementById("btnToggleEmail").disabled = false;
+            document.getElementById("btnToggleMobileNumber").disabled = false;
+            document.getElementById("btnToggleText").disabled = false;
+        }
+
+        if (@IsEmail == 1)
+        {
+            $("#btnToggleEmail").addClass("active");
+            $("#btnToggleEmail").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleEmail").addClass("focus");
+            $("#btnToggleEmail").attr("aria-pressed", false);
+        }
+
+        if (@IsPhoneNumber == 1)
+        {
+            $("#btnToggleMobileNumber").addClass("active");
+            $("#btnToggleMobileNumber").attr("aria-pressed", true);
+        }
+        else
+        {
+            $("#btnToggleMobileNumber").addClass("focus");
+            $("#btnToggleMobileNumber").attr("aria-pressed", false);
+        }
+
+        if (@IsText == 1)
+        {
+            $("#btnToggleText").addClass("active");
+            $("#btnToggleText").attr("aria-pressed", true);
+            document.getElementById("isText").disabled = false;
+        }
+        else
+        {
+            $("#btnToggleText").addClass("focus");
+            $("#btnToggleText").attr("aria-pressed", false);
+            document.getElementById("isText").disabled = true;
+        }
+
+    });
+    $('#isText').on('change', function () {
+        if ($("#btnToggleText").attr('aria-pressed') == "true") {
+            if ($('#isText').val().trim() == "") {
+                $('#errTextInComment').text('Vui lòng nhập ký tự áp dụng cho bình luận ẩn.');
+                $('#isText').focus();
+                return;
+            } else {
+                $('#errTextInComment').text("");
+            }
+        }
+    });
+    function btnHiddenClick(type, name) {
+        switch (type) {
+            case 1:
+                if ($("#btnToggleHidden").attr('aria-pressed') != "true") {
+                    $("#btnToggleHidden").removeClass("focus");
+                    $("#btnToggleHidden").addClass("active");
+                    $("#btnToggleHidden").attr("aria-pressed", true);
+                    document.getElementById("btnToggleEmail").disabled = true;
+                    document.getElementById("btnToggleMobileNumber").disabled = true;
+                    document.getElementById("btnToggleText").disabled = true;
+                    document.getElementById("isText").disabled = true;
+
+                    $("#btnToggleEmail").removeClass("active");
+                    $("#btnToggleEmail").removeAttr("aria-pressed");
+                    $("#btnToggleMobileNumber").removeClass("active");
+                    $("#btnToggleMobileNumber").removeAttr("aria-pressed");
+                    $("#btnToggleText").removeClass("active");
+                    $("#btnToggleText").removeAttr("aria-pressed");
+
+                    $("#btnToggleEmail").addClass("focus");
+                    $("#btnToggleEmail").attr("aria-pressed", false);
+
+                    $("#btnToggleMobileNumber").addClass("focus");
+                    $("#btnToggleMobileNumber").attr("aria-pressed", false);
+
+                    $("#btnToggleText").addClass("focus");
+                    $("#btnToggleText").attr("aria-pressed", false);
+
+                } else {
+                    $("#btnToggleHidden").removeClass("active");
+                    $("#btnToggleHidden").addClass("focus");
+                    $("#btnToggleHidden").attr("aria-pressed", false);
+                    document.getElementById("btnToggleHidden").disabled = false;
+                    document.getElementById("btnToggleEmail").disabled = false;
+                    document.getElementById("btnToggleMobileNumber").disabled = false;
+                    document.getElementById("btnToggleText").disabled = false;
+                    document.getElementById("isText").disabled = false;
+                    if ($("#btnToggleText").attr('aria-pressed') != "true") {
+                        document.getElementById("isText").disabled = true;
+                    } else {
+                        document.getElementById("isText").disabled = false;
+                    }
+                }
+                break;
+            case 2:
+                document.getElementById("btnToggleHidden").disabled = false;
+                document.getElementById("btnToggleEmail").disabled = false;
+                if (name == "btnToggleEmail") {
+                    if ($("#btnToggleEmail").attr('aria-pressed') != "true") {
+                        $("#btnToggleEmail").removeClass("focus");
+                        $("#btnToggleEmail").addClass("active");
+                        $("#btnToggleEmail").attr("aria-pressed", true);
+                    } else {
+                        $("#btnToggleEmail").removeClass("active");
+                        $("#btnToggleEmail").addClass("focus");
+                        $("#btnToggleEmail").attr("aria-pressed", false);
+                    }
+                }
+                document.getElementById("btnToggleMobileNumber").disabled = false;
+                if (name == "btnToggleMobileNumber") {
+                    if ($("#btnToggleMobileNumber").attr('aria-pressed') != "true") {
+                        $("#btnToggleMobileNumber").removeClass("focus");
+                        $("#btnToggleMobileNumber").addClass("active");
+                        $("#btnToggleMobileNumber").attr("aria-pressed", true);
+                    } else {
+                        $("#btnToggleMobileNumber").removeClass("active");
+                        $("#btnToggleMobileNumber").addClass("focus");
+                        $("#btnToggleMobileNumber").attr("aria-pressed", false);
+                    }
+                }
+                document.getElementById("btnToggleText").disabled = false;
+                if (name == "btnToggleText") {
+                    if ($("#btnToggleText").attr('aria-pressed') != "true") {
+                        $("#btnToggleText").removeClass("focus");
+                        $("#btnToggleText").addClass("active");
+                        $("#btnToggleText").attr("aria-pressed", true);
+                        document.getElementById("isText").disabled = false;
+                    } else {
+                        $("#btnToggleText").removeClass("active");
+                        $("#btnToggleText").addClass("focus");
+                        $("#btnToggleText").attr("aria-pressed", false);
+                        document.getElementById("isText").disabled = true;
+                    }
+                }
+                //document.getElementById("isText").disabled = false;
+                //if ($("#btnToggleText").attr('aria-pressed') != "true") {
+                //    document.getElementById("isText").disabled = false;
+                //} else {
+                //    document.getElementById("isText").disabled = true;
+                //}
+                break;
+            default:
+                break;
+        }
+    }
+
+    function btnSaveHiddenClick() {
+        var isErr = false;
+        if ($("#btnToggleText").attr('aria-pressed') == "true") {
+            if ($("#isText").val().length == 0) {
+                $('#errTextInComment').text("Vui lòng nhập ký tự áp dụng cho bình luận ẩn.");
+                $('#TextInComment').focus();
+                isErr = true;
+            }
+        }
+        if (isErr == true) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FAB_JUpdateAutoHidden", "FAB_PageConfiguration", new { area = "Facebook" } )',
+            dataType: 'json',
+            loading: true,
+            data: {
+                ID: $("#idHidden").val(),
+                IsAll: $("#btnToggleHidden").attr('aria-pressed') == "true" ? 1 : 0,
+                AvailableDate: $("#selAvailableDate").val(),
+                Text: $("#isText").val(),
+                IsEmail: $("#btnToggleEmail").attr('aria-pressed') == "true" ? 1 : 0,
+                IsPhone: $("#btnToggleMobileNumber").attr('aria-pressed') == "true" ? 1 : 0,
+                IsText: $("#btnToggleText").attr('aria-pressed') == "true" ? 1 : 0
+            },
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: false,
+                        timer: 1500
+                    });
+                    setTimeout(function (res) {
+                        window.location.reload();
+                    }, 1200);
+                }
+                else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>

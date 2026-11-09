@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Danh sách bảng cước DV cộng thêm</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-end mb-2">
+                    <button class="btn btn-sm btn-primary mr-2" onclick="window.location.href = '@Url.Action("AddFreightChargesView", "TransportExtraService")'"> Tạo mới</button>
+                    <button class="btn btn-sm btn-secondary" onclick="window.location.href = '@Url.Action("ExportListFreightCharges", "TransportExtraService")'"> Xuất Excel</button>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12">
+                    <div id="tbl-data" class="table-responsive">
+                        @{ Html.RenderAction("SearchListFreightChargesView", "TransportExtraService"); }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

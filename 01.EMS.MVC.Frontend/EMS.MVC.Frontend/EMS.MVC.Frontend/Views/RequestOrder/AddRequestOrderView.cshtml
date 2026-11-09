@@ -1,0 +1,284 @@
+﻿
+@{
+    ViewBag.Title = "AddRequestOrderView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #footer{
+        display: none;
+    }
+</style>
+<div class="container-medium">
+    <div class="gr-top">
+
+        <a type="button" href="./yeu-cau-import-file.html" class="btn btn-upload ">
+            <i class="icon-up fs-18"></i>
+            Nhập file
+        </a>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">
+                Thông tin khách hàng
+            </h4>
+            <form>
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="Họ và tên" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" placeholder="Số điện thoại">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" placeholder="Địa chỉ">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Tỉnh/Thành phố</label>
+                            <select id="ProvinceID" class="select2-with-label-single select2" onchange="LoadListDistrict('ProvinceID', 'DistrictID', 'WardID')">
+                                <option value="">
+                                    Chọn Tỉnh/Thành phố
+                                </option>
+                            </select>
+                            <span class="text-danger" id="errProvinceID"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Quận/Huyện</label>
+                            <select id="DistrictID" class="select2-with-label-single-1 select2" onchange="LoadListWard('DistrictID', 'WardID')">
+                                <option value="">
+                                    Chọn Quận/Huyện
+                                </option>
+                            </select>
+                            <span class="text-danger" id="errDistrictID"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Phường/Xã</label>
+                            <select id="WardID" class="select2-with-label-single-2 select2">
+                                <option value="">
+                                    Chọn Phường/Xã
+                                </option>
+                            </select>
+                            <span class="text-danger" id="errWardID"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <label class="form-label">Kênh bán hàng</label>
+                            <select class="select2-with-label-single-2 select2" id="Channel">
+                                @foreach (var item in ViewBag.ListChannel)
+                                {
+                                    <option value="@item.Value" @{if (item.Value == "TT") { Write("selected"); } }>@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3 mt-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea class="form-control" rows="4" id="Description" placeholder="Mô tả" maxlength="250"></textarea>
+                            <div class="text-end">
+                                <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">0</span>/250</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body ">
+            <h4 class="card-title">
+                Thông tin sản phẩm
+            </h4>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">Sản phẩm<span class="text-danger">*</span></label>
+
+                    <div class="form-search">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.9842 17.6825L15.8675 14.575C16.8731 13.2939 17.4187 11.7119 17.4167 10.0833C17.4167 8.63294 16.9866 7.21512 16.1808 6.00916C15.375 4.80319 14.2297 3.86326 12.8897 3.30822C11.5497 2.75318 10.0752 2.60795 8.65268 2.89091C7.23015 3.17387 5.92347 3.8723 4.89789 4.89789C3.8723 5.92347 3.17387 7.23015 2.89091 8.65268C2.60795 10.0752 2.75318 11.5497 3.30822 12.8897C3.86326 14.2297 4.80319 15.375 6.00916 16.1808C7.21512 16.9866 8.63294 17.4167 10.0833 17.4167C11.7119 17.4187 13.2939 16.8731 14.575 15.8675L17.6825 18.9842C17.7677 19.0701 17.8691 19.1383 17.9808 19.1848C18.0925 19.2314 18.2123 19.2553 18.3333 19.2553C18.4543 19.2553 18.5742 19.2314 18.6859 19.1848C18.7976 19.1383 18.899 19.0701 18.9842 18.9842C19.0701 18.899 19.1383 18.7976 19.1848 18.6859C19.2314 18.5742 19.2553 18.4543 19.2553 18.3333C19.2553 18.2123 19.2314 18.0925 19.1848 17.9808C19.1383 17.8691 19.0701 17.7677 18.9842 17.6825V17.6825ZM4.58334 10.0833C4.58334 8.99554 4.90591 7.93217 5.51025 7.0277C6.1146 6.12323 6.97358 5.41828 7.97858 5.002C8.98357 4.58572 10.0894 4.4768 11.1563 4.68902C12.2232 4.90124 13.2032 5.42506 13.9724 6.19425C14.7416 6.96344 15.2654 7.94345 15.4777 9.01034C15.6899 10.0772 15.581 11.1831 15.1647 12.1881C14.7484 13.1931 14.0434 14.0521 13.139 14.6564C12.2345 15.2608 11.1711 15.5833 10.0833 15.5833C8.62465 15.5833 7.2257 15.0039 6.19425 13.9724C5.1628 12.941 4.58334 11.542 4.58334 10.0833Z"
+                                    fill="#86909C" />
+                        </svg>
+                        <input type="text" class="form-control" id="textSearch" onkeyup="searchProduct()" placeholder="Tìm theo tên sản phẩm">
+                    </div>
+                </div>
+            </div>
+            <span class="text-danger" id="errOrderedProducts"></span>
+            <div class="table-responsive table-primary table-border-1" id="showTableOrderedProduct">
+                <table class="table table-responsive-md">
+                    <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Tên biến thể</th>
+                            <th>Số lượng</th>
+                            <th>Giá tiền</th>
+                            <th>Thành tiền</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="OrderedProducts">
+                        @*<tr>
+                            <td>
+                                <img src="./images/2.png" alt="">
+                                Mr. Bobby
+                            </td>
+                            <td>Mr. Bobby</td>
+                            <td>
+                                <div class="quantity-block">
+                                    <button class=" btn quantity-arrow-minus"> - </button>
+                                    <input class="quantity-num" type="number" value="1" />
+                                    <button class="btn quantity-arrow-plus"> + </button>
+                                </div>
+                            </td>
+                            <td>30.000đ</td>
+                            <td>30.000đ</td>
+                            <td>
+                                <button type="button" class="btn btn-trash light ">
+                                    <i class="icon-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="./images/2.png" alt="">
+                                Mr. Bobby
+                            </td>
+                            <td>Mr. Bobby</td>
+                            <td>
+                                <div class="quantity-block">
+                                    <button class=" btn quantity-arrow-minus"> - </button>
+                                    <input class="quantity-num" type="number" value="1" />
+                                    <button class="btn quantity-arrow-plus"> + </button>
+                                </div>
+                            </td>
+                            <td>30.000đ</td>
+                            <td>30.000đ</td>
+                            <td>
+                                <button type="button" class="btn btn-trash light ">
+                                    <i class="icon-trash"></i>
+
+                                </button>
+                            </td>
+                        </tr>*@
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bottom-group">
+    <div class="float-end">
+        <button type="button" class="btn btn-outline-dark">Hủy bỏ</button>
+        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#update">
+            Cập nhật trạng thái
+        </button>
+        <button type="button" class="btn btn-primary">Xác nhận</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    ShowInputLength("Description", "ShowLengthNote", 250);
+    $(document).ready(function () {
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            language: {
+                noResults: function () {
+                    return 'Không tìm thấy dữ liệu.';
+                },
+            },
+        });
+        LoadListProvince("ProvinceID");
+    })
+
+    function searchProduct() {
+        //debugger
+        var textSearch = $('#textSearch').val().trim();
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ProductSearchView", "RequestOrder")',
+            data: {
+                textSearch: textSearch,
+                isRequestOrder: "Y"
+            },
+            dataType: 'html',
+            success: function (res) {
+                //debugger
+                $('#modal-ViewModal-html').html(res);
+                $('#ViewModal').modal('show');
+            }
+        });
+    }
+
+    @*$('#textSearch').on('change', function () {
+        debugger
+        //var arrOrderedProduct = [];
+        //var lstOrderedProduct = document.getElementsByName('OrderedProduct');
+        //for (var j = 0; j < lstOrderedProduct.length; j++) {
+        //    var obj = {};
+        //    obj.Key = lstOrderedProduct[j].getAttribute('data-key');
+        //    arrOrderedProduct.push(obj);
+        //}
+
+        //var str = JSON.stringify(arrOrderedProduct);
+        var textSearch = $('#textSearch').val().trim();
+
+        $.get('@Url.Action("ProductSearchView", "RequestOrder")', {
+            textSearch: textSearch,
+            isRequestOrder: "Y"
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ProductSearchView", "RequestOrder")',
+            data: {
+                textSearch: textSearch,
+                isRequestOrder: "Y"
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    $('#modal-ViewModal-html').html(res);
+                    $('#ViewModal').modal('show');
+                } else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            }
+        });
+    })*@
+</script>
+

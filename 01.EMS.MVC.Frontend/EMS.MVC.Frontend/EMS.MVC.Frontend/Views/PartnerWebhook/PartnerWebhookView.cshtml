@@ -1,0 +1,31 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="d-flex flex-row-reverse">
+                            <button class="btn btn-primary text-white font-w600 mt-4" id="ShowAddPartnerWebhookView">
+                                <i class="ti-plus"></i>
+                                Thêm mới
+                            </button>
+                        </div>
+                    </div>
+                    <div id="tbl-data" class="table-responsive table-primary">
+                        @{
+                            Html.RenderAction("SearchListPartnerWebhookView", "PartnerWebhook");
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#ShowAddPartnerWebhookView").on("click", function (event) {
+        $.post('@Url.Action("AddPartnerWebhookView", "PartnerWebhook")', function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    });
+</script>

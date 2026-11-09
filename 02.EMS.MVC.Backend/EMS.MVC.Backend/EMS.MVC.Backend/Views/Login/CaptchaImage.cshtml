@@ -1,0 +1,8 @@
+﻿<input type="hidden" class="form-control" placeholder="Mã Captcha" id="CaptchaValue" name="CaptchaValue" value="@ViewBag.CaptchaText" maxlength="5" readonly>
+<img class="img-fluid" id="CaptchaImage" src="@Url.Action("CreateCaptchaImage","Login", new { CaptchaText = ViewBag.CaptchaText })" />
+@*<script>
+    $(document).ready(function () {
+        $("#CaptchaValue").val('@ViewBag.CaptchaText');
+    });
+</script>*@
+

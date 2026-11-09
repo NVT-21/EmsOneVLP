@@ -1,0 +1,118 @@
+﻿@model EMS.MVC.Backend.Models.NotifyControlSearchListModel
+@{
+    ViewBag.Title = "Quản lý thông báo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("NotifyView", "NotifyControl")">Quản lý thông báo</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                    <label>Thời gian</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Từ</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="FromDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.FromDate" />
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Đến</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="ToDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.ToDate">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    <label>Trạng thái</label>
+                    <select class="select2" id="IsLock">
+                        <option value="" selected>Tất cả</option>
+                        <option value="N">Mở khoá</option>
+                        <option value="Y">Đã khoá</option>
+                    </select>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-3">
+                    <label>&nbsp;</label>
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btnAdd" class="btn btn-primary btn-sm mb-2">
+                <i class="fa fa-plus text-white"></i>&nbsp;Thêm mới</button>
+            </div>
+            <div id="tbl-data" class="table-responsive">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        CreateDatePicker("#FromDate, #ToDate");
+        $('#btnSearch').click();
+    });
+    $('#btnSearch').on('click', function () {
+        var errMsg = '', isError = false;
+        var agrs = {
+            FromDate: $('#FromDate').val().trim(),
+            ToDate: $('#ToDate').val().trim(),
+            IsLock: $('#IsLock').val(),
+        };
+        if (agrs.FromDate == "") {
+            errMsg = 'Vui lòng chọn Từ ngày';
+            isError = true;
+        }
+        if (agrs.ToDate == "") {
+            errMsg = 'Vui lòng chọn Đến ngày';
+            isError = true;
+        }
+
+        var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+        if (check_date < 0) {
+            errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+            isError = true;
+        }
+        if (check_date > 31) {
+            errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 1 tháng.';
+            isError = true;
+        }
+        if (isError) {
+            swal({
+                title: 'Thông báo',
+                text: errMsg,
+                icon: 'error',
+                button: {
+                    text: "Đóng",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+
+            })
+            return;
+        }
+        $.get('@Url.Action("SearchListNotifyView", "NotifyControl")', agrs, function (htmlString) {
+            $('#tbl-data').html(htmlString);
+        });
+    });
+    $('#btnAdd').on('click', function () {
+        $.get('@Url.Action("NotifyAddView", "NotifyControl")', function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    });
+</script>

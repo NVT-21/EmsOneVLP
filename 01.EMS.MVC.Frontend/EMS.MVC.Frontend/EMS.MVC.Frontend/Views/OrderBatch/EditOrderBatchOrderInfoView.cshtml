@@ -1,0 +1,82 @@
+﻿@model List<EMS.MVC.Frontend.Models.EditOrderBatchOrderInfoViewModel>
+
+@if (Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <tr class="row-item">
+            <td class="text-center">
+                <button class="btn btn-sm btn-dark" type="button" title="Xoá" onclick="btnRemoveRow(this)">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </td>
+            <td hidden>
+                <input type="hidden" id="OrderID_@item.NumberOfDetail" value="@item.OrderID" disabled/>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="OrderCode" id="OrderCode_@item.NumberOfDetail" value="@item.OrderCode" onchange="changeOrderCode(@item.NumberOfDetail)" @*onchange="CheckChangeValue('OrderCode_' + @item.NumberOfDetail, '', 'SpecialCharButNotVietnamese', 'N')"*@ placeholder="Nhập mã đơn hàng" maxlength="70">
+                <span class="text-danger" id="errOrderCode_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="OrderName" id="OrderName_@item.NumberOfDetail" value="@item.OrderName" placeholder="Nhập tên đơn hàng" maxlength="150">
+                <span class="text-danger" id="errOrderName_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="OrderQuantity" id="OrderQuantity_@item.NumberOfDetail" value="@item.OrderQuantity" onchange="changeOrderQuantity(@item.NumberOfDetail)" placeholder="Nhập số lượng đơn hàng" maxlength="3" data-inputmask="'alias': 'PositiveNumber'">
+                <span class="text-danger" id="errOrderQuantity_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="Length" id="Length_@item.NumberOfDetail" value="@item.Length" onchange="changeLength(@item.NumberOfDetail)" placeholder="Nhập chiều dài" maxlength="4" data-inputmask="'alias': 'PositiveDecimal'">
+                <span class="text-danger" id="errLength_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="Width" id="Width_@item.NumberOfDetail" value="@item.Width" onchange="changeWidth(@item.NumberOfDetail)" placeholder="Nhập chiều rộng" maxlength="4" data-inputmask="'alias': 'PositiveDecimal'">
+                <span class="text-danger" id="errWidth_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="Height" id="Height_@item.NumberOfDetail" value="@item.Height" onchange="changeHeight(@item.NumberOfDetail)" placeholder="Nhập chiều cao" maxlength="4" data-inputmask="'alias': 'PositiveDecimal'">
+                <span class="text-danger" id="errHeight_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="Weight" id="Weight_@item.NumberOfDetail" value="@item.Weight" onchange="changeWeight(@item.NumberOfDetail)" placeholder="Nhập khối lượng" maxlength="9" data-inputmask="'alias': 'PositiveNumber'">
+                <span class="text-danger" id="errWeight_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="OrderValue" id="OrderValue_@item.NumberOfDetail" value="@item.OrderValue" onchange="changeOrderValue(@item.NumberOfDetail)" placeholder="Nhập giá trị đơn hàng" maxlength="11" data-inputmask="'alias': 'currency'">
+                <span class="text-danger" id="errOrderValue_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px">
+                <div class="@{if (item.TotalPHU == 0) { Write("d-none"); } }" id="ShowTotalPHU_@item.NumberOfDetail">
+                    <input type="text" class="form-control" name="TotalPHU" id="TotalPHU_@item.NumberOfDetail" value="@item.TotalPHU" onchange="changeTotalPHU(@item.NumberOfDetail)" placeholder="Nhập tiền thu phí hủy đơn" maxlength="11" data-inputmask="'alias': 'currency'">
+                    <span class="text-danger" id="errTotalPHU_@item.NumberOfDetail"></span>
+                </div>
+            </td>
+            <td style="min-width: 200px">
+                <input type="text" class="form-control" name="Message" id="Message_@item.NumberOfDetail" value="@item.Message" placeholder="Nhập nội dung đơn hàng. Tối đa 250 ký tự" maxlength="250">
+                <span class="text-danger" id="errMessage_@item.NumberOfDetail"></span>
+            </td>
+            <td style="min-width: 200px" id="OrderProduct_@item.NumberOfDetail">
+                @{
+                    Html.RenderAction("ProductInfoView", "OrderBatch", new { ListProductInfo = item.ListProductInfo, NumberOfDetail = item.NumberOfDetail });
+                }
+            </td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-primary" type="button" title="Thêm sản phẩm" onclick="btnSearchProduct(@item.NumberOfDetail)">
+                    <i class="fas fa-cart-plus"></i>
+                </button>
+            </td>
+            <td hidden id="TotalFee_@item.NumberOfDetail"></td>
+            <td hidden id="MainFee_@item.NumberOfDetail"></td>
+            <td hidden id="ExtraFee_@item.NumberOfDetail"></td>
+            <td hidden class="NumberOfDetail">@item.NumberOfDetail</td>
+        </tr>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $(":input").inputmask();
+    });
+</script>
+
+

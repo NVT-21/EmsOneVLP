@@ -1,0 +1,286 @@
+﻿@{
+    Layout = null;
+}
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Chia yêu cầu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Số yêu cầu có thể chia: @ViewBag.RequestOrderCount</p>
+            <div class="row">
+                <div class="col-3">
+                    <div class="mb-3">
+                        <label class="form-label">Số yêu cầu cần chia</label>
+                        <select class="default-select form-control  mb-3 select2" id="NumberOfOrderDivide">
+                            <option value="">--- Chọn ---</option>
+                            <option value="All">Tất cả</option>
+                            <option value="Quantity">Số lượng</option>
+                        </select>
+                        <span class="text-danger" id="errNumberOfOrderDivide"></span>
+                    </div>
+                </div>
+                <div class="col-3" id="checkQuantity" style="display: none;">
+                    <label>Nhập số lượng <span class="text-danger">(*)</span></label>
+                    <input class="form-control" id="Quantity" onkeypress="return isNumberKey(event)" autocomplete="off" />
+                    <span class="text-danger" id="errQuantity"></span>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu chí</label>
+                        <select class="default-select form-control  mb-3 select2" id="Criteria">
+                            <option value="">---Chọn---</option>
+                            <option value="DivisionEqually" selected>Chia đều</option>
+                            <option value="DivisionEmployee">Ưu tiên nhân viên cũ</option>
+                        </select>
+                        <span class="text-danger" id="errCriteria"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label">Gán yêu cầu cho nhóm nhân viên</label>
+                        <select class="default-select form-control  mb-3 selectpicker" id="GroupPermissionID" data-live-search="true" data-selected-text-format="count" data-actions-box="true" multiple>
+                            @if (ViewBag.ListEmployeeGroup.Count > 0)
+                            {
+                                foreach (var item in ViewBag.ListEmployeeGroup)
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                            }
+                        </select>
+                        <span class="text-danger" id="errGroupPermissionID"></span>
+                    </div>
+                </div>
+                <div class="col-6" id="checkGroupPermission" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Danh sách nhân viên</label>
+                        <div id="showListEmployee"></div>
+                        <span class="text-danger" id="errEmployeeID"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" id="btnSubmitOrderDivision">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
+    function loadEmployee() {
+        //debugger
+        var GroupPermissionID = $('#GroupPermissionID').val().join(',');
+        if (GroupPermissionID != "") {
+            $('#checkGroupPermission').css('display', 'block');
+            $.get('@Url.Action("GetListEmployeeByEmployeeGroupID", "RequestOrder")', {
+                strEmployeeGroupID: GroupPermissionID
+            }, function (data) {
+                $('#showListEmployee').html(data);
+            });
+        } else {
+            $('#showListEmployee').empty();
+            $('#checkGroupPermission').css('display', 'none');
+        }
+    }
+
+    $(document).ready(function () {
+        $('#GroupPermissionID').selectpicker('refresh');
+        $('#GroupPermissionID').selectpicker();
+        $('#GroupPermissionID').selectpicker('selectAll');
+        $('select.select2').select2({
+            selectOnClose: true,
+            width: '100%',
+            language: {
+                noResults: function () {
+                    return 'Không tìm thấy dữ liệu.';
+                },
+            },
+        });
+        $('#Quantity').on("cut copy paste", function (e) {
+            e.preventDefault();
+        });
+
+        loadEmployee();
+
+        $('#GroupPermissionID').on('change', function () {
+            loadEmployee();
+        });
+
+        $('#NumberOfOrderDivide').on('change', function () {
+            if ($('#NumberOfOrderDivide').val() == '') {
+                $("#errNumberOfOrderDivide").text("Vui lòng chọn số yêu cầu cần chia.");
+                $("#NumberOfOrderDivide").focus();
+                return;
+            } else {
+                $("#errNumberOfOrderDivide").text("");
+            }
+        });
+
+        $('#NumberOfOrderDivide').on('change', function () {
+            var value = $('#NumberOfOrderDivide').val();
+            if (value == "Quantity") {
+                $('#checkQuantity').css('display', 'block');
+            } else {
+                $('#checkQuantity').css('display', 'none');
+            }
+        });
+
+        $('#Quantity').on('change', function () {
+            if ($('#Quantity').val() == '' || $('#Quantity').val() == 0) {
+                $("#errQuantity").text("Vui lòng nhập số lượng.");
+                $("#Quantity").focus();
+                return;
+            } else {
+                if (parseInt($('#Quantity').val()) > parseInt($('#RequestOrderCount').val())) {
+                    $("#errQuantity").text("Số lượng yêu cầu cần chia vượt mức cho phép.");
+                    $("#Quantity").focus();
+                    return;
+                } else {
+                    $("#errQuantity").text("");
+                }
+            }
+        });
+    })
+
+    $("#btnSubmitOrderDivision").on('click', function () {
+        var isError = false;
+        var data = {
+            FromDate: $('#FromDate').val(),
+            ToDate: $('#ToDate').val(),
+            Criteria: $('#Criteria').val(),
+            NumberOfOrderDivide: $('#NumberOfOrderDivide').val(),
+            Quantity: $('#NumberOfOrderDivide').val() == "Quantity" ? $('#Quantity').val() : $('#RequestOrderCount').val(),
+            GroupPermissionID: $('#GroupPermissionID').val(),
+            strEmployeeID: $('#GroupPermissionID').val() != "" ? $('#EmployeeID').val().join(',') : "",
+            LimitQuantity: $('#RequestOrderCount').val()
+        };
+
+        if (data.Criteria == '') {
+            $("#errCriteria").text("Vui lòng chọn tiêu chí.");
+            $("#Criteria").focus();
+            isError = true;
+        } else {
+            $("#errCriteria").text("");
+        }
+
+        if (data.NumberOfOrderDivide == '') {
+            $("#errNumberOfOrderDivide").text("Vui lòng chọn số yêu cầu cần chia.");
+            $("#NumberOfOrderDivide").focus();
+            isError = true;
+        } else {
+            if (data.NumberOfOrderDivide == 'Quantity') {
+                if (data.Quantity == '' || data.Quantity == 0) {
+                    $("#errQuantity").text("Vui lòng nhập số lượng.");
+                    $("#Quantity").focus();
+                    isError = true;
+                } else {
+                    if (parseInt(data.Quantity) > parseInt(data.LimitQuantity)) {
+                        $("#errQuantity").text("Số lượng yêu cầu cần chia vượt mức cho phép");
+                        $("#Quantity").focus();
+                        isError = true;
+                    } else {
+                        $("#errQuantity").text("");
+                    }
+                }
+            } else {
+                $("#errNumberOfOrderDivide").text("");
+            }
+        }
+
+        if (data.GroupPermissionID == '') {
+            $("#errGroupPermissionID").text("Vui lòng chọn nhóm nhân viên.");
+            $("#GroupPermissionID").focus();
+            isError = true;
+        } else {
+            $("#errGroupPermissionID").text("");
+        }
+
+        if (data.strEmployeeID == '') {
+            $("#errEmployeeID").text("Vui lòng chọn nhân viên.");
+            $("#errEmployeeID").focus();
+            isError = true;
+        } else {
+            $("#errEmployeeID").text("");
+        }
+
+        if (isError == true) {
+            return;
+        }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn lưu?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JChooseDivisionView", "RequestOrder")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = '@Url.Action("DivisionView", "RequestOrder")';
+                            });
+                        } else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    })
+</script>

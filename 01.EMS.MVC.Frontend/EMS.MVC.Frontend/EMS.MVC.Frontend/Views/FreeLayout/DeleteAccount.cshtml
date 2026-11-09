@@ -1,0 +1,95 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hướng dẫn xoá thông tin tài khoản trên ứng dụng EMSOne</title>
+    <style>
+    :root{
+      --bg:#f7f7f8;
+      --fg:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --brand:#0ea5e9;
+      --paper:#ffffff;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--fg); background:var(--bg);
+    }
+
+    .page{
+      max-width:900px; margin:24px auto; padding:32px; background:var(--paper);
+      border:1px solid var(--border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.04);
+    }
+
+    /* URL bar */
+    .urlbar{
+      border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff;
+      font-size:14px; color:#111; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+    }
+    .urlbar code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    h1{
+      margin:28px 0 8px; font-size:22px; text-align:center; font-weight:700;
+    }
+    h2{
+      margin:0 0 28px; font-size:16px; text-align:center; font-weight:600; color:var(--muted);
+    }
+
+    .steps{display:flex; flex-direction:column; gap:28px}
+
+    .step{display:flex; flex-direction:column; gap:12px}
+    .step-title{font-size:14px; font-weight:600}
+
+    .shot{
+      width:100%; aspect-ratio: 16/11; /* gần giống bố cục ảnh minh hoạ */
+      border:1px solid var(--border); border-radius:12px; position:relative; background:#fafafa;
+      display:grid; place-items:center;
+    }
+    .shot::before{
+      content:"ảnh chức năng app"; color:#9ca3af; font-size:14px; letter-spacing:.2px;
+    }
+
+    .footer-note{
+      margin-top:18px; font-size:12px; color:var(--muted); text-align:center;
+    }
+
+    </style>
+</head>
+<body>
+    <main class="page">
+
+        <h1>Tổng công ty chuyển phát nhanh bưu điện - Công ty cổ phần</h1>
+        <h2>Hướng dẫn xoá thông tin tài khoản trên ứng dụng EMSOne</h2>
+
+        <section class="steps">
+            <article class="step">
+                <div class="step-title">Bước 1: Truy cập ứng dụng EMSOne (kèm hình ảnh chức năng trên app)</div>
+                <div class="shot" aria-label="Ảnh chức năng app - Bước 1">
+                    <img src="~/Assets/images/default/delete-account-1.jpg" alt="Ảnh chức năng app - Bước 1" />
+                </div>
+            </article>
+
+            <article class="step">
+                <div class="step-title">Bước 2: Truy cập chức năng tài khoản (kèm hình ảnh chức năng trên app)</div>
+                <div class="shot" aria-label="Ảnh chức năng app - Bước 2">
+                    <img src="~/Assets/images/default/delete-account-2.jpg" alt="Ảnh chức năng app - Bước 2" />
+                </div>
+            </article>
+
+            <article class="step">
+                <div class="step-title">Bước 3: Chọn chức năng xoá tài khoản.</div>
+                <div class="shot" aria-label="Ảnh chức năng app - Bước 3">
+                    <img src="~/Assets/images/default/delete-account-3.jpg" alt="Ảnh chức năng app - Bước 3" />
+                </div>
+            </article>
+        </section>
+
+        <p class="footer-note">(Chèn ảnh màn hình ứng dụng vào các khung trên khi cần.)</p>
+    </main>
+</body>
+</html>

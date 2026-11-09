@@ -1,0 +1,224 @@
+﻿@model EMS.MVC.Backend.Models.TransportFeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .dropdown-toggle {
+        background-color: white;
+        text-transform: capitalize;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("TransportFeeView","TransportFee")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Ước tính cước phí</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label class="form-label">Dịch vụ chuyển chính <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "ID", "Name"), "--- Chọn ---", new { @class = "select2" })
+                    <span class="text-danger" id="errMainTransportServiceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                    <label class="form-label">Dịch vụ vận chuyển cộng thêm </label>
+                    @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "ID", "Name"), new { @class = "selectpicker form-control text-capitalize", @title = "--- Chọn ---", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                    <span class="text-danger" id="errExtraTransportServiceID"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label"> Nơi xuất phát <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.FromProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2" })
+                    <span class="text-danger" id="errFromProvinceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label">Tỉnh/Thành phố nơi đến <span class="text-danger">*</span> </label>
+                    @Html.DropDownListFor(model => model.ToProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListDistrict('ToProvinceID', 'ToDistrictID', 'ToWardID')" })
+                    <span class="text-danger" id="errToProvinceID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label">Quận/Huyện nơi đến </label>
+                    @Html.DropDownListFor(model => model.ToDistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('ToDistrictID', 'ToWardID')" })
+                    <span class="text-danger" id="errToDistrictID"></span>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label class="form-label">Phường/Xã nơi đến </label>
+                    @Html.DropDownListFor(model => model.ToWardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errToWardID"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Khối lượng (gram) <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Khối lượng", @maxlength = "8", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                    <span class="text-danger" id="errWeight"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Chiều dài (cm)</label>
+                    @Html.EditorFor(model => model.Length, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Dài", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                    <span class="text-danger" id="errLength"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Chiều rộng (cm)</label>
+                    @Html.EditorFor(model => model.Width, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Rộng", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                    <span class="text-danger" id="errWidth"></span>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Chiều cao (cm)</label>
+                    @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Cao", @maxlength = "4", @data_inputmask = "'alias': 'PositiveDecimal'" } })
+                    <span class="text-danger" id="errHeight"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Mã khách hàng</label>
+                    @Html.EditorFor(model => model.CrmOrPaypostCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Mã khách hàng" } })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <div class="custom-props">
+                        <label class="form-label">Số lượng </label>
+                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số lượng sản phẩm", @maxlength = "3", @data_inputmask = "'alias': 'PositiveNumber'" } })
+                        <span class="text-danger" id="errQuantity"></span>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Giá trị đơn hàng (đ)</label>
+                    @Html.EditorFor(model => model.OrderValue, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Giá trị đơn hàng", @maxlength = "11", @data_inputmask = "'alias': 'currency'" } })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 mb-2">
+                    <label class="form-label">Tiền COD (đ)</label>
+                    @Html.EditorFor(model => model.TotalCOD, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Tiền COD", @maxlength = "10", @data_inputmask = "'alias': 'currency'" } })
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="">Cước dịch vụ chính</span>
+                    <span class="font-weight-bold" id="MainFee">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="">Cước dịch vụ cộng thêm</span>
+                    <span class="font-weight-bold" id="ExtraFee">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="">Phụ phí</span>
+                    <span class="font-weight-bold" id="Surcharge">0 đ</span>
+                </div>
+            </div>
+            <div class="row mb-1" style="color: #737b8b; font-size: initial;">
+                <div class="col-xl-4 col-lg-4 col-md-4 d-flex justify-content-between">
+                    <span class="">Tổng cộng</span>
+                    <span class="font-weight-bold" id="TotalAmount">0 đ</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer" style="background-color: white;">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-end">
+                    <button type="button" class="btn btn-sm btn-primary" id="btnSubmit">Tính cước</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    CheckChangeValue("MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", "", "Y");
+    CheckChangeValue("FromProvinceID", "Vui lòng chọn nơi xuất phát", "", "Y");
+    CheckChangeValue("ToProvinceID", "Vui lòng chọn Tỉnh/TP nơi đến", "", "Y");
+    CheckChangeValue("Weight", "Vui lòng nhập trọng lượng", "Number", "Y");
+
+    //$(document).ready(function () {
+    //    $("#ExtraTransportServiceID").selectpicker();
+    //});
+
+    $("#btnSubmit").on("click", function () {
+        var isError = false;
+        var data = {
+            MainTransportServiceID: $("#MainTransportServiceID").val(),
+            ExtraTransportServiceID: $("#ExtraTransportServiceID").val().toString(),
+            FromProvinceID: $("#FromProvinceID").val(),
+            ToProvinceID: $("#ToProvinceID").val(),
+            ToDistrictID: $("#ToDistrictID").val(),
+            ToWardID: $("#ToWardID").val(),
+            Weight: NumberReplace($('#Weight').val()),
+            Length: $("#Length").val(),
+            Width: $("#Width").val(),
+            Height: $("#Height").val(),
+            CrmOrPaypostCode: $("#CrmOrPaypostCode").val().trim(),
+            Quantity: NumberReplace($('#Quantity').val()),
+            OrderValue: NumberReplace($('#OrderValue').val()),
+            TotalCOD: NumberReplace($('#TotalCOD').val()),
+        };
+
+        isError = CheckNullValue(data.MainTransportServiceID, "MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", isError);
+
+        isError = CheckNullValue(data.FromProvinceID, "FromProvinceID", "Vui lòng chọn nơi xuất phát", isError);
+
+        isError = CheckNullValue(data.ToProvinceID, "ToProvinceID", "Vui lòng chọn Tỉnh/TP nơi đến", isError);
+
+        isError = CheckNullAndRegexValue(data.Weight, "Number", "Weight", "Vui lòng nhập trọng lượng", "Chỉ được nhập số", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportFee", "TransportFee")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == "00") {
+                    var data = JSON.parse(res.Data);
+                    $("#MainFee").text(NumberFormat(data.MainFee) + " đ");
+                    $("#ExtraFee").text(NumberFormat(data.ExtraFee) + " đ");
+                    $("#Surcharge").text(NumberFormat(data.Surcharge) + " đ");
+                    $("#TotalAmount").text(NumberFormat(data.TotalAmount) + " đ");
+                } else {
+                    CreateCustomSwal("error", res.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+
+    $('#MainTransportServiceID, #ExtraTransportServiceID, #Weight, #Length, #Width, #Height, #Quantity, #TotalCOD, #OrderValue, #FromProvinceID, #ToProvinceID, #ToDistrictID, #ToWardID').on('change', function () {
+        $("#MainFee").text(0 + " đ");
+        $("#ExtraFee").text(0 + " đ");
+        $("#Surcharge").text(0 + " đ");
+        $("#TotalAmount").text(0 + " đ");
+    });
+</script>

@@ -1,0 +1,198 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListInventoryImportViewModel>
+<table id="SearchListDataTable" class="table table-responsive-md" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Mã phiếu nhập</th>
+            <th>Nhà cung cấp</th>
+            <th>Tổng tiền</th>
+            <th>Người tạo</th>
+            <th>Thời gian nhập kho</th>
+            <th>Thời gian tạo</th>
+            <th>Trạng thái</th>
+            <th class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("DetailInventoryImportView","InventoryImport", new { SearchKey = EMS.Library.Security.EncodeBase64(item.InventoryImportID.ToString()) })">@item.InventoryImportCode</a>
+                    </td>
+                    <td>@item.Provider.ProviderName</td>
+                    <td>@item.TotalAmount.ToString("N0")</td>
+                    <td>@item.CreaterName</td>
+                    <td>@item.DateOfInventoryImport</td>
+                    <td>@item.CreatedDate</td>
+                    <td>@item.Status.Name</td>
+                    <td class="text-center">
+                        @if (item.Status.Code == "N" || item.Status.Code == "W")
+                        {
+                            <div class="dropdown">
+                                <button class="btn " type="button" id="order-dropdown-1"
+                                        data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false">
+                                    <span>
+                                        Chọn
+                                    </span>
+                                    <i class="icon-arrow-b"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="order-dropdown-1">
+                                    <div class="py-2">
+                                        @* Tạo mới, chờ xác nhận *@
+                                        @if (item.Status.Code == "N" || item.Status.Code == "W")
+                                        {
+                                            <a class="dropdown-item" href="@Url.Action("EditInventoryImportView","InventoryImport", new { SearchKey = EMS.Library.Security.EncodeBase64(item.InventoryImportID.ToString()) })">
+                                                <i class="fas fa-edit"></i>Sửa phiếu nhập kho
+                                            </a>
+                                        }
+                                        @* Chờ xác nhận *@
+                                        @if (item.Status.Code == "W")
+                                        {
+                                            <a class="dropdown-item" onclick="btnConfirm(@item.InventoryImportID)">
+                                                <i class="fa fa-check me-1"></i>Xác nhận
+                                            </a>
+
+                                            <a class="dropdown-item" onclick="btnReject(@item.InventoryImportID)">
+                                                <i class="fa fa-times me-1"></i>Từ chối
+                                            </a>
+
+                                            <a class="dropdown-item" onclick="btnRemove(@item.InventoryImportID)">
+                                                <i class="fa fa-trash me-1"></i>Xoá phiếu
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function btnConfirm(InventoryImportID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn xác nhận phiếu nhập kho?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JAcceptInventoryImport", "InventoryImport")',
+                    data: {
+                        InventoryImportID: InventoryImportID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message, '@Url.Action("InventoryImportView", "InventoryImport")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    };
+
+    function btnReject(ID) {
+        $.get('@Url.Action("RejectInventoryImportView", "InventoryImport")', {
+             ID: ID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    };
+
+    function btnRemove(InventoryImportID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xoá phiếu nhập kho?",
+            buttons: {
+                confirm: {
+                    text: "Xác nhận",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Đóng",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveInventoryImport", "InventoryImport")',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        InventoryImportID: InventoryImportID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message,'@Url.Action("InventoryImportView", "InventoryImport")');
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

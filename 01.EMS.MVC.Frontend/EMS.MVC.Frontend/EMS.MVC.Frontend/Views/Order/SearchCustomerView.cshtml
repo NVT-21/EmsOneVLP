@@ -1,0 +1,392 @@
+﻿@model EMS.MVC.Frontend.Models.SearchCustomerViewModel
+@if (Model != null)
+{
+    <input type="text" id="Receiver_ID" value="@Model.Receiver.ID" hidden />
+
+    <h5 class="fs-16 font-w600">Thông tin người mua</h5>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <label class="text-2">Họ và tên: </label>
+            <span>@Model.Buyer.FullName</span>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <label class="text-2">Số điện thoại: </label>
+            <span>@Model.Buyer.MobileNumber</span>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12">
+            <label class="text-2">Số đơn thành công: </label>
+            <span class="text-green font-weight-bold">@Model.Buyer.SuccessOrder</span> / <span class="text-warning font-weight-bold">@Model.Buyer.TotalOrder</span>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Buyer.CustomerGroup.Name))
+        {
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <label class="text-2">Nhóm: </label>
+                <span>@Model.Buyer.CustomerGroup.Name</span>
+            </div>
+        }
+
+        @if (Model.Buyer.BlackList == "Y")
+        {
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <span class="text-danger">Khách hàng nằm trong danh sách đen.</span>
+            </div>
+        }
+    </div>
+
+    <div class="ShowTransport @{ if (Model.IsTransport == "N") { Write("d-none"); } } ">
+        <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 mb-3">
+                <h5 class="fs-16 font-w600">Thông tin người nhận</h5>
+            </div>
+        </div>
+        <div id="addr-alert" class="alert alert-danger d-none py-2 px-3">
+            <span id="addr-alert-text">Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.</span>
+            <button id="btn-reanalyze" type="button" class="btn btn-primary ms-2">Phân tích lại</button>
+        </div>
+        <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                @Html.EditorFor(model => model.Receiver.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên" } })
+                <span class="text-danger" id="errReceiver_FullName"></span>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                @Html.EditorFor(model => model.Receiver.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                <span class="text-danger" id="errReceiver_MobileNumber"></span>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                @Html.EditorFor(model => model.Receiver.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                <span class="text-danger" id="errReceiver_Street"></span>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                <label class="mb-1">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Receiver.Province.ID, new SelectList(Model.Receiver.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('Receiver_Province_ID', 'Receiver_Ward_ID')" })
+                <span class="text-danger" id="errReceiver_Province_ID"></span>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 mb-3">
+                <label class="mb-1">Phường/Xã <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(model => model.Receiver.Ward.ID, new SelectList(Model.Receiver.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                <span class="text-danger" id="errReceiver_Ward_ID"></span>
+            </div>
+
+        </div>
+
+        <div class="alert alert-danger notification ShowChangeReceiverInfo @{ if (Model.Receiver.IsChange == "N") { Write("d-none"); } }">
+
+            <p>
+                Bạn vừa thay đổi thông tin khách hàng đã tạo trước đó. Bạn có muốn cập nhật lại thông tin khách
+                hàng này không?
+            </p>
+            <div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.IsUpdateReceiver, "Y", new { @class = "form-check-input" })
+                    <label class="form-check-label" for="d">
+                        Có
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(m => m.IsUpdateReceiver, "N", new { @class = "form-check-input", @checked = "checked" })
+                    <label class="form-check-label " for="f">
+                        Không
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="fs-16 font-w600">Thông tin người gửi</h5>
+
+        @if(Model.TypeShop == 1)
+        {
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Địa chỉ lấy hàng <span class="text-danger">*</span></label>
+                    <select id="PickUpAddressID" class="select2">
+                        @foreach(var item in Model.ListPickUpAddress)
+                        {
+                            <option value="@item.PickUpAddressID" data-FullName="@item.FullName" data-MobileNumber="@item.MobileNumber" data-ProvinceID="@item.Province.ID" data-WardID="@item.Ward.ID" data-Address="@item.Street" data-FullAddress="@item.FullAddress" @if(item.PickUpAddressID == Model.PickUpAddressID) { Write("selected"); }>@item.PickUpName</option>
+                        }
+                    </select>
+                    <span class="text-danger" id="errPickUpAddressID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên", @disabled = "disabled" } })
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11", @disabled = "disabled" } })
+                </div>
+            </div>
+            <div class="row">
+                @Html.HiddenFor(model => model.Sender.Province.ID)
+                @Html.HiddenFor(model => model.Sender.Ward.ID)
+                @Html.HiddenFor(model => model.Sender.Street)
+                <div class="col-xl-12 col-lg-12 col-md-12 mb-2">
+                    <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.FullAddress, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @disabled = "disabled" } })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.PickUpAddressID, new { @Value = "0" })
+
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Họ và tên <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.FullName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Họ và tên" } })
+                    <span class="text-danger" id="errSender_FullName"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Số điện thoại <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.MobileNumber, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Số điện thoại", @maxlength = "11" } })
+                    <span class="text-danger" id="errSender_MobileNumber"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.Sender.Province.ID, new SelectList(Model.Sender.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListWardV2('Sender_Province_ID', 'Sender_Ward_ID')" })
+                    <span class="text-danger" id="errSender_Province_ID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Phường/Xã <span class="text-danger">*</span></label>
+                    @Html.DropDownListFor(model => model.Sender.Ward.ID, new SelectList(Model.Sender.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    <span class="text-danger" id="errSender_Ward_ID"></span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 mb-2">
+                    <label class="mb-1">Địa chỉ <span class="text-danger">*</span></label>
+                    @Html.EditorFor(model => model.Sender.Street, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Địa chỉ", @maxlength = "400" } })
+                    <span class="text-danger" id="errSender_Street"></span>
+                </div>
+                @Html.HiddenFor(model => model.Sender.FullAddress)
+            </div>
+        }
+    </div>
+}
+else
+{
+    @Html.HiddenFor(model => model.Receiver.ID, new { @Value = "0" })
+    <div class="alert alert-danger notification" id="errReceiver_ID">
+        Không tìm thấy không tin. Vui lòng nhấn vào <a style="cursor: pointer; color: #007bff;" onclick="ShowAddCustomerView()">đây</a> để tạo thông tin khách hàng.
+    </div>
+}
+<script>
+    let manualOverride = false;  // Biến kiểm tra khi người dùng thay đổi thủ công
+    let addressChange = false;   // Biến kiểm tra khi người dùng thay đổi địa chỉ thủ công
+    let isLoading = false;
+    let controller = null;       // Để hủy request API cũ khi nhập địa chỉ mới
+    OnlyNumber("#Receiver_MobileNumber, #Sender_Receiver_MobileNumber");
+
+    CheckChangeValue("Sender_FullName", "Vui lòng nhập Họ và tên người gửi.", "", "Y");
+    CheckChangeValue("Sender_MobileNumber", "Vui lòng nhập Số điện thoại người gửi.", "MobileNumber", "Y");
+    CheckChangeValue("Sender_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+    CheckChangeValue("Sender_Ward_ID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+    CheckChangeValue("Receiver_FullName", "Vui lòng nhập Họ và tên người nhận.", "Vietnamese", "Y");
+    CheckChangeValue("Receiver_MobileNumber", "Vui lòng nhập Số điện thoại người nhận.", "MobileNumber", "Y");
+    CheckChangeValue("Receiver_Province_ID", "Vui lòng chọn Tỉnh/ Thành phố.", "", "Y");
+    CheckChangeValue("Receiver_Ward_ID", "Vui lòng chọn Phường/ Xã.", "", "Y");
+
+    $(document).ready(function () {
+        $('#Receiver_Street').on('change', function () {
+            // Nếu người dùng thay đổi Địa chỉ, phân tích lại địa chỉ (tự động hoặc thủ công)
+            if (addressChange) {
+                analyzeAddress($(this).val());  // Phân tích lại Địa chỉ
+            }
+            addressChange = true;  // Đánh dấu rằng Địa chỉ đã thay đổi thủ công
+        });
+        $('#btn-reanalyze').on('click', function () {
+            showAlert(false);
+            analyzeAddress($('#Receiver_Street').val());  // Yêu cầu phân tích lại
+        })
+        $('select.select2').select2(AttributeSelect2);
+        SearchCollectionPostOfficeRecent();
+        
+    });
+    // Hàm xử lý auto-fill địa chỉ
+    const analyzeAddress = debounce(async (text) => {
+        if (!text?.trim()) return;
+
+        // Nếu người dùng đã chỉnh tay, không tự động điền
+        //if (manualOverride) return;
+
+        // Hủy request cũ nếu có
+        if (controller) controller.abort();
+        controller = new AbortController();
+
+        try {
+            var Data = {};
+            Data = PWDGetByEMSVMapsSearch(text);
+            var Response = Data.responseJSON;
+            if (Response.Code == "00") {
+                var JSONParse = JSON.parse(Response.Data);
+                fillProvince(JSONParse.ProvinceID);
+                fillWard(JSONParse.WardID);
+            }
+        } catch (error) {
+            console.error('Lỗi khi phân tích địa chỉ', error);
+        }
+    }, 500);
+
+    // Hàm debounce để trì hoãn việc gọi API
+    function debounce(fn, delay = 500) {
+        let timer;
+        return function () {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, arguments), delay);
+        };
+    }
+
+    // Hàm điền giá trị cho Tỉnh và Phường (Ví dụ: khi API phân tích địa chỉ)
+    function fillProvince(provinceCode) {
+        if (!isLoading) {
+            $('#Receiver_Province_ID').val(provinceCode).trigger('change');  // set value cho Tỉnh
+        }
+
+    }
+
+    function fillWard(wardCode) {
+        if (!isLoading) {
+            $('#Receiver_Ward_ID').val(wardCode).trigger('change');  // set value cho Phường
+        }
+    }
+
+    $('#Receiver_Province_ID, #Receiver_Ward_ID').on('select2:select', function (e) {
+        showAlert(true, "Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.");
+    });
+
+    // Hàm xử lý hiển thị cảnh báo khi người dùng thay đổi thủ công
+    function showAlert(show, message) {
+        const alert = document.getElementById('addr-alert');
+        alert.classList.toggle('d-none', !show);
+        document.getElementById('addr-alert-text').textContent = message || 'Bạn đã thay đổi khu vực thủ công. Hệ thống sẽ không tự cập nhật nữa.';
+    }
+
+    $('#PickUpAddressID, #Sender_Province_ID, #Sender_Ward_ID, #Receiver_FullName, #Receiver_MobileNumber, #Receiver_Province_ID, #Receiver_Ward_ID').on('change', function () {
+        var divID = this.id;
+        var value = $(this).val();
+        if (divID == "PickUpAddressID" && value) {
+            $("#Sender_FullName").val($("option:selected", this).attr("data-FullName"));
+            $("#Sender_MobileNumber").val($("option:selected", this).attr("data-MobileNumber"));
+            $("#Sender_Province_ID").val($("option:selected", this).attr("data-ProvinceID"));
+            $("#Sender_Ward_ID").val($("option:selected", this).attr("data-WardID"));
+            $("#Sender_Street").val($("option:selected", this).attr("data-Address"));
+            $("#Sender_FullAddress").val($("option:selected", this).attr("data-FullAddress"));
+        } else if (divID == "Receiver_FullName" || divID == "Receiver_MobileNumber" || divID == "Receiver_Province_ID" || divID == "Receiver_Ward_ID") {
+            if ($(".ShowChangeReceiverInfo").hasClass("d-none") == true) {
+                $(".ShowChangeReceiverInfo").removeClass("d-none");
+            }
+
+            if (divID == "Receiver_FullName" || divID == "Receiver_MobileNumber") {
+                return;
+            }
+        }
+
+        $('#MainTransportServiceID').change();
+
+        if (divID == "PickUpAddressID" || divID == "Sender_Province_ID") {
+            SearchCollectionPostOfficeRecent();
+        }
+
+        if (divID == "PickUpAddressID" || divID == "Sender_Province_ID" || divID == "Receiver_Province_ID") {
+            $("#ShowExpectedDelivery").html("");
+        }
+
+        
+
+        if (divID == "Sender_Province_ID" || divID == "Sender_Ward_ID") {
+            $("#Sender_Street").val("");
+        }
+
+        //if (divID == "Receiver_Province_ID" || divID == "Receiver_Ward_ID") {
+        //    $("#Receiver_Street").val("");
+        //}
+    });
+
+
+    function SearchCollectionPostOfficeRecent() {
+        $("#ShowCollectionPostOfficeRecent").removeClass("d-none");
+        if ($("input[name='CollectionType.ID']:checked").val() != "2") {
+            $("#ShowCollectionPostOfficeRecent").addClass("d-none");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SearchListRecentCollectionPostOffice", "Handle")',
+            dataType: 'json',
+            loading: true,
+            data: {
+                ProvinceID: $("#Sender_Province_ID").val(),
+            },
+            success: function (res) {
+                $("#ShowCollectionPostOfficeRecent").html("");
+                var responseData = res;
+                if (responseData.length) {
+                    $("#ShowCollectionPostOfficeRecent").html('<select id="SearchListCollectionPostOfficeRecent" class="select2"></select>');
+                    var CollectionPostOffice = [{
+                        id: 0,
+                        text: "Gợi ý bưu cục gần nhất"
+                    }];
+
+                    var model = @Html.Raw(Json.Encode(Model));
+                    var CollectionPostOfficeRecentID = 0;
+                    if (model != null) {
+                        CollectionPostOfficeRecentID = model.CollectionPostOfficeRecentID;
+                    }
+
+                    responseData.forEach(function (value, index) {
+                        var obj = {
+                            id: value.ID,
+                            Code: value.Code,
+                            Name: value.Name,
+                            CodeAndName: value.CodeAndName,
+                            FullAddress: value.FullAddress,
+                            text: value.Name + " - " + value.FullAddress,
+                            selected: value.ID == CollectionPostOfficeRecentID ? true : false
+                        }
+                        CollectionPostOffice.push(obj);
+                    });
+
+                    $("#SearchListCollectionPostOfficeRecent").select2({
+                        data: CollectionPostOffice,
+                        templateResult: function (state) {
+                            if (state.id == 0) {
+                                return state.text;
+                            }
+                            var html = "";
+                            html += "<div title='" + state.text + "'>";
+                            html += "<div class='fw-bold'>" + state.Name + "</div>";
+                            html += "<div class=''><i class='fas fa-map-marker-alt me-2'></i>" + state.FullAddress + "</div>";
+                            html += "</div>";
+                            return $(html);
+                        },
+                        selectOnClose: true,
+                        width: '100%',
+                        language: {
+                            noResults: function () {
+                                return 'Không tìm thấy dữ liệu.';
+                            },
+                        },
+                    });
+                } else {
+                    $("#ShowCollectionPostOfficeRecent").html("<div class='text-italic' style='text-align: justify;'>Không có bưu cục EMS thu gom gần đây. Vui lòng chọn hình thức Thu gom tận nơi để bưu tá đến lấy hàng</div>");
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>
+

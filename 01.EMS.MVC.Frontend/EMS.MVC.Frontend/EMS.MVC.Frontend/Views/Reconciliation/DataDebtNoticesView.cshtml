@@ -1,0 +1,434 @@
+﻿@model EMS.MVC.Frontend.Models.DebtNoticesDataViewModel
+@{
+    var stt = 1;
+}
+<style>
+    .cell-Width {
+        max-width: 100px;
+    }
+</style>
+@if (Model != null)
+{
+    <h4 class="mt-2 ml-4 text-uppercase">Thông Tin Khách Hàng</h4>
+    <hr />
+    <div class="row mt-2 ml-2">
+        <div class="col-lg-4 mb-2 text-content">
+            <label class="text-lable"><b>Mã KH:</b> </label>&nbsp;@Model.DataInfo.CustomerCode
+        </div>
+        <div class="col-lg-4 mb-2 text-content">
+            <label class="text-lable"><b>Tên KH:</b> </label>&nbsp;@Model.DataInfo.CustomerName
+        </div>
+        <div class="col-lg-4 mb-2 text-content">
+
+        </div>
+    </div>
+    <div class="row mt-2 ml-2 mb-2">
+        <div class="col-lg-4 col-xl-4 mb-2 text-content">
+            <label class="text-lable"><b>Số điện thoại:</b> </label>&nbsp;@Model.DataInfo.MobileNumber
+        </div>
+        <div class="col-lg-4 col-xl-4 mb-2 text-content">
+            <label class="text-lable"><b>Địa chỉ:</b> </label>&nbsp;@Model.DataInfo.Address
+        </div>
+        <div class="col-lg-4 col-xl-4 mb-2 text-content">
+            <label class="text-lable"><b>TaxCode:</b> </label>&nbsp;@Model.DataInfo.TaxCode
+        </div>
+    </div>
+    <hr />
+    <p>&nbsp;</p>
+}
+<div class="table-responsive">
+    <table id="SearchListDataTable" class="table table-responsive-md">
+        <thead>
+            <tr>
+                <th class="text-center" colspan="7">Tổng dữ liệu</th>
+                @if (Model != null)
+                {
+                    <th class="text-end"> @Model.SumMainFee.ToString("N0") ₫</th>
+                    <th class="text-end"> @Model.SumCODFee.ToString("N0") ₫</th>
+                    <th class="text-end"> @Model.SumServiceFee.ToString("N0") ₫</th>
+                    <th class="text-end"> @Model.SumAdjustmentFee.ToString("N0") ₫</th>
+                    <th class="text-end"> @Model.SumTotalCharge.ToString("N0") ₫</th>
+                }
+                else
+                {
+                    <th class="text-end"> 0 ₫</th>
+                    <th class="text-end"> 0 ₫</th>
+                    <th class="text-end"> 0 ₫</th>
+                    <th class="text-end"> 0 ₫</th>
+                    <th class="text-end"> 0 ₫</th>
+                }
+                <th class="text-center"></th>
+            </tr>
+            <tr class="text-center">
+                <th> STT </th>
+                <th> Số hiệu </th>
+                <th> Số tham chiếu</th>
+                <th> Ngày</th>
+                <th> Bưu cục khai thác </th>
+                <th> Bưu cục trả </th>
+                <th> Trọng lượng</th>
+                <th> Cước chính (VNĐ)</th>
+                <th> Cước COD (VNĐ)</th>
+                <th> Cước DV (VNĐ)</th>
+                <th> Cước điều chỉnh (VNĐ)</th>
+                <th> Tổng cước (VNĐ)</th>
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;"> Nội dung</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model.DataInfoDetails)
+                {
+                    var TotalCharge = item.MainFee + item.CODFee + item.ServiceFee + item.AdjustmentFee;
+                    <tr>
+                        <td class="text-center">@(stt++)</td>
+                        <td class="text-center">
+                            @item.ItemCode
+                        </td>
+                        <td class="text-center">
+                            @item.ReferenceNumber
+                        </td>
+                        <td class="text-center">
+                            @item.ReleaseDate
+                        </td>
+                        <td class="text-center">
+                            @item.PostOfficeExploit
+                        </td>
+                        <td class="text-center">
+                            @item.PostOfficeReturn
+                        </td>
+                        <td class="text-end">
+                            @item.Weight
+                        </td>
+                        <td class="text-end">
+                            @item.MainFee.ToString("N0")
+                        </td>
+                        <td class="text-end">
+                            @item.CODFee.ToString("N0")
+                        </td>
+                        <td class="text-end">
+                            @item.ServiceFee.ToString("N0")
+                        </td>
+                        <td class="text-end">
+                            @item.AdjustmentFee.ToString("N0")
+                        </td>
+                        <td class="text-end">
+                            @TotalCharge.ToString("N0")
+                        </td>
+                        <td class="text-start" style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;line-height: 1.4rem;">
+                            @item.Content
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model != null)
+{
+    if (Model.DataInfo.CustomerCode != null)
+    {
+        <div class="table-responsive mt-2">
+            <table id="ListDataSum" class="table" style="border-collapse:collapse;" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Cước khác:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.OtherCharges.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.OtherCharges.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Cước điều chỉnh:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @{
+                                    var AdjustmentFee = (Model.DataInfo.AdjustmentFeeRevenue - Model.SumAdjustmentFee);
+                                }
+                                @AdjustmentFee.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @AdjustmentFee.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Trong nước:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.DomesticRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.DomesticRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.DomesticRevenue * Model.DataInfo.DomesticRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Thoả thuận:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.NegotiableRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.AgreementRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.NegotiableRevenue * Model.DataInfo.AgreementRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Quốc tế:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.InternationalRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.InternationalRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.InternationalRevenue * Model.DataInfo.InternationalRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Quốc tế Priority:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.InternationalPriorityRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.PriorityRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.InternationalPriorityRevenue * Model.DataInfo.PriorityRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Thương mại điện tử:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.EcommerceRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.EcommerceRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.EcommerceRevenue * Model.DataInfo.EcommerceRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Chuyển hoàn:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.PermuteRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.ReturnRate.ToString("N0") %
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Math.Round((double)(Model.DataInfo.PermuteRevenue * Model.DataInfo.ReturnRate) / 100).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Hoàn cước:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.RefundRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.RefundRevenue.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Truy thu:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.ArrearsRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.ArrearsRevenue.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Khuyến mãi theo CV:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.PromotionCVRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.PromotionCVRevenue.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Cước điều chỉnh khác:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.OtherAdjustmentChargesRevenue.ToString("N0")
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @Model.DataInfo.OtherAdjustmentChargesRevenue.ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-Width">
+                            <div class="text-content mt-2">
+                                <label class="text-lable"><b>Tổng tiền thanh toán sau khi chiết khấu giảm giá:</b></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                @{
+                                    double Sum = (((double)(Model.DataInfo.DomesticRevenue * Model.DataInfo.DomesticRate) / 100) +
+                                            ((double)(Model.DataInfo.PermuteRevenue * Model.DataInfo.ReturnRate) / 100) +
+                                            ((double)(Model.DataInfo.InternationalRevenue * Model.DataInfo.InternationalRate) / 100) +
+                                            ((double)(Model.DataInfo.NegotiableRevenue * Model.DataInfo.AgreementRate) / 100) +
+                                            ((double)(Model.DataInfo.EcommerceRevenue * Model.DataInfo.EcommerceRate) / 100) +
+                                            (Model.DataInfo.ArrearsRevenue + Model.DataInfo.RefundRevenue));
+                                }
+                                @Math.Round((double)((Model.SumTotalCharge + (Model.DataInfo.AdjustmentFeeRevenue - Model.SumAdjustmentFee) + Model.DataInfo.OtherCharges) - Sum)).ToString("N0")
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+}
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

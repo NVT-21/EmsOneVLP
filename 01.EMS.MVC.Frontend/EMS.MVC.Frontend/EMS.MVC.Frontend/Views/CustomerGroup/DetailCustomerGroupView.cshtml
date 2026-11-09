@@ -1,0 +1,308 @@
+﻿@model EMS.MVC.Frontend.Models.CustomerDetailViewModel
+@{
+    ViewBag.Title = "DetailCustomerGroupView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="header-content">
+            <p class="fs-20 font-w600">CHI TIẾT KHÁCH HÀNG - @Model.FullName.ToUpper()</p>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="rounded card">
+                        <div class="card-body">
+                            <h3 class="card-title">Thông Tin Liên Hệ</h3>
+                            <div class="form-group row mb-3">
+                                <div class="col-md-3">
+                                    <label for="FullName" class="text-2">Họ và Tên <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" id="FullName" value="@Model.FullName" autocomplete="off" />
+                                    <span class="text-danger" id="errFullName"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="MobileNumber" class="text-2">Số điện thoại <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" id="MobileNumber" value="@Model.MobileNumber" autocomplete="off" />
+                                    <span class="text-danger" id="errMobiNumber"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="BirthDay" class="text-2">Ngày sinh</label>
+                                    <input type="text" class="form-control" id="BirthDay" value="@Model.BirthDay" autocomplete="off" />
+                                    <span class="text-danger" id="errBirthDay"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="Email" class="text-2">Email</label>
+                                    <input type="text" class="form-control" id="Email" value="@Model.Email" autocomplete="off" />
+                                    <span class="text-danger" id="errEmail"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label for="Address" class="text-2">Địa chỉ <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control" id="Address" value="@Model.Address" autocomplete="off" />
+                                    <span class="text-danger" id="errAddress"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="WardID" class="text-2">Xã/Phường <span class="text-danger">(*)</span></label>
+                                    @Html.DropDownListFor(model => model.WardID, new SelectList(ViewBag.ListWard, "ID", "Name"), "---Chọn---", new { @class = "select2" })
+                                    <span class="text-danger" id="errWardID"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="DistrictID" class="text-2">Quận/Huyện <span class="text-danger">(*)</span></label>
+                                    @Html.DropDownListFor(model => model.DistrictID, new SelectList(ViewBag.ListDistrict, "ID", "Name"), "---Chọn---", new { @class = "select2", @onchange = "LoadWardID_V2('DistrictID', 'WardID')" })
+                                    <span class="text-danger" id="errDistrictID"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="ProvinceID" class="text-2">Tỉnh/Thành phố <span class="text-danger">(*)</span></label>
+                                    @Html.DropDownListFor(model => model.ProvinceID, new SelectList(ViewBag.ListProvince, "ID", "Name"), "---Chọn---", new { @class = "select2", @onchange = "LoadDistrict_V2('ProvinceID', 'DistrictID', 'WardID')" })
+                                    <span class="text-danger" id="errProvinceID"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="rounded card">
+                        <div class="card-body">
+                            <h3 class="card-title">Thông Tin Khác</h3>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label for="Taxcode" class="text-2">Mã số thuế</label>
+                                    <input type="text" class="form-control" id="TaxCode" value="@Model.TaxCode" autocomplete="off" />
+                                    <span class="text-danger" id="errTaxCode"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="GroupName" class="text-2">Nhóm khách hàng</label>
+                                    <input type="text" class="form-control" id="GroupName" value="@Model.GroupName" />
+                                    <span class="text-danger" id="errGroupName"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="CustomerStickerID" class="text-2">Gán nhãn</label>
+                                    <select id="CustomerStickerID" class="js-example-basic-multiple w-100" multiple="multiple" style="width:100%!important;">
+                                        @if (ViewBag.ListCustomerSticker != null)
+                                        {
+                                            List<int> lstTemp = new List<int>();
+                                            if (Model.Sticker != "")
+                                            {
+                                                var split = Model.Sticker.Split(',');
+                                                for (var i = 0; i < split.Length; i++)
+                                                {
+                                                    lstTemp.Add(Convert.ToInt32(split[i]));
+                                                }
+                                            }
+                                            foreach (var item in ViewBag.ListCustomerSticker)
+                                            {
+                                                <option value="@item.Value" @{ if (lstTemp.Exists(m => m == Convert.ToInt32(item.Value))) { Write("Selected"); } else { Write(""); } }>@item.Text</option>
+                                            }
+                                        }
+                                        <option value="0">Khác</option>
+                                    </select>
+                                    <span class="text-danger" id="errCustomerStickerID"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="Channel" class="text-2">Kênh</label>
+                                    @Html.DropDownListFor(model => model.Channel, new SelectList(ViewBag.ListChannel, "Value", "Text"), "---Chọn---", new { @class = "select2" })
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <label class="text-2" for="Note">Ghi chú</label>
+                                    <textarea type="text" class="form-control" id="Note">@Model.Note</textarea>
+                                    <span class="text-danger" id="errNote"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-block btn-danger" onclick="location.href = '@Url.Action("CustomerView", "Customer")'">QUAY LẠI</button>
+                    </div>
+                    <div class="col-md-3 offset-md-1">
+                        <button type="button" id="btnEdit" class="btn btn-block btn-sm btn-warning">CHỈNH SỬA</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnConfirm" class="btn btn-block btn-sm btn-secondary">XÁC NHẬN</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" onclick="btnAddOrderView('@Model.MobileNumber')" id="btnCreateOrder" class="btn btn-block btn-sm btn-primary">TẠO ĐƠN HÀNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>    
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="rounded card">
+                <div class="card-body">
+                    <h4 class="card-title">Lịch sử mua hàng</h4>
+                    <div class="form-group row">
+                        @if (Model.MobileNumber != null)
+                        {
+                            Html.RenderAction("CustomerOrderHistoryView", "Customer", new { MobileNumber = Model.MobileNumber });
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#FullName').attr("disabled", true);
+        $('#MobileNumber').attr("disabled", true);
+        $('#Email').attr("disabled", true);
+        $('#ProvinceID').attr("disabled", true);
+        $('#BirthDay').attr("disabled", true);
+        $('#DistrictID').attr("disabled", true);
+        $('#WardID').attr("disabled", true);
+        $('#Address').attr("disabled", true);
+        $('#TaxCode').attr("disabled", true);
+        $('#GroupName').attr("disabled", true);
+        $('#Channel').attr("disabled", true);
+        $('#CustomerStickerID').prop('disabled', true);
+        $('#CustomerStickerID').selectpicker('refresh');
+        $('#Note').attr("disabled", true);
+        $('#btnConfirm').attr("disabled", true);
+        $('#btnEdit').attr("disabled", false);
+
+        $('#BirthDay').datepicker().change(evt => {
+            var selectedDate = $('#BirthDay').datepicker('getDate');
+            var now = new Date();
+            now.setHours(0, 0, 0, 0);
+            if (selectedDate < now) {
+                isErrorBirthDay = true;
+                $("#errBirthDay").text("");
+            } else {
+                isErrorBirthDay = false;
+                $("#errBirthDay").text("Ngày sinh không hợp lệ");
+                $("#errBirthDay").focus();
+                return;
+            }
+        });
+    });
+
+    function btnAddOrderView(MobileNumber) {
+        window.location.href = '@Url.Action("AddOrderView", "Order")?MobileNumber=' + MobileNumber;
+    }
+
+    $("#btnEdit").on('click', function () {
+
+        $('#FullName').attr("disabled", false);
+        $('#MobileNumber').attr("disabled", false);
+        $('#Email').attr("disabled", false);
+        $('#BirthDay').attr("disabled", false);
+        $('#ProvinceID').attr("disabled", false);
+        $('#DistrictID').attr("disabled", false);
+        $('#WardID').attr("disabled", false);
+        $('#Address').attr("disabled", false);
+        $('#TaxCode').attr("disabled", false);
+        $('#GroupName').attr("disabled", false);
+        $('#Channel').attr("disabled", false);
+        $('#CustomerStickerID').prop('disabled', false);
+        $('#CustomerStickerID').selectpicker('refresh');
+        $('#Note').attr("disabled", false);
+        $('#btnConfirm').attr("disabled", false);
+        $('#btnEdit').attr("disabled", true);
+    });
+
+    $("#btnConfirm").on('click', function () {
+
+        var isMsg = "Dữ liệu không được để trống!";
+        var IsError = false;
+        var data = {
+            ID: $("#ID").val(),
+            FullName: $("#FullName").val().trim(),
+            MobileNumber: $("#MobileNumber").val().trim(),
+            Email: $("#Email").val().trim(),
+            ProvinceID: $("#ProvinceID").val(),
+            DistrictID: $("#DistrictID").val(),
+            WardID: $("#WardID").val(),
+            Address: $("#Address").val().trim(),
+            BirthDay: $("#BirthDay").val().trim(),
+            TaxCode: $("#TaxCode").val().trim(),
+            Note: $("#Note").val().trim(),
+            Channel: $("#Channel").val(),
+            strStickerNew: $("#CustomerStickerID").val()
+        }
+
+        IsError = CheckNullValue(data.FullName, "FullName", isMsg, IsError);
+        IsError = CheckNullValue(data.MobileNumber, "MobileNumber", isMsg, IsError);
+        IsError = CheckNullValue(data.Email, "FullName", isMsg, IsError);
+        IsError = CheckNullValue(data.ProvinceID, "ProvinceID", isMsg, IsError);
+        IsError = CheckNullValue(data.DistrictID, "DistrictID", isMsg, IsError);
+        IsError = CheckNullValue(data.WardID, "WardID", isMsg, IsError);
+        IsError = CheckNullValue(data.Address, "Address", isMsg, IsError);
+        IsError = CheckNullValue(data.BirthDay, "BirthDay", isMsg, IsError);
+        IsError = CheckNullValue(data.TaxCode, "TaxCode", isMsg, IsError);
+        IsError = CheckNullValue(data.CustomerStickerID, "CustomerStickerID", isMsg, IsError);
+
+        if (IsError == true) { return; }
+
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn cập nhật thông tin thanh toán?",
+            buttons: {
+                confirm: {
+                    text: "CÓ",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "KHÔNG",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JEditCustomer", "Customer")',
+                    data: data,
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });        
+    });
+
+
+
+</script>
+
+

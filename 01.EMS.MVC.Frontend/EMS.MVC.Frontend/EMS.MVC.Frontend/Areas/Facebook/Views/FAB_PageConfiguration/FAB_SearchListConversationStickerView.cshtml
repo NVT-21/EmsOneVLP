@@ -1,0 +1,89 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListConversationStickerViewModel>
+@foreach (var item in Model)
+{
+    <div class="col-4 mb-4">
+        <div class="username-container border">
+            <div class="profile-container">
+                <div class="profile-img overflow-hidden" style="background-color:@item.StickerColor;">
+                </div>
+                <div class="profile-description mt-3">
+                    <p style="font-size: 1.2em;">@item.StickerName</p>
+                </div>
+            </div>
+            <div class="menu-bar">
+                <i class="fs-14 c-pointer fa fa-edit me-2" onclick="fnEdit(@item.StickerID)"></i>
+                <i class="fs-14 c-pointer fa fa-trash" onclick="fnDelete(@item.StickerID);"></i>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function fnEdit(StickerID) {
+        $.post('@Url.Action("FAB_EditConversationStickerView", "FAB_PageConfiguration", new { area = "Facebook" })', {
+            StickerID: StickerID
+        }, function (data) {
+            $('#modal-ViewModal-html').html(data);
+            $('#ViewModal').modal('show');
+        });
+    }
+    function fnDelete(StickerID) {
+        swal({
+            text: "Bạn chắc chắn muốn xoá?",
+            html: true,
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("FAB_JDeleteConversationSticker", "FAB_PageConfiguration", new { area = "Facebook" })',
+                    dataType: 'json',
+                    loading: true,
+                    data: {
+                        StickerID: StickerID
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                            setTimeout(function () {
+                                $("#SearchKey").val("");
+                                $.get('@Url.Action("FAB_SearchListConversationStickerView", "FAB_PageConfiguration", new { area = "Facebook" })', function (data) {
+                                    $('#tbl-data').html(data);
+                                });
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
+

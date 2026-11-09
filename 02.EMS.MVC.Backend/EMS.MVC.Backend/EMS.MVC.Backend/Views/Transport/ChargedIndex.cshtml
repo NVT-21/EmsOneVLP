@@ -1,0 +1,174 @@
+﻿@model EMS.MVC.Backend.Models.TransportFeeViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn {
+        text-transform: none;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Tính thử cước</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Dịch vụ vận chuyển chính <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.MainTransportServiceID, new SelectList(Model.ListMainTransportService, "Value", "Text"), "--- Chọn ---", new { @class = "select2" })
+                        <span class="error-message" id="errMainTransportServiceID"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Dịch vụ vận chuyển cộng thêm</label>
+                        @Html.DropDownListFor(model => model.ExtraTransportServiceID, new SelectList(Model.ListExtraTransportService, "Value", "Text"), new { @class = "selectpicker form-control form-control-sm", @data_live_search = "true", @data_dropup_auto = "false", @data_size = "8", @data_selected_text_format = "count", @data_actions_box = "true", @multiple = "true" })
+                        <span class="error-message" id="errExtraTransportServiceID"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label for="">Nơi xuất phát <span class="text-danger">(*)</span></label>
+                        @Html.DropDownListFor(m => m.FromProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2" })
+                        <span class="error-message" id="errFromProvinceID"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label for="">Tỉnh/TP nơi đến <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.ToProvinceID, new SelectList(Model.ListProvince, "ID", "Name"), "--- Tỉnh/ Thành phố ---", new { @class = "select2", @onchange = "LoadListDistrict('ToProvinceID', 'ToDistrictID', 'ToWardID')" })
+                        <span class="error-message" id="errToProvinceID"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label for="">Quận/Huyện nơi đến</label>
+                        @Html.DropDownListFor(m => m.ToDistrictID, new SelectList(Model.ListDistrict, "ID", "Name"), "--- Quận/ Huyện ---", new { @class = "select2", @onchange = "LoadListWard('ToDistrictID', 'ToWardID')" })
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label for="">Phường/Xã nơi đến</label>
+                        @Html.DropDownListFor(m => m.ToWardID, new SelectList(Model.ListWard, "ID", "Name"), "--- Phường/ Xã ---", new { @class = "select2" })
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Khối lượng (gram) <span class="text-danger">*</span></label>
+                        <input class="form-control" id="Weight" placeholder="Nhập trọng lượng" data-inputmask="'alias': 'currency'" onkeyup="checkNull(this.value, '#errWeight', '');" />
+                        <span class="error-message" id="errWeight"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Mã khách hàng</label>
+                        <input class="form-control" id="CustomerCode" placeholder="Nhập mã khách hàng" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Số lượng</label>
+                        <input class="form-control" id="Quantity" placeholder="Nhập số lượng" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Giá trị đơn hàng</label>
+                        <input class="form-control" id="Amount" placeholder="Nhập giá trị đơn hàng" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <div class="col-sm-12 col-md-6 pb-3">
+                        <label>Tiền COD</label>
+                        <input class="form-control" id="COD" placeholder="Nhập tiền COD" data-inputmask="'alias': 'currency'" />
+                    </div>
+                    <hr />
+                    <div class="col-6" id="ResponseData">
+
+                    </div>
+                </div>
+                <hr />
+                <div class="col-12 pb-3">
+                    <button class="btn btn-sm btn-primary pull-right" id="Submit">TÍNH CƯỚC</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    CheckChangeValue("MainTransportServiceID", "Vui lòng chọn dịch vụ vận chuyển chính", "", "Y");
+    CheckChangeValue("FromProvinceID", "Vui lòng chọn nơi xuất phát", "", "Y");
+    CheckChangeValue("ToProvinceID", "Vui lòng chọn Tỉnh/TP nơi đến", "", "Y");
+    CheckChangeValue("Weight", "Vui lòng nhập trọng lượng", "Number", "Y");
+
+    $(document).ready(function () {
+        $('#TransportExtraService').selectpicker();
+    });
+
+    $("#Submit").on("click", function () {
+        var isError = false;
+        var data = {
+            MainServiceID: $("#MainTransportServiceID").val(),
+            ExtraServiceIDs: $("#ExtraTransportServiceID").val().toString(),
+            FromProvinceID: $("#FromProvinceID").val(),
+            ToProvinceID: $("#ToProvinceID").val(),
+            ToDistrictID: $("#ToDistrictID").val(),
+            ToWardID: $("#ToWardID").val(),
+            Weight: $("#Weight").val().replaceAll(",", ""),
+            CustomerCode: $("#CustomerCode").val().trim(),
+            Quantity: $("#Quantity").val().replaceAll(",",""),
+            Amount: $("#Amount").val().replaceAll(",", ""),
+            COD: $("#COD").val().replaceAll(",", "")
+        };
+
+        isError = checkNull(data.MainServiceID, "#errMainTransportServiceID", isError);
+        isError = checkNull(data.FromProvinceID, "#errFromProvinceID", isError);
+        isError = checkNull(data.ToProvinceID, "#errToProvinceID", isError);
+        isError = checkNull(data.Weight, "#errWeight", isError);
+
+        if (isError == true) {
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JCharged", "Transport")',
+            dataType: 'json',
+            loading: true,
+            data: data,
+            success: function (res) {
+                if (res.Code == '00') {
+                    var resData = JSON.parse(res.Data);
+                    var strHTML = '<p>Cước dịch vụ chính<span class="pull-right">' + CurrencyFormatVND(resData.MainFee) + '</span></p><p>Cước dịch vụ cộng thêm<span class="pull-right">' + CurrencyFormatVND(resData.ExtraFee) + '</span></p><p>Phụ phí<span class="pull-right">' + CurrencyFormatVND(resData.Surcharge) + '</span></p><p>Tổng cộng<span class="pull-right">' + CurrencyFormatVND(resData.TotalAmount) + '</span>';
+                    $('#ResponseData').html(strHTML);
+                } else {
+                    $('#ResponseData').html('');
+                    swal({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: res.Message,
+                        button: {
+                            text: "Đóng",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary"
+                        }
+                    });
+                    return;
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>

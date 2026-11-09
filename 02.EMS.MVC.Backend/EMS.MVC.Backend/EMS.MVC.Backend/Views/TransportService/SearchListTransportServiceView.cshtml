@@ -1,0 +1,182 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListTransportServiceViewModel>
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 d-flex justify-content-end mb-2">
+        <button type="button" class="btn btn-sm btn-primary" onclick="btnAddTransportService(@ViewBag.ParentID)">THÊM</button>
+    </div>
+</div>
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã dịch vụ </th>
+            <th> Tên dịch vụ </th>
+            <th> Dịch vụ đặc biệt </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.Code</td>
+                    <td>@item.Name</td>
+                    <td>@item.SpecialService.Name</td>
+                    <td>
+                        <button onclick="btnEdit(@item.ID)" title="Sửa" class="badge badge-outline-danger">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        @if (item.IsLock == "N")
+                        {
+                            <button type="button" title="Khóa" onclick="Lock(@item.ID, '@item.Name')" class="badge badge-outline-primary">
+                                <i class="fa fa-unlock"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" title="Mở khóa" onclick="Unlock(@item.ID, '@item.Name')" class="badge badge-outline-danger">
+                                <i class="fa fa-lock"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    function btnAddTransportService(ParentID) {
+        $.get('@Url.Action("AddTransportServiceView", "TransportService")', { ParentID: ParentID }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function btnEdit(ServiceID) {
+        $.get('@Url.Action("EditTransportServiceView", "TransportService")', { ID: ServiceID }, function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function Lock(ServiceID, ServiceName) {
+        swal({
+            title: 'Thông báo',
+            text: "Nếu khóa dịch vụ, bảng cước tương ứng với Dịch vụ " + ServiceName + " sẽ bị Tạm ngừng. Bạn có chắc chắn Khóa?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JLock", "TransportService")',
+                    data: {
+                        ID: ServiceID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function Unlock(ServiceID, ServiceName) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn mở khóa Dịch vụ " + ServiceName + "?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JUnLock", "TransportService")',
+                    data: {
+                        ID: ServiceID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            CreateCustomSwal("success", res.Message);
+                        } else {
+                            CreateCustomSwal("error", res.Message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Error',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Close",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+</script>

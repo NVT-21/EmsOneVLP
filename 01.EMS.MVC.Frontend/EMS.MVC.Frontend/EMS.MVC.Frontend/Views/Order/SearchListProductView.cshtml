@@ -1,0 +1,51 @@
+﻿@model List<EMS.MVC.Frontend.Models.SearchListProductViewModel>
+<input type="hidden" id="TotalListProduct" value="@Model.Count" />
+<div class="table-responsive table-primary">
+    <table class="table table-responsive-md">
+        <thead>
+            <tr>
+                <th style="min-width: 200px;">Tên sản phẩm</th>
+                <th style="min-width: 200px;">Tên biến thể</th>
+                <th>Số lượng</th>
+                <th style="min-width: 150px;">Giá tiền</th>
+                <th style="min-width: 150px;">Thành tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="row-item" data-VariantID="@item.VariantID" data-Weight="@item.Weight" data-ProductID="@item.ProductID" data-ProductName="@item.ProductName" data-PriceProduct="@item.PriceProduct" data-WareHouseQuantity="@item.WareHouseQuantity">
+                    <td>
+                        <img src="~/Assets/images/logo/logo_ems_app.jpg" alt="" class="me-1">
+                        @item.ProductName
+                    </td>
+                    <td>@item.VariantName</td>
+                    <td style="width: 250px;">
+                        <div class="quantity-block">
+                            <button class="btn quantity-arrow-minus" onclick="btnMinus(@item.VariantID, 2)"> - </button>
+                            <input class="quantity-num" id="NumberOfProduct_@item.VariantID" type="number" value="@item.NumberOfProduct" onchange="CheckNumberOfProductInWareHouseQuantity(@item.VariantID, @item.WareHouseQuantity, 2)" />
+                            <button class="btn quantity-arrow-plus" onclick="btnPlus(@item.VariantID, 2)"> + </button>
+                        </div>
+                        <span class="text-danger" id="errVariant_@item.VariantID"></span>
+                    </td>
+                    <td id="PriceProduct_@item.VariantID">@item.PriceProduct.ToString("N0")</td>
+                    <td id="TotalPrice_@item.VariantID">@item.TotalPrice.ToString("N0")</td>
+                    <td>
+                        <button type="button" class="btn btn-trash light" title="Xóa sản phẩm" onclick="btnDeleteProduct(this)">
+                            <i class="icon-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    if ($("#TotalListProduct").val() > 0) {
+    //        LoadTotalPrice();
+    //    }
+    //});
+</script>

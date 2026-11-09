@@ -1,0 +1,192 @@
+﻿@model EMS.MVC.Backend.Models.ReconciliationCODMoneyViewModel
+@{
+    ViewBag.Title = "CODMoney";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("CODMoney","Reconciliation")">Quản lý đối soát tiền COD</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span></span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>Loại ngày</label>
+                    @Html.DropDownListFor(model => model.TypeDate, new SelectList(Model.ListTypeDate, "Value", "Text"), new { @class = "select2" })
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-2">
+                    <label>Thời gian</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Từ</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="FromDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.FromDate" />
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-secondary text-white border-secondary form-control form-control-sm">Đến</span>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="ToDate" placeholder="Ngày/ Tháng/ Năm" value="@Model.ToDate">
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>Mã PayPost/CRM</label>
+                    <input class="form-control" id="CustomerPPCRM" name="CustomerPPCRM" placeholder="Mã PayPost/CRM" type="text">
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>Mã khách hàng</label>
+                    <input class="form-control" id="CustomerCode" name="CustomerCode" placeholder="Mã khách hàng" type="text">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>Trạng thái COD</label>
+                    @Html.DropDownListFor(model => model.CODTransType, new SelectList(Model.ListCODTransType, "Value", "Text"), "Tất cả", new { @class = "select2" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>&nbsp;</label>
+                    <button id="btnSearch" class="btn btn-sm btn-secondary form-control text-white">
+                        <i class="fa fa-search"></i> TÌM KIẾM
+                    </button>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 mb-2">
+                    <label>&nbsp;</label>
+                    <button type="button" id="btnExportExcel" class="btn btn-sm btn-dribbble form-control">
+                        <i class="fa fa-file-excel-o mr-2"></i>&nbsp; EXPORT EXCEL
+                    </button>
+                </div>
+            </div>
+            <hr />
+            <div id="tbl-data" class="table-responsive">
+                @*@{Html.RenderAction("GetDataCODMoney", "Reconciliation", new { TypeDate = 1, FromDate = Model.FromDate, ToDate = Model.ToDate });}*@
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            CreateDatePicker("#FromDate, #ToDate");
+        });
+        $('#btnSearch').on('click', function () {
+            var errMsg = '', isError = false;
+            var agrs = {
+                TypeDate: $('#TypeDate').val(),
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CustomerPPCRM: $('#CustomerPPCRM').val().trim(),
+                CustomerCode: $('#CustomerCode').val().trim(),
+                CODTransType: Number($('#CODTransType').val())
+            };
+            if (agrs.CustomerPPCRM == "") {
+                if (agrs.CustomerCode == "") {
+                    errMsg = 'Vui nhập mã PayPost/CRM hoặc mã Khách Hàng';
+                    isError = true;
+                }
+            }
+
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 93) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 3 tháng.';
+                isError = true;
+            }
+
+            if (isError) {
+                swal({
+                    title: 'Thông báo',
+                    text: errMsg,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+
+                })
+                return;
+            }
+
+            $.get('@Url.Action("GetDataCODMoney", "Reconciliation")', agrs, function (htmlString) {
+                $('#tbl-data').html(htmlString);
+            });
+        });
+        $("#btnExportExcel").on("click", function () {
+            var errMsg = '', isError = false;
+            var agrs = {
+                TypeDate: $('#TypeDate').val(),
+                FromDate: $('#FromDate').val(),
+                ToDate: $('#ToDate').val(),
+                CustomerPPCRM: $('#CustomerPPCRM').val().trim(),
+                CustomerCode: $('#CustomerCode').val().trim(),
+                CODTransType: Number($('#CODTransType').val())
+            };
+            if (agrs.CustomerPPCRM == "") {
+                if (agrs.CustomerCode == "") {
+                    errMsg = 'Vui nhập mã PayPost/CRM hoặc mã Khách Hàng';
+                    isError = true;
+                }
+            }
+            if (agrs.FromDate == "") {
+                errMsg = 'Vui lòng chọn Từ ngày';
+                isError = true;
+            }
+            if (agrs.ToDate == "") {
+                errMsg = 'Vui lòng chọn Đến ngày';
+                isError = true;
+            }
+
+            var check_date = getDateDiff(agrs.FromDate, agrs.ToDate);
+
+            if (check_date < 0) {
+                errMsg = 'Ngày bắt đầu không được lớn hơn ngày kết thúc.';
+                isError = true;
+            }
+            if (check_date > 93) {
+                errMsg = 'Vui lòng chọn thời gian lọc dữ liệu trong vòng 3 tháng.';
+                isError = true;
+            }
+            if (isError) {
+                swal({
+                    title: 'Thông báo',
+                    text: errMsg,
+                    icon: 'error',
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+
+                })
+                return;
+            }
+            window.location.href = "@Url.Action("ExportExcelDataCODMoney", "Reconciliation")?CustomerPPCRM=" + agrs.CustomerPPCRM + "&CustomerCode=" + agrs.CustomerCode + "&CODTransType=" + agrs.CODTransType + "&TypeDate=" + agrs.TypeDate + "&FromDate=" + agrs.FromDate + "&ToDate=" + agrs.ToDate;
+        });
+    </script>
+}

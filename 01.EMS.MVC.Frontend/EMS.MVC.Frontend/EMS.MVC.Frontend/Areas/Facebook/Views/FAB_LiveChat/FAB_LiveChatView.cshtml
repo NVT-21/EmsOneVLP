@@ -1,0 +1,476 @@
+﻿@model EMS.MVC.Frontend.Areas.Facebook.Models.FAB_LiveChatViewModel
+@{
+    Layout = "~/Areas/Facebook/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(m => m.PageID)
+@Html.HiddenFor(m => m.PageName)
+@Html.HiddenFor(m => m.PageAvatar)
+<style>
+    .image-default-css {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+<div class="d-none" id="Info-@Model.PageID" data-DisplayName="@Model.PageName" data-Avatar="@Model.PageAvatar"></div>
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 col-lg-2 col-xl-2 border-right p-0">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <strong class="form-label">Tìm kiếm & Phân loại</strong>
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <input type="text" id="ConversationSearchKey" class="form-control my-3" placeholder="Tìm kiếm tên KH, SĐT ..." style="border-top-left-radius: 10px;
+                                          border-top-right-radius: 10px;
+                                          border-bottom-left-radius: 10px;
+                                          border-bottom-right-radius: 10px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 mb-1">
+                                <select id="StickerID" class="selectpicker form-control form-control-sm" data-live-search="true" data-actions-box="true" data-dropup-auto="false" data-size="10" data-selected-text-format="count" multiple>
+                                    @foreach (var item in Model.ListConversionSticker)
+                                    {
+                                        <option value="@item.StickerID" style="color: @item.StickerColor">
+                                            @item.StickerName
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="ListConversion" class="CustomScrollBar" style="min-height: 650px; overflow-y: scroll; overflow-x: hidden;">
+                            @{
+                                Html.RenderAction("FAB_SearchListConversionView", "FAB_LiveChat", new { area = "Facebook" });
+                            }
+                        </div>
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-md-5 col-lg-5 col-xl-5 image-default-css" id="MessageOfConversion">
+                    </div>
+                    <div class="col-md-12 col-lg-5 col-xl-5 stretch-card d-none" id="showUserInformation">
+                        <div class="card p-2 bg-white rounded">
+                            <div class="custom-tab-1 pt-4">
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item" onclick="fnTabClick('infoCustomer')">
+                                        <a class="nav-link active" data-bs-toggle="tab" href="#infoCustomer" id="p_Tab_infoCustomer">Khách hàng</a>
+                                    </li>
+                                    <li class="nav-item" onclick="fnTabClick('orderCustomer')">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#orderCustomer" id="p_Tab_orderCustomer"> Đơn hàng</a>
+                                    </li>
+                                    <li class="nav-item" onclick="fnTabClick('conversationSticker')">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#conversationSticker" id="p_Tab_conversationSticker">Thẻ hội thoại</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane fade fade show active" id="infoCustomer" role="tabpanel" style="height: 650px;">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                @{
+                                                    Html.RenderAction("FAB_UserInformationView", "FAB_LiveChat", new { area = "Facebook" });
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="orderCustomer">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div id="dataOrderCustomer" class="col-md-12" style="height: 650px; overflow-y: auto;overflow-x: hidden;">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="conversationSticker">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div id="dataStickerOfConversation" class="col-md-12" style="height: 650px; overflow-y: auto;overflow-x: hidden;">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("div.nav-control").click();
+            $("#footer").addClass("d-none");
+            $(".content-body").css("min-height", "");
+            var LiveChatViewUserID = sessionStorage.getItem('LiveChatViewUserID');
+            if (LiveChatViewUserID) {
+                $("#conversion-" + LiveChatViewUserID).click();
+                sessionStorage.removeItem("LiveChatViewUserID");
+            }
+            $("#StickerID").selectpicker("refresh");
+        });
+
+        var FacebookHubProxy = $.connection.FacebookHub;
+
+        $.connection.hub.url = 'https://social-webhook.somee.com/signalr/hubs';
+        //$.connection.hub.url = 'https://localhost:44321/signalr/hubs';
+        //$.connection.hub.url = 'https://webhook.emsone.com.vn/signalr/hubs';
+
+        var PageID = $("#PageID").val();
+
+        $.connection.hub.qs = { 'name': PageID };
+
+        //$.connection.hub.logging = true;
+        //{ useDefaultPath: false, transport: ['webSockets', 'longPolling'] }
+
+        $.connection.hub.start()
+            .done(function () { console.log('Now connected'); })
+            .fail(function (e) { console.log('Could not Connect!'); });
+
+        $.connection.hub.error(function (error) {
+            console.log('SignalR error: ' + error)
+        });
+
+        //FacebookHubProxy.on("UserSendMessageToPage", (data) => {
+        //    console.log(data);
+        //});
+
+        FacebookHubProxy.client.UserSendMessageToPage = function (data) {
+            var ResponseData = JSON.parse(data);
+            var event_name = "";
+            if (ResponseData.entry[0].messaging[0].message.attachments == null) {
+                event_name = "TEXT";
+            } else {
+                event_name = ResponseData.entry[0].messaging[0].message.attachments[0].type.toUpperCase();
+            }
+            switch (event_name) {
+                case "TEXT":
+                    LoadConversion(ResponseData.entry[0].messaging[0].sender.id, ResponseData.entry[0].messaging[0].message.text, event_name).then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.entry[0].messaging[0].sender.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.entry[0].messaging[0].message.mid, 0, ResponseData.entry[0].messaging[0].sender.id, ResponseData.entry[0].messaging[0].message.text, "TEXT", ResponseData.entry[0].time);
+                        }
+                        }).catch(function () {
+                            console.log("Error LoadConversion");
+                    });
+                    break;
+                case "IMAGE":
+                case "AUDIO":
+                case "VIDEO":
+                case "FILE":
+                    LoadConversion(ResponseData.entry[0].messaging[0].sender.id, "", event_name).then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.entry[0].messaging[0].sender.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.entry[0].messaging[0].message.mid, 0, ResponseData.entry[0].messaging[0].sender.id, ResponseData.entry[0].messaging[0].message.text, event_name, ResponseData.entry[0].time, ResponseData.entry[0].messaging[0].message.attachments[0].payload.url);
+                        }
+                    }).catch(function () {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+            }
+        };
+
+        FacebookHubProxy.client.PageSendMessageToUser = function (data) {
+            var ResponseData = JSON.parse(data);
+            var event_name = "";
+            if (ResponseData.entry[0].messaging[0].message.attachments == null) {
+                event_name = "TEXT";
+            } else {
+                event_name = ResponseData.entry[0].messaging[0].message.attachments[0].type.toUpperCase();
+            }
+            switch (event_name) {
+                case "TEXT":
+                    LoadConversion(ResponseData.entry[0].messaging[0].recipient.id, ResponseData.entry[0].messaging[0].message.text, "TEXT").then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.entry[0].messaging[0].recipient.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.entry[0].messaging[0].message.mid, 1, ResponseData.entry[0].messaging[0].sender.id, ResponseData.entry[0].messaging[0].message.text, "TEXT", ResponseData.entry[0].time, "");
+                        }
+                    }).catch(function (ex) {
+                        console.log("Error LoadConversion");
+                    });
+                    break;
+                case "IMAGE":
+                case "AUDIO":
+                case "VIDEO":
+                case "FILE":
+                    LoadConversion(ResponseData.entry[0].messaging[0].recipient.id, "", event_name).then(function () {
+                        var CheckConversionActive = $("#conversion-" + ResponseData.entry[0].messaging[0].recipient.id).hasClass("active");
+                        if (CheckConversionActive == true) {
+                            LoadMessageOfConversion(ResponseData.entry[0].messaging[0].message.mid, 1, ResponseData.entry[0].messaging[0].sender.id, ResponseData.entry[0].messaging[0].message.text, event_name, ResponseData.entry[0].time, ResponseData.entry[0].messaging[0].message.attachments[0].payload.url);
+                        }
+                    }).catch(function (e) {
+                        console.log("Error LoadConversion");
+                        console.log(e);
+                    });
+                    break;
+            }
+        };
+
+        FacebookHubProxy.client.UserReceivedMessage = function (data) {
+            $("#StatusMessage").text("Đã nhận");
+        };
+
+        FacebookHubProxy.client.UserSeenMessage = function (data) {
+            $("#StatusMessage").text("Đã xem");
+        };
+
+        async function LoadConversion(UserID, MessageText, MessageType) {
+            var CheckConversionExist = $("#conversion-" + UserID).length;
+            if (CheckConversionExist == 1) {
+                var CheckConversionIndex = $("#conversion-" + UserID).attr("data-index");
+                var CheckConversionActive = $("#conversion-" + UserID).hasClass("active");
+                if (CheckConversionIndex == 1) {
+                    var NumberOfMessage = parseInt($("#NumberOfMessage-" + UserID).text());
+
+                    if (CheckConversionActive == true) {
+                        $("#NumberOfMessage-" + UserID).addClass("d-none");
+                        $("#NumberOfMessage-" + UserID).text("0");
+                    } else {
+                        $("#NumberOfMessage-" + UserID).text(NumberOfMessage + 1);
+                        if ($("#NumberOfMessage-" + UserID).hasClass("d-none")) {
+                            $("#NumberOfMessage-" + UserID).removeClass("d-none");
+                        }
+                    }
+
+                    switch (MessageType) {
+                        case "IMAGE":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fas fa-image"></i> [Hình ảnh]');
+                            break;
+                        case "FILE":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fa fa-file"></i> [File]');
+                            break;
+                        case "FALLBACK":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fa fa-file"></i> [Fallback]');
+                            break;
+                        case "VIDEO":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fa fa-file-video-o"></i> [Video]');
+                            break;
+                        case "AUDIO":
+                            $("#MessageOfConversion-" + UserID).html('<i class="fa fa-file-audio-o"></i> [[Ghi âm]');
+                            break;
+                        default:
+                            $("#MessageOfConversion-" + UserID).text(MessageText);
+                            break;
+                    };
+                } else {
+                    var NumberOfMessage = parseInt($("#NumberOfMessage-" + UserID).text()) + 1;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("FAB_ConversionView", "FAB_LiveChat", new { area = "Facebook" })',
+                        dataType: 'html',
+                        async: false,
+                        data: {
+                            ConversionID: $("#Info-" + UserID).attr("data-ConversionID"),
+                            UserID: $("#Info-" + UserID).attr("data-UserID"),
+                            SenderID: UserID,
+                            DisplayName: $("#Info-" + UserID).attr("data-DisplayName"),
+                            Avatar: $("#Info-" + UserID).attr("data-Avatar"),
+                            MessageText: MessageText,
+                            MessageType: MessageType,
+                            NumberOfMessage: NumberOfMessage,
+                            UpdatedDate: '@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")',
+                            ConversionIndex: 1,
+                        },
+                        success: function (html) {
+                            $("#conversion-" + UserID).remove();
+                            $("#ListConversion").prepend(html);
+                            if (CheckConversionActive == true) {
+                                $("#conversion-" + UserID).addClass("active");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG",
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            } else {
+                //Nếu chưa có cuộc hội thoại
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SearchListConversion", "Handle", new { area = "" })',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        Channel: "FB",
+                        UserID: UserID,
+                    },
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            var ResponseData = JSON.parse(res.Data);
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Action("FAB_ConversionView", "FAB_LiveChat", new { area = "Facebook" })',
+                                dataType: 'html',
+                                async: false,
+                                data: {
+                                    ConversionID: ResponseData[0].ConversionID,
+                                    UserID: ResponseData[0].UserID,
+                                    SenderID: UserID,
+                                    DisplayName: ResponseData[0].DisplayName,
+                                    Avatar: ResponseData[0].Avatar,
+                                    MessageText: MessageText,
+                                    MessageType: MessageType,
+                                    NumberOfMessage: 1,
+                                    UpdatedDate: moment().format('DD/MM/YYYY HH:mm:ss'),
+                                    ConversionIndex: 1,
+                                },
+                                success: function (html) {
+                                    $("#conversion-" + UserID).remove();
+                                    $("#ListConversion").prepend(html);
+                                },
+                                error: function (xhr, status, error) {
+                                    var err = eval("(" + xhr.responseText + ")");
+                                    swal({
+                                        title: 'Lỗi',
+                                        text: err.Message,
+                                        button: {
+                                            text: "ĐÓNG",
+                                        }
+                                    });
+                                    return;
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            button: {
+                                text: "ĐÓNG",
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        }
+
+        function LoadMessageOfConversion(MessageID, FromWhom, UserID, MessageText, MessageType, TimeStamp, Url) {
+            if (!TimeStamp) {
+                TimeStamp = moment().format('DD/MM/YYYY HH:mm:ss');
+            } else {
+                TimeStamp = moment(parseInt(TimeStamp)).format('DD/MM/YYYY HH:mm:ss');
+            }
+
+            var arr = [{
+                FromWhom: FromWhom,
+                MessageID: MessageID,
+                DisplayName: $("#Info-" + UserID).attr("data-DisplayName"),
+                Avatar: $("#Info-" + UserID).attr("data-Avatar"),
+                MessageType: MessageType,
+                MessageText: MessageText,
+                CreatedDate: TimeStamp,
+                LinkURL: Url,
+                Thumbnail: Url,
+                Status: {
+                    Code: "N",
+                    Name: "Đã gửi"
+                }
+            }];
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("FAB_MessageOfConversionView", "FAB_LiveChat", new { area = "Facebook" })',
+                dataType: 'html',
+                async: false,
+                data: {
+                    model: arr
+                },
+                beforeSend: function () {
+                    $(".IsStatusMessage").remove();
+                },
+                success: function (html) {
+                    $(html).appendTo("#ContentMessage");
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    swal({
+                        title: 'Lỗi',
+                        text: err.Message,
+                        button: {
+                            text: "ĐÓNG",
+                        }
+                    });
+                    return;
+                }
+            });
+        }
+
+        function fnTabClick(id) {
+            sessionStorage.removeItem('lastTabUserInformation');
+            sessionStorage.setItem('lastTabUserInformation', id);
+            if (id == "orderCustomer") {
+                $.post('@Url.Action("FAB_AddOrderView", "FAB_LiveChat", new { area = "Facebook" })', function (data) {
+                    $('#dataOrderCustomer').html(data);
+                });
+            } else if (id == "conversationSticker") {
+                $.post('@Url.Action("FAB_StickerOfConversationView", "FAB_LiveChat", new { area = "Facebook" })', function (data) {
+                    $('#dataStickerOfConversation').html(data);
+                });
+            }
+        }
+
+        function CheckTabUserInformation() {
+            var arrLastTab = ["infoCustomer", "conversationSticker", "orderCustomer"];
+            var lastTab = "";
+            if (sessionStorage.getItem('lastTabUserInformation') != null) {
+                lastTab = sessionStorage.getItem('lastTabUserInformation');
+            } else {
+                lastTab = "infoCustomer";
+            }
+            var arrLastTabFilter = arrLastTab.filter((item) => item !== lastTab);
+            for (var i = 0; i < arrLastTabFilter.length; i++) {
+                $("#" + arrLastTabFilter[i]).removeClass("show");
+                $("#" + arrLastTabFilter[i]).removeClass("active");
+                $("#p_Tab_" + arrLastTabFilter[i]).removeClass("active");
+            }
+            $("#" + lastTab).addClass("show");
+            $("#" + lastTab).addClass("active");
+            $("#p_Tab_" + lastTab).addClass("active");
+            fnTabClick(lastTab);
+        }
+
+        $("#ConversationSearchKey, #StickerID").on("change", function () {
+            var req = {
+                SearchKey: $("#ConversationSearchKey").val().trim().toUpperCase(),
+                StickerID: $("#StickerID").val().toString()
+            };
+            $.get('@Url.Action("FAB_SearchListConversionView", "FAB_LiveChat", new { area = "Facebook" })', req, function (data) {
+                $('#ListConversion').html(data);
+            });
+        });
+    </script>
+}

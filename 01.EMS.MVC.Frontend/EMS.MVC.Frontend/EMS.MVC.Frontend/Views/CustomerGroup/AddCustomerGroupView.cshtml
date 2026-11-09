@@ -1,0 +1,189 @@
+﻿@model EMS.MVC.Frontend.Models.AddCustomerGroupViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-720">
+    <div class="card">
+        <div class="card-header border-0 ">
+            <h5 class="card-title">Cấu hình nhóm khách hàng</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Mã nhóm <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.GroupCode, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Nhập mã nhóm" } })
+                        <span class="text-danger" id="errGroupCode"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Tên nhóm <span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.GroupName, new { htmlAttributes = new { @type = "text", @class = "form-control", @placeholder = "Nhập tên nhóm" } })
+                        <span class="text-danger" id="errGroupName"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Chọn điều kiện</label>
+                    <span class="text-danger" id="errChooseCondition"></span>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" id="checkedOrderSuccess" class="form-check-input">
+                                <label class="form-check-label" for="checkedOrderSuccess">Số đơn hàng thành công</label>
+                            </div>
+                        </div>
+                        <div class="custom-props" id="OrderSuccessChecked" style="display: none">
+                            <input type="text" id="OrderSuccess" class="form-control" placeholder="Nhập số đơn hàng thành công" maxlength="10" data-inputmask="'alias': 'currency'" autocomplete="off">
+                        </div>
+                        <span class="text-danger" id="errOrderSuccess"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" id="checkedPurchaseMoney" class="form-check-input">
+                                <label class="form-check-label" for="checkedPurchaseMoney">Số tiền mua hàng thành công</label>
+                            </div>
+                        </div>
+                        <div class="custom-props" id="PurchaseMoneyChecked" style="display: none">
+                            <input type="text" id="PurchaseMoney" class="form-control" placeholder="Nhập số tiền mua hàng thành công" maxlength="12" data-inputmask="'alias': 'currency'" autocomplete="off">
+                            <span class="props">VNĐ</span>
+                        </div>
+                        <span class="text-danger" id="errPurchaseMoney"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-sm-flex justify-content-end align-items-center">
+            <button type="button" id="btnCancel" class="btn btn-outline-dark" onclick="window.location.href = '@Url.Action("CustomerGroupView", "CustomerGroup")'">Hủy bỏ</button>
+            <button type="button" id="btnConfirm" class="btn btn-primary">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        CheckChangeValue("GroupCode", "Vui lòng nhập mã nhóm", "Code", "Y");
+        CheckChangeValue("GroupName", "Vui lòng nhập tên nhóm", "", "Y");
+        CheckChangeValue("OrderSuccess", "Vui lòng nhập số lượng đơn hàng thành công.", "Number", "Y");
+        CheckChangeValue("PurchaseMoney", "Vui lòng nhập số tiền mua hàng thành công.", "Money", "Y");
+
+        $("#GroupCode").on("keyup keydown", function () {
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        $('#checkedOrderSuccess, #checkedPurchaseMoney').on('change', function () {
+            if ($('#checkedOrderSuccess').is(':checked') == true || $('#checkedPurchaseMoney').is(':checked') == true) {
+                $('#errChooseCondition').text("");
+            }
+        });
+
+        $('#checkedOrderSuccess').on('click', function (e) {
+            var checkedOrderSuccess = document.getElementById("checkedOrderSuccess").checked;
+            if (checkedOrderSuccess) {
+                $("#OrderSuccessChecked").css("display", "block");
+            }
+            else {
+                $("#OrderSuccessChecked").css("display", "none");
+            }
+        });
+
+        $("#checkedPurchaseMoney").on('click', function (e) {
+            var checkedPurchaseMoney = document.getElementById("checkedPurchaseMoney").checked;
+            if (checkedPurchaseMoney) {
+                $("#PurchaseMoneyChecked").css("display", "block");
+            }
+            else {
+                $("#PurchaseMoneyChecked").css("display", "none");
+            }
+        });
+
+        $("#btnConfirm").on('click', function () {
+            var isError = false;
+            var data = {
+                GroupCode: $("#GroupCode").val().trim().toUpperCase(),
+                GroupName: $("#GroupName").val().trim(),
+                OrderSuccess: "",
+                PurchaseMoney: "",
+                checkedOrderSuccess: $("#checkedOrderSuccess").is(":checked"),
+                checkedPurchaseMoney: $("#checkedPurchaseMoney").is(":checked")
+            };
+
+            isError = CheckNullAndRegexValue(data.GroupCode, "Code", "GroupCode", "Vui lòng nhập mã nhóm", "Giá trị hợp lệ không bao gồm ký tự đặc biệt.", isError);
+            isError = CheckNullValue(data.GroupName, "GroupName", "Vui lòng nhập tên nhóm", isError);
+
+            if (data.checkedOrderSuccess == false && data.checkedPurchaseMoney == false) {
+                $("#errChooseCondition").text("Vui lòng chọn 1 trong 2 điều kiện.");
+                isError = true;
+            } else {
+                if (data.checkedOrderSuccess == true) {
+                    data.OrderSuccess = NumberReplace($("#OrderSuccess").val()) == 0 ? "" : NumberReplace($("#OrderSuccess").val());
+                    isError = CheckNullValue(data.OrderSuccess, "OrderSuccess", "Vui lòng nhập số lượng đơn hàng thành công", isError);
+                }
+
+                if (data.checkedPurchaseMoney == true) {
+                    data.PurchaseMoney = NumberReplace($("#PurchaseMoney").val()) == 0 ? "" : NumberReplace($("#PurchaseMoney").val());
+                    isError = CheckNullValue(data.PurchaseMoney, "PurchaseMoney", "Vui lòng nhập số tiền mua hàng thành công", isError);
+                }
+            }
+
+            if (isError == true) {
+                return;
+            }
+
+            swal({
+                title: 'Thông báo',
+                text: "Bạn chắc chắn muốn thêm mới nhóm khách hàng?",
+                buttons: {
+                    confirm: {
+                        text: "Xác nhận",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "Đóng",
+                        value: false,
+                        visible: true,
+                        className: "btn btn-danger",
+                        closeModal: true,
+                    }
+                },
+            }).then((value) => {
+                if (value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("JAddNewCustomerGroup", "CustomerGroup")',
+                        data: data,
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.Code == "00") {
+                                CreateCustomSwal("success", res.Message, '@Url.Action("CustomerGroupView", "CustomerGroup")');
+                            } else {
+                                CreateCustomSwal("error", res.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            swal({
+                                title: 'Lỗi',
+                                text: err.Message,
+                                button: {
+                                    text: "ĐÓNG"
+                                }
+                            });
+                            return;
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+}
+

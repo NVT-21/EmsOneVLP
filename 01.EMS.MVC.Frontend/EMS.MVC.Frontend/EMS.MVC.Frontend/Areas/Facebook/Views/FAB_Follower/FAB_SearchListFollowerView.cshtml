@@ -1,0 +1,41 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_SearchListFollowerViewModel>
+
+<table id="SearchListDataTable" class="table table-responsive-md">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> ID Facebook </th>
+            <th> Tên khách hàng</th>
+            <th> Ngày sinh </th>
+            <th> Số điện thoại </th>
+            <th> Địa chỉ </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td class="text-center">@item.ChannelUserID</td>
+                    <td class="text-center">@item.FullName</td>
+                    <td class="text-center">
+                        @if (!string.IsNullOrEmpty(item.BirthDay))
+                        {
+                            <span>@item.BirthDay.Split(' ')[0]</span>
+                        }
+                    </td>
+                    <td class="text-center">@item.MobileNumber</td>
+                    <td class="text-start">@item.FullAddress</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+</script>

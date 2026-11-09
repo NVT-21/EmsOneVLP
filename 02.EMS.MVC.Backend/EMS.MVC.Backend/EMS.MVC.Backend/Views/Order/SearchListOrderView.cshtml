@@ -1,0 +1,354 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListOrderViewModel>
+<div class="mb-2" style="text-align: end;">
+    <button type="button" class="btn btn-sm btn-primary" id="ExportExcel" onclick="btnExportExcel()">Export Excel</button>
+</div>
+<table id="ListDataTableSearch" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th class="text-center" colspan="9"> Tổng dữ liệu </th>
+            <th class="text-right">@Model.Sum(m => m.PaymentFreightVat).ToString("N0") ₫</th>
+            <th class="text-right">@Model.Sum(m => m.TotalCOD).ToString("N0") ₫</th>
+            <th colspan="2"></th>
+        </tr>
+        <tr class="table-info text-center">
+            <th><input class="dt-body-center" type="checkbox" name="select_all" value="1" id="SelectAll"></th>
+            <th> STT </th>
+            <th style="max-width: 150px; white-space: inherit; text-align: left; vertical-align: baseline;"> Mã đơn hàng </th>
+            <th> Mã bưu gửi </th>
+            <th> Mã khách hàng</th>
+            @if (ViewBag.SearchOrderStatus == "L")
+            {
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> Tên người mua</th>
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> SĐT người mua </th>
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> Địa chỉ người mua </th>
+            }
+            else
+            {
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> Nơi gửi </th>
+                <th style="max-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> Nơi nhận </th>
+            }
+            <th style="min-width: 260px; white-space: inherit; text-align: left; vertical-align: baseline;"> Nội dung </th>
+            <th> Cước tạm tính </th>
+            <th> Cước thực tế </th>
+            <th> Thu hộ </th>
+            <th> D/v chính</th>
+            <th> D/v cộng thêm</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @if (item.EMSOneCode.Substring(item.EMSOneCode.Length - 3, 3) != "GRA")
+                        {
+                            <input type="checkbox" id="SelectData" data-EMSOneCode="@item.EMSOneCode" data-ShopID="@item.ShopID" data-PrintTypeDefault="@item.PrintTypeDefault" value="@item.OrderID" />
+                        }
+                    </td>
+                    <td class="text-center" style="vertical-align: baseline;">@(stt++)</td>
+                    <td style="max-width: 150px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                        <span style="line-height: 1.4rem;"><a style="cursor: pointer; color:#007bff;" onclick="btnDetailOrderView(@item.OrderID, @item.ShopID)">@item.OrderCode</a></span>
+                        <br />
+                        @if (ViewBag.SearchOrderStatus == null)
+                        {
+                            <span class="badge badge-outline-success">@item.OrderStatus.Name</span>
+                            <br />
+                        }
+                        <span style="line-height: 1.4rem;">@item.CreatedDate</span>
+                    </td>
+                    <td class="text-left" style="vertical-align: baseline;">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li><a href="#" onclick="btnDetailShippingCode('@item.ShippingID','@item.ShippingCode',@item.ShopID,'@item.EMSOneCode')">@item.ShippingCode</a></li>
+                            @if (item.TrackingItemInfoCreatedDate != "")
+                            {
+                                <li>@item.TrackingItemInfoCreatedDate</li>
+                            }
+                            <li>@item.PostalType</li>
+                            @if (!string.IsNullOrEmpty(item.BatchCode))
+                            {
+                                <li><a href="#" onclick="btnDetailOrderBatchView('@item.BatchCode', @item.ShopID)">@item.BatchCode</a></li>
+                            }
+                            @if (item.OrderStatus.Code == "C")
+                            {
+                                <li>Người hủy: @item.UpdatedName</li>
+                                <li>Thời gian hủy: @item.UpdatedDate</li>
+                                @*<li>Lý do hủy: @item.ReasonCancel</li>*@
+                            }
+                        </ul>
+                        @*<span style="line-height: 1.4rem;"><a href="#" onclick="btnDetailShippingCode('@item.ShippingID','@item.ShippingCode',@item.ShopID,'@item.EMSOneCode')">@item.ShippingCode</a></span>
+                            @if (item.TrackingItemInfoCreatedDate != "")
+                            {
+                                <br />
+                                <span style="line-height: 1.4rem;">@item.TrackingItemInfoCreatedDate</span>
+                            }*@
+                    </td>
+                    @*<td class="text-center" style="vertical-align: baseline;">
+                            <span style="line-height: 1.4rem;">@item.PostalType</span>
+                            @if (!string.IsNullOrEmpty(item.BatchCode))
+                            {
+                                <br />
+                                <span style="line-height: 1.4rem;">
+                                    <a href="#" onclick="btnDetailOrderBatchView('@item.BatchCode', @item.ShopID)">@item.BatchCode</a>
+                                </span>
+                            }
+                        </td>*@
+                    <td class="text-center" style="vertical-align: baseline;" title="@item.StoreName">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li>@item.CrmOrPaypostCode</li>
+                            <li>@item.ShopCode</li>
+                            <li>@item.PartnerName</li>
+                        </ul>
+                        @*<span style="line-height: 1.4rem;">@item.CrmOrPaypostCode</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.ShopCode</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.PartnerName</span>*@
+                    </td>
+                    @if (ViewBag.SearchOrderStatus == "L")
+                    {
+                        <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline;">@item.CustomerName</td>
+                        <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline;">@item.CustomerPhone</td>
+                        <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: 1.2rem;">@item.CustomerFullAddress</td>
+                    }
+                    else
+                    {
+                        <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline;">
+                            @if (item.Transport == "Y")
+                            {
+                                if (item.SenderName.Trim() != "")
+                                {
+                                    <span style="line-height: 1.4rem;"><i class="fa fa-user mr-1" aria-hidden="true"></i>@item.SenderName.Trim()</span>
+                                }
+                                if (item.SenderPhone.Trim() != "")
+                                {
+                                    <br />
+                                    <span class="badge badge-outline-success"><i class="fa fa-phone mr-1" aria-hidden="true"></i>@item.SenderPhone.Trim()</span>
+                                }
+                                if (item.SenderFullAddress.Trim() != "")
+                                {
+                                    <br />
+                                    <span style="line-height: 1.4rem;"><i class="fa fa-location-arrow mr-1" aria-hidden="true"></i>@item.SenderFullAddress.Trim()</span>
+                                }
+                            }
+                        </td>
+                        <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline; ">
+                            @if (item.Transport == "Y")
+                            {
+                                if (item.ReceiverName.Trim() != "")
+                                {
+                                    <span style="line-height: 1.4rem;"><i class="fa fa-user mr-1" aria-hidden="true"></i>@item.ReceiverName.Trim()</span>
+                                }
+                                if (item.ReceiverPhone.Trim() != "")
+                                {
+                                    <br />
+                                    <span class="badge badge-outline-success"><i class="fa fa-phone mr-1" aria-hidden="true"></i>@item.ReceiverPhone.Trim()</span>
+                                }
+                                if (item.ReceiverFullAddress.Trim() != "")
+                                {
+                                    var index = item.ReceiverFullAddress.Trim().LastIndexOf(',') + 1;
+                                    <br />
+                                    <span style="line-height: 1.4rem;"><i class="fa fa-location-arrow mr-1" aria-hidden="true"></i>@item.ReceiverFullAddress.Trim().Substring(0, index) <b> @item.ReceiverFullAddress.Trim().Substring(index)</b></span>
+                                }
+                            }
+                        </td>
+                    }
+                    <td style="min-width: 200px; white-space: inherit; text-align: left; vertical-align: baseline; line-height: 1.2rem; word-break: break-word;">
+                        @Html.Raw(item.Message)
+                        @if (item.ProvisionalTransportWeight > 0)
+                        {
+                            <br />
+                            <span>Khối lượng tạm tính: @item.ProvisionalTransportWeight (gr)</span>
+                            <br />
+                            <span>Khối lượng thực tế: @item.ActualTransportWeight (gr)</span>
+                        }
+                    </td>
+                    <td class="text-right" style="vertical-align: baseline;">@item.TransportFee.ToString("N0")</td>
+                    <td class="text-right" style="vertical-align: baseline;">@item.PaymentFreightVat.ToString("N0")</td>
+                    <td class="text-right" style="vertical-align: baseline;">@item.TotalCOD.ToString("N0")</td>
+                    <td style="vertical-align: baseline;line-height: 1.4rem;">@item.TransportMainService.Name</td>
+                    <td style="vertical-align: baseline;">
+                        @{
+                            var SplitTransportExtraServiceName = item.TransportExtraService.Name.Split(',');
+                            for (var i = 0; i < SplitTransportExtraServiceName.Length; i++)
+                            {
+                                <span style="line-height: 1.4rem;">@SplitTransportExtraServiceName[i]</span>
+                                <br />
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th class="text-center" colspan="9"> Tổng cộng </th>
+            <th class="text-right"></th>
+            <th class="text-right"></th>
+            <th colspan="2"></th>
+        </tr>
+    </tfoot>
+</table>
+<button type="button" id="btnPrintOrderHidden" hidden></button>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var table = $('#ListDataTableSearch').dataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, 500, -1],
+                [20, 30, 50, 100, 500, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                'sSearch': "",
+                'searchPlaceholder': "Tìm kiếm nhanh",
+                'emptyTable': "Không có dữ liệu",
+                'zeroRecords': "Không có dữ liệu",
+                'sInfo': 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                'infoEmpty': "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                'infoFiltered': "(Tìm kiếm từ _MAX_ bản ghi)",
+                'oPaginate': {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                'lengthMenu': "Hiển thị _MENU_ bản ghi"
+            },
+            "dom": "<'row' <'col-md-6' i> <'col-md-6' f>>rt<'row' <'col-md-6' l> <'col-md-6' p>>",
+            'ordering': false,
+            'stateSave': true,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                var j = 9;
+                var max = 10;
+                while (j <= max) {
+                    // Total over all pages
+                    total = api
+                        .column(j)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    // Total over this page
+                    pageTotal = api
+                        .column(j, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    // Update footer
+                    $(api.column(j).footer()).html(
+                        CurrencyFormatVND(pageTotal)
+                    );
+                    j++;
+                }
+            }
+        });
+
+        var allPages = table.fnGetNodes();
+
+        $('#SelectAll').click(function () {
+            if ($(this).hasClass('allChecked')) {
+                $('input[type="checkbox"]', allPages).prop('checked', false);
+            } else {
+                $('input[type="checkbox"]', allPages).prop('checked', true);
+            }
+            $(this).toggleClass('allChecked');
+        });
+
+        $("#btnPrintOrderHidden").on('click', function () {
+            var arr = [];
+
+            var rowSelected = table.$("#SelectData:checked", allPages);
+
+            rowSelected.each(function (index, value) {
+                var obj = {};
+                obj.EMSOneCode = $(value).attr("data-EMSOneCode");
+                obj.ShopID = $(value).attr("data-ShopID");
+                arr.push(obj);
+            });
+
+            if (arr.length == 0) {
+                swal({
+                    title: 'Thông báo',
+                    text: "Vui lòng chọn đơn hàng cần in.",
+                    button: {
+                        text: "ĐÓNG",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+            localStorage.setItem('ListDataOrderPrint', JSON.stringify(arr));
+            var link = document.createElement('a');
+            link.target = "_blank";
+            link.href = '@Url.Action("OrderPrintView", "Order")';
+            //link.href = '@XHelper.Ems247Url@("in-don-hang")';
+            link.click();
+        });
+
+        if ('@ViewBag.ReloadCountStatus' == "Y") {
+            LoadCountStatus();
+        }
+    });
+    function LoadCountStatus() {
+        var data = @Html.Raw(Json.Encode(ViewBag.CountOrderStatus));
+        var TotalOrder = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Count >= 1000) {
+                $("#OrderStatus" + data[i].Status).text("(999+)");
+            } else {
+                $("#OrderStatus" + data[i].Status).text("(" + data[i].Count + ")");
+            }
+            if (data[i].Status != "C" && data[i].Status != "D" && data[i].Status != "L") {
+                //Trạng thái đơn hàng khác đã huỷ, đơn nháp và tại cửa hàng thì tính tổng
+                TotalOrder += data[i].Count;
+            }
+        }
+        if (TotalOrder >= 1000) {
+            $("#StatusAll").text("(999+)");
+        } else {
+            $("#StatusAll").text("(" + TotalOrder + ")");
+        }
+    }
+    function btnDetailOrderView(OrderID, ShopID) {
+        $.post('@Url.Action("OrderDetailView", "Order")', { OrderID: OrderID, ShopID: ShopID} ,function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function btnDetailOrderBatchView(BatchCode, ShopID) {
+        $.post('@Url.Action("DetailOrderBatchView", "OrderBatch")', { BatchCode: BatchCode, ShopID: ShopID} ,function (data) {
+            $('#modal-common-container').html(data);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function btnDetailShippingCode(ShippingID, ShippingCode, ShopID, EMSOneCode) {
+        var SubstrEMSOneCode = EMSOneCode.substring(EMSOneCode.length - 3, EMSOneCode.length);
+        var link = document.createElement('a');
+        link.target = "_blank";
+        switch (SubstrEMSOneCode) {
+            case "GRA":
+                var param = String.format("ShippingID={0}", btoa(ShippingID));
+                link.href = '@XHelper.Ems247Url@("tra-cuu-buu-gui-grab?")' + param;
+                break;
+            default:
+                var param = String.format("ShippingCode={0}", btoa(ShippingCode));
+                link.href = '@XHelper.Ems247Url@("tra-cuu-buu-gui?")' + param;
+                break;
+        }
+        link.click();
+    }
+</script>

@@ -1,0 +1,42 @@
+﻿
+<div class="modal-dialog modal-confirm modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-body text-center">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="72" height="72" rx="36" fill="#0054A6" />
+                <path d="M24.3335 37.6667L31.0002 44.3334L47.6668 27.6667" stroke="white" stroke-width="3"
+                      stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="mt-4 mb-3">
+                Đăng ký tài khoản thành công! <br>
+                Bạn vui lòng kiểm tra email để cập nhật thông tin.
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <button type="button" id="btnClose" class="btn btn-primary btn-block">OK</button>
+                </div>
+            </div>
+            <p class="mt-3">Tự động về trang chủ sau <span class="text-blue font-w600" id="CountDown">10</span> giây</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#btnClose").on("click", function () {
+        clearInterval(counter);
+        window.location.href = '@Url.Action("LoginView","Account")';
+    });
+
+    var count = 10;
+    function CountDown() {
+        count = count - 1;
+        $("#CountDown").text(count);
+        if (count <= 0) {
+            clearInterval(counter);
+            window.location.href = '@Url.Action("LoginView","Account")';
+        }
+    }
+
+    var counter = setInterval(CountDown, 1000);
+</script>

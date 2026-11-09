@@ -1,0 +1,118 @@
+﻿@model List<EMS.MVC.Backend.Models.TransportPostageListViewModel>
+@{
+    ViewBag.Title = "TransportPostageList";
+    Layout = null;
+}
+<table id="dataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th> STT </th>
+            <th> Mã bảng cước </th>
+            <th> Tên bảng cước </th>
+            <th> Dịch vụ chính </th>
+            <th> Thời gian ấp dụng </th>
+            <th> Trạng thái </th>
+            <th> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    @*<td class="text-left">
+                            <a href="@Url.Action("TransportPostageBasicInfo", "Transport", new { PostageID = item.ID })" title="Thông tin chi tiết hồ sơ">@item.Code</a>
+                        </td>*@
+                    <td class="text-center">@item.STT</td>
+                    <td class="text-left">@item.Code</td>
+                    <td class="text-left">@item.Name</td>
+                    <td class="text-left">@item.ServiceName</td>
+                    <td>
+                        <p>Từ @item.StartDate</p>
+                        @if (@item.EndDate != "")
+                        {
+                            <p>đến @item.EndDate</p>
+                        }
+                    </td>
+                    <td>@item.Status.Name</td>
+                    <td class="text-left">
+
+                        @if (item.Status.Code == "C")
+                        {
+                            <button type="button" title="Chi tiết" onclick="location.href = '@Url.Action("TransportPostageEdit", "Transport", new { PostageID = item.ID, PostageCode = item.Code})'" class="badge badge-outline-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <button type="button" title="Bỏ xác nhận" onclick="Unconfirm('@item.ID')" class="badge badge-outline-warning">
+                                <i class="fa fa-reply"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" title="Sửa" onclick="location.href = '@Url.Action("TransportPostageEdit", "Transport", new { PostageID = item.ID, PostageCode = item.Code})'" class="badge badge-outline-warning">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                        }
+                        @if (item.IsLock == "N")
+                        {
+                            <button type="button" title="Tạm dừng" onclick="Lock('@item.ID')" class="badge badge-outline-danger">
+                                <i class="fa fa-stop"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" title="Mở" onclick="Unlock('@item.ID')" class="badge badge-outline-primary">
+                                <i class="fa fa-play"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            aLengthMenu: [
+                [10, 15, -1],
+                [10, 15, "Tất cả"]
+            ],
+            info: true,
+            searching: true,
+            ordering: false,
+            paging: true,
+            iDisplayLength: 10,
+            bLengthChange: true,
+            language: {
+                sSearch: "Tìm kiếm",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ dòng',
+                oPaginate: {
+                    sFirst: 'Trang đầu',
+                    sPrevious: 'Trang trước',
+                    sNext: 'Trang sau',
+                    sLast: 'Trang cuối'
+                },
+                emptyTable: "Không có dữ liệu",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 dòng",
+                zeroRecords: "Không tìm thấy dòng phù hợp",
+                infoFiltered: "(tìm kiếm từ _MAX_ dòng)",
+                loadingRecords: "Đang tải...",
+                processing: "Đang xử lý...",
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            }
+        });
+        $('#dataTable').each(function () {
+            var datatable = $(this);
+            // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+            var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+            search_input.attr('placeholder', 'Tìm kiếm nhanh');
+            search_input.removeClass('form-control-sm');
+            // LENGTH - Inline-Form control
+            var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+            length_sel.removeClass('form-control-sm');
+            length_sel.css('color', 'black');
+        });
+    });
+</script>

@@ -1,0 +1,28 @@
+﻿<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Thẻ hội thoại</h5>
+        <div id="tbl-ListDataTableConversationSticker" class="table-responsive table-primary">
+
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-12 d-flex align-items-end justify-content-end">
+                <div class="me-2">
+                    <button type="button" class="btn btn-primary" onclick="btnUpdateCStickerOfC()">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        LoadDataConversationSticker();
+    });
+    function LoadDataConversationSticker() {
+        var req = {
+            ConversationID: $("#ConversionID").val()
+        };
+        $.get('@Url.Action("FAB_SearchStickerOfConversationView", "FAB_LiveChat", new { area = "Facebook" })', req,function (data) {
+            $('#tbl-ListDataTableConversationSticker').html(data);
+        });
+    }
+</script>

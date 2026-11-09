@@ -1,0 +1,158 @@
+﻿@model EMS.MVC.Frontend.Models.EditEmployeeGroupViewModel
+@Html.HiddenFor(m => m.ID, new { @id= "EmployeeGroupID" })
+<div class="modal-dialog modal-medium modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Sửa nhóm nhân viên</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body" id="ClearModal">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Mã nhóm nhân viên<span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @type = "text", @class = "form-control", @disabled = "true" } })
+                        <span class="text-danger" id="errCode"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Tên nhóm nhân viên<span class="text-danger">*</span></label>
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @type = "text", @class = "form-control" } })
+                        <span class="text-danger" id="errName"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(model => model.IsLock, new SelectList(Model.ListIsLock, "Value", "Text"), new { @class = "select2" })
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Mô tả", @maxlength = "250", @rows = "4" })
+                        <div class="text-end">
+                            <span class="fs-12 font-w300 text-3"><span id="ShowLengthNote">@Model.Description.Length</span>/250</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Nhân viên <span class="text-danger">*</span></label>
+                        <select class="selectpicker form-control form-control-sm" id="EmployeeID" data-live-search="true" data-selected-text-format="count" data-actions-box="true" data-size="5" multiple>
+                            @foreach (var item in Model.ListEmployee)
+                            {
+                                <option value="@item.ID" @{ if (Model.EmployeeID.Contains(item.ID.ToString())) { Write("selected"); } }>@item.FullName</option>
+                            }
+                        </select>
+                        @*<select class="selectpicker form-control form-control-sm" id="EmployeeID" data-live-search="true" data-selected-text-format="count" data-actions-box="true" data-size="5" multiple>
+                                @if (ViewBag.ListEmployee.Count > 0)
+                                {
+                                    List<int> lstTemp = new List<int>();
+                                    if (Model.strEmployeeID != "")
+                                    {
+                                        var split = Model.strEmployeeID.Split(',');
+                                        for (var i = 0; i < split.Length; i++)
+                                        {
+                                            lstTemp.Add(Convert.ToInt32(split[i]));
+                                        }
+                                    }
+
+                                    foreach (var item in ViewBag.ListEmployee)
+                                    {
+                                        <optgroup label="@item.EmployeeGroupPermissionName" data-icon="fa fa-users">
+                                            @foreach (var itemEmployee in item.ListEmployee)
+                                            {
+                                                <option data-tokens="@item.EmployeeGroupPermissionName @itemEmployee.EmployeeName" data-subtext="@itemEmployee.EmployeeMobileNumber" value="@itemEmployee.EmployeeID" @{ if (lstTemp.Exists(m => m == Convert.ToInt32(itemEmployee.EmployeeID))) { Write("Selected"); } else { Write(""); } }>@itemEmployee.EmployeeName</option>
+                                            }
+                                        </optgroup>
+                                    }
+                                }
+                            </select>*@
+                        <span class="text-danger" id="errEmployeeID"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark light" data-bs-dismiss="modal">Hủy bỏ</button>
+            <button type="button" class="btn btn-primary" onclick="EditEmployeeGroup()">Cập nhật</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    CheckChangeValue("Name", "Tên nhóm nhân viên không được để trống", "Vietnamese", "Y");
+    CheckChangeValue("IsLock", "Vui lòng chọn trạng thái", "", "Y");
+    CheckChangeValue("EmployeeID", "Vui lòng chọn nhân viên", "", "Y");
+
+    ShowInputLength("Description", "ShowLengthNote", 250);
+
+    $(document).ready(function () {
+        $('#EmployeeID').selectpicker('refresh');
+    });
+
+    $('select.select2').select2(AttributeSelect2);
+
+    function EditEmployeeGroup() {
+        var isError = false;
+        var msgIsValid = "Giá trị hợp lệ không bao gồm ký tự đặc biệt.";
+        var data = {
+            ID: $("#EmployeeGroupID").val().trim(),
+            Name: $("#Name").val().trim(),
+            Description: $("#Description").val().trim(),
+            IsLock: $("#IsLock").val(),
+            EmployeeID: $("#EmployeeID").val().join(","),
+        };
+
+        isError = CheckNullAndRegexValue(data.Name, "Vietnamese", "Name", "Tên nhóm nhân viên không được để trống", msgIsValid, isError);
+        isError = CheckNullValue(data.EmployeeID, "EmployeeID", "Vui lòng chọn nhân viên.", isError);
+
+        if (isError == true) {
+            return;
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JEditEmployeeGroup", "EmployeeGroup")',
+            data: data,
+            dataType: 'json',
+            success: function (res) {
+                if (res.Code == "00") {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        html: true,
+                        button: false,
+                        timer: 1500
+                    }).then(function () {
+                        LoadEmployeeGroupListData();
+                        $('#ViewModal').modal('hide');
+                    });
+                } else {
+                    swal({
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "ĐÓNG"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "ĐÓNG"
+                    }
+                });
+                return;
+            }
+        });
+    }
+</script>

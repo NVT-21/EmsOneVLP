@@ -1,0 +1,179 @@
+﻿@model List<EMS.MVC.Frontend.Areas.Facebook.Models.FAB_MessageOfConversionViewModel>
+@using Newtonsoft.Json
+@using System.Text.RegularExpressions
+@{
+    Regex regexType = new Regex(@"([a-z\-_0-9\/\:\.]*\.(pdf|doc|docx|xls|xlsx|ppt|pptx))");
+    Regex regexName = new Regex(@"[\w-]+\.(pdf|doc|docx|xls|xlsx|ppt|pptx)");
+}
+@if (Model.Count > 0)
+{
+    var CreatedDateTemp = "";
+    var dtFormat = DateTime.Now.ToString("dd/MM/yyyy");
+    for (var i = 0; i < Model.Count; i++)
+    {
+        if (Model[i].CreatedDate.Split(' ')[0] != CreatedDateTemp)
+        {
+            <div class="chat-date @{ if (Model.Count == 1) { Write("d-none"); } } ">
+                <div class="start line"></div>
+                @if (dtFormat == Model[i].CreatedDate.Split(' ')[0])
+                {
+                    <span>Hôm nay - @Model[i].CreatedDate.Split(' ')[1]</span>
+                }
+                else
+                {
+                    <span>@Model[i].CreatedDate.Split(' ')[0] - @Model[i].CreatedDate.Split(' ')[1]</span>
+                }
+                <div class="flx">
+                    <div class="end line"></div>
+                </div>
+            </div>
+            CreatedDateTemp = Model[i].CreatedDate.Split(' ')[0];
+        }
+
+        <div class="@{ if (Model[i].FromWhom == 0) { Write("chat-message-left"); } else { Write("chat-message-right"); }} mb-2 MessageBox" id="content-@Model[i].MessageID">
+            <div>
+                <img src="@Model[i].Avatar" class="rounded-circle mr-1" alt="@Model[i].DisplayName" width="40" height="40">
+            </div>
+            <div class="flex-shrink-1 rounded py-2 px-3" style="@{if (Model[i].MessageType == "TEXT") { if (Model[i].FromWhom == 0) { Write("background-color: #fff; margin-left: 15px;"); } else { Write("background-color: #e5efff; margin-right: 15px;"); } } } ">
+                <div class="row">
+                    <div class="col-md-12">
+                        @{
+                            switch (Model[i].MessageType)
+                            {
+                                case "IMAGE":
+                                    if (!string.IsNullOrEmpty(Model[i].MessageText))
+                                    {
+                                        <div class="flex-shrink-1 py-2 px-3 mb-2 rounded" style="background-color: #fff;">
+                                            @Model[i].MessageText
+                                        </div>
+                                    }
+                                    <div class="img-item">
+                                        <img class="img-fluid img-modals"
+                                             style="cursor: pointer;"
+                                             width="120" height="120"
+                                             src="@Model[i].LinkURL"
+                                             data-ListImage="@JsonConvert.SerializeObject(Model[i].LinkURL)"
+                                             onerror="ImageError(this)"
+                                             onclick="ImageZoomAndSlider(this)" />
+                                    </div>
+                                    break;
+                                case "AUDIO":
+                                    <div class="audio-message">
+                                        <div class="audio-content">
+                                            <audio controls>
+                                                <source src="@Model[i].LinkURL" type="audio/mpeg">
+                                            </audio>
+                                        </div>
+                                    </div>
+                                    break;
+                                case "VIDEO":
+                                    <div class="video-message">
+                                        <div class="video-content">
+                                            <video controls style="height:250px; width:300px">
+                                                <source src="@Model[i].LinkURL" type="video/mp4">
+                                            </video>
+                                        </div>
+                                    </div>
+                                    break;
+                                case "FILE":
+                                    Match matchType = regexType.Match(Model[i].LinkURL);
+                                    Match matchName = regexName.Match(Model[i].LinkURL);
+                                    var nameValue = matchName.Groups[0].Value;
+                                    if (nameValue.Count() > 10)
+                                    {
+                                        nameValue = nameValue.Split('.')[0].Substring(0, 5)
+                                            + "..."
+                                            + nameValue.Split('.')[0].Substring(nameValue.Split('.')[0].Length - 5, 5)
+                                            + "."
+                                            + nameValue.Split('.')[1];
+                                    }
+                                    switch (matchType.Groups[2].Value.ToUpper())
+                                    {
+                                        case "PDF":
+                                            <div class="file-message">
+                                                <img src="~/Assets/images/default/pdf_icon.png" alt="PDF Picture" width="80" height="80">
+                                                <h5>@nameValue</h5>
+                                                <div class="file-content">
+                                                    <a href="@Model[i].LinkURL" download>Download file</a>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case "DOC":
+                                        case "DOCX":
+                                            <div class="file-message">
+                                                <img src="~/Assets/images/default/word_icon.png" alt="Word Picture" width="80" height="80">
+                                                <h5>@nameValue</h5>
+                                                <div class="file-content">
+                                                    <a href="@Model[i].LinkURL" download>Download file</a>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case "XLS":
+                                        case "XLSX":
+                                            <div class="file-message">
+                                                <img src="~/Assets/images/default/excel_icon.png" alt="Excel Picture" width="80" height="80">
+                                                <h5>@nameValue</h5>
+                                                <div class="file-content">
+                                                    <a href="@Model[i].LinkURL" download>Download file</a>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case "PPT":
+                                        case "PPTX":
+                                            <div class="file-message">
+                                                <img src="~/Assets/images/default/powerpoint_icon.png" alt="Powerpoint Picture" width="80" height="80">
+                                                <h5>@nameValue</h5>
+                                                <div class="file-content">
+                                                    <a href="@Model[i].LinkURL" download>Download file</a>
+                                                </div>
+                                            </div>
+                                            break;
+                                        default:
+                                            <div class="file-message">
+                                                <img src="~/Assets/images/default/default_message_file.png" alt="Profile picture" width="50" height="50">
+                                                <div class="file-content">
+                                                    <a href="@Model[i].LinkURL" download>Download file</a>
+                                                </div>
+                                            </div>
+                                            break;
+                                    }
+                                    break;
+                                default:
+                                    Write(Model[i].MessageText);
+                                    break;
+                            }
+                        }
+
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted small me-1">
+                                @Model[i].CreatedDate.Split(' ')[1]
+                            </div>
+                            @if (i == Model.Count - 1 && Model[i].FromWhom == 1)
+                            {
+                                <div class="text-muted small IsStatusMessage">
+                                    @if (Model[i].Status.Code == "N")
+                                    {
+                                        <span id="StatusMessage">@Model[i].Status.Name</span>
+                                    }
+                                    else if (Model[i].Status.Code == "R")
+                                    {
+                                        <span id="StatusMessage">@Model[i].Status.Name</span>
+                                    }
+                                    else if (Model[i].Status.Code == "S")
+                                    {
+                                        <span id="StatusMessage">@Model[i].Status.Name</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<script>
+    $(document).ready(function () {
+        $('#ContentMessage').scrollTop($('#ContentMessage')[0].scrollHeight);
+    });
+</script>

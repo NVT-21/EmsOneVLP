@@ -1,0 +1,315 @@
+﻿@model EMS.MVC.Backend.Models.AddressAndLabelPrintViewModel
+
+@*<div class="row justify-content-end">
+        <div class="col-xl-2 col-lg-3 col-md-3">
+            <input type="text" class="form-control" id="SearchNodeTree" placeholder="Tìm kiếm"/>
+        </div>
+    </div>*@
+<div class="row">
+    <div class="col-xl-3 col-lg-5 col-md-12 mb-2">
+        <div class="card">
+            <div class="card-body">
+                <div id="DivAddPickUpAddress" style="font-size: initial;background-color: #0072BC; color: white; border-radius: 10px; padding: 3px 5px; width: fit-content; cursor: pointer;" title="Thêm địa chỉ lấy hàng">
+                    <i class="fa fa-plus-circle mr-2"></i>@Model.StoreName @*<span id="ShowStoreName"></span>*@
+                </div>
+                <div class="row ml-1 mt-1 CustomScrollBar" id="tree" style="overflow-x: auto; height: 520px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-9 col-lg-7 col-md-12" id="ShowInfoAddressOrLabelPrint">
+    </div>
+</div>
+
+@*<div class="row">
+        <div class="col-xl-2 col-lg-3 col-md-3" id="TreeView" style="text-align: justify; overflow-x: auto;height: 420px;">
+            <div class="mt-1" id="DivAddPickUpAddress" style="font-size: initial;background-color: #0072BC; color: white; border-radius: 10px; padding: 3px 5px; width: fit-content; cursor: pointer;" title="Thêm địa chỉ lấy hàng">
+                <i class="fa fa-plus-circle mr-2"></i>@Model.StoreName
+            </div>
+            <div class="row ml-1 mt-1" id="tree">
+            </div>
+        </div>
+        <div class="col-xl-10 col-lg-9 col-md-9" id="ShowInfoAddressOrLabelPrint">
+        </div>
+    </div>*@
+
+<script>
+    $(document).ready(function () {
+        //$("#ShowStoreName").text($("#StoreNameTemp").val());
+        $("#tree").jstree({
+            "core": {
+                //"animation": 0,
+                //"check_callback": true,
+                //'force_text': true,
+                "themes": {
+                    "icons": false
+                },
+                "data": {
+                    "url": function (node) {
+                        var url = "";
+                        if (node.id === "#") {
+                            url = "@Url.Action("PickUpAddressTreeView", "Handle")?ShopID=" + @Model.ShopID;
+                        } else {
+                            url = "@Url.Action("LabelPrintTreeView", "Handle")?PickUpAddressID=" + node.id;
+                        }
+                        return url;
+                    },
+                    "data": function (node) {
+                        return { 'id': node.id };
+                    },
+                    "dataType": "json"
+                }
+            },
+            //"plugins": ["contextmenu"],
+            //'contextmenu': {
+            //    'select_node': false,
+            //    'items': reportMenu
+            //}
+        }).on("loaded.jstree", function (event, data) {
+            @*$(this).jstree("open_all");
+            $('#tree').jstree(true).select_node(@Model.PickUpID);*@
+        }).on("select_node.jstree", function (e, data) {
+            var Parent = data.node.parent;
+            if (Parent == "#") {
+                ShowInfoPickUpAddress(data.node.id, @Model.ShopID);
+                data.instance.open_node(data.node); // click vào là open node luôn
+            } else {
+                ShowInfoLabelPrint(data.node.li_attr.id, @Model.ShopID);
+            }
+        });
+    });
+
+    //$('#TreeView, #tree').on('contextmenu', function (e) {
+    //    if (e.target === e.delegateTarget) {
+    //        e.preventDefault();
+    //        $.vakata.context.show(e.target, { 'x': e.pageX, 'y': e.pageY }, {
+    //            "create": {
+    //                "label": "THÊM Đ/C LẤY HÀNG",
+    //                "icon": "fa fa-plus",
+    //                "action": function (data) {
+    //                    AddPickUpAddressView(ShopID);
+    //                }
+    //            }
+    //        });
+    //    }
+    //});
+
+    //function reportMenu(node) {
+    //    if (node.parent == "#") {
+    //        return {
+    //            createItem: {
+    //                "label": "THÊM MẪU IN",
+    //                "icon": "fa fa-plus",
+    //                "action": function (obj) {
+    //                    AddLabelPrintView(node.id, ShopID);
+    //                },
+    //            },
+    //            deleteItem: {
+    //                "label": "XÓA Đ/C LẤY HÀNG",
+    //                "icon": "fa fa-times",
+    //                "action": function (obj) {
+    //                    RemovePickUpAddress(node.id, ShopID);
+    //                }
+    //            }
+    //        };
+    //    } else {
+    //        return {
+    //            deleteItem: {
+    //                "label": "XÓA MẪU IN",
+    //                "icon": "fa fa-times",
+    //                "action": function (obj) {
+    //                    RemoveLabelPrint(node.li_attr.id, ShopID);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+    $("#DivAddPickUpAddress").on("click", function () {
+        AddPickUpAddressView(@Model.ShopID, @Model.CollectionPostOfficeID);
+    });
+
+    function ShowInfoPickUpAddress(PickUpAddressID, ShopID) {
+        $.post('@Url.Action("ShowInfoPickUpAddress", "Shop")', {
+            ShopID: ShopID,
+            PickUpAddressID: PickUpAddressID
+        }, function (htmlString) {
+            $("#ShowInfoAddressOrLabelPrint").html(htmlString);
+        });
+    }
+
+    function AddPickUpAddressView(ShopID, CollectionPostOfficeID) {
+        $.post('@Url.Action("AddPickUpAddressView", "Shop")', {
+            ShopID: ShopID,
+            CollectionPostOfficeID: CollectionPostOfficeID
+        }, function (htmlString) {
+            $('#modal-common-container').html(htmlString);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function RemovePickUpAddress(PickUpAddressID, ShopID) {
+        swal({
+            title: 'Thông báo',
+            text: "Xóa địa chỉ lấy hàng sẽ xóa luôn mẫu in. Bạn có chắc chắn muốn xóa?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemovePickUpAddress", "Shop")',
+                    data: {
+                        PickUpAddressID: PickUpAddressID,
+                        ShopID: ShopID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 2000
+                            }).then(function () {
+                                $('#tree').jstree(true).refresh();
+                                $("#ShowInfoAddressOrLabelPrint").html("");
+                            });
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    function ShowInfoLabelPrint(LabelPrintID, ShopID){
+        $.post('@Url.Action("ShowInfoLabelPrint", "Shop")', {
+            ShopID: ShopID,
+            LabelPrintID: LabelPrintID
+        }, function (htmlString) {
+            $("#ShowInfoAddressOrLabelPrint").html(htmlString);
+        });
+    }
+
+    function AddLabelPrintView(PickUpAddressID, ShopID){
+        $.post('@Url.Action("AddLabelPrintView", "Shop")', { PickUpAddressID: PickUpAddressID, ShopID: ShopID }, function (htmlString) {
+            $('#modal-common-container').html(htmlString);
+            $('#modal-common').modal('show');
+        });
+    }
+
+    function RemoveLabelPrint(LabelPrintID, ShopID) {
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn xóa mẫu in?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("JRemoveLabelPrint", "Shop")',
+                    data: {
+                        LabelPrintID: LabelPrintID,
+                        ShopID: ShopID
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: false,
+                                timer: 2000
+                            }).then(function () {
+                                $('#tree').jstree(true).refresh();
+                                $("#ShowInfoAddressOrLabelPrint").html("");
+                            });
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+</script>

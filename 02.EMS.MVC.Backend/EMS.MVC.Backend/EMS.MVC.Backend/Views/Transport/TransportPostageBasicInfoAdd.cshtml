@@ -1,0 +1,418 @@
+﻿@{
+    ViewBag.Title = "TransportPostageDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /*td {
+        padding: 5px 5px 5px 5px !important;
+    }
+
+    th {
+        padding: 10px 10px !important;
+        font-weight: 500 !important;
+    }*/
+    .btn {
+        text-transform: none;
+    }
+    .datepicker-days .table-condensed {
+        margin-bottom: 20px;
+    }
+
+    .filter-option-inner-inner {
+        color: black !important;
+    }
+</style>
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="template-demo">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Transport")">Quản lý cước vận chuyển</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Transport")">Cấu hình</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("FreightChargesView", "TransportMainService")">Danh sách bảng cước</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>Tạo mới bảng cước</span></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div id="Content">
+
+                <div class="card">
+                    <div class="card-body">
+                        @*-----Thông tin cơ bản-----*@
+                        <div class="form-group row">
+                            <div class="col-lg-6 mb-3">
+                                <label for="Code">Mã bảng cước <span class="text-danger">(*)</span></label>
+                                <input type="text" class="form-control" id="Code" onkeyup="checkCode(this.value, '#errCode','')" maxlength="12" oninput="this.value = this.value.toUpperCase()" placeholder="Mã bảng cước">
+                                <span class="error-message" id="errCode"></span>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="Name">Tên bảng cước <span class="text-danger">(*)</span></label>
+                                <input type="text" class="form-control" id="Name" placeholder="Tên bảng cước" maxlength="300" onkeyup="checkVietnamese(this.value, '#errFullName', '')">
+                                <span class="error-message" id="errName"></span>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="PricesOriginal">Ngày bắt đầu <span class="text-danger">(*)</span> </label>
+                                <input type="text" class="form-control" size="16" id="StartDate" placeholder="Ngày/ Tháng/ Năm Giờ:Phút" autocomplete="off">
+                                <span class="error-message" id="errStartDate"></span>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <div class="form-check mt-0">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" id="cbEndDate">
+                                        Ngày kết thúc
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                                <input type="text" class="form-control" id="EndDate" placeholder="Ngày/ Tháng/ Năm Giờ:Phút" autocomplete="off" disabled>
+                                <span class="error-message" id="errEndDate"></span>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="MainServiceID">Dịch vụ chính <span class="text-danger">(*)</span></label>
+                                <select class="form-control" id="MainServiceID">
+                                    <option value="">--- Chọn ---</option>
+                                    @foreach (var item in ViewBag.MainServiceList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message" id="errMainServiceID"></span>
+                            </div>
+                            <div class="col-6">
+                                <label for="">Dịch vụ cộng thêm <span class="text-danger"></span></label>
+                                <select class="form-control selectpicker w-100" data-live-search="true" data-dropup-auto="false" data-size="8" data-selected-text-format="count" data-actions-box="true" multiple id="ExtraServiceIDs">
+                                    @foreach (var item in ViewBag.ExtraServiceList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message errExtraServiceIDs"></span>
+                            </div>
+                            <div class="col-lg-6 mb-3" style="display:none;">
+                                <label>Khu vực <span class="text-danger">(*)</span></label>
+                                <div class="form-group row">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="Area" value="1" checked disabled>
+                                                Trong nước
+                                                <i class="input-helper"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="Area" value="2" disabled>
+                                                Quốc tế
+                                                <i class="input-helper"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="ProvinceApply">Tỉnh áp dụng <span class="text-danger">(*)</span></label>
+                                <select class="form-control" id="ProvinceApply">
+                                    @foreach (var item in ViewBag.ProvinceApplyList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message" id="errProvinceApply"></span>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="AreaApply">Vùng áp dụng <span class="text-danger">(*)</span></label>
+                                <select class="form-control" id="AreaApply">
+                                    @foreach (var item in ViewBag.AreaApplyList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message" id="errAreaApply"></span>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="SubjectsOfApplication">Áp dụng cho <span class="text-danger">(*)</span></label>
+                                <select class="form-control" id="SubjectsOfApplication">
+                                    @foreach (var item in ViewBag.SubjectsOfApplication)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message" id="errSubjectsOfApplication"></span>
+                            </div>
+                            @*Khách hàng*@
+                            <div class="col-6" id="ApplyToShopsView" style="display:none;">
+                                <label for="">Khách hàng <span class="text-danger">(*)</span></label>
+                                <select class="form-control selectpicker w-100" data-live-search="true" data-dropup-auto="false" data-size="8" data-selected-text-format="count" data-actions-box="true" multiple id="ApplyToShops">
+                                    @foreach (var item in ViewBag.ApprovedShopList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message errApplicationObjectValue"></span>
+                            </div>
+                            @*Nơi xuất phát*@
+                            <div class="col-6" id="ApplyToProvincesView" style="display:none;">
+                                <label for="">Nơi xuất phát <span class="text-danger">(*)</span></label>
+                                <select class="form-control selectpicker w-100" data-live-search="true" data-dropup-auto="false" data-size="8" data-selected-text-format="count" data-actions-box="true" multiple id="ApplyToProvinces">
+                                    @foreach (var item in ViewBag.ProvincesList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <span class="error-message errApplicationObjectValue"></span>
+                            </div>
+                            <div class="col-12" id="ApplicationObjectValueView" style="display:none;">
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <label class="">Các mục đã chọn</label>
+                                        <div class="row pt-2 border-top" id="ApplicationObjectValue">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 pt-3 pb-3">
+                    <button class="btn btn-sm btn-primary pull-right w-auto" id="Submit_BasicInfo" >Tạo mới</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var model = @Html.Raw(Json.Encode(Model));
+    $(document).ready(function () {
+        jQuery.datetimepicker.setLocale('vi');
+        $('#StartDate, #EndDate').datetimepicker({
+            format: 'd/m/Y H:i',
+            lang: "vi",
+            autoclose: true, minDate: new Date(), startDate: new Date('@DateTime.Now.Year', '@(DateTime.Now.Month - 1)', '@DateTime.Now.Day', @DateTime.Now.Hour, @DateTime.Now.Minute, 0, 0),
+            step: 10,
+            validateOnBlur: true
+        });
+
+        $('#ApplyToProvinces').selectpicker();
+        $('#ApplyToShops').selectpicker();
+
+    });
+
+    $('#NextMainFee').on('click', function () {
+        $.get('@Url.Action("TransportPostageMainFee", "Transport")?PostageID=' + model.PostageID, function (htmlString) {
+            $('#Content').html(htmlString);
+        })
+    });
+
+    $('#SubjectsOfApplication').on('change', function () {
+        var value = $('#SubjectsOfApplication').val();
+        $('#ApplyToShopGroups').selectpicker('deselectAll');
+        $('#ApplyToShops').selectpicker('deselectAll');
+        $('#ApplyToProvinces').selectpicker('deselectAll');
+        $('#ApplicationObjectValue').html('');
+        /*$('.filter-option-inner-inner').text('Chưa chọn');*/
+        if (value == "1") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').hide();
+        }
+        else if (value == "2") {
+            $('#ApplyToShopGroupsView').show();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').show();
+        }
+        else if (value == "3") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').show();
+            $('#ApplyToProvincesView').hide();
+            $('#ApplicationObjectValueView').show();
+        }
+        else if (value == "4") {
+            $('#ApplyToShopGroupsView').hide();
+            $('#ApplyToShopsView').hide();
+            $('#ApplyToProvincesView').show();
+            $('#ApplicationObjectValueView').show();
+        }
+    });
+
+    //Kiểm tra thời gian sử dụng
+    $('#StartDate, #EndDate, #cbEndDate').on('change', function () {
+        var CheckEndDate = document.getElementById("cbEndDate").checked;
+        if (CheckEndDate) {
+            $('#EndDate').prop("disabled", false);
+        }
+        else {
+            $('#EndDate').val("");
+            $('#EndDate').prop("disabled", true);
+        }
+
+        let strStartDate = $('#StartDate').val();
+        let strEndDate = $('#EndDate').val();
+        if (strStartDate != "") {
+            $('#errStartDate').text('');
+        }
+        $('#errEndDate').text('');
+        if (strEndDate == "" && CheckEndDate) {
+            $('#errEndDate').text('Trường này không được để trống.');
+        }
+        if (CheckEndDate && strStartDate != "" && strEndDate != "") {
+            var StartDate = convertDateTime(strStartDate);
+            var EndDate = convertDateTime(strEndDate);
+            if (StartDate > EndDate) {
+                if (this.id == "StartDate") {
+                    $("#EndDate").datetimepicker({ value: StartDate });
+                }
+                else {
+                    $("#StartDate").datetimepicker({ value: EndDate });
+                }
+            }
+            else {
+                $('#errEndDate').text('');
+            }
+        }
+        else if (CheckEndDate && StartDate != "" && EndDate == "") {
+            $('#EndDate').val(StartDate);
+        }
+    });
+
+    $('#ApplyToShops, #ApplyToProvinces').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        var selectID = $(this).attr('ID');
+        var text = "";
+        $("#" + selectID + " option:selected").each(function () {
+            var $this = $(this);
+            if ($this.length) {
+                text += '<div class="col-3 pb-2" style="font-size:0.875rem;">' + $this.text() + ' <i class="fa fa-times del text-danger" title="Xoá" onclick="removeThis(' + "'" + $this.val() + "'" + ',this,' + "'" + selectID + "'" + ');"></i> </div>';
+            }
+        });
+        $('#ApplicationObjectValue').html(text);
+    });
+
+    function removeThis(val, This, selectID) {
+        $("#" + selectID + " option[value='" + val + "']").prop("selected", false);
+        $(This).parent().remove();
+        $('#' + selectID).trigger('change');
+    }
+
+     //Required
+    $('#Name, #StartDate, #EndDate').on('keyup', function () {
+            var ID = $(this).attr('ID');
+            funcRequired(ID);
+    });
+    $('#MainServiceID, #Area, #SubjectsOfApplication').on('change', function () {
+        var ID = $(this).attr('ID');
+        funcRequired(ID);
+    });
+    $('#ApplyToShops, #ApplyToProvinces').on('change', function () {
+        $('.errApplicationObjectValue').text('');
+    });
+
+    //------------------>
+
+    $('#Submit_BasicInfo').on('click', function () {
+        let isError = false;
+
+        // Ngày kết thúc
+        let EndDate = "";
+        let cbEndDate = getCheckboxValue("cbEndDate");
+        if (cbEndDate == "Y") {
+            EndDate = $('#EndDate').val();
+            isError = checkNull(EndDate, '#errEndDate', isError);
+        }
+
+
+        let agrs = {
+            PostageCode: $('#Code').val(),
+            PostageName: $('#Name').val().trim(),
+            StartDate: $('#StartDate').val().trim(),
+            EndDate: EndDate,
+            MainServiceID: $('#MainServiceID').val(),
+            ExtraServiceIDs: $('#ExtraServiceIDs').val().toString(),
+            Area: 1,
+            ProvinceApply: $('#ProvinceApply').val(),
+            AreaApply: $('#AreaApply').val(),
+            SubjectsOfApplication: $('#SubjectsOfApplication').val()
+        };
+
+        //checkNull
+        isError = checkCode(agrs.PostageCode, '#errCode', isError);
+        isError = checkVietnamese(agrs.PostageName, '#errName', isError);
+        isError = checkNull(agrs.StartDate, '#errStartDate', isError);
+        isError = checkNull(agrs.MainServiceID, '#errMainServiceID', isError);
+        isError = checkNull(agrs.SubjectsOfApplication, '#errSubjectsOfApplication', isError);
+
+        //Thông tin cơ bản - Áp dụng cho
+        if (agrs.SubjectsOfApplication == 3) //Khách hàng
+        {
+            let ApplicationObjectValue = $('#ApplyToShops').val();
+            isError = checkNull(ApplicationObjectValue, '.errApplicationObjectValue', isError);
+            agrs.ApplicationObjectValue = ApplicationObjectValue.toString();
+        }
+        else if (agrs.SubjectsOfApplication == 4)//Nơi xuất phát
+        {
+            let ApplicationObjectValue = $('#ApplyToProvinces').val();
+            isError = checkNull(ApplicationObjectValue, '.errApplicationObjectValue', isError);
+            agrs.ApplicationObjectValue = ApplicationObjectValue.toString();
+        }
+
+        //Lỗi - trả về
+        if (isError) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("JTransportPostageBasicInfoAdd", "Transport")',
+            dataType: 'json',
+            loading: true,
+            data: agrs,
+            success: function (res) {
+                if (res.Code == "00") {
+                    let resData = JSON.parse(res.Data);
+                    swal({
+                        icon: "success",
+                        title: "Thông báo",
+                        text: res.Message,
+                        timer: 1500,
+                        button: false
+                    }).then(function () {
+                        window.location.href = '@Url.Action("TransportPostageEdit", "Transport")?PostageID=' + resData.PostageID + '&PostageCode=' + agrs.PostageCode;
+                    });
+                } else {
+                    swal({
+                        icon: "error",
+                        title: "Thông báo",
+                        text: res.Message,
+                        button: {
+                            text: "Đóng"
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                swal({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: err.Message,
+                    button: {
+                        text: "Đóng",
+                        value: true,
+                        visible: true,
+                        className: "btn btn-primary"
+                    }
+                });
+                return;
+            }
+        });
+    });
+</script>
+

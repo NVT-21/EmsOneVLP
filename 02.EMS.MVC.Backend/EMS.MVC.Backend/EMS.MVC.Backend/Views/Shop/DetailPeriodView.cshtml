@@ -1,0 +1,64 @@
+﻿@model EMS.MVC.Backend.Models.DetailPeriodViewModel
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-6">
+        <table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+            <thead>
+                <tr class="table-info text-center">
+                    <th class="align-middle"> Kỳ đối soát COD</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListCOD.Count > 0)
+                {
+                    foreach (var item in Model.ListCOD)
+                    {
+                        <tr>
+                            <td>
+                                @item
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6">
+        <table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+            <thead>
+                <tr class="table-info text-center">
+                    <th class="align-middle"> Kỳ đối soát cước vận chuyển</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListFee.Count > 0)
+                {
+                    foreach (var item in Model.ListFee)
+                    {
+                        <tr>
+                            <td>
+                                @item
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

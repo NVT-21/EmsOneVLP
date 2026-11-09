@@ -1,0 +1,189 @@
+﻿@model EMS.MVC.Backend.Models.SummaryOfDebtNoticesViewModel
+@if (Model != null)
+{
+    <div class="row mt-4 ml-2 text-center">
+        <div class="col-lg-12 mb-2 text-content">
+            <h4 class="text-uppercase font-weight-bold">Tổng công ty chuyển phát nhanh bưu điện- Công ty cổ phần</h4>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <h4 class="text-uppercase font-weight-bold">@Model.DataInfo.BranchNameMenu</h4>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <h4 class="text-uppercase font-weight-bold">@Model.DataInfo.CustomerServiceCenterNameMenu</h4>
+        </div>
+    </div>
+    <hr />
+    <div class="row mt-2 ml-2 text-center">
+        <div class="col-lg-12 mb-2 text-content">
+            <h4 class="mt-2 ml-4 text-uppercase font-weight-bold">GIẤY BÁO NỢ TỔNG HỢP</h4>
+        </div>
+    </div>
+    <hr />
+    <div class="row mt-2 ml-3">
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable"><b>Khách hàng nợ: </b>&nbsp;@Model.DataInfoDetails.CustomerName</label>
+        </div>
+        <div class="col-lg-12 text-content">
+            <label class="text-lable"><b>Thanh toán với </b>&nbsp;@Model.DataInfo.BranchNameMenu <b>các khoản cước phí ghi nợ tháng: </b>@Model.MonthYear.ToString().Substring(4, 2)/@Model.MonthYear.ToString().Substring(0, 4)</label>
+        </div>
+    </div>
+    <hr />
+}
+<div class="table-responsive">
+    <table id="ListDataTableSearch" class="table table-bordered table-hover text-center">
+        <thead>
+            <tr class="table-info text-center">
+                <th class="align-middle" rowspan="2">STT</th>
+                <th class="align-middle" rowspan="2">Diễn giải</th>
+                <th class="align-middle" rowspan="2">Số lượng bưu gửi</th>
+                <th class="align-middle" colspan="3"> Cước phát sinh (VNĐ) </th>
+            </tr>
+            <tr class="table-info text-center">
+                <th class="align-middle"> Cước trước VAT</th>
+                <th class="align-middle"> VAT </th>
+                <th class="align-middle"> Cước sau VAT </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model.DataInfoDetails.ListItem)
+                {
+                    <tr>
+                        <td class="text-center">@item.NumRow</td>
+                        <td class="text-left">
+                            @if (item.RowIndex == 18 || item.RowIndex == 19)
+                            {
+                                <b>@item.Explain</b>
+                            }
+                            else
+                            {
+                                @item.Explain
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (item.RowIndex != 19)
+                            {
+                                if (item.RowIndex == 18)
+                                {
+                                    <b>@item.NumberOfParcels.ToString("N0")</b>
+                                }
+                                else
+                                {
+                                    @item.NumberOfParcels.ToString("N0")
+                                }
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (item.RowIndex != 19)
+                            {
+                                if (item.RowIndex == 18)
+                                {
+                                    <b>@item.FeeBeforeVAT.ToString("N0")</b>
+                                }
+                                else
+                                {
+                                    @item.FeeBeforeVAT.ToString("N0")
+                                }
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (item.RowIndex != 19)
+                            {
+                                if (item.RowIndex == 18)
+                                {
+                                    <b>@item.FeeVAT.ToString("N0")</b>
+                                }
+                                else
+                                {
+                                    @item.FeeVAT.ToString("N0")
+                                }
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (item.RowIndex == 18 || item.RowIndex == 19)
+                            {
+                                <b>@item.FeeAfterVAT.ToString("N0")</b>
+                            }
+                            else
+                            {
+                                @item.FeeAfterVAT.ToString("N0")
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+@if (Model != null)
+{
+    <p>&nbsp;</p>
+    <hr />
+    <div class="row mt-2 ml-2">
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small"><b>Số tiền bằng chữ: &nbsp;@Model.TotalRevenueToText</b></label>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small"><b>Kèm theo: </b>&nbsp;@Model.DataInfoDetails.InvoiceNumber chứng từ gốc</label>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small">
+                Quý khách có thể thanh toán bằng tiền
+                mặt, séc, chuyển khoản qua ngân hàng.
+            </label>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small">
+                @Model.DataInfo.PaymentInformationMenu
+            </label>
+        </div>
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small">
+                Quý khách vui lòng thanh toán và đối soát
+                cho Chi nhánh Tổng công ty Chuyển phát nhanh Bưu điện
+                trong vòng 15 ngày kể từ ngày nhận được giấy báo này.
+            </label>
+        </div>
+    </div>
+    <div class="row mt-2 ml-2">
+        <div class="col-lg-6 mb-2 text-content">
+            <label class="text-lable small"><b>Kế toán bưu cục: </b>&nbsp;@Model.DataInfoDetails.AccountantName</label>
+        </div>
+        <div class="col-lg-6 mb-2 text-content">
+            <label class="text-lable small"><b>Số máy liên hệ: </b>&nbsp;@Model.DataInfoDetails.AccountantPhone</label>
+        </div>
+    </div>
+    <div class="row mt-2 ml-2">
+        <div class="col-lg-12 mb-2 text-content">
+            <label class="text-lable small"><b>Địa chỉ thanh toán: </b>&nbsp;@Model.DataInfoDetails.PaymentPostCode - @Model.DataInfoDetails.PaymentPostAddress</label>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('#ListDataTableSearch').DataTable({
+            "aLengthMenu": [
+                [20, 30, 50, 100, -1],
+                [20, 30, 50, 100, "Tất cả"]
+            ],
+            "iDisplayLength": 20,
+            'language': {
+                sSearch: 'Tìm kiếm ',
+                emptyTable: "Không có dữ liệu",
+                zeroRecords: "Không có dữ liệu",
+                sInfo: 'Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi',
+                infoEmpty: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoFiltered: "(Tìm kiếm từ _MAX_ bản ghi)",
+                oPaginate: {
+                    'sFirst': 'Trang đầu',
+                    'sPrevious': 'Trang trước',
+                    'sNext': 'Trang sau',
+                    'sLast': 'Trang cuối'
+                },
+                lengthMenu: "Hiển thị _MENU_ bản ghi"
+            },
+            "ordering": false
+        });
+    });
+</script>

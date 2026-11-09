@@ -1,0 +1,341 @@
+﻿@model List<EMS.MVC.Backend.Models.SearchListShopViewModel>
+<div class="mb-2" style="text-align: end;">
+    <button type="button" class="btn btn-sm btn-primary" id="ExportExcel" onclick="btnExportExcel()">Export Excel</button>
+</div>
+<table id="SearchListDataTable" class="table table-bordered table-hover text-center">
+    <thead>
+        <tr class="table-info text-center">
+            <th class="align-middle"> STT </th>
+            <th class="align-middle"> Mã khách hàng </th>
+            <th class="align-middle" style="max-width: 240px; white-space: inherit; line-height: 20px;"> Thông tin đăng ký </th>
+            <th class="align-middle" style="max-width: 240px; white-space: inherit; line-height: 20px;"> Hình thức kinh doanh </th>
+            <th class="align-middle" style="max-width: 240px; white-space: inherit; line-height: 20px;"> Thông tin tài khoản </th>
+            <th class="align-middle"> Ngày tạo </th>
+            <th class="align-middle"> Trạng thái </th>
+            <th class="align-middle"> Nhân viên phê duyệt </th>
+            <th class="align-middle"> Thao tác </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(stt++)</td>
+                    <td>
+                        <span style="line-height: 1.4rem;">@item.CustomerCode</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.Code</span>
+                    </td>
+                    <td style="max-width: 240px; white-space: inherit; line-height: 20px; ">
+                        <span style="line-height: 1.4rem;">@item.StoreName</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.Email</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.MobileNumber</span>
+                    </td>
+                    <td style="max-width: 240px; white-space: inherit; line-height: 20px; ">
+                        <span style="line-height: 1.4rem;">@item.ProductBusiness</span>
+                        <br />
+                        <span style="line-height: 1.4rem;">@item.TypeBusiness</span>
+                    </td>
+                    <td style="max-width: 240px; white-space: inherit; line-height: 20px; ">
+                        @if (item.Status.Code == "A")
+                        {
+                            <span style="line-height: 1.4rem;">@item.AccountType.Name</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.NumberOfEmployee.Name người dùng</span>
+                        }
+                        else
+                        {
+                            <span>---</span>
+                        }
+                    </td>
+                    <td>@item.CreatedDate</td>
+                    <td>
+                        <span style="line-height: 1.4rem;">@item.Status.Name</span>
+                        @if (item.Status.Code == "A")
+                        {
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.ConfirmedDate</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.Status.Code == "A" || item.Status.Code == "R")
+                        {
+                            <span style="line-height: 1.4rem;">@item.ConfirmedName</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.ConfirmedPhone</span>
+                            <br />
+                            <span style="line-height: 1.4rem;">@item.ConfirmedEmail</span>
+                            if (item.Status.Code == "R")
+                            {
+                                <a style="cursor: pointer; color: #007bff; font-size: 17px;" data-toggle="popover" data-content="@item.ReasonReject" data-placement="bottom" title="Lý do">
+                                    <i class="fa fa-info-circle"></i>
+                                </a>
+                            }
+
+                        }
+                        else
+                        {
+                            Write("---");
+                        }
+                    </td>
+                    <td>
+                        @if (item.Status.Code == "N")
+                        {
+                            <a class="badge badge-outline-primary" title="Duyệt" href="@Url.Action("ApprovedShopView", "Shop", new { ShopID = item.ID})">
+                                <i class="fa fa-eye text-primary"></i>
+                            </a>
+                        }
+                        else if (item.Status.Code == "A")
+                        {
+                            <a class="badge badge-outline-primary" href="@Url.Action("DetailShopView", "Shop", new { ID = item.ID})" title="Chi tiết">
+                                <i class="fa fa-search text-primary"></i>
+                            </a>
+                            <a class="badge badge-outline-primary" href="@Url.Action("EditShopView", "Shop", new { ID = item.ID})" title="Sửa">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            if (item.IsLock == "N")
+                            {
+                                <button onclick="btnIsLock(@item.ID, 'Y', '@item.FullName')" title="Khoá" class="badge badge-outline-primary">
+                                    <i class="fa fa-unlock"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <button onclick="btnIsLock(@item.ID, 'N', '@item.FullName')" title="Mở khoá" class="badge badge-outline-primary">
+                                    <i class="fa fa-lock"></i>
+                                </button>
+                            }
+                            <button onclick="FuncResetPassword('@item.ID', '@item.MobileNumber', '@item.Email')" title="Khôi phục mật khẩu" class="badge badge-outline-warning">
+                                <i class="fa fa-refresh" aria-hidden="true"></i>
+                            </button>
+
+                            <button onclick="FuncSendEmailRegiterSuccess('@item.ID', '@item.MobileNumber', '@item.Email', '@item.FullName')" title="Gửi lại email kích hoạt mật khẩu" class="badge badge-outline-warning">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            Write("---");
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        MyCreateDataTable("SearchListDataTable");
+    });
+
+    // Mở/Khóa cửa hàng
+    function btnIsLock(ID, IsLock, FullName) {
+        var text = "";
+        if (IsLock == "N") {
+            text = "Mở khoá";
+        } else {
+            text = "Khoá";
+        }
+        swal({
+            title: 'Thông báo',
+            text: "Bạn chắc chắn muốn " + text + " " + FullName + "?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ChangeIsLock", "Shop")',
+                    data: {
+                        ID: ID,
+                        IsLock: IsLock
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                title: "Thông báo",
+                                text: res.Message,
+                                html: true,
+                                button: false,
+                                timer: 1500
+                            }).then(function () {
+                                location.reload();
+                            });
+                        } else {
+                            swal({
+                                icon: "error",
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        swal({
+                            title: 'Lỗi',
+                            text: err.Message,
+                            icon: 'error',
+                            button: {
+                                text: "Đóng",
+                                value: true,
+                                visible: true,
+                                className: "btn btn-primary"
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        });
+    }
+
+    //Reset mật khẩu
+    function FuncResetPassword(ID, MobileNumber, Email) {
+        var data = {
+            ID: ID,
+            MobileNumber: MobileNumber,
+            Email: Email
+        };
+        swal({
+            title: 'Xác nhận hành động',
+            text: "Bạn chắc chắn muốn khôi phục mật khẩu mặc định?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ResetPasswordShop", "Shop")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                        } else {
+                            swal({
+                                icon: 'error',
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                    }
+                });
+            }
+        });
+    };
+
+    // Gửi lại email kích hoạt mật khẩu
+    function FuncSendEmailRegiterSuccess(ID, MobileNumber, Email, fullName) {
+        var data = {
+            ShopID: ID,
+            MobileNumber: MobileNumber,
+            ToEmail: Email,
+            FullName: fullName,
+        };
+        swal({
+            title: 'Xác nhận hành động',
+            text: "Bạn chắc chắn muốn gửi lại email?",
+            icon: 'warning',
+            buttons: {
+                confirm: {
+                    text: "Có",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary",
+                    closeModal: true
+                },
+                cancel: {
+                    text: "Không",
+                    value: false,
+                    visible: true,
+                    className: "btn btn-danger",
+                    closeModal: true,
+                }
+            },
+        }).then((value) => {
+            if (value) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SendEmailRegiterSuccess", "Shop")',
+                    dataType: 'json',
+                    loading: true,
+                    data: data,
+                    success: function (res) {
+                        if (res.Code == "00") {
+                            swal({
+                                icon: "success",
+                                text: res.Message,
+                                button: false,
+                                timer: 1500
+                            });
+                        } else {
+                            swal({
+                                icon: 'error',
+                                title: "Thông báo",
+                                text: res.Message,
+                                button: {
+                                    text: "Đóng"
+                                }
+                            });
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                    }
+                });
+            }
+        });
+    }
+</script>
+
