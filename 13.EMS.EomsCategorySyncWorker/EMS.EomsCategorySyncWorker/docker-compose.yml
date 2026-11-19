@@ -1,0 +1,21 @@
+# Worker đồng bộ danh mục EOMS (Tỉnh / Xã / Sản phẩm) chạy độc lập
+# Trong thư mục triển khai:
+#   cp .env.example .env && nano .env
+#   docker compose up -d --build
+
+services:
+  eoms-category-sync-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ems-eoms-category-sync-worker:latest
+    container_name: ${WORKER_CONTAINER_NAME:-ems-eoms-category-sync-worker}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - ems-category-net
+
+networks:
+  ems-category-net:
+    driver: bridge

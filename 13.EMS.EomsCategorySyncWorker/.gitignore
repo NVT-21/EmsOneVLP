@@ -1,0 +1,5 @@
+bin/
+obj/
+deploy_package/
+EMS.EomsCategorySyncWorker.zip
+.env
